@@ -1,0 +1,376 @@
+<resources>
+    <string name="app_name">KG Optometry CRM</string>
+    <string name="kg_optometry">KG OPTOMETRY</string>
+    <string name="kg_optometry_crm">KG OPTOMETRY CRM</string>
+    <string name="login_hint">Your login</string>
+    <string name="hello_user">Hello, %1$s!</string>
+    <string name="login">LOG IN</string>
+    <string name="logout">LOG OUT</string>
+    <string name="please_login">You should login into the app to continue using it.</string>
+    <string name="sign_in_failure">Sign in Failure!</string>
+    <string name="remember_me_checkbox">Remember me on this device</string>
+    <string name="forgot_password">Forgot password?</string>
+    <string name="hint_search_by">Search by:</string>
+    <string name="entries_found_in_database">Found %1$s customers</string>
+    <string name="data_import_completed">Completed! \nDatabase has now %1$s customers.</string>
+    <string name="refraction_overdue">Found %1$s customers with overdue RF</string>
+    <string name="hint_start_typing">Start typing to search database</string>
+    <string name="hint_phone">Phone:</string>
+    <string name="hint_family_code">Family code:</string>
+    <string name="select_forms_to_add">Select FORM to add:</string>
+    <string name="number_of_years">- %1$s years</string>
+
+    <string name="number_of_years_patient">- %1$s years, DOB: %2$s</string>
+
+    <string name="info_form_caption">INFO</string>
+    <string name="memo_form_caption">MEMO</string>
+    <string name="current_rx_caption">CURRENT / OLD Rx</string>
+    <string name="refraction_caption">REFRACTION</string>
+    <string name="ocular_health_caption">OCULAR HEALTH</string>
+    <string name="supplementary_test_caption">SUPPLEMENTARY TESTS</string>
+    <string name="final_prescription_caption">FINAL PRESCRIPTION</string>
+    <string name="sales_order">SALES ORDER</string>
+    <string name="contact_lens_caption">CONTACT LENS EXAM</string>
+    <string name="orthox_caption">ORTHOK</string>
+    <string name="save_button">SAVE</string>
+    <string name="delete_form">DELETE</string>
+
+    <string name="hint_name_input">Name:</string>
+    <string name="hint_id_input">ID:</string>
+    <string name="hint_ic_input">IC:</string>
+    <string name="hint_family_input">Family Code:</string>
+    <string name="hint_other_id">Other ID:</string>
+    <string name="hint_dob">D.O.B.</string>
+    <string name="hint_age">Age:</string>
+    <string name="hint_phone1">Phone 1:</string>
+    <string name="hint_phone2">Phone 2:</string>
+    <string name="hint_phone3">Phone 3:</string>
+    <string name="hint_race">Race:</string>
+    <string name="hint_sex">Sex:</string>
+    <string name="hint_address">Address:</string>
+    <string name="hint_post_code">Post Code:</string>
+    <string name="hint_city">City:</string>
+    <string name="hint_state">State:</string>
+    <string name="hint_country">Country:</string>
+    <string name="hint_occupation">Occupation:</string>
+
+    <string name="hint_contact_lens">Contact Lens:</string>
+    <string name="hint_vdu">VDU:</string>
+    <string name="hint_driving">Driving:</string>
+    <string name="yes_answer">Yes</string>
+    <string name="no_answer">No</string>
+    <string name="ok_hint">OK</string>
+    <string name="occasionally_answer">Occasionally</string>
+    <string name="hint_hypertension">Hypertension:</string>
+    <string name="hint_diabetes">Diabetes:</string>
+    <string name="hint_allergy">Allergy:</string>
+    <string name="hint_medication">Medication:</string>
+    <string name="hint_cataract_removal">Cataract Removal:</string>
+    <string name="hint_glaucoma">Glaucoma:</string>
+    <string name="hint_eye_surgery">Eye Surgery:</string>
+    <string name="hint_current_status">Status/History/Main CO</string>
+    <string name="hint_history">History:</string>
+    <string name="hint_main_complaint">Main Complaint:</string>
+    <string name="hint_remark">Remark:</string>
+
+    <string name="right">R</string>
+    <string name="left">L</string>
+
+    <string name="right_full">Right</string>
+    <string name="left_full">Left</string>
+
+    <string name="hint_retinoscopy">Retinoscopy:</string>
+    <string name="sph">Sph</string>
+    <string name="cyl">Cyl</string>
+    <string name="axis">Axis</string>
+
+    <string name="subjective_refraction">Subjective Refraction</string>
+    <string name="chart">Chart</string>
+    <string name="va">VA</string>
+    <string name="add">ADD</string>
+    <string name="pd">PD</string>
+    <string name="add2">ADD2</string>
+    <string name="near_va">Near VA</string>
+    <string name="near_va2">Near VA2</string>
+
+    <string name="mpmva">MPMVA</string>
+    <string name="ouva">OU VA</string>
+    <string name="x_sign">X</string>
+    <string name="previous">PREV</string>
+    <string name="next">NEXT</string>
+
+    <string name="currently_using">Currently Using</string>
+    <string name="current_lens">Current Lens</string>
+    <string name="lens_year">Lens Year</string>
+
+    <string name="lens">Lens</string>
+    <string name="iop">IOP</string>
+    <string name="av_ratio">AV Ratio</string>
+    <string name="cd_ratio">CD Ratio</string>
+    <string name="tbut">TBUT</string>
+
+    <string name="color_vision">Color Vision</string>
+    <string name="tno">TNO</string>
+    <string name="randot">Randot</string>
+    <string name="npc">NPC</string>
+    <string name="worth_dots_distance">Worth-4-Dots-Distance</string>
+    <string name="worth_dots_near">Worth-4-Dots-Near</string>
+    <string name="accommodation">Accommodation</string>
+    <string name="right_aa">Right AA</string>
+    <string name="left_aa">Left AA</string>
+    <string name="right_mem">Right MEM</string>
+    <string name="left_mem">Left MEM</string>
+    <string name="phoria">Phoria</string>
+    <string name="cover_test_distance">Cover Test - Distance</string>
+    <string name="cover_test_near">Cover Test - Near</string>
+    <string name="howell_card_distance">Howell Card - Distance</string>
+    <string name="howell_card_near">Howell Card - Near</string>
+    <string name="omt">OMT</string>
+    <string name="range_of_movement">Range of movement</string>
+    <string name="eye_movement">Eye movement</string>
+    <string name="losses_fixation">Losses Fixation</string>
+    <string name="head_movement">Head Movement</string>
+    <string name="overshoot">Overshoot</string>
+    <string name="additional_test_manage">Additional Test/ Management</string>
+
+    <string name="occupation">Occupation</string>
+    <string name="current_cl">Current CL</string>
+    <string name="wearing_hours">Wearing Hours</string>
+    <string name="current_status">Current Status</string>
+    <string name="vision">Vision</string>
+    <string name="comfort">Comfort</string>
+    <string name="complaints">Complaints</string>
+    <string name="visual_demand">Visual Demand</string>
+    <string name="rx">RX</string>
+    <string name="_24">/24</string>
+    <string name="_7">/7</string>
+    <string name="_30">/30</string>
+    <string name="_10">/10</string>
+
+    <string name="patient_history_contact_lens">Patient History</string>
+    <string name="cornea">Cornea</string>
+    <string name="limbus">Limbus</string>
+    <string name="lashes">Lashes</string>
+    <string name="bulbar_conj">Bulbar Conj</string>
+    <string name="lids">Lids</string>
+    <string name="tear_quality">Tear Quality</string>
+    <string name="ocular_health_contact_lens">Ocular Health</string>
+
+    <string name="fitting_contact_lens">Fitting</string>
+    <string name="rx_smal">Rx</string>
+    <string name="bc">Bc</string>
+    <string name="dia">Dia</string>
+    <string name="movement">Movement</string>
+    <string name="centration">Centration</string>
+    <string name="over_refraction">Over-refraction</string>
+
+    <string name="final_prescription_oh">Final Prescription</string>
+
+    <string name="solution">Solution</string>
+    <string name="advice">Advice</string>
+    <string name="rm">RM</string>
+    <string name="total">Total</string>
+
+    <string name="type">Type</string>
+    <string name="ht">HT</string>
+    <string name="frameHT">Frame HT</string>
+    <string name="ed">ED</string>
+    <string name="frame">Frame</string>
+    <string name="frameRM">Frame RM</string>
+    <string name="lensRM">Lens RM</string>
+    <string name="contact_lens_sun_glass">Contact Lens / Sunglasses</string>
+    <string name="clsgrm">CL/SG RM</string>
+    <string name="optometrist">Optometrist</string>
+    <string name="salesperson">Salesperson</string>
+
+    <string name="unaided_va">Unaided VA</string>
+    <string name="over_refraction_short">Over-ref.</string>
+    <string name="treatment_zone">Treatment\nZone</string>
+    <string name="management">Management</string>
+
+    <string name="customer_same_IC">The customer with IC %1$s already exists.\nWould you like to delete current customer and load the existing one? </string>
+    <string name="customer_form_delete">If you really want to delete %1$s of %2$s forever, please, enter valid password and tap YES.</string>
+    <string name="form_delete_title">Confirm Form Deletion</string>
+    <string name="patient_delete_title">Confirm Patient Deletion</string>
+    <string name="photo_delete_title">Confirm Photo Deletion</string>
+
+    <string name="photo_delete">Do you want to delete photo forever?</string>
+
+    <string name="to_prescribe">TO PRESCRIBE</string>
+    <string name="t_slash_a">T/A</string>
+    <string name="t_slash_s">T/S</string>
+    <string name="t_slash_h">T/H</string>
+    <string name="o_slash_r">O/R</string>
+    <string name="sph_cyl_axis_va">Sph / Cyl x Axis ( VA )</string>
+    <string name="wait_a_minute">Wait a minute - checking for new entries ..</string>
+    <string name="start_search">Customers</string>
+    <string name="settled_checkbox_caption">SETTLED</string>
+    <string name="successfully_saved">Record was successfully saved!</string>
+    <string name="navigation_else">Navigation was not defined</string>
+    <string name="goto_customers">Customers</string>
+    <string name="need_admin_rights">You need ADMIN rights to DELETE the record!</string>
+    <string name="or">OR</string>
+    <string name="frame_size">Frame Size</string>
+    <string name="total_rm">Total RM</string>
+    <string name="cash_order">CASH ORDER</string>
+    <string name="solution_misc">Solution/Misc</string>
+    <string name="solution_misc_rm">Sol/Misc RM</string>
+    <string name="hint_mm_input">MM</string>
+
+    <string-array name="worth_four_dots">
+        <item> </item>
+        <item>4 DOTS</item>
+        <item>RE SUPPRESSED</item>
+        <item>LE SUPPRESSED</item>
+        <item>5 DOTS</item>
+    </string-array>
+
+    <string-array name="cover_test">
+        <item> </item>
+        <item>NMD</item>
+        <item>SXP</item>
+        <item>MXP</item>
+        <item>LXP</item>
+        <item>CUSTOM</item>
+    </string-array>
+
+    <string-array name="howell_card">
+        <item> </item>
+        <item>ORTHO</item>
+        <item>1XP</item>
+        <item>2XP</item>
+        <item>3XP</item>
+        <item>4XP</item>
+        <item>5XP</item>
+        <item>6XP</item>
+        <item>7XP</item>
+        <item>8XP</item>
+        <item>9XP</item>
+        <item>10XP</item>
+        <item>1EP</item>
+        <item>2EP</item>
+        <item>3EP</item>
+        <item>4EP</item>
+        <item>5EP</item>
+        <item>6EP</item>
+        <item>Custom</item>
+    </string-array>
+
+    <string-array name="range_movement">
+        <item> </item>
+        <item>FULL</item>
+        <item>LIMITED</item>
+    </string-array>
+
+    <string-array name="eye_movement">
+        <item> </item>
+        <item>SMOOTH</item>
+        <item>SLIGHT JERKY</item>
+        <item>JERKY</item>
+    </string-array>
+
+    <string-array name="yes_no">
+        <item> </item>
+        <item>YES</item>
+        <item>NO</item>
+    </string-array>
+
+    <string-array name="database_search_choices">
+        <item>NAME</item>
+        <item>DATE</item>
+        <item>ID</item>
+        <item>IC</item>
+        <item>PHONE</item>
+        <item>FAMILY CODE</item>
+        <item>ADDRESS</item>
+        <item>OCCUPATION</item>
+    </string-array>
+
+    <string-array name="forms_order">
+        <item>INFO</item>
+        <item>MEMO</item>
+        <item>CURRENT / OLD Rx</item>
+        <item>REFRACTION</item>
+        <item>OCULAR HEALTH</item>
+        <item>SUPPLEMENTARY TESTS</item>
+        <item>CONTACT LENS EXAM</item>
+        <item>ORTHOK</item>
+        <item>FINAL PRESCRIPTION</item>
+    </string-array>
+
+    <string-array name="chart_choices">
+        <item> </item>
+        <item>SHERIDAN GARDINER</item>
+        <item>SLOAN</item>
+        <item>ILLITERATE E</item>
+        <item>LANDOLT C</item>
+        <item>KAY PICTURE</item>
+        <item>NUMBER</item>
+    </string-array>
+
+    <string-array name="currently_using_choices">
+        <item> </item>
+        <item>UNAIDED</item>
+        <item>SINGLE VISION</item>
+        <item>SV-DISTANCE</item>
+        <item>SV-READING</item>
+        <item>SV-INTERMEDIATE</item>
+        <item>OFFICE LENS</item>
+        <item>MONOVISION</item>
+        <item>BIFOCAL RS</item>
+        <item>BIFOCAL UD</item>
+        <item>PROGRESSIVE</item>
+        <item>MYOPIA CONTROL</item>
+        <item>ANTI FATIGUE</item>
+        <!--        <item>BIFOCAL</item>-->
+    </string-array>
+
+    <string-array name="type_final_choices">
+        <item> </item>
+        <item>SINGLE VISION</item>
+        <item>SV-DISTANCE</item>
+        <item>SV-READING</item>
+        <item>SV-INTERMEDIATE</item>
+        <item>OFFICE LENS</item>
+        <item>MONOVISION</item>
+        <item>BIFOCAL RS</item>
+        <item>BIFOCAL UD</item>
+        <item>PROGRESSIVE</item>
+        <item>MYOPIA CONTROL</item>
+        <item>ANTI FATIGUE</item>
+    </string-array>
+
+    <string-array name="sex_choices">
+        <item> </item>
+        <item>MALE</item>
+        <item>FEMALE</item>
+    </string-array>
+
+    <string-array name="race_choices">
+        <item>OTHER</item>
+        <item>CHINESE</item>
+        <item>MALAY</item>
+        <item>INDIAN</item>
+    </string-array>
+
+    <string-array name="state_choices">
+        <item> </item>
+        <item>KEDAH</item>
+        <item>PENANG</item>
+        <item>PERLIS</item>
+        <item>PERAK</item>
+        <item>KELANTAN</item>
+        <item>SELANGOR</item>
+        <item>NEGERI SEMBILIAN</item>
+        <item>TERENGGANU</item>
+        <item>PAHANG</item>
+        <item>MELAKA</item>
+        <item>JOHOR</item>
+        <item>SABAH</item>
+        <item>SARAWAK</item>
+        <item>WP KL</item>
+        <item>WP PUTRAJAYA</item>
+        <item>WP LABUAN</item>
+    </string-array>
+
+</resources>

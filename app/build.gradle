@@ -1,0 +1,132 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'androidx.navigation.safeargs'
+apply plugin:  'com.google.firebase.crashlytics'
+apply plugin:  'com.google.gms.google-services'
+
+android {
+//    compileSdkVersion 30
+    compileSdkVersion 31
+//    buildToolsVersion "30.0.2"
+    buildToolsVersion "32.0.0"
+
+    buildFeatures{
+        dataBinding  true
+        viewBinding  true
+    }
+
+
+    defaultConfig {
+        applicationId "com.lizpostudio.kgoptometrycrm"
+        minSdkVersion 21
+//        targetSdkVersion 30
+        targetSdkVersion 31
+        versionCode 5
+        versionName "1.5"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    // For Kotlin projects
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
+    packagingOptions {
+        exclude 'META-INF/atomicfu.kotlin_module'
+    }
+}
+
+configurations.all {
+    resolutionStrategy {
+        force("org.antlr:antlr4-runtime:4.7.1")
+        force("org.antlr:antlr4-tool:4.7.1")
+    }
+}
+
+dependencies {
+    // Import the BoM for the Firebase platform
+//    implementation platform('com.google.firebase:firebase-bom:26.0.0')
+    implementation platform('com.google.firebase:firebase-bom:29.0.3')
+
+    // Declare the dependencies for the Crashlytics and Analytics libraries
+    implementation 'com.google.firebase:firebase-crashlytics-ktx'
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+    // Firebase
+
+//    implementation "com.google.firebase:firebase-database:20.0.2"
+    implementation "com.google.firebase:firebase-database"
+
+    implementation 'com.google.firebase:firebase-database-ktx'
+    implementation 'com.google.firebase:firebase-storage-ktx'
+    implementation 'com.google.firebase:firebase-auth-ktx'
+
+    // Firebase UI
+    implementation 'com.firebaseui:firebase-ui-database:8.0.0'
+    // Firebase UI sign-in
+    implementation 'com.firebaseui:firebase-ui-auth:8.0.0'
+
+    // Google
+//    implementation 'com.google.android.gms:play-services-auth:19.2.0'
+    implementation 'com.google.android.gms:play-services-auth:20.1.0'
+
+    //GSON to convert Firebase data to Kotlin Object
+    implementation 'com.google.code.gson:gson:2.8.8'
+
+    implementation "androidx.appcompat:appcompat:$rootProject.appCompatVersion"
+ //   implementation "androidx.activity:activity-ktx:$rootProject.activityVersion"
+
+    // Dependencies for working with Architecture components
+
+    // Room components
+    implementation "androidx.room:room-ktx:$rootProject.roomVersion"
+    kapt "androidx.room:room-compiler:$rootProject.roomVersion"
+    androidTestImplementation "androidx.room:room-testing:$rootProject.roomVersion"
+
+    // Lifecycle components
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$rootProject.lifecycleVersion"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$rootProject.lifecycleVersion"
+    implementation "androidx.lifecycle:lifecycle-common-java8:$rootProject.lifecycleVersion"
+
+    // Kotlin components
+   // implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+//    api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0"
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2"
+//    api "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1"
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0"
+
+    // UI
+    implementation "androidx.constraintlayout:constraintlayout:$rootProject.constraintLayoutVersion"
+    implementation "com.google.android.material:material:$rootProject.materialVersion"
+
+// fragment
+//    implementation "androidx.fragment:fragment-ktx:1.3.6"
+    implementation "androidx.fragment:fragment-ktx:1.4.0"
+
+    // navigation
+//    implementation 'androidx.navigation:navigation-fragment-ktx:2.3.5'
+//    implementation 'androidx.navigation:navigation-ui-ktx:2.3.5'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.4.1'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.4.1'
+
+    // Testing
+//    testImplementation "junit:junit:$rootProject.junitVersion"
+//    androidTestImplementation "androidx.arch.core:core-testing:$rootProject.coreTestingVersion"
+//    androidTestImplementation ("androidx.test.espresso:espresso-core:$rootProject.espressoVersion", {
+//        exclude group: 'com.android.support', module: 'support-annotations'
+//    })
+//    androidTestImplementation "androidx.test.ext:junit:$rootProject.androidxJunitVersion"
+}
