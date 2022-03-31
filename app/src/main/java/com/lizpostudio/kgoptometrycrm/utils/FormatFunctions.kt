@@ -31,7 +31,8 @@ fun convertFBRecordToPatients(f:FBRecords, key:Long):Patients {
         f.graphicsRight,
         f.syncStatus == "true",
         f.reservedField,
-        f.practitioner
+        f.practitioner,
+        f.mm
     )
 }
 
@@ -52,7 +53,8 @@ fun convertFormToFBRecord(p:Patients):FBRecords {
         p.sectionData,
         p.sectionName,
         "true",
-        p.practitioner
+        p.practitioner,
+        p.mm
     )
 }
 

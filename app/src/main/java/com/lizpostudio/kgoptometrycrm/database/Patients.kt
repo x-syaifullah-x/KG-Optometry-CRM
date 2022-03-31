@@ -53,8 +53,13 @@ data class Patients(
     var reservedField: String = "",
 
     @ColumnInfo(name = "practitioner")
-    var practitioner: String = ""
-) {
+    var practitioner: String = "",
+
+    @ColumnInfo(name = "mm")
+    var mm: String = "",
+
+    ) {
+
 
     fun assertEqual(toForm: Patients): Boolean {
 /*        Log.d(TAG, "\n${this.patientID}: ${this.patientID == toForm.patientID}\n" +
@@ -86,7 +91,8 @@ data class Patients(
                 this.graphicsRight == toForm.graphicsRight &&
                 this.syncStatus == toForm.syncStatus &&
                 this.reservedField == toForm.reservedField &&
-                this.practitioner == toForm.practitioner)
+                this.practitioner == toForm.practitioner &&
+                this.mm == toForm.mm)
     }
 
     fun copyFrom(from: Patients) {
@@ -106,6 +112,7 @@ data class Patients(
         this.syncStatus = from.syncStatus
         this.reservedField = from.reservedField
         this.practitioner = from.practitioner
+        this.mm = from.mm
     }
 }
 
@@ -125,4 +132,5 @@ data class FBRecords(
     var sectionName: String = "",
     var syncStatus: String = "",
     var practitioner: String = "",
+    var mm: String = ""
 )

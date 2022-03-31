@@ -562,10 +562,12 @@ class MemoFragment : Fragment() {
             settledCheck.isChecked = extractData[0] == "TRUE"
             remarkInput.setText(patientForm.remarks)
 
-            val dataPractitioner = arrayOf(patientForm.practitioner)
+            val dataPractitioner = patientForm.practitioner.split("|")
             val adapterPractitioner =
                 ArrayAdapter(requireContext(), R.layout.spinner_list_basic_, dataPractitioner)
             practitionerName.adapter = adapterPractitioner
+
+            mmInput.setText(patientForm.mm)
 // END of Binding
         }
     }
@@ -581,6 +583,19 @@ class MemoFragment : Fragment() {
             if (sectionEditDate != -1L) currentForm.dateOfSection = sectionEditDate
             val extractData = settledCheck.isChecked.toString() // + "|"
             currentForm.sectionData = extractData.uppercase()
+
+            val dataSelected = binding.practitionerName.selectedItem as String
+
+            val dataPractitioner = StringBuilder(dataSelected)
+            val count = binding.practitionerName.adapter.count
+            for (i in 0 until count) {
+                val a = binding.practitionerName.adapter.getItem(i)
+                if (a.toString() != dataSelected) {
+                    dataPractitioner.append("|$a")
+                }
+            }
+            currentForm.practitioner = "$dataPractitioner"
+            currentForm.mm = "${binding.mmInput.text}"
         }
         return !currentForm.assertEqual(priorPatient)
     }
