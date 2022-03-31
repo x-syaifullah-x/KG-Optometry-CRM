@@ -79,8 +79,6 @@
                 app:srcCompat="@drawable/ic_baseline_clear_24"
                 app:tint="@color/redCircle"
                 tools:ignore="ContentDescription,RtlSymmetry" />
-
-
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
@@ -147,40 +145,6 @@
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-        <!--        <TextView-->
-        <!--            android:id="@+id/form_caption"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:layout_marginTop="8dp"-->
-        <!--            android:background="@color/cardBackgroundDarker"-->
-        <!--            android:fontFamily="@font/didact_gothic"-->
-        <!--            android:padding="4dp"-->
-        <!--            android:paddingStart="16dp"-->
-        <!--            android:text="@string/current_rx_caption"-->
-        <!--            android:textColor="@color/colorPrimaryDark"-->
-        <!--            android:textSize="18sp"-->
-        <!--            android:textStyle="bold"-->
-        <!--            app:layout_constraintStart_toStartOf="parent"-->
-        <!--            app:layout_constraintTop_toBottomOf="@+id/patient_name" />-->
-
-        <!--        <TextView-->
-        <!--            android:id="@+id/date_caption"-->
-        <!--            android:layout_width="0dp"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:background="@color/cardBackgroundDarker"-->
-        <!--            android:fontFamily="@font/didact_gothic"-->
-        <!--            android:padding="4dp"-->
-        <!--            android:paddingEnd="16dp"-->
-        <!--            android:textAlignment="textEnd"-->
-        <!--            android:textColor="@color/colorPrimaryDark"-->
-        <!--            android:textSize="18sp"-->
-        <!--            android:textStyle="bold"-->
-        <!--            app:layout_constraintEnd_toEndOf="parent"-->
-        <!--            app:layout_constraintStart_toEndOf="@+id/form_caption"-->
-        <!--            app:layout_constraintTop_toTopOf="@+id/form_caption"-->
-        <!--            tools:text="05/10/2020" />-->
-
         <androidx.core.widget.NestedScrollView
             android:id="@+id/scroll_view_layout"
             android:layout_width="match_parent"
@@ -194,8 +158,6 @@
                 android:id="@+id/main_items"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-
-                <!-- END of RIGHT LEFT Sph, Cyl, Axis -->
 
                 <FrameLayout
                     android:id="@+id/picture_frame"
@@ -513,13 +475,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/remark_hint"
                     tools:ignore="Autofill,LabelFor" />
-
-
             </androidx.constraintlayout.widget.ConstraintLayout>
-
         </androidx.core.widget.NestedScrollView>
-
-
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 </layout>

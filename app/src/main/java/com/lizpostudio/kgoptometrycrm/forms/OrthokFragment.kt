@@ -441,10 +441,10 @@ class OrthokFragment: Fragment() {
             binding.showHideButton.setOnClickListener {
                 showPhoto = !showPhoto
                 if (showPhoto) {
-                    binding.pictureFrame.visibility = View.VISIBLE
+                    binding.autorefPhoto.visibility = View.VISIBLE
                     binding.showHideButton.setImageResource(R.drawable.visibility_32)
                 } else {
-                    binding.pictureFrame.visibility = View.GONE
+                    binding.autorefPhoto.visibility = View.INVISIBLE
                     binding.showHideButton.setImageResource(R.drawable.visibility_off_32)
                 }
             }
