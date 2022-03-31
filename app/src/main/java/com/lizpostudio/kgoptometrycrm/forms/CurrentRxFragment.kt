@@ -249,7 +249,6 @@ class CurrentRxFragment : Fragment() {
 
 // Capture photo
         binding.photoButton.setOnClickListener {
-            Log.i("dadad", photoFile.toString())
             photoUri = FileProvider.getUriForFile(
                 requireActivity(),
                 "com.lizpostudio.kgoptometrycrm.fileprovider",
@@ -723,7 +722,7 @@ class CurrentRxFragment : Fragment() {
 
             remarkInput.setText(patientForm.remarks)
 
-            val dataPractitioner = arrayOf(patientForm.practitioner)
+            val dataPractitioner = patientForm.practitioner.split("|")
             val adapterPractitioner =
                 ArrayAdapter(requireContext(), R.layout.spinner_list_basic_, dataPractitioner)
             practitionerName.adapter = adapterPractitioner
@@ -758,6 +757,17 @@ class CurrentRxFragment : Fragment() {
 
             currentForm.sectionData = extractData.uppercase()
 
+            val dataSelected = binding.practitionerName.selectedItem as String
+
+            val dataPractitioner = StringBuilder(dataSelected)
+            val count = binding.practitionerName.adapter.count
+            for (i in 0 until count) {
+                val a = binding.practitionerName.adapter.getItem(i)
+                if (a.toString() != dataSelected) {
+                    dataPractitioner.append("|$a")
+                }
+            }
+            currentForm.practitioner = "$dataPractitioner"
         }
         return !currentForm.assertEqual(priorPatient)
     }
