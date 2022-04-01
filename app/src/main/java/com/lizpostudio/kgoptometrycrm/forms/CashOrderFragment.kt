@@ -172,11 +172,22 @@ class CashOrderFragment : Fragment() {
 
                 val sortedList = it.sortedBy { patientsForms -> patientsForms.dateOfSection }
                 val newList = mutableListOf<Patients>()
+
                 for (section in orderOfSections) {
                     for (forms in sortedList) {
-                        if (section == forms.sectionName) newList.add(forms)
+                        var sectionName = forms.sectionName
+                        if (sectionName == getString(R.string.final_prescription_caption)){
+                            sectionName = getString(R.string.sales_order_from_selection)
+                            forms.sectionName = getString(R.string.sales_order_from_selection)
+                        }
+                        if (section == sectionName) newList.add(forms)
                     }
                 }
+//                for (section in orderOfSections) {
+//                    for (forms in sortedList) {
+//                        if (section == forms.sectionName) newList.add(forms)
+//                    }
+//                }
 
                 val navChipGroup = binding.navigationLayout
                 val children = newList.map { patientForm ->
@@ -465,7 +476,7 @@ class CashOrderFragment : Fragment() {
     private fun launchNavigator(option: String) {
         when (option) {
             "none" -> {
-                Log.d(TAG, "No navigation triggered")
+                fillTheForm(currentForm)
             }
             "back" -> this.findNavController().navigate(
                 CashOrderFragmentDirections
@@ -703,7 +714,7 @@ class CashOrderFragment : Fragment() {
 
         binding.apply {
 
-            currentForm.remarks = remarkInput.text.toString().toUpperCase()
+            currentForm.remarks = remarkInput.text.toString().uppercase()
             if (sectionEditDate != -1L) currentForm.dateOfSection = sectionEditDate
 
 //            val extractData =  spinnerType.selectedItem.toString() + "|" +
@@ -766,9 +777,9 @@ class CashOrderFragment : Fragment() {
 
             currentForm.sectionData = extractData.uppercase()
 
-            currentForm.cs = "${binding.editCs.text}"
-            currentForm.solutionMisc = "${binding.editSolutionMisc.text}"
-            currentForm.solutionMiscRm = "${binding.editSolutionMiscRm.text}"
+            currentForm.cs = "${binding.editCs.text}".uppercase()
+            currentForm.solutionMisc = "${binding.editSolutionMisc.text}".uppercase()
+            currentForm.solutionMiscRm = "${binding.editSolutionMiscRm.text}".uppercase()
 
             val dataSelected = binding.practitionerName.selectedItem as String
             val dataPractitioner = StringBuilder(dataSelected)
@@ -779,7 +790,7 @@ class CashOrderFragment : Fragment() {
                     dataPractitioner.append("|$a")
                 }
             }
-            currentForm.practitioner = "$dataPractitioner"
+            currentForm.practitioner = "$dataPractitioner".uppercase()
         }
         return !currentForm.assertEqual(priorPatient)
     }

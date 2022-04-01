@@ -654,218 +654,185 @@
                         android:textSize="18sp" />
                 </RadioGroup>
 
-                <HorizontalScrollView
-                    android:id="@+id/aaa"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:scrollbarSize="1dp"
-                    app:layout_constraintEnd_toEndOf="parent"
+                <TextView
+                    android:id="@+id/hypertension_hint"
+                    style="@style/primaryDark18sp"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/hint_hypertension"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="@id/guideline_vertical_25"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/radio_group_driving">
+                    app:layout_constraintTop_toBottomOf="@id/radio_group_driving" />
 
-                    <androidx.constraintlayout.widget.ConstraintLayout
+                <RadioGroup
+                    android:id="@+id/radio_group_hypertension"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:layout_constraintEnd_toEndOf="@+id/hypertension_hint"
+                    app:layout_constraintStart_toStartOf="@+id/hypertension_hint"
+                    app:layout_constraintTop_toBottomOf="@+id/hypertension_hint">
+
+                    <RadioButton
+                        android:id="@+id/radio_hypertension_yes"
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent">
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/didact_gothic"
+                        android:text="@string/yes_answer"
+                        android:textSize="18sp" />
 
-                        <TextView
-                            android:id="@+id/hypertension_hint"
-                            style="@style/primaryDark18sp"
-                            android:layout_marginTop="8dp"
-                            android:text="@string/hint_hypertension"
-                            android:textStyle="bold"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
+                    <RadioButton
+                        android:id="@+id/radio_hypertension_no"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/didact_gothic"
+                        android:text="@string/no_answer"
+                        android:textSize="18sp" />
+                </RadioGroup>
 
-                        <RadioGroup
-                            android:id="@+id/radio_group_hypertension"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            app:layout_constraintEnd_toEndOf="@+id/hypertension_hint"
-                            app:layout_constraintStart_toStartOf="@+id/hypertension_hint"
-                            app:layout_constraintTop_toBottomOf="@+id/hypertension_hint">
+                <EditText
+                    android:id="@+id/hypertension_info_input"
+                    style="@style/fixedConstraintInputTextBox18sp"
+                    android:inputType="text"
+                    app:layout_constraintEnd_toEndOf="@+id/radio_group_hypertension"
+                    app:layout_constraintStart_toStartOf="@+id/radio_group_hypertension"
+                    app:layout_constraintTop_toBottomOf="@+id/radio_group_hypertension"
+                    tools:ignore="Autofill,LabelFor" />
 
-                            <RadioButton
-                                android:id="@+id/radio_hypertension_yes"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:fontFamily="@font/didact_gothic"
-                                android:text="@string/yes_answer"
-                                android:textSize="18sp" />
+                <TextView
+                    android:id="@+id/diabetes_hint"
+                    style="@style/primaryDark18sp"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/hint_diabetes"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="@id/guideline_vertical_50"
+                    app:layout_constraintStart_toStartOf="@id/guideline_vertical_25"
+                    app:layout_constraintTop_toBottomOf="@id/radio_group_driving" />
 
-                            <RadioButton
-                                android:id="@+id/radio_hypertension_no"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:fontFamily="@font/didact_gothic"
-                                android:text="@string/no_answer"
-                                android:textSize="18sp" />
-                        </RadioGroup>
+                <RadioGroup
+                    android:id="@+id/radio_group_diabetes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:layout_constraintEnd_toEndOf="@id/diabetes_hint"
+                    app:layout_constraintStart_toStartOf="@+id/diabetes_hint"
+                    app:layout_constraintTop_toBottomOf="@+id/diabetes_hint">
 
-                        <EditText
-                            android:id="@+id/hypertension_info_input"
-                            style="@style/fixedConstraintInputTextBox18sp"
-                            android:inputType="text"
-                            app:layout_constraintEnd_toEndOf="@+id/radio_group_hypertension"
-                            app:layout_constraintStart_toStartOf="@+id/radio_group_hypertension"
-                            app:layout_constraintTop_toBottomOf="@+id/radio_group_hypertension"
-                            tools:ignore="Autofill,LabelFor" />
+                    <RadioButton
+                        android:id="@+id/radio_diabetes_yes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/didact_gothic"
+                        android:text="@string/yes_answer"
+                        android:textSize="18sp" />
 
-                        <androidx.constraintlayout.widget.Barrier
-                            android:id="@+id/barrier_hypertension_hint_radio_group_hypertension"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            app:barrierDirection="right"
-                            app:constraint_referenced_ids="hypertension_hint,radio_group_hypertension" />
+                    <RadioButton
+                        android:id="@+id/radio_diabetes_no"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/didact_gothic"
+                        android:text="@string/no_answer"
+                        android:textSize="18sp" />
+                </RadioGroup>
 
-                        <TextView
-                            android:id="@+id/diabetes_hint"
-                            style="@style/primaryDark18sp"
-                            android:layout_marginTop="8dp"
-                            android:text="@string/hint_diabetes"
-                            android:textStyle="bold"
-                            app:layout_constraintStart_toEndOf="@+id/barrier_hypertension_hint_radio_group_hypertension"
-                            app:layout_constraintTop_toTopOf="parent" />
+                <EditText
+                    android:id="@+id/diabetes_info_input"
+                    style="@style/fixedConstraintInputTextBox18sp"
+                    android:inputType="text"
+                    app:layout_constraintEnd_toEndOf="@+id/radio_group_diabetes"
+                    app:layout_constraintStart_toStartOf="@+id/radio_group_diabetes"
+                    app:layout_constraintTop_toBottomOf="@+id/radio_group_diabetes"
+                    tools:ignore="Autofill,LabelFor" />
 
-                        <RadioGroup
-                            android:id="@+id/radio_group_diabetes"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            app:layout_constraintStart_toEndOf="@+id/barrier_hypertension_hint_radio_group_hypertension"
-                            app:layout_constraintTop_toBottomOf="@+id/diabetes_hint">
+                <TextView
+                    android:id="@+id/allergy_hint"
+                    style="@style/primaryDark18sp"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/hint_allergy"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="@id/guideline_vertical_75"
+                    app:layout_constraintStart_toStartOf="@id/guideline_vertical_50"
+                    app:layout_constraintTop_toBottomOf="@id/radio_group_driving" />
 
-                            <RadioButton
-                                android:id="@+id/radio_diabetes_yes"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:fontFamily="@font/didact_gothic"
-                                android:text="@string/yes_answer"
-                                android:textSize="18sp" />
+                <RadioGroup
+                    android:id="@+id/radio_group_allergy"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:layout_constraintEnd_toEndOf="@id/allergy_hint"
+                    app:layout_constraintStart_toStartOf="@+id/allergy_hint"
+                    app:layout_constraintTop_toBottomOf="@+id/allergy_hint">
 
-                            <RadioButton
-                                android:id="@+id/radio_diabetes_no"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:fontFamily="@font/didact_gothic"
-                                android:text="@string/no_answer"
-                                android:textSize="18sp" />
-                        </RadioGroup>
+                    <RadioButton
+                        android:id="@+id/radio_allergy_yes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/didact_gothic"
+                        android:text="@string/yes_answer"
+                        android:textSize="18sp" />
 
-                        <EditText
-                            android:id="@+id/diabetes_info_input"
-                            style="@style/fixedConstraintInputTextBox18sp"
-                            android:inputType="text"
-                            app:layout_constraintEnd_toEndOf="@+id/radio_group_diabetes"
-                            app:layout_constraintStart_toStartOf="@+id/radio_group_diabetes"
-                            app:layout_constraintTop_toBottomOf="@+id/radio_group_diabetes"
-                            tools:ignore="Autofill,LabelFor" />
+                    <RadioButton
+                        android:id="@+id/radio_allergy_no"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/didact_gothic"
+                        android:text="@string/no_answer"
+                        android:textSize="18sp" />
+                </RadioGroup>
 
-                        <androidx.constraintlayout.widget.Barrier
-                            android:id="@+id/barrier_diabetes_hint_radio_group_diabetes"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            app:barrierDirection="right"
-                            app:constraint_referenced_ids="diabetes_hint,radio_group_diabetes" />
+                <EditText
+                    android:id="@+id/allergy_info_input"
+                    style="@style/fixedConstraintInputTextBox18sp"
+                    android:inputType="text"
+                    app:layout_constraintEnd_toEndOf="@+id/radio_group_allergy"
+                    app:layout_constraintStart_toStartOf="@+id/radio_group_allergy"
+                    app:layout_constraintTop_toBottomOf="@+id/radio_group_allergy"
+                    tools:ignore="Autofill,LabelFor" />
 
-                        <TextView
-                            android:id="@+id/allergy_hint"
-                            style="@style/primaryDark18sp"
-                            android:layout_marginTop="8dp"
-                            android:text="@string/hint_allergy"
-                            android:textStyle="bold"
-                            app:layout_constraintStart_toEndOf="@id/barrier_diabetes_hint_radio_group_diabetes"
-                            app:layout_constraintTop_toTopOf="parent" />
+                <TextView
+                    android:id="@+id/medications_hint"
+                    style="@style/primaryDark18sp"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/hint_medication"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/allergy_info_input"
+                    app:layout_constraintTop_toBottomOf="@id/radio_group_driving" />
 
-                        <RadioGroup
-                            android:id="@+id/radio_group_allergy"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            app:layout_constraintStart_toEndOf="@+id/barrier_diabetes_hint_radio_group_diabetes"
-                            app:layout_constraintTop_toBottomOf="@+id/allergy_hint">
+                <RadioGroup
+                    android:id="@+id/radio_group_medications"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:layout_constraintEnd_toEndOf="@id/medications_hint"
+                    app:layout_constraintStart_toStartOf="@+id/medications_hint"
+                    app:layout_constraintTop_toBottomOf="@+id/medications_hint">
 
-                            <RadioButton
-                                android:id="@+id/radio_allergy_yes"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:fontFamily="@font/didact_gothic"
-                                android:text="@string/yes_answer"
-                                android:textSize="18sp" />
+                    <RadioButton
+                        android:id="@+id/radio_medications_yes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/didact_gothic"
+                        android:text="@string/yes_answer"
+                        android:textSize="18sp" />
 
-                            <RadioButton
-                                android:id="@+id/radio_allergy_no"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:fontFamily="@font/didact_gothic"
-                                android:text="@string/no_answer"
-                                android:textSize="18sp" />
-                        </RadioGroup>
+                    <RadioButton
+                        android:id="@+id/radio_medications_no"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/didact_gothic"
+                        android:text="@string/no_answer"
+                        android:textSize="18sp" />
+                </RadioGroup>
 
-                        <EditText
-                            android:id="@+id/allergy_info_input"
-                            style="@style/fixedConstraintInputTextBox18sp"
-                            android:inputType="text"
-                            app:layout_constraintEnd_toEndOf="@+id/radio_group_allergy"
-                            app:layout_constraintStart_toStartOf="@+id/radio_group_allergy"
-                            app:layout_constraintTop_toBottomOf="@+id/radio_group_allergy"
-                            tools:ignore="Autofill,LabelFor" />
-
-                        <androidx.constraintlayout.widget.Barrier
-                            android:id="@+id/barrier_allergy_hint_radio_group_allergy"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            app:barrierDirection="right"
-                            app:constraint_referenced_ids="allergy_hint,radio_group_allergy" />
-
-                        <TextView
-                            android:id="@+id/medications_hint"
-                            style="@style/primaryDark18sp"
-                            android:layout_marginTop="8dp"
-                            android:text="@string/hint_medication"
-                            android:textStyle="bold"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toEndOf="@id/radio_group_allergy"
-                            app:layout_constraintTop_toTopOf="parent" />
-
-                        <RadioGroup
-                            android:id="@+id/radio_group_medications"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            app:layout_constraintEnd_toEndOf="@id/medications_hint"
-                            app:layout_constraintStart_toStartOf="@+id/medications_hint"
-                            app:layout_constraintTop_toBottomOf="@+id/medications_hint">
-
-                            <RadioButton
-                                android:id="@+id/radio_medications_yes"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:fontFamily="@font/didact_gothic"
-                                android:text="@string/yes_answer"
-                                android:textSize="18sp" />
-
-                            <RadioButton
-                                android:id="@+id/radio_medications_no"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginEnd="12dp"
-                                android:fontFamily="@font/didact_gothic"
-                                android:text="@string/no_answer"
-                                android:textSize="18sp" />
-                        </RadioGroup>
-
-                        <EditText
-                            android:id="@+id/medications_info_input"
-                            style="@style/fixedConstraintInputTextBox18sp"
-                            android:inputType="text"
-                            app:layout_constraintEnd_toEndOf="@id/radio_group_medications"
-                            app:layout_constraintStart_toStartOf="@id/radio_group_medications"
-                            app:layout_constraintTop_toBottomOf="@id/radio_group_medications"
-                            tools:ignore="Autofill,LabelFor" />
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-                </HorizontalScrollView>
-
+                <EditText
+                    android:id="@+id/medications_info_input"
+                    style="@style/fixedConstraintInputTextBox18sp"
+                    android:inputType="text"
+                    app:layout_constraintEnd_toEndOf="@id/radio_group_medications"
+                    app:layout_constraintStart_toStartOf="@id/radio_group_medications"
+                    app:layout_constraintTop_toBottomOf="@id/radio_group_medications"
+                    tools:ignore="Autofill,LabelFor" />
 
                 <androidx.constraintlayout.widget.Barrier
                     android:id="@+id/barrier_hypertension_info_input_diabetes_info_input_allergy_info_input_medications_info_input"
@@ -873,176 +840,154 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     app:barrierDirection="bottom"
-                    app:constraint_referenced_ids="aaa" />
+                    app:constraint_referenced_ids="hypertension_info_input,diabetes_info_input,allergy_info_input,medications_info_input" />
 
-                <HorizontalScrollView
-                    android:id="@+id/aaaaa"
+                <TextView
+                    android:id="@+id/cataract_hint"
+                    style="@style/primaryDark18sp"
+                    android:lines="1"
+                    android:text="@string/hint_cataract_removal"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="@id/guideline_vertical_33"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/barrier_hypertension_info_input_diabetes_info_input_allergy_info_input_medications_info_input" />
+
+                <RadioGroup
+                    android:id="@+id/radio_group_cataract"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:layout_constraintEnd_toEndOf="@id/cataract_hint"
+                    app:layout_constraintStart_toStartOf="@+id/cataract_hint"
+                    app:layout_constraintTop_toBottomOf="@+id/cataract_hint">
+
+                    <RadioButton
+                        android:id="@+id/radio_cataract_yes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/didact_gothic"
+                        android:paddingEnd="@dimen/padding_16dp"
+                        android:text="@string/yes_answer"
+                        android:textSize="18sp" />
+
+                    <RadioButton
+                        android:id="@+id/radio_cataract_no"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/didact_gothic"
+                        android:paddingEnd="@dimen/padding_16dp"
+                        android:text="@string/no_answer"
+                        android:textSize="18sp" />
+                </RadioGroup>
+
+                <EditText
+                    android:id="@+id/cataract_info_input"
+                    style="@style/fixedConstraintInputTextBox18sp"
+                    android:inputType="text"
+                    app:layout_constraintEnd_toEndOf="@id/radio_group_cataract"
+                    app:layout_constraintStart_toStartOf="@id/radio_group_cataract"
+                    app:layout_constraintTop_toBottomOf="@id/radio_group_cataract"
+                    tools:ignore="Autofill,LabelFor" />
+
+                <TextView
+                    android:id="@+id/glaucoma_hint"
+                    style="@style/primaryDark18sp"
+                    android:text="@string/hint_glaucoma"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="@id/guideline_vertical_66"
+                    app:layout_constraintStart_toStartOf="@id/guideline_vertical_33"
+                    app:layout_constraintTop_toBottomOf="@id/barrier_hypertension_info_input_diabetes_info_input_allergy_info_input_medications_info_input" />
+
+                <RadioGroup
+                    android:id="@+id/radio_group_glaucoma"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:layout_constraintEnd_toEndOf="@id/glaucoma_hint"
+                    app:layout_constraintStart_toStartOf="@+id/glaucoma_hint"
+                    app:layout_constraintTop_toBottomOf="@+id/glaucoma_hint">
+
+                    <RadioButton
+                        android:id="@+id/radio_glaucoma_yes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/didact_gothic"
+                        android:paddingEnd="@dimen/padding_16dp"
+                        android:text="@string/yes_answer"
+                        android:textSize="18sp" />
+
+                    <RadioButton
+                        android:id="@+id/radio_glaucoma_no"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/didact_gothic"
+                        android:paddingEnd="@dimen/padding_16dp"
+                        android:text="@string/no_answer"
+                        android:textSize="18sp" />
+                </RadioGroup>
+
+                <EditText
+                    android:id="@+id/glaucoma_info_input"
+                    style="@style/fixedConstraintInputTextBox18sp"
+                    android:inputType="text"
+                    app:layout_constraintEnd_toEndOf="@id/radio_group_glaucoma"
+                    app:layout_constraintStart_toStartOf="@id/radio_group_glaucoma"
+                    app:layout_constraintTop_toBottomOf="@id/radio_group_glaucoma"
+                    tools:ignore="Autofill,LabelFor" />
+
+                <TextView
+                    android:id="@+id/eye_surgery_hint"
+                    style="@style/primaryDark18sp"
+                    android:text="@string/hint_eye_surgery"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/glaucoma_info_input"
+                    app:layout_constraintTop_toBottomOf="@id/barrier_hypertension_info_input_diabetes_info_input_allergy_info_input_medications_info_input" />
+
+                <RadioGroup
+                    android:id="@+id/radio_group_eye_surgery"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:layout_constraintEnd_toEndOf="@id/eye_surgery_hint"
+                    app:layout_constraintStart_toStartOf="@+id/eye_surgery_hint"
+                    app:layout_constraintTop_toBottomOf="@+id/eye_surgery_hint">
+
+                    <RadioButton
+                        android:id="@+id/radio_eye_surgery_yes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/didact_gothic"
+                        android:paddingEnd="@dimen/padding_16dp"
+                        android:text="@string/yes_answer"
+                        android:textSize="18sp" />
+
+                    <RadioButton
+                        android:id="@+id/radio_eye_surgery_no"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/didact_gothic"
+                        android:paddingEnd="@dimen/padding_16dp"
+                        android:text="@string/no_answer"
+                        android:textSize="18sp" />
+                </RadioGroup>
+
+                <EditText
+                    android:id="@+id/eye_surgery_info_input"
+                    style="@style/fixedConstraintInputTextBox18sp"
+                    android:inputType="text"
+                    app:layout_constraintEnd_toEndOf="@+id/radio_group_eye_surgery"
+                    app:layout_constraintStart_toStartOf="@+id/radio_group_eye_surgery"
+                    app:layout_constraintTop_toBottomOf="@+id/radio_group_eye_surgery"
+                    tools:ignore="Autofill,LabelFor" />
+
+                <androidx.constraintlayout.widget.Barrier
+                    android:id="@+id/barrier_cataract_info_input_glaucoma_info_input_eye_surgery_info_input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:scrollbarSize="0.5dp"
-                    app:layout_constraintTop_toBottomOf="@id/aaa">
-
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent">
-
-                        <TextView
-                            android:id="@+id/cataract_hint"
-                            style="@style/primaryDark18sp"
-                            android:lines="1"
-                            android:text="@string/hint_cataract_removal"
-                            android:textStyle="bold"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
-
-                        <RadioGroup
-                            android:id="@+id/radio_group_cataract"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            app:layout_constraintStart_toStartOf="@+id/cataract_hint"
-                            app:layout_constraintTop_toBottomOf="@+id/cataract_hint">
-
-                            <RadioButton
-                                android:id="@+id/radio_cataract_yes"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:fontFamily="@font/didact_gothic"
-                                android:paddingEnd="@dimen/padding_16dp"
-                                android:text="@string/yes_answer"
-                                android:textSize="18sp" />
-
-                            <RadioButton
-                                android:id="@+id/radio_cataract_no"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:fontFamily="@font/didact_gothic"
-                                android:paddingEnd="@dimen/padding_16dp"
-                                android:text="@string/no_answer"
-                                android:textSize="18sp" />
-                        </RadioGroup>
-
-                        <EditText
-                            android:id="@+id/cataract_info_input"
-                            style="@style/fixedConstraintInputTextBox18sp"
-                            android:inputType="text"
-                            app:layout_constraintEnd_toEndOf="@id/radio_group_cataract"
-                            app:layout_constraintStart_toStartOf="@id/radio_group_cataract"
-                            app:layout_constraintTop_toBottomOf="@id/radio_group_cataract"
-                            tools:ignore="Autofill,LabelFor" />
-
-                        <androidx.constraintlayout.widget.Barrier
-                            android:id="@+id/barrier_cataract_hint_radio_group_cataract"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            app:barrierDirection="right"
-                            app:constraint_referenced_ids="cataract_hint,radio_group_cataract" />
-
-                        <TextView
-                            android:id="@+id/glaucoma_hint"
-                            style="@style/primaryDark18sp"
-                            android:text="@string/hint_glaucoma"
-                            android:textStyle="bold"
-                            app:layout_constraintStart_toEndOf="@+id/barrier_cataract_hint_radio_group_cataract"
-                            app:layout_constraintTop_toTopOf="parent" />
-
-                        <RadioGroup
-                            android:id="@+id/radio_group_glaucoma"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            app:layout_constraintStart_toStartOf="@+id/glaucoma_hint"
-                            app:layout_constraintTop_toBottomOf="@+id/glaucoma_hint">
-
-                            <RadioButton
-                                android:id="@+id/radio_glaucoma_yes"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:fontFamily="@font/didact_gothic"
-                                android:paddingEnd="@dimen/padding_16dp"
-                                android:text="@string/yes_answer"
-                                android:textSize="18sp" />
-
-                            <RadioButton
-                                android:id="@+id/radio_glaucoma_no"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:fontFamily="@font/didact_gothic"
-                                android:paddingEnd="@dimen/padding_16dp"
-                                android:text="@string/no_answer"
-                                android:textSize="18sp" />
-                        </RadioGroup>
-
-                        <EditText
-                            android:id="@+id/glaucoma_info_input"
-                            style="@style/fixedConstraintInputTextBox18sp"
-                            android:inputType="text"
-                            app:layout_constraintEnd_toEndOf="@id/radio_group_glaucoma"
-                            app:layout_constraintStart_toStartOf="@id/radio_group_glaucoma"
-                            app:layout_constraintTop_toBottomOf="@id/radio_group_glaucoma"
-                            tools:ignore="Autofill,LabelFor" />
-
-                        <androidx.constraintlayout.widget.Barrier
-                            android:id="@+id/glaucoma_hint_radio_group_glaucoma"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            app:barrierDirection="right"
-                            app:constraint_referenced_ids="glaucoma_hint,radio_group_glaucoma" />
-
-                        <TextView
-                            android:id="@+id/eye_surgery_hint"
-                            style="@style/primaryDark18sp"
-                            android:text="@string/hint_eye_surgery"
-                            android:textStyle="bold"
-                            app:layout_constraintStart_toEndOf="@id/glaucoma_hint_radio_group_glaucoma"
-                            app:layout_constraintTop_toTopOf="parent" />
-
-                        <RadioGroup
-                            android:id="@+id/radio_group_eye_surgery"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            app:layout_constraintStart_toStartOf="@+id/eye_surgery_hint"
-                            app:layout_constraintTop_toBottomOf="@+id/eye_surgery_hint">
-
-                            <RadioButton
-                                android:id="@+id/radio_eye_surgery_yes"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:fontFamily="@font/didact_gothic"
-                                android:paddingEnd="@dimen/padding_16dp"
-                                android:text="@string/yes_answer"
-                                android:textSize="18sp" />
-
-                            <RadioButton
-                                android:id="@+id/radio_eye_surgery_no"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:fontFamily="@font/didact_gothic"
-                                android:paddingEnd="@dimen/padding_16dp"
-                                android:text="@string/no_answer"
-                                android:textSize="18sp" />
-                        </RadioGroup>
-
-                        <EditText
-                            android:id="@+id/eye_surgery_info_input"
-                            style="@style/fixedConstraintInputTextBox18sp"
-                            android:inputType="text"
-                            app:layout_constraintEnd_toEndOf="@+id/radio_group_eye_surgery"
-                            app:layout_constraintStart_toStartOf="@+id/radio_group_eye_surgery"
-                            app:layout_constraintTop_toBottomOf="@+id/radio_group_eye_surgery"
-                            tools:ignore="Autofill,LabelFor" />
-
-                        <androidx.constraintlayout.widget.Barrier
-                            android:id="@+id/barrier_cataract_info_input_glaucoma_info_input_eye_surgery_info_input"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            app:barrierDirection="bottom"
-                            app:constraint_referenced_ids="cataract_info_input,glaucoma_info_input,eye_surgery_info_input" />
-
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-                </HorizontalScrollView>
+                    android:orientation="horizontal"
+                    app:barrierDirection="bottom"
+                    app:constraint_referenced_ids="cataract_info_input,glaucoma_info_input,eye_surgery_info_input" />
 
                 <TextView
                     android:id="@+id/remark_hint"
@@ -1050,7 +995,7 @@
                     android:text="@string/hint_remark"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/aaaaa" />
+                    app:layout_constraintTop_toBottomOf="@+id/barrier_cataract_info_input_glaucoma_info_input_eye_surgery_info_input" />
 
                 <EditText
                     android:id="@+id/remark_input"

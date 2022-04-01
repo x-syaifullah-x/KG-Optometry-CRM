@@ -137,8 +137,8 @@ class InfoFragment : Fragment() {
                         position: Int,
                         id: Long
                     ) {
-                        val tv = (parent?.getChildAt(0) as TextView)
-                        tv.typeface = binding.countryInput.typeface
+                        val tv = (parent?.getChildAt(0) as? TextView)
+                        tv?.typeface = binding.countryInput.typeface
                     }
 
                     override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -161,8 +161,8 @@ class InfoFragment : Fragment() {
                     position: Int,
                     id: Long
                 ) {
-                    val tv = (parent?.getChildAt(0) as TextView)
-                    tv.typeface = binding.occupationInput.typeface
+                    val tv = (parent?.getChildAt(0) as? TextView)
+                    tv?.typeface = binding.occupationInput.typeface
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -185,8 +185,8 @@ class InfoFragment : Fragment() {
                     position: Int,
                     id: Long
                 ) {
-                    val tv = (parent?.getChildAt(0) as TextView)
-                    tv.typeface = binding.occupationInput.typeface
+                    val tv = (parent?.getChildAt(0) as? TextView)
+                    tv?.typeface = binding.occupationInput.typeface
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -301,16 +301,29 @@ class InfoFragment : Fragment() {
             allForms?.let {
 
                 patientAllForms = it
+
                 val orderOfSections = listOf(*resources.getStringArray(R.array.forms_order))
                 val screenDst = Resources.getSystem().displayMetrics.density
 
                 val sortedList = it.sortedBy { patientsForms -> patientsForms.dateOfSection }
                 val newList = mutableListOf<Patients>()
+
                 for (section in orderOfSections) {
                     for (forms in sortedList) {
-                        if (section == forms.sectionName) newList.add(forms)
+                        var sectionName = forms.sectionName
+                        if (sectionName == getString(R.string.final_prescription_caption)) {
+                            sectionName = getString(R.string.sales_order_from_selection)
+                            forms.sectionName = getString(R.string.sales_order_from_selection)
+                        }
+                        if (section == sectionName) newList.add(forms)
                     }
                 }
+
+//                for (section in orderOfSections) {
+//                    for (forms in sortedList) {
+//                        if (section == forms.sectionName) newList.add(forms)
+//                    }
+//                }
 
                 val navChipGroup = binding.navigationLayout
                 val children = newList.map { patientForm ->
@@ -475,7 +488,7 @@ class InfoFragment : Fragment() {
     private fun launchNavigator(option: String) {
         when (option) {
             "none" -> {
-                Log.d(TAG, "No navigation triggered")
+                fillTheForm(currentForm)
             }
             "back" -> this.findNavController().navigate(
                 InfoFragmentDirections.actionInfoFragmentToFormSelectionFragment(
@@ -612,11 +625,6 @@ class InfoFragment : Fragment() {
             phone3Input.setText(extractData[3])
             phone3Input.setText(extractData[3])
 
-            val dataPractitioner = patientForm.practitioner.split("|")
-            val adapterPractitioner =
-                ArrayAdapter(requireContext(), R.layout.spinner_list_basic, dataPractitioner)
-            practitionerName.adapter = adapterPractitioner
-
             var itemFound = false
             for (i in 0 until binding.raceInput.adapter.count) {
                 if (extractData[4].trim().toUpperCase() == binding.raceInput.adapter.getItem(i)
@@ -714,6 +722,11 @@ class InfoFragment : Fragment() {
             eyeSurgeryInfoInput.setText(extractData[28])
 
             remarkInput.setText(patientForm.remarks)
+
+            val dataPractitioner = patientForm.practitioner.split("|")
+            val adapterPractitioner =
+                ArrayAdapter(requireContext(), R.layout.spinner_list_basic_, dataPractitioner)
+            practitionerName.adapter = adapterPractitioner
         }
     }
 
@@ -843,7 +856,7 @@ class InfoFragment : Fragment() {
                     dataPractitioner.append("|$a")
                 }
             }
-            currentForm.practitioner = "$dataPractitioner"
+            currentForm.practitioner = "$dataPractitioner".uppercase()
 
             return !currentForm.assertEqual(priorPatient)
         }

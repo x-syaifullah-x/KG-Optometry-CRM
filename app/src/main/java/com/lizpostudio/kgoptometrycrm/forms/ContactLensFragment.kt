@@ -12,7 +12,10 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
-import android.widget.*
+import android.widget.ArrayAdapter
+import android.widget.LinearLayout
+import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -30,9 +33,9 @@ import com.lizpostudio.kgoptometrycrm.utils.*
 
 private var TAG = "LogTrace"
 
-class ContactLensFragment: Fragment() {
+class ContactLensFragment : Fragment() {
 
-    private val patientViewModel:PatientsViewModel by viewModels {
+    private val patientViewModel: PatientsViewModel by viewModels {
         PatientsViewModelFactory((requireNotNull(this.activity).application as OptometryApplication).repository)
     }
 
@@ -45,17 +48,21 @@ class ContactLensFragment: Fragment() {
     private var sectionEditDate = -1L
 
     private var fillMaskTop = mutableListOf<MutableList<PointF>>()
-    private var fillMaskRight = mutableListOf (mutableListOf<MutableList<PointF>>(), mutableListOf<MutableList<PointF>>(),
-        mutableListOf<MutableList<PointF>>(), mutableListOf<MutableList<PointF>>())
-    private var fillMaskLeft =  mutableListOf(mutableListOf<MutableList<PointF>>(), mutableListOf<MutableList<PointF>>(),
-        mutableListOf<MutableList<PointF>>(), mutableListOf<MutableList<PointF>>())
+    private var fillMaskRight = mutableListOf(
+        mutableListOf<MutableList<PointF>>(), mutableListOf<MutableList<PointF>>(),
+        mutableListOf<MutableList<PointF>>(), mutableListOf<MutableList<PointF>>()
+    )
+    private var fillMaskLeft = mutableListOf(
+        mutableListOf<MutableList<PointF>>(), mutableListOf<MutableList<PointF>>(),
+        mutableListOf<MutableList<PointF>>(), mutableListOf<MutableList<PointF>>()
+    )
 
     private var fitIndex = 0
     private var fittingFormsAr = mutableListOf<MutableList<String>>()
 
     private var fillIndexTop = -1
     private var fillIndexRight = mutableListOf(-1, -1, -1, -1)
-    private var fillIndexLeft=  mutableListOf(-1, -1, -1, -1)
+    private var fillIndexLeft = mutableListOf(-1, -1, -1, -1)
 
     private var currentForm = Patients()
     private var navigateFormName = ""
@@ -81,8 +88,8 @@ class ContactLensFragment: Fragment() {
         var startPTRight = PointF()
         var startPTLeft = PointF()
 
-        var selectedColor = ContextCompat.getColor(requireContext(),R.color.greenCircle)
-        var selectedColorFitting = ContextCompat.getColor(requireContext(),R.color.greenCircle)
+        var selectedColor = ContextCompat.getColor(requireContext(), R.color.greenCircle)
+        var selectedColorFitting = ContextCompat.getColor(requireContext(), R.color.greenCircle)
 
         val textBoxActiveTop = mutableListOf(false, false, false, false)
         val textBoxActiveRight = mutableListOf(false, false)
@@ -105,18 +112,29 @@ class ContactLensFragment: Fragment() {
         binding.lifecycleOwner = this
 
         // get if user is Admin
-        val sharedPref = app.getSharedPreferences("kgoptometry",
-            Context.MODE_PRIVATE)
-        isAdmin= sharedPref?.getString("admin", "")?: "" == "admin"
-        viewOnlyMode = sharedPref?.getBoolean("viewOnly", false)?:false
+        val sharedPref = app.getSharedPreferences(
+            "kgoptometry",
+            Context.MODE_PRIVATE
+        )
+        isAdmin = sharedPref?.getString("admin", "") ?: "" == "admin"
+        viewOnlyMode = sharedPref?.getBoolean("viewOnly", false) ?: false
         if (viewOnlyMode) {
-            binding.mainLayout.setBackgroundColor(ContextCompat.getColor(requireContext(),R.color.viewOnlyMode))
+            binding.mainLayout.setBackgroundColor(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.viewOnlyMode
+                )
+            )
             binding.saveFormButton.visibility = View.GONE
-        }
-        else  binding.mainLayout.setBackgroundColor(ContextCompat.getColor(requireContext(),R.color.lightBackground))
-     //   Log.d(TAG, "is Admin = $isAdmin")
+        } else binding.mainLayout.setBackgroundColor(
+            ContextCompat.getColor(
+                requireContext(),
+                R.color.lightBackground
+            )
+        )
+        //   Log.d(TAG, "is Admin = $isAdmin")
 
-        binding.dateCaption.setOnClickListener{
+        binding.dateCaption.setOnClickListener {
             changeDate()
         }
 
@@ -124,83 +142,135 @@ class ContactLensFragment: Fragment() {
         binding.patientHistorySwitch.setOnClickListener {
             hideLayouts()
             binding.layoutPatientHistory.visibility = View.VISIBLE
-            binding.patientHistorySwitch.setColorFilter(ContextCompat.getColor(requireContext(),
-                R.color.greenCircle), android.graphics.PorterDuff.Mode.SRC_IN)
+            binding.patientHistorySwitch.setColorFilter(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.greenCircle
+                ), android.graphics.PorterDuff.Mode.SRC_IN
+            )
         }
 
         binding.ocularHealthSwitch.setOnClickListener {
             hideLayouts()
             binding.layoutOcularHealth.visibility = View.VISIBLE
-            binding.ocularHealthSwitch.setColorFilter(ContextCompat.getColor(requireContext(),
-                R.color.greenCircle), android.graphics.PorterDuff.Mode.SRC_IN)
+            binding.ocularHealthSwitch.setColorFilter(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.greenCircle
+                ), android.graphics.PorterDuff.Mode.SRC_IN
+            )
         }
 
-        binding. fittingSwitch.setOnClickListener {
+        binding.fittingSwitch.setOnClickListener {
             hideLayouts()
             showFittingsButtons()
             binding.layoutFitting.visibility = View.VISIBLE
-            binding.fittingSwitch.setColorFilter(ContextCompat.getColor(requireContext(),
-                R.color.greenCircle), android.graphics.PorterDuff.Mode.SRC_IN)
+            binding.fittingSwitch.setColorFilter(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.greenCircle
+                ), android.graphics.PorterDuff.Mode.SRC_IN
+            )
         }
 
         binding.fitSwitch1.setOnClickListener {
-        // save current fittings - increment fitindex - load new fittings
+            // save current fittings - increment fitindex - load new fittings
             saveAndLoadFitting(0)
-            binding.fitSwitch1.setColorFilter(ContextCompat.getColor(requireContext(),
-                R.color.greenCircle), android.graphics.PorterDuff.Mode.SRC_IN)
+            binding.fitSwitch1.setColorFilter(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.greenCircle
+                ), android.graphics.PorterDuff.Mode.SRC_IN
+            )
         }
 
         binding.fitSwitch2.setOnClickListener {
             saveAndLoadFitting(1)
-            binding.fitSwitch2.setColorFilter(ContextCompat.getColor(requireContext(),
-                R.color.greenCircle), android.graphics.PorterDuff.Mode.SRC_IN)
+            binding.fitSwitch2.setColorFilter(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.greenCircle
+                ), android.graphics.PorterDuff.Mode.SRC_IN
+            )
         }
 
         binding.fitSwitch3.setOnClickListener {
             saveAndLoadFitting(2)
-            binding.fitSwitch3.setColorFilter(ContextCompat.getColor(requireContext(),
-                R.color.greenCircle), android.graphics.PorterDuff.Mode.SRC_IN)
+            binding.fitSwitch3.setColorFilter(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.greenCircle
+                ), android.graphics.PorterDuff.Mode.SRC_IN
+            )
         }
 
         binding.fitSwitch4.setOnClickListener {
             saveAndLoadFitting(3)
-            binding.fitSwitch4.setColorFilter(ContextCompat.getColor(requireContext(),
-                R.color.greenCircle), android.graphics.PorterDuff.Mode.SRC_IN)
+            binding.fitSwitch4.setColorFilter(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.greenCircle
+                ), android.graphics.PorterDuff.Mode.SRC_IN
+            )
         }
 
-        binding. finalSwitch.setOnClickListener {
+        binding.finalSwitch.setOnClickListener {
             hideLayouts()
             binding.layoutFinalPrescriptionCl.visibility = View.VISIBLE
-            binding.finalSwitch.setColorFilter(ContextCompat.getColor(requireContext(),
-                R.color.greenCircle), android.graphics.PorterDuff.Mode.SRC_IN)
+            binding.finalSwitch.setColorFilter(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.greenCircle
+                ), android.graphics.PorterDuff.Mode.SRC_IN
+            )
         }
 
         // ================== POPULATE SPINNERS =====================
 
         val wearingNumbers24 = createNumbersList(24)
         val wearing24SpinnerAdapter: ArrayAdapter<String> =
-            ArrayAdapter<String>(app.applicationContext, android.R.layout.simple_spinner_item, wearingNumbers24)
+            ArrayAdapter<String>(
+                app.applicationContext,
+                android.R.layout.simple_spinner_item,
+                wearingNumbers24
+            )
         binding.spinnerWearing24.adapter = wearing24SpinnerAdapter
 
         val wearingNumbers7 = createNumbersList(7)
         val wearing7SpinnerAdapter: ArrayAdapter<String> =
-            ArrayAdapter<String>(app.applicationContext, android.R.layout.simple_spinner_item, wearingNumbers7)
+            ArrayAdapter<String>(
+                app.applicationContext,
+                android.R.layout.simple_spinner_item,
+                wearingNumbers7
+            )
         binding.spinnerWearing7.adapter = wearing7SpinnerAdapter
 
         val wearingNumbers30 = createNumbersList(30)
         val wearing30SpinnerAdapter: ArrayAdapter<String> =
-            ArrayAdapter<String>(app.applicationContext, android.R.layout.simple_spinner_item, wearingNumbers30)
+            ArrayAdapter<String>(
+                app.applicationContext,
+                android.R.layout.simple_spinner_item,
+                wearingNumbers30
+            )
         binding.spinnerWearing30.adapter = wearing30SpinnerAdapter
 
         val visionScale10 = createNumbersList(10)
         val vision10SpinnerAdapter: ArrayAdapter<String> =
-            ArrayAdapter<String>(app.applicationContext, android.R.layout.simple_spinner_item, visionScale10)
+            ArrayAdapter<String>(
+                app.applicationContext,
+                android.R.layout.simple_spinner_item,
+                visionScale10
+            )
         binding.spinnerVision.adapter = vision10SpinnerAdapter
         binding.spinnerComfort.adapter = vision10SpinnerAdapter
 
         val sphListItems = sphList()
         val sphSpinnerAdapter: ArrayAdapter<String> =
-            ArrayAdapter<String>(app.applicationContext, android.R.layout.simple_spinner_item, sphListItems)
+            ArrayAdapter<String>(
+                app.applicationContext,
+                android.R.layout.simple_spinner_item,
+                sphListItems
+            )
 
         binding.spinnerLeftSph.adapter = sphSpinnerAdapter
         binding.spinnerRightSph.adapter = sphSpinnerAdapter
@@ -209,7 +279,11 @@ class ContactLensFragment: Fragment() {
 
         val cylListItems = cylList()
         val cylSpinnerAdapter: ArrayAdapter<String> =
-            ArrayAdapter<String>(app.applicationContext, android.R.layout.simple_spinner_item, cylListItems)
+            ArrayAdapter<String>(
+                app.applicationContext,
+                android.R.layout.simple_spinner_item,
+                cylListItems
+            )
 
         binding.spinnerLeftCyl.adapter = cylSpinnerAdapter
         binding.spinnerRightCyl.adapter = cylSpinnerAdapter
@@ -218,7 +292,11 @@ class ContactLensFragment: Fragment() {
 
         val tBUTListItems = tBUTList()
         val tBUTSpinnerAdapter: ArrayAdapter<String> =
-            ArrayAdapter<String>(app.applicationContext, android.R.layout.simple_spinner_item, tBUTListItems)
+            ArrayAdapter<String>(
+                app.applicationContext,
+                android.R.layout.simple_spinner_item,
+                tBUTListItems
+            )
         binding.spinnerTbutLeft.adapter = tBUTSpinnerAdapter
         binding.spinnerTbutRight.adapter = tBUTSpinnerAdapter
 
@@ -229,7 +307,7 @@ class ContactLensFragment: Fragment() {
         // Drawing CROSS AND CIRCLE
         binding.apply {
             imageFittingRightCl.customDrawing = 1
-            imageFittingLeftCl.customDrawing =1
+            imageFittingLeftCl.customDrawing = 1
 
             imageFittingLeftCl.invalidate()
             imageFittingRightCl.invalidate()
@@ -255,35 +333,35 @@ class ContactLensFragment: Fragment() {
         }
 
         binding.imgColorRed.setOnClickListener {
-            selectedColor = ContextCompat.getColor(requireContext(),R.color.redCircle)
+            selectedColor = ContextCompat.getColor(requireContext(), R.color.redCircle)
             binding.imgColorSelected.setImageResource(R.drawable.red_circle)
             hideColors()
         }
 
         binding.imgColorYellow.setOnClickListener {
-            selectedColor = ContextCompat.getColor(requireContext(),R.color.yellowCircle)
+            selectedColor = ContextCompat.getColor(requireContext(), R.color.yellowCircle)
             binding.imgColorSelected.setImageResource(R.drawable.yellow_circle)
             hideColors()
         }
         binding.imgColorGreen.setOnClickListener {
-            selectedColor = ContextCompat.getColor(requireContext(),R.color.greenCircle)
+            selectedColor = ContextCompat.getColor(requireContext(), R.color.greenCircle)
             binding.imgColorSelected.setImageResource(R.drawable.green_circle)
             hideColors()
         }
         // ======FITTING
         binding.imgColorRedFitting.setOnClickListener {
-            selectedColorFitting = ContextCompat.getColor(requireContext(),R.color.redCircle)
+            selectedColorFitting = ContextCompat.getColor(requireContext(), R.color.redCircle)
             binding.imgColorSelectedFitting.setImageResource(R.drawable.red_circle)
             hideColorsFitting()
         }
 
         binding.imgColorYellowFitting.setOnClickListener {
-            selectedColorFitting = ContextCompat.getColor(requireContext(),R.color.yellowCircle)
+            selectedColorFitting = ContextCompat.getColor(requireContext(), R.color.yellowCircle)
             binding.imgColorSelectedFitting.setImageResource(R.drawable.yellow_circle)
             hideColorsFitting()
         }
         binding.imgColorGreenFitting.setOnClickListener {
-            selectedColorFitting = ContextCompat.getColor(requireContext(),R.color.greenCircle)
+            selectedColorFitting = ContextCompat.getColor(requireContext(), R.color.greenCircle)
             binding.imgColorSelectedFitting.setImageResource(R.drawable.green_circle)
             hideColorsFitting()
         }
@@ -292,13 +370,13 @@ class ContactLensFragment: Fragment() {
 
         binding.imgEditTop1.setOnClickListener {
             textBoxActiveTop[0] = !textBoxActiveTop[0]
-            for (item in 1 .. 3) {
+            for (item in 1..3) {
                 textBoxActiveTop[item] = false
             }
             if (textBoxActiveTop.contains(true)) {
                 binding.editAddTextTop.visibility = View.VISIBLE
                 binding.editAddTextTop.setText(binding.extraTextTop1.text)
-            }  else {
+            } else {
                 binding.editAddTextTop.visibility = View.GONE
                 hideKeyBoard(app)
             }
@@ -314,7 +392,7 @@ class ContactLensFragment: Fragment() {
             if (textBoxActiveTop.contains(true)) {
                 binding.editAddTextTop.visibility = View.VISIBLE
                 binding.editAddTextTop.setText(binding.extraTextTop2.text)
-            }  else {
+            } else {
                 binding.editAddTextTop.visibility = View.GONE
                 hideKeyBoard(app)
             }
@@ -330,7 +408,7 @@ class ContactLensFragment: Fragment() {
             if (textBoxActiveTop.contains(true)) {
                 binding.editAddTextTop.visibility = View.VISIBLE
                 binding.editAddTextTop.setText(binding.extraTextTop3.text)
-            }  else {
+            } else {
                 binding.editAddTextTop.visibility = View.GONE
                 hideKeyBoard(app)
             }
@@ -346,7 +424,7 @@ class ContactLensFragment: Fragment() {
             if (textBoxActiveTop.contains(true)) {
                 binding.editAddTextTop.visibility = View.VISIBLE
                 binding.editAddTextTop.setText(binding.extraTextTop4.text)
-            }  else {
+            } else {
                 binding.editAddTextTop.visibility = View.GONE
                 hideKeyBoard(app)
             }
@@ -368,8 +446,10 @@ class ContactLensFragment: Fragment() {
                     }
                 }
             }
+
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
             }
+
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
             }
         })
@@ -388,13 +468,13 @@ class ContactLensFragment: Fragment() {
         binding.undoTop.setOnClickListener {
             if (fillMaskTop.isNotEmpty()) {
                 fillMaskTop.removeLast()
-                fillIndexTop --
+                fillIndexTop--
 
                 binding.oculoHealthCl.fillMask = fillMaskTop
                 binding.oculoHealthCl.invalidate()
             }
         }
-         // ================= PAINTING ON OCULAR HEALTH =====================
+        // ================= PAINTING ON OCULAR HEALTH =====================
 
         binding.oculoHealthCl.setOnTouchListener { v, m ->
             if (m.action == MotionEvent.ACTION_DOWN) {
@@ -406,7 +486,7 @@ class ContactLensFragment: Fragment() {
 
                 //          Log.d(TAG, "selected color = ${selectedColor}")
                 fillMaskTop.add(newMList)
-                fillMaskTop[fillIndexTop].add(PointF(m.x+startPTTop.x,m.y+startPTTop.y))
+                fillMaskTop[fillIndexTop].add(PointF(m.x + startPTTop.x, m.y + startPTTop.y))
 
                 //    Log.d(TAG, "fillMask = ${fillMask}")
 
@@ -418,9 +498,14 @@ class ContactLensFragment: Fragment() {
             if (m.action == MotionEvent.ACTION_MOVE) {
 
                 // print mask
-                if (fillIndexTop>0) {
-                    if  (!(fillMaskTop[fillIndexTop].last().x == m.x+startPTTop.x && fillMaskTop[fillIndexTop].last().y == m.y+startPTTop.y))
-                        fillMaskTop[fillIndexTop].add(PointF(m.x+startPTTop.x,m.y+startPTTop.y))
+                if (fillIndexTop > 0) {
+                    if (!(fillMaskTop[fillIndexTop].last().x == m.x + startPTTop.x && fillMaskTop[fillIndexTop].last().y == m.y + startPTTop.y))
+                        fillMaskTop[fillIndexTop].add(
+                            PointF(
+                                m.x + startPTTop.x,
+                                m.y + startPTTop.y
+                            )
+                        )
                 }
 
                 binding.oculoHealthCl.fillMask = fillMaskTop
@@ -440,7 +525,7 @@ class ContactLensFragment: Fragment() {
             if (textBoxActiveRight.contains(true)) {
                 binding.editAddTextRight.visibility = View.VISIBLE
                 binding.editAddTextRight.setText(binding.extraTextTopRight.text)
-            }  else {
+            } else {
                 binding.editAddTextRight.visibility = View.GONE
                 hideKeyBoard(app)
             }
@@ -454,7 +539,7 @@ class ContactLensFragment: Fragment() {
             if (textBoxActiveLeft.contains(true)) {
                 binding.editAddTextLeft.visibility = View.VISIBLE
                 binding.editAddTextLeft.setText(binding.extraTextTopLeft.text)
-            }  else {
+            } else {
                 binding.editAddTextLeft.visibility = View.GONE
                 hideKeyBoard(app)
             }
@@ -467,7 +552,7 @@ class ContactLensFragment: Fragment() {
             if (textBoxActiveRight.contains(true)) {
                 binding.editAddTextRight.visibility = View.VISIBLE
                 binding.editAddTextRight.setText(binding.extraTextBottomRight.text)
-            }  else {
+            } else {
                 binding.editAddTextRight.visibility = View.GONE
                 hideKeyBoard(app)
             }
@@ -481,7 +566,7 @@ class ContactLensFragment: Fragment() {
             if (textBoxActiveLeft.contains(true)) {
                 binding.editAddTextLeft.visibility = View.VISIBLE
                 binding.editAddTextLeft.setText(binding.extraTextBottomLeft.text)
-            }  else {
+            } else {
                 binding.editAddTextLeft.visibility = View.GONE
                 hideKeyBoard(app)
             }
@@ -502,8 +587,10 @@ class ContactLensFragment: Fragment() {
                     }
                 }
             }
+
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
             }
+
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
             }
         })
@@ -520,8 +607,10 @@ class ContactLensFragment: Fragment() {
                     }
                 }
             }
+
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
             }
+
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
             }
         })
@@ -540,7 +629,7 @@ class ContactLensFragment: Fragment() {
         binding.undoRight.setOnClickListener {
             if (fillMaskRight[fitIndex].isNotEmpty()) {
                 fillMaskRight[fitIndex].removeLast()
-                fillIndexRight[fitIndex] --
+                fillIndexRight[fitIndex]--
 
                 binding.imageFittingRightCl.fillMask = fillMaskRight[fitIndex]
                 binding.imageFittingRightCl.invalidate()
@@ -559,7 +648,7 @@ class ContactLensFragment: Fragment() {
         binding.undoLeft.setOnClickListener {
             if (fillMaskLeft[fitIndex].isNotEmpty()) {
                 fillMaskLeft[fitIndex].removeLast()
-                fillIndexLeft[fitIndex] --
+                fillIndexLeft[fitIndex]--
 
                 binding.imageFittingLeftCl.fillMask = fillMaskLeft[fitIndex]
                 binding.imageFittingLeftCl.invalidate()
@@ -577,9 +666,14 @@ class ContactLensFragment: Fragment() {
 
                 //          Log.d(TAG, "selected color = ${selectedColor}")
                 fillMaskRight[fitIndex].add(newMList)
-                fillMaskRight[fitIndex][fillIndexRight[fitIndex]].add(PointF(m.x+startPTRight.x,m.y+startPTRight.y))
+                fillMaskRight[fitIndex][fillIndexRight[fitIndex]].add(
+                    PointF(
+                        m.x + startPTRight.x,
+                        m.y + startPTRight.y
+                    )
+                )
 
-    //               Log.d(TAG, "fillMask RIGHT = ${fillMaskRight[FITINDEX]}")
+                //               Log.d(TAG, "fillMask RIGHT = ${fillMaskRight[FITINDEX]}")
 
                 binding.imageFittingRightCl.fillMask = fillMaskRight[fitIndex]
                 binding.imageFittingRightCl.invalidate()
@@ -589,9 +683,14 @@ class ContactLensFragment: Fragment() {
             if (m.action == MotionEvent.ACTION_MOVE) {
 
                 // print mask
-                if (fillIndexRight[fitIndex]>0) {
-                    if  (!(fillMaskRight[fitIndex][fillIndexRight[fitIndex]].last().x == m.x+startPTRight.x && fillMaskRight[fitIndex][fillIndexRight[fitIndex]].last().y == m.y+startPTRight.y))
-                        fillMaskRight[fitIndex][fillIndexRight[fitIndex]].add(PointF(m.x+startPTRight.x,m.y+startPTRight.y))
+                if (fillIndexRight[fitIndex] > 0) {
+                    if (!(fillMaskRight[fitIndex][fillIndexRight[fitIndex]].last().x == m.x + startPTRight.x && fillMaskRight[fitIndex][fillIndexRight[fitIndex]].last().y == m.y + startPTRight.y))
+                        fillMaskRight[fitIndex][fillIndexRight[fitIndex]].add(
+                            PointF(
+                                m.x + startPTRight.x,
+                                m.y + startPTRight.y
+                            )
+                        )
                 }
 
                 binding.imageFittingRightCl.fillMask = fillMaskRight[fitIndex]
@@ -611,9 +710,14 @@ class ContactLensFragment: Fragment() {
 
                 //          Log.d(TAG, "selected color = ${selectedColor}")
                 fillMaskLeft[fitIndex].add(newMList)
-                fillMaskLeft[fitIndex][fillIndexLeft[fitIndex]].add(PointF(m.x+startPTLeft.x,m.y+startPTLeft.y))
+                fillMaskLeft[fitIndex][fillIndexLeft[fitIndex]].add(
+                    PointF(
+                        m.x + startPTLeft.x,
+                        m.y + startPTLeft.y
+                    )
+                )
 
-               // Log.d(TAG, "fillMask LEFT = ${fillMaskLeft[fitIndex]}")
+                // Log.d(TAG, "fillMask LEFT = ${fillMaskLeft[fitIndex]}")
 
 
                 binding.imageFittingLeftCl.fillMask = fillMaskLeft[fitIndex]
@@ -624,9 +728,14 @@ class ContactLensFragment: Fragment() {
             if (m.action == MotionEvent.ACTION_MOVE) {
 
                 // print mask
-                if (fillIndexLeft[fitIndex]>0) {
-                    if  (!(fillMaskLeft[fitIndex][fillIndexLeft[fitIndex]].last().x == m.x+startPTLeft.x && fillMaskLeft[fitIndex][fillIndexLeft[fitIndex]].last().y == m.y+startPTLeft.y))
-                        fillMaskLeft[fitIndex][fillIndexLeft[fitIndex]].add(PointF(m.x+startPTLeft.x,m.y+startPTLeft.y))
+                if (fillIndexLeft[fitIndex] > 0) {
+                    if (!(fillMaskLeft[fitIndex][fillIndexLeft[fitIndex]].last().x == m.x + startPTLeft.x && fillMaskLeft[fitIndex][fillIndexLeft[fitIndex]].last().y == m.y + startPTLeft.y))
+                        fillMaskLeft[fitIndex][fillIndexLeft[fitIndex]].add(
+                            PointF(
+                                m.x + startPTLeft.x,
+                                m.y + startPTLeft.y
+                            )
+                        )
                 }
 
                 binding.imageFittingLeftCl.fillMask = fillMaskLeft[fitIndex]
@@ -648,7 +757,7 @@ class ContactLensFragment: Fragment() {
             }
         })
 
-        patientViewModel.patientInitForms.observe(viewLifecycleOwner, { allForms ->
+        patientViewModel.patientInitForms.observe(viewLifecycleOwner) { allForms ->
             allForms?.let {
 
                 val screenDst = Resources.getSystem().displayMetrics.density
@@ -661,24 +770,37 @@ class ContactLensFragment: Fragment() {
 
                         pAge += resources.getString(
                             R.string.number_of_years_patient,
-                            age, dob)
+                            age, dob
+                        )
 
                     }
                 }
                 binding.patientName.text = pAge
-              val orderOfSections = listOf(*resources.getStringArray(R.array.forms_order))
+                val orderOfSections = listOf(*resources.getStringArray(R.array.forms_order))
 
                 val sortedList = it.sortedBy { patientsForms -> patientsForms.dateOfSection }
                 val newList = mutableListOf<Patients>()
+
                 for (section in orderOfSections) {
                     for (forms in sortedList) {
-                        if (section == forms.sectionName) newList.add(forms)
+                        var sectionName = forms.sectionName
+                        if (sectionName == getString(R.string.final_prescription_caption)){
+                            sectionName = getString(R.string.sales_order_from_selection)
+                            forms.sectionName = getString(R.string.sales_order_from_selection)
+                        }
+                        if (section == sectionName) newList.add(forms)
                     }
                 }
 
+//                for (section in orderOfSections) {
+//                    for (forms in sortedList) {
+//                        if (section == forms.sectionName) newList.add(forms)
+//                    }
+//                }
+
                 val navChipGroup = binding.navigationLayout
                 val children = newList.map { patientForm ->
-                  val chip = TextView(app.applicationContext)
+                    val chip = TextView(app.applicationContext)
 
                     val params = LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -687,24 +809,36 @@ class ContactLensFragment: Fragment() {
                         gravity = Gravity.CENTER
                     }
                     chip.layoutParams = params
-                    chip.setPadding((8*screenDst).toInt(), 0, (8*screenDst).toInt() ,0)
+                    chip.setPadding((8 * screenDst).toInt(), 0, (8 * screenDst).toInt(), 0)
 
                     if (patientForm.recordID == recordID)
-                        chip.setBackgroundColor(ContextCompat.getColor(app.applicationContext, R.color.lightBackground))
+                        chip.setBackgroundColor(
+                            ContextCompat.getColor(
+                                app.applicationContext,
+                                R.color.lightBackground
+                            )
+                        )
                     else
-                        chip.setBackgroundColor(ContextCompat.getColor(app.applicationContext, R.color.cardBackgroundDarker))
+                        chip.setBackgroundColor(
+                            ContextCompat.getColor(
+                                app.applicationContext,
+                                R.color.cardBackgroundDarker
+                            )
+                        )
 
                     val sectionShortName = makeShortSectionName(patientForm.sectionName)
                     chip.text = "$sectionShortName\n${
-                        convertLongToDDMMYY(patientForm.dateOfSection)}"
+                        convertLongToDDMMYY(patientForm.dateOfSection)
+                    }"
 
                     chip.tag = patientForm.sectionName + "\n" + "${patientForm.recordID}"
 
                     chip.setOnClickListener { button ->
                         navigateFormName = button.tag.toString().split("\n").first()
-                        navigateFormRecordID = button.tag.toString().split("\n").last().toLongOrNull()?:-1L
+                        navigateFormRecordID =
+                            button.tag.toString().split("\n").last().toLongOrNull() ?: -1L
 
-                        if (navigateFormRecordID !=-1L) {
+                        if (navigateFormRecordID != -1L) {
                             saveAndNavigate(navigateFormName)
                         }
                     }
@@ -719,18 +853,19 @@ class ContactLensFragment: Fragment() {
                     navChipGroup.addView(chipDivider)
                 }
 
-                val hPosList = newList.map {form ->  form.recordID }
+                val hPosList = newList.map { form -> form.recordID }
                 val hPos = hPosList.indexOf(recordID)
-                if (hPos >3) {
+                if (hPos > 3) {
                     val scrollWidth = binding.chipsScroll.width
-                    val scrollX = ((hPos -2)* (scrollWidth/6.25)).toInt()
+                    val scrollX = ((hPos - 2) * (scrollWidth / 6.25)).toInt()
                     binding.chipsScroll.postDelayed({
                         if (_binding != null)
-                        binding.chipsScroll.smoothScrollTo(scrollX, 0)}, 100L)
+                            binding.chipsScroll.smoothScrollTo(scrollX, 0)
+                    }, 100L)
                 }
             }
 
-        })
+        }
 
         patientViewModel.navTrigger.observe(viewLifecycleOwner, { navOption ->
             navOption?.let {
@@ -740,18 +875,22 @@ class ContactLensFragment: Fragment() {
 
         // DELETE FORM FUNCTIONALITY
 
-        patientViewModel.recordDeleted.observe(viewLifecycleOwner, { ifDeleted ->
+        patientViewModel.recordDeleted.observe(viewLifecycleOwner) { ifDeleted ->
             ifDeleted?.let {
-                if (ifDeleted) this.findNavController().navigate(ContactLensFragmentDirections.
-                actionContactLensFragmentToFormSelectionFragment(patientID))
+                if (ifDeleted) this.findNavController().navigate(
+                    ContactLensFragmentDirections.actionContactLensFragmentToFormSelectionFragment(
+                        patientID
+                    )
+                )
             }
-        })
+        }
 
         binding.deleteForm.setOnClickListener {
             if (context != null)
                 actionConfirmDeletion(
                     title = resources.getString(R.string.form_delete_title),
-                    message = resources.getString(R.string.customer_form_delete,
+                    message = resources.getString(
+                        R.string.customer_form_delete,
                         currentForm.sectionName,
                         currentForm.patientName
                     ),
@@ -766,16 +905,16 @@ class ContactLensFragment: Fragment() {
 
         // CHANGE DATA in THE FORM if record in FIREBASE was changed.
 
-        patientViewModel.patientFireForm.observe(viewLifecycleOwner, {patientNewRecord ->
-            patientNewRecord?.let{
+        patientViewModel.patientFireForm.observe(viewLifecycleOwner) { patientNewRecord ->
+            patientNewRecord?.let {
                 Log.d(TAG, "Reload CL Form? == ${!currentForm.assertEqual(it)}")
-                if (currentForm.recordID == it.recordID && !currentForm.assertEqual(it) ) {
+                if (currentForm.recordID == it.recordID && !currentForm.assertEqual(it)) {
                     Log.d(TAG, "CL Record from FB loaded")
                     currentForm.copyFrom(it)
                     fillTheForm(it)
                 }
             }
-        })
+        }
 
         binding.saveFormButton.setOnClickListener {
             saveAndNavigate("none")
@@ -788,7 +927,7 @@ class ContactLensFragment: Fragment() {
         return binding.root
     }
 
-    private fun saveAndNavigate(navOption:String) {
+    private fun saveAndNavigate(navOption: String) {
         patientViewModel.removeRecordsChangesListener()
         if (viewOnlyMode) {
             launchNavigator(navOption)
@@ -796,7 +935,10 @@ class ContactLensFragment: Fragment() {
             if (formWasChanged()) {
                 Log.d(TAG, "CL form CHANGED")
                 Log.d(TAG, "Submiting to FDB record ID ${currentForm.recordID}")
-                patientViewModel.submitPatientToFirebase(currentForm.recordID.toString(), currentForm)
+                patientViewModel.submitPatientToFirebase(
+                    currentForm.recordID.toString(),
+                    currentForm
+                )
                 // trigger navigation after update
                 patientViewModel.updateRecord(currentForm, navOption)
             } else {
@@ -806,20 +948,21 @@ class ContactLensFragment: Fragment() {
         }
     }
 
-    private fun launchNavigator(option:String) {
+    private fun launchNavigator(option: String) {
         when (option) {
-            "none" -> {Log.d(TAG, "No navigation triggered")}
-            "back" ->   this.findNavController().navigate(
-                ContactLensFragmentDirections.actionContactLensFragmentToFormSelectionFragment(
-                    patientID
-                )
+            "none" -> {
+                fillTheForm(currentForm)
+            }
+            "back" -> this.findNavController().navigate(
+                ContactLensFragmentDirections
+                    .actionContactLensFragmentToFormSelectionFragment(patientID)
             )
             else -> navigateToSelectedForm()
         }
     }
 
 
-    private fun saveAndLoadFitting(newIndex:Int) {
+    private fun saveAndLoadFitting(newIndex: Int) {
         saveCurrentFittingIntoAr()
         fitIndex = newIndex
         loadCurrentFittingFromAr()
@@ -850,14 +993,30 @@ class ContactLensFragment: Fragment() {
     private fun makeFitSwitchesGrey() {
         binding.apply {
 
-            fitSwitch1.setColorFilter(ContextCompat.getColor(requireContext(),
-                R.color.greyTint), android.graphics.PorterDuff.Mode.SRC_IN)
-            fitSwitch2.setColorFilter(ContextCompat.getColor(requireContext(),
-                R.color.greyTint), android.graphics.PorterDuff.Mode.SRC_IN)
-            fitSwitch3.setColorFilter(ContextCompat.getColor(requireContext(),
-                R.color.greyTint), android.graphics.PorterDuff.Mode.SRC_IN)
-            fitSwitch4.setColorFilter(ContextCompat.getColor(requireContext(),
-                R.color.greyTint), android.graphics.PorterDuff.Mode.SRC_IN)
+            fitSwitch1.setColorFilter(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.greyTint
+                ), android.graphics.PorterDuff.Mode.SRC_IN
+            )
+            fitSwitch2.setColorFilter(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.greyTint
+                ), android.graphics.PorterDuff.Mode.SRC_IN
+            )
+            fitSwitch3.setColorFilter(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.greyTint
+                ), android.graphics.PorterDuff.Mode.SRC_IN
+            )
+            fitSwitch4.setColorFilter(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.greyTint
+                ), android.graphics.PorterDuff.Mode.SRC_IN
+            )
         }
     }
 
@@ -882,74 +1041,114 @@ class ContactLensFragment: Fragment() {
             fitSwitch2.visibility = View.GONE
             fitSwitch3.visibility = View.GONE
             fitSwitch4.visibility = View.GONE
-            patientHistorySwitch.setColorFilter(ContextCompat.getColor(requireContext(),
-                R.color.greyTint), android.graphics.PorterDuff.Mode.SRC_IN)
+            patientHistorySwitch.setColorFilter(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.greyTint
+                ), android.graphics.PorterDuff.Mode.SRC_IN
+            )
 
-            ocularHealthSwitch.setColorFilter(ContextCompat.getColor(requireContext(),
-                R.color.greyTint), android.graphics.PorterDuff.Mode.SRC_IN)
+            ocularHealthSwitch.setColorFilter(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.greyTint
+                ), android.graphics.PorterDuff.Mode.SRC_IN
+            )
 
-            fittingSwitch.setColorFilter(ContextCompat.getColor(requireContext(),
-                R.color.greyTint), android.graphics.PorterDuff.Mode.SRC_IN)
+            fittingSwitch.setColorFilter(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.greyTint
+                ), android.graphics.PorterDuff.Mode.SRC_IN
+            )
 
-            finalSwitch.setColorFilter(ContextCompat.getColor(requireContext(),
-                R.color.greyTint), android.graphics.PorterDuff.Mode.SRC_IN)
+            finalSwitch.setColorFilter(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.greyTint
+                ), android.graphics.PorterDuff.Mode.SRC_IN
+            )
         }
     }
 
     private fun navigateToSelectedForm() {
 
         val orderOfSections = listOf(*resources.getStringArray(R.array.forms_order))
-              when(navigateFormName) {
-                orderOfSections[0] -> this.findNavController().navigate(
-                    ContactLensFragmentDirections
-                        .actionContactLensFragmentToInfoFragment(navigateFormRecordID))
+        when (navigateFormName) {
+            orderOfSections[0] -> this.findNavController().navigate(
+                ContactLensFragmentDirections
+                    .actionContactLensFragmentToInfoFragment(navigateFormRecordID)
+            )
 
-                  orderOfSections[1] -> this.findNavController().navigate(
-                      ContactLensFragmentDirections.actionContactLensFragmentToMemoFragment(navigateFormRecordID))
+            orderOfSections[1] -> this.findNavController().navigate(
+                ContactLensFragmentDirections.actionContactLensFragmentToMemoFragment(
+                    navigateFormRecordID
+                )
+            )
 
-                orderOfSections[2] -> this.findNavController().navigate(
-                    ContactLensFragmentDirections.actionContactLensFragmentToCurrentRxFragment(navigateFormRecordID))
+            orderOfSections[2] -> this.findNavController().navigate(
+                ContactLensFragmentDirections.actionContactLensFragmentToCurrentRxFragment(
+                    navigateFormRecordID
+                )
+            )
 
-                orderOfSections[3] -> this.findNavController().navigate(
-                    ContactLensFragmentDirections.actionContactLensFragmentToRefractionFragment(navigateFormRecordID))
+            orderOfSections[3] -> this.findNavController().navigate(
+                ContactLensFragmentDirections.actionContactLensFragmentToRefractionFragment(
+                    navigateFormRecordID
+                )
+            )
 
-                orderOfSections[4] -> this.findNavController().navigate(
-                    ContactLensFragmentDirections.actionContactLensFragmentToOcularHealthFragment(navigateFormRecordID))
+            orderOfSections[4] -> this.findNavController().navigate(
+                ContactLensFragmentDirections.actionContactLensFragmentToOcularHealthFragment(
+                    navigateFormRecordID
+                )
+            )
 
-                orderOfSections[5] -> this.findNavController().navigate(
-                    ContactLensFragmentDirections.actionContactLensFragmentToSupplementaryFragment(navigateFormRecordID))
-                orderOfSections[6] -> {
-                    if (recordID != navigateFormRecordID) {
-                        recordID = navigateFormRecordID
-                        patientViewModel.getPatientForm(navigateFormRecordID)
-                    }
+            orderOfSections[5] -> this.findNavController().navigate(
+                ContactLensFragmentDirections.actionContactLensFragmentToSupplementaryFragment(
+                    navigateFormRecordID
+                )
+            )
+            orderOfSections[6] -> {
+                if (recordID != navigateFormRecordID) {
+                    recordID = navigateFormRecordID
+                    patientViewModel.getPatientForm(navigateFormRecordID)
                 }
-                orderOfSections[7] -> this.findNavController().navigate(
-                     ContactLensFragmentDirections.actionContactLensFragmentToOrthokFragment(navigateFormRecordID))
-                  orderOfSections[8] -> this.findNavController().navigate(
-                      ContactLensFragmentDirections.actionContactLensFragmentToFinalPrescriptionFragment(navigateFormRecordID))
-                  orderOfSections[9] -> {
-                      this.findNavController().navigate(
-                          ContactLensFragmentDirections
-                              .actionContactLensFragmentToCashOrderFragment(navigateFormRecordID)
-                      )
-                  }
-                else -> Toast.makeText(context, getString(R.string.ok_hint), Toast.LENGTH_SHORT).show()
+            }
+            orderOfSections[7] -> this.findNavController().navigate(
+                ContactLensFragmentDirections.actionContactLensFragmentToOrthokFragment(
+                    navigateFormRecordID
+                )
+            )
+            orderOfSections[8] -> this.findNavController().navigate(
+                ContactLensFragmentDirections.actionContactLensFragmentToFinalPrescriptionFragment(
+                    navigateFormRecordID
+                )
+            )
+            orderOfSections[9] -> {
+                this.findNavController().navigate(
+                    ContactLensFragmentDirections
+                        .actionContactLensFragmentToCashOrderFragment(navigateFormRecordID)
+                )
+            }
+            else -> Toast.makeText(context, getString(R.string.ok_hint), Toast.LENGTH_SHORT).show()
 
         }
     }
+
     private fun hideKeyBoard(app: Application) {
         val imm =
             (app.applicationContext).getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(binding.mainLayout.windowToken, 0)
     }
+
     @SuppressLint("SetTextI18n")
     private fun fillTheForm(patientForm: Patients) {
 
         val extractData = patientForm.sectionData.split('|').toMutableList()
 //      Log.d(TAG, "extract data size before = ${extractData.size}")
         if (extractData.size < 138) {
-            for (index in extractData.size .. 138) {
+            for (index in extractData.size..138) {
                 extractData.add("")
             }
         }
@@ -957,24 +1156,28 @@ class ContactLensFragment: Fragment() {
         val graphicsTop = patientForm.reservedField.split('|')
 
         val graphicsR = patientForm.graphicsRight.split(';')
-        val graphicsL= patientForm.graphicsLeft.split(';')
+        val graphicsL = patientForm.graphicsLeft.split(';')
 
         val screenPxDST = Resources.getSystem().displayMetrics.density
         val widthTop = screenWidthPx().toFloat()
-        val heightTop = resources.getDimension(R.dimen.ocular_health_cl_top)*screenPxDST
+        val heightTop = resources.getDimension(R.dimen.ocular_health_cl_top) * screenPxDST
 
-        val widthRL = widthTop *0.7f
-        val heightRL =resources.getDimension(R.dimen.image_fitting_cl)*screenPxDST
+        val widthRL = widthTop * 0.7f
+        val heightRL = resources.getDimension(R.dimen.image_fitting_cl) * screenPxDST
 
 
-        var widthHeightString = if  (graphicsTop.isNotEmpty()) graphicsTop[0].split(',') else emptyList()
+        var widthHeightString =
+            if (graphicsTop.isNotEmpty()) graphicsTop[0].split(',') else emptyList()
 
         var wH = if (widthHeightString.lastIndex == 1) {
-            Pair (widthHeightString[0].toFloatOrNull()?:0f, widthHeightString[1].toFloatOrNull()?:0f)
-        } else Pair (0f, 0f)
+            Pair(
+                widthHeightString[0].toFloatOrNull() ?: 0f,
+                widthHeightString[1].toFloatOrNull() ?: 0f
+            )
+        } else Pair(0f, 0f)
 
-        val widthRatio =  if (wH.first != 0f && widthTop != 0f)  widthTop / wH.first else 1f
-        val heightRatio =  if (wH.second != 0f && heightTop != 0f)  heightTop/ wH.second else 1f
+        val widthRatio = if (wH.first != 0f && widthTop != 0f) widthTop / wH.first else 1f
+        val heightRatio = if (wH.second != 0f && heightTop != 0f) heightTop / wH.second else 1f
 
         fillMaskTop = convertStringToFillMask(graphicsTop, widthRatio, heightRatio)
         fillIndexTop = if (fillMaskTop.size > 0) fillMaskTop.lastIndex else -1
@@ -982,28 +1185,42 @@ class ContactLensFragment: Fragment() {
         if (graphicsR.size >= 4) {
             for (index in 0..3) {
                 val graphicsRight = graphicsR[index].split('|')
-                widthHeightString = if  (graphicsRight.isNotEmpty()) graphicsRight[0].split(',') else emptyList()
+                widthHeightString =
+                    if (graphicsRight.isNotEmpty()) graphicsRight[0].split(',') else emptyList()
                 wH = if (widthHeightString.lastIndex == 1) {
-                    Pair (widthHeightString[0].toFloatOrNull()?:0f, widthHeightString[1].toFloatOrNull()?:0f)
-                } else Pair (0f, 0f)
-                val rlWidthRatio =  if (wH.first != 0f && widthRL != 0f)  widthRL / wH.first else 1f
-                val rlHeightRatio =  if (wH.second != 0f && heightRL != 0f)  heightRL/ wH.second else 1f
-                fillMaskRight[index] = convertStringToFillMask(graphicsRight, rlWidthRatio, rlHeightRatio)
-                fillIndexRight[index] = if (fillMaskRight[index].size > 0) fillMaskRight[index].lastIndex else -1
+                    Pair(
+                        widthHeightString[0].toFloatOrNull() ?: 0f,
+                        widthHeightString[1].toFloatOrNull() ?: 0f
+                    )
+                } else Pair(0f, 0f)
+                val rlWidthRatio = if (wH.first != 0f && widthRL != 0f) widthRL / wH.first else 1f
+                val rlHeightRatio =
+                    if (wH.second != 0f && heightRL != 0f) heightRL / wH.second else 1f
+                fillMaskRight[index] =
+                    convertStringToFillMask(graphicsRight, rlWidthRatio, rlHeightRatio)
+                fillIndexRight[index] =
+                    if (fillMaskRight[index].size > 0) fillMaskRight[index].lastIndex else -1
             }
         }
 
         if (graphicsL.size >= 4) {
             for (index in 0..3) {
                 val graphicsLeft = graphicsL[index].split('|')
-                widthHeightString = if  (graphicsLeft.isNotEmpty()) graphicsLeft[0].split(',') else emptyList()
+                widthHeightString =
+                    if (graphicsLeft.isNotEmpty()) graphicsLeft[0].split(',') else emptyList()
                 wH = if (widthHeightString.lastIndex == 1) {
-                    Pair (widthHeightString[0].toFloatOrNull()?:0f, widthHeightString[1].toFloatOrNull()?:0f)
-                } else Pair (0f, 0f)
-                val rlWidthRatio =  if (wH.first != 0f && widthRL != 0f)  widthRL / wH.first else 1f
-                val rlHeightRatio =  if (wH.second != 0f && heightRL != 0f)  heightRL/ wH.second else 1f
-                fillMaskLeft[index] = convertStringToFillMask(graphicsLeft, rlWidthRatio, rlHeightRatio)
-                fillIndexLeft[index] = if (fillMaskLeft[index].size > 0) fillMaskLeft[index].lastIndex else -1
+                    Pair(
+                        widthHeightString[0].toFloatOrNull() ?: 0f,
+                        widthHeightString[1].toFloatOrNull() ?: 0f
+                    )
+                } else Pair(0f, 0f)
+                val rlWidthRatio = if (wH.first != 0f && widthRL != 0f) widthRL / wH.first else 1f
+                val rlHeightRatio =
+                    if (wH.second != 0f && heightRL != 0f) heightRL / wH.second else 1f
+                fillMaskLeft[index] =
+                    convertStringToFillMask(graphicsLeft, rlWidthRatio, rlHeightRatio)
+                fillIndexLeft[index] =
+                    if (fillMaskLeft[index].size > 0) fillMaskLeft[index].lastIndex else -1
             }
         }
 
@@ -1019,7 +1236,7 @@ class ContactLensFragment: Fragment() {
             imageFittingLeftCl.fillMask = fillMaskLeft[0]
             imageFittingLeftCl.invalidate()
 
-     //       patientName.text = patientForm.patientName
+            //       patientName.text = patientForm.patientName
             dateCaption.text = convertLongToDDMMYY(patientForm.dateOfSection)
             sectionEditDate = patientForm.dateOfSection
 
@@ -1029,7 +1246,7 @@ class ContactLensFragment: Fragment() {
 
             var isEmpty = true
             if (extractData[2].trim() != "") {
-                for(i in 0 until spinnerWearing24.adapter.count) {
+                for (i in 0 until spinnerWearing24.adapter.count) {
                     if (extractData[2].trim() == spinnerWearing24.adapter.getItem(i).toString()) {
                         spinnerWearing24.setSelection(i)
                         isEmpty = false
@@ -1040,7 +1257,7 @@ class ContactLensFragment: Fragment() {
 
             isEmpty = true
             if (extractData[3].trim() != "") {
-                for(i in 0 until spinnerWearing7.adapter.count) {
+                for (i in 0 until spinnerWearing7.adapter.count) {
                     if (extractData[3].trim() == spinnerWearing7.adapter.getItem(i).toString()) {
                         spinnerWearing7.setSelection(i)
                         isEmpty = false
@@ -1051,7 +1268,7 @@ class ContactLensFragment: Fragment() {
 
             isEmpty = true
             if (extractData[4].trim() != "") {
-                for(i in 0 until spinnerWearing30.adapter.count) {
+                for (i in 0 until spinnerWearing30.adapter.count) {
                     if (extractData[4].trim() == spinnerWearing30.adapter.getItem(i).toString()) {
                         spinnerWearing30.setSelection(i)
                         isEmpty = false
@@ -1064,7 +1281,7 @@ class ContactLensFragment: Fragment() {
 
             isEmpty = true
             if (extractData[6].trim() != "") {
-                for(i in 0 until spinnerVision.adapter.count) {
+                for (i in 0 until spinnerVision.adapter.count) {
                     if (extractData[6].trim() == spinnerVision.adapter.getItem(i).toString()) {
                         spinnerVision.setSelection(i)
                         isEmpty = false
@@ -1075,7 +1292,7 @@ class ContactLensFragment: Fragment() {
 
             isEmpty = true
             if (extractData[7].trim() != "") {
-                for(i in 0 until spinnerComfort.adapter.count) {
+                for (i in 0 until spinnerComfort.adapter.count) {
                     if (extractData[7].trim() == spinnerComfort.adapter.getItem(i).toString()) {
                         spinnerComfort.setSelection(i)
                         isEmpty = false
@@ -1089,15 +1306,16 @@ class ContactLensFragment: Fragment() {
 
             isEmpty = true
 
-            for(i in 0 until spinnerRightSph.adapter.count) {
+            for (i in 0 until spinnerRightSph.adapter.count) {
                 if (extractData[10].trim() != "" &&
-                    extractData[10] == spinnerRightSph.adapter.getItem(i).toString()) {
+                    extractData[10] == spinnerRightSph.adapter.getItem(i).toString()
+                ) {
                     spinnerRightSph.setSelection(i)
                     isEmpty = false
                 }
             }
             if (isEmpty) { // set " " as default value
-                for(i in 0 until spinnerRightSph.adapter.count) {
+                for (i in 0 until spinnerRightSph.adapter.count) {
                     if (" " == spinnerRightSph.adapter.getItem(i).toString()) {
                         spinnerRightSph.setSelection(i)
                     }
@@ -1106,9 +1324,11 @@ class ContactLensFragment: Fragment() {
 
             isEmpty = true
 
-            for(i in 0 until spinnerRightCyl.adapter.count) {
+            for (i in 0 until spinnerRightCyl.adapter.count) {
                 if (extractData[12].trim() != "" &&
-                    extractData[12].trim().toDoubleOrNull() == spinnerRightCyl.adapter.getItem(i).toString().toDoubleOrNull()) {
+                    extractData[12].trim().toDoubleOrNull() == spinnerRightCyl.adapter.getItem(i)
+                        .toString().toDoubleOrNull()
+                ) {
                     spinnerRightCyl.setSelection(i)
                     isEmpty = false
                 }
@@ -1116,9 +1336,10 @@ class ContactLensFragment: Fragment() {
             if (isEmpty) spinnerRightCyl.setSelection(0)
             isEmpty = true
 
-            for(i in 0 until spinnerLeftSph.adapter.count) {
+            for (i in 0 until spinnerLeftSph.adapter.count) {
                 if (extractData[11].trim() != "" &&
-                    extractData[11] == spinnerLeftSph.adapter.getItem(i).toString()) {
+                    extractData[11] == spinnerLeftSph.adapter.getItem(i).toString()
+                ) {
                     spinnerLeftSph.setSelection(i)
                     isEmpty = false
                 }
@@ -1132,9 +1353,11 @@ class ContactLensFragment: Fragment() {
             }
             isEmpty = true
 
-            for(i in 0 until spinnerLeftCyl.adapter.count) {
+            for (i in 0 until spinnerLeftCyl.adapter.count) {
                 if (extractData[13].trim() != "" &&
-                    extractData[13].trim().toDoubleOrNull() == spinnerLeftCyl.adapter.getItem(i).toString().toDoubleOrNull()) {
+                    extractData[13].trim().toDoubleOrNull() == spinnerLeftCyl.adapter.getItem(i)
+                        .toString().toDoubleOrNull()
+                ) {
                     spinnerLeftCyl.setSelection(i)
                     isEmpty = false
                 }
@@ -1157,9 +1380,10 @@ class ContactLensFragment: Fragment() {
             editBulbarConjLeft.setText(extractData[27])
 
             isEmpty = true
-            for(i in 0 until spinnerTbutRight.adapter.count) {
+            for (i in 0 until spinnerTbutRight.adapter.count) {
                 if (extractData[25].trim() != "" &&
-                    extractData[25].trim()== spinnerTbutRight.adapter.getItem(i).toString()) {
+                    extractData[25].trim() == spinnerTbutRight.adapter.getItem(i).toString()
+                ) {
                     spinnerTbutRight.setSelection(i)
                     isEmpty = false
                 }
@@ -1167,9 +1391,10 @@ class ContactLensFragment: Fragment() {
             if (isEmpty) spinnerTbutRight.setSelection(0)
 
             isEmpty = true
-            for(i in 0 until spinnerTbutLeft.adapter.count) {
+            for (i in 0 until spinnerTbutLeft.adapter.count) {
                 if (extractData[26].trim() != "" &&
-                    extractData[26].trim()== spinnerTbutLeft.adapter.getItem(i).toString()) {
+                    extractData[26].trim() == spinnerTbutLeft.adapter.getItem(i).toString()
+                ) {
                     spinnerTbutLeft.setSelection(i)
                     isEmpty = false
                 }
@@ -1203,15 +1428,16 @@ class ContactLensFragment: Fragment() {
             editOverRefractionLeft.setText(extractData[43])
 
             isEmpty = true
-            for(i in 0 until spinnerRightSphFinal.adapter.count) {
+            for (i in 0 until spinnerRightSphFinal.adapter.count) {
                 if (extractData[44].trim() != "" &&
-                    extractData[44] == spinnerRightSphFinal.adapter.getItem(i).toString()) {
+                    extractData[44] == spinnerRightSphFinal.adapter.getItem(i).toString()
+                ) {
                     spinnerRightSphFinal.setSelection(i)
                     isEmpty = false
                 }
             }
             if (isEmpty) { // set " " as default value
-                for(i in 0 until spinnerRightSphFinal.adapter.count) {
+                for (i in 0 until spinnerRightSphFinal.adapter.count) {
                     if (" " == spinnerRightSphFinal.adapter.getItem(i).toString()) {
                         spinnerRightSphFinal.setSelection(i)
                     }
@@ -1220,9 +1446,12 @@ class ContactLensFragment: Fragment() {
 
             isEmpty = true
 
-            for(i in 0 until spinnerRightCylFinal.adapter.count) {
+            for (i in 0 until spinnerRightCylFinal.adapter.count) {
                 if (extractData[46].trim() != "" &&
-                    extractData[46].trim().toDoubleOrNull() == spinnerRightCylFinal.adapter.getItem(i).toString().toDoubleOrNull()) {
+                    extractData[46].trim().toDoubleOrNull() == spinnerRightCylFinal.adapter.getItem(
+                        i
+                    ).toString().toDoubleOrNull()
+                ) {
                     spinnerRightCylFinal.setSelection(i)
                     isEmpty = false
                 }
@@ -1230,9 +1459,10 @@ class ContactLensFragment: Fragment() {
             if (isEmpty) spinnerRightCylFinal.setSelection(0)
             isEmpty = true
 
-            for(i in 0 until spinnerLeftSphFinal.adapter.count) {
+            for (i in 0 until spinnerLeftSphFinal.adapter.count) {
                 if (extractData[45].trim() != "" &&
-                    extractData[45] == spinnerLeftSphFinal.adapter.getItem(i).toString()) {
+                    extractData[45] == spinnerLeftSphFinal.adapter.getItem(i).toString()
+                ) {
                     spinnerLeftSphFinal.setSelection(i)
                     isEmpty = false
                 }
@@ -1246,9 +1476,12 @@ class ContactLensFragment: Fragment() {
             }
             isEmpty = true
 
-            for(i in 0 until spinnerLeftCylFinal.adapter.count) {
+            for (i in 0 until spinnerLeftCylFinal.adapter.count) {
                 if (extractData[47].trim() != "" &&
-                    extractData[47].trim().toDoubleOrNull() == spinnerLeftCylFinal.adapter.getItem(i).toString().toDoubleOrNull()) {
+                    extractData[47].trim()
+                        .toDoubleOrNull() == spinnerLeftCylFinal.adapter.getItem(i).toString()
+                        .toDoubleOrNull()
+                ) {
                     spinnerLeftCylFinal.setSelection(i)
                     isEmpty = false
                 }
@@ -1290,88 +1523,106 @@ class ContactLensFragment: Fragment() {
             editLensRight.setText(extractData[129])
             editLensLeft.setText(extractData[130])
 
- editRemark.setText(patientForm.remarks)
+            editRemark.setText(patientForm.remarks)
 // END of Binding
         }
         // LOAD FITTINGS DATA
-        val fittingForm = mutableListOf(extractData[32], extractData[33],extractData[34],
-            extractData[70],extractData[35],extractData[36],extractData[64],extractData[65],extractData[37],
-            extractData[38],extractData[39],extractData[40],extractData[71],extractData[41],extractData[42],
-            extractData[66],extractData[67],extractData[43], extractData[129],extractData[130] )
+        val fittingForm = mutableListOf(
+            extractData[32],
+            extractData[33],
+            extractData[34],
+            extractData[70],
+            extractData[35],
+            extractData[36],
+            extractData[64],
+            extractData[65],
+            extractData[37],
+            extractData[38],
+            extractData[39],
+            extractData[40],
+            extractData[71],
+            extractData[41],
+            extractData[42],
+            extractData[66],
+            extractData[67],
+            extractData[43],
+            extractData[129],
+            extractData[130]
+        )
 
-            fittingFormsAr.clear()
-            fittingFormsAr.add(fittingForm)
-        for (index in 0 .. 2) {
+        fittingFormsAr.clear()
+        fittingFormsAr.add(fittingForm)
+        for (index in 0..2) {
             val nextFitting = mutableListOf<String>()
-            for (jot in 1 .. 18) {
-                val element = extractData[71+index*18+jot]
+            for (jot in 1..18) {
+                val element = extractData[71 + index * 18 + jot]
                 nextFitting.add(element)
             }
-            nextFitting.add(extractData[131+index*2])
-            nextFitting.add(extractData[131+index*2+1])
+            nextFitting.add(extractData[131 + index * 2])
+            nextFitting.add(extractData[131 + index * 2 + 1])
 
             fittingFormsAr.add(nextFitting)
         }
     }
 
-    private fun formWasChanged():Boolean {
+    private fun formWasChanged(): Boolean {
 
         val priorPatient = currentForm.copy()
 
         // create new Record, fill it in with Form data and pass to ViewModel with recordID to update DB
         val screenPxDST = Resources.getSystem().displayMetrics.density
         val widthTop = screenWidthPx()
-        val heightTop = (resources.getDimension(R.dimen.ocular_health_cl_top)*screenPxDST).toInt()
+        val heightTop = (resources.getDimension(R.dimen.ocular_health_cl_top) * screenPxDST).toInt()
 
-        val widthRL =(widthTop *0.7).toInt()
-        val heightRL =(resources.getDimension(R.dimen.image_fitting_cl)*screenPxDST).toInt()
+        val widthRL = (widthTop * 0.7).toInt()
+        val heightRL = (resources.getDimension(R.dimen.image_fitting_cl) * screenPxDST).toInt()
 
         val graphicsTop = convertFillMask(fillMaskTop, widthTop, heightTop)
 
 
-        var graphicsRight =""
+        var graphicsRight = ""
         for (index in 0..3) {
-            graphicsRight+= convertFillMask(fillMaskRight[index], widthRL, heightRL)
-            graphicsRight+= ";"
+            graphicsRight += convertFillMask(fillMaskRight[index], widthRL, heightRL)
+            graphicsRight += ";"
         }
 
-        var graphicsLeft =""
+        var graphicsLeft = ""
         for (index in 0..3) {
-            graphicsLeft+= convertFillMask(fillMaskLeft[index], widthRL, heightRL)
-            graphicsLeft+= ";"
+            graphicsLeft += convertFillMask(fillMaskLeft[index], widthRL, heightRL)
+            graphicsLeft += ";"
         }
 
 /*        Log.d("Orthok_Fragment", "on save: widthTop = $widthTop, heightTop = $heightTop")
         Log.d("Orthok_Fragment", "on save: widthRL = $widthRL, heightRL = $heightRL")*/
 
-           binding.apply {
+        binding.apply {
 
-               saveCurrentFittingIntoAr()
+            saveCurrentFittingIntoAr()
 
-               var fittingElement = ""
-               for (index in 1 .. 3) {
-                            for (jot in 0 .. 17) {
-                                fittingElement+= fittingFormsAr[index][jot]
-                                fittingElement+="|"
-                                      }
-               }
-               var secondFittingElement = ""
-               for (index in 0 .. 3) {
-                   for (jot in 18 .. 19) {
-                       secondFittingElement+= fittingFormsAr[index][jot]
-                       secondFittingElement+="|"
-                   }
-               }
+            var fittingElement = ""
+            for (index in 1..3) {
+                for (jot in 0..17) {
+                    fittingElement += fittingFormsAr[index][jot]
+                    fittingElement += "|"
+                }
+            }
+            var secondFittingElement = ""
+            for (index in 0..3) {
+                for (jot in 18..19) {
+                    secondFittingElement += fittingFormsAr[index][jot]
+                    secondFittingElement += "|"
+                }
+            }
 
-               currentForm.graphicsRight = graphicsRight
-               currentForm.graphicsLeft = graphicsLeft
-               currentForm.reservedField = graphicsTop
+            currentForm.graphicsRight = graphicsRight
+            currentForm.graphicsLeft = graphicsLeft
+            currentForm.reservedField = graphicsTop
 
-                currentForm.remarks = editRemark.text.toString().toUpperCase()
+            currentForm.remarks = editRemark.text.toString().toUpperCase()
 
             if (sectionEditDate != -1L) currentForm.dateOfSection = sectionEditDate
 
-            val extractData =  editOccupation.text.toString() + "|" +
+            val extractData = editOccupation.text.toString() + "|" +
                     editCurrentCl.text.toString() + "|" +
                     spinnerWearing24.selectedItem.toString() + "|" +
                     spinnerWearing7.selectedItem.toString() + "|" +
@@ -1390,8 +1641,8 @@ class ContactLensFragment: Fragment() {
                     editRightVa.text.toString() + "|" +
                     editLeftVa.text.toString() + "|" +
                     editCorneaRight.text.toString() + "|" +
-                    editCorneaLeft.text.toString()+ "|" +
-                    editLimbusRight.text.toString()+ "|" +
+                    editCorneaLeft.text.toString() + "|" +
+                    editLimbusRight.text.toString() + "|" +
                     editLashesRight.text.toString() + "|" +
                     editLashesLeft.text.toString() + "|" +
                     editLimbusLeft.text.toString() + "|" +
@@ -1410,9 +1661,9 @@ class ContactLensFragment: Fragment() {
                     fittingFormsAr[0][5] + "|" +
                     fittingFormsAr[0][8] + "|" +
                     fittingFormsAr[0][9] + "|" +
-                    fittingFormsAr[0][10]+ "|" +
+                    fittingFormsAr[0][10] + "|" +
                     fittingFormsAr[0][11] + "|" +
-                    fittingFormsAr[0][13]+ "|" +
+                    fittingFormsAr[0][13] + "|" +
                     fittingFormsAr[0][14] + "|" +
                     fittingFormsAr[0][17] + "|" +
                     spinnerRightSphFinal.selectedItem.toString() + "|" +
@@ -1431,14 +1682,14 @@ class ContactLensFragment: Fragment() {
                     editRm2.text.toString() + "|" +
                     editRm3.text.toString() + "|" +
                     editTotal.text.toString() + "|" +
-                       extraTextTop1.text  + "|" +
-                       extraTextTop2.text  + "|" +
-                       extraTextTop3.text  + "|" +
-                       extraTextTop4.text + "|" +
-                    fittingFormsAr[0][6]  + "|" +
-                    fittingFormsAr[0][7]  + "|" +
-                    fittingFormsAr[0][15]  + "|" +
-                    fittingFormsAr[0][16]+ "|" +
+                    extraTextTop1.text + "|" +
+                    extraTextTop2.text + "|" +
+                    extraTextTop3.text + "|" +
+                    extraTextTop4.text + "|" +
+                    fittingFormsAr[0][6] + "|" +
+                    fittingFormsAr[0][7] + "|" +
+                    fittingFormsAr[0][15] + "|" +
+                    fittingFormsAr[0][16] + "|" +
                     editRightTaFinal.text.toString() + "|" +
                     editLeftTaFinal.text.toString() + "|" +
                     fittingFormsAr[0][3] + "|" +
@@ -1446,7 +1697,7 @@ class ContactLensFragment: Fragment() {
                     editRLens.text.toString() + "|" +
                     editLLens.text.toString() + "|" + secondFittingElement
 
-               currentForm.sectionData = extractData.uppercase()
+            currentForm.sectionData = extractData.uppercase()
         }
 
         return !currentForm.assertEqual(priorPatient)
@@ -1484,10 +1735,10 @@ class ContactLensFragment: Fragment() {
     private fun loadCurrentFittingFromAr() {
         binding.apply {
             if (fittingFormsAr.isNotEmpty()) {
-                editRxRight.setText( fittingFormsAr[fitIndex][0] )
+                editRxRight.setText(fittingFormsAr[fitIndex][0])
                 editBcRight.setText(fittingFormsAr[fitIndex][1])
                 editDiaRight.setText(fittingFormsAr[fitIndex][2])
-                editTaRight.setText( fittingFormsAr[fitIndex][3] )
+                editTaRight.setText(fittingFormsAr[fitIndex][3])
                 editMovementRight.setText(fittingFormsAr[fitIndex][4])
                 editCentrationRight.setText(fittingFormsAr[fitIndex][5])
                 extraTextTopRight.text = fittingFormsAr[fitIndex][6]
@@ -1513,17 +1764,19 @@ class ContactLensFragment: Fragment() {
         val (todayYear, todayMonth, todayDay) = dayMonthY()
         val myActivity = activity
 
-        myActivity?.let{
+        myActivity?.let {
             val datePickerDialog = DatePickerDialog(
                 it,
                 { _, year, monthOfYear, dayOfMonth -> // set day of month , month and year value in the edit text
                     sectionEditDate = convertYMDtoTimeMillis(year, monthOfYear, dayOfMonth)
-                    if (sectionEditDate != -1L) binding.dateCaption.text = convertLongToDDMMYY(sectionEditDate)
+                    if (sectionEditDate != -1L) binding.dateCaption.text =
+                        convertLongToDDMMYY(sectionEditDate)
                 }, todayYear, todayMonth, todayDay
             )
             datePickerDialog.show()
         }
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

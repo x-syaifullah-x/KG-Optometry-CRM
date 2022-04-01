@@ -158,7 +158,12 @@ class FormSelectionFragment: Fragment() {
 
                     for (section in orderOfSections) {
                         for (forms in sortedForms) {
-                            if (section == forms.sectionName) newList.add(forms)
+                            var sectionName = forms.sectionName
+                            if (sectionName == getString(R.string.final_prescription_caption)){
+                                sectionName = getString(R.string.sales_order_from_selection)
+                                forms.sectionName = getString(R.string.sales_order_from_selection)
+                            }
+                            if (section == sectionName) newList.add(forms)
                         }
                     }
                     recyclerAdapter.submitList(newList)
@@ -395,6 +400,8 @@ class FormSelectionFragment: Fragment() {
                 navController.navigate(FormSelectionFragmentDirections.actionFormSelectionFragmentToContactLensFragment(recordSelected.recordID))
             resources.getString(R.string.orthox_caption) ->
                 navController.navigate(FormSelectionFragmentDirections.actionFormSelectionFragmentToOrthokFragment(recordSelected.recordID))
+            resources.getString(R.string.sales_order_from_selection) ->
+                navController.navigate(FormSelectionFragmentDirections.actionFormSelectionFragmentToFinalPrescriptionFragment(recordSelected.recordID))
             resources.getString(R.string.final_prescription_caption) ->
                 navController.navigate(FormSelectionFragmentDirections.actionFormSelectionFragmentToFinalPrescriptionFragment(recordSelected.recordID))
             resources.getString(R.string.cash_order) ->

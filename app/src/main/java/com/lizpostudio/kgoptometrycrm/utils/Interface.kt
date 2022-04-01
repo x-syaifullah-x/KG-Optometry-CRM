@@ -11,12 +11,17 @@ import com.lizpostudio.kgoptometrycrm.R
  * Builds alert dialog with text box to confirm password and returns
  * callback if password was correctly entered
  */
- fun actionConfirmDeletion(title:String, message:String,
-                                  isAdmin:Boolean, context: Context, checkPassword:Boolean = true,
-                                  callback: (deleteAllowed:Boolean) -> Unit) {
+fun actionConfirmDeletion(
+    title: String,
+    message: String,
+    isAdmin: Boolean,
+    context: Context,
+    checkPassword: Boolean = true,
+    callback: (deleteAllowed: Boolean) -> Unit
+) {
 
-        val passwordBox =  EditText(context)
-        passwordBox.textAlignment = View.TEXT_ALIGNMENT_CENTER
+    val passwordBox = EditText(context)
+    passwordBox.textAlignment = View.TEXT_ALIGNMENT_CENTER
     val dialogBuilder = AlertDialog.Builder(context)
     dialogBuilder.setTitle(title)
     dialogBuilder.setMessage(message)

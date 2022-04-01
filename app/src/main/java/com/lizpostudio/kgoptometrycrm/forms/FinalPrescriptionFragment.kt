@@ -10,6 +10,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -104,9 +105,7 @@ class FinalPrescriptionFragment : Fragment() {
             )
             binding.saveFormButton.visibility = View.GONE
         } else binding.mainLayout.setBackgroundColor(
-            ContextCompat.getColor(
-                requireContext(),
-                R.color.lightBackground
+            ContextCompat.getColor(requireContext(), R.color.lightBackground
             )
         )
 
@@ -172,11 +171,22 @@ class FinalPrescriptionFragment : Fragment() {
 
                 val sortedList = it.sortedBy { patientsForms -> patientsForms.dateOfSection }
                 val newList = mutableListOf<Patients>()
+
                 for (section in orderOfSections) {
                     for (forms in sortedList) {
-                        if (section == forms.sectionName) newList.add(forms)
+                        var sectionName = forms.sectionName
+                        if (sectionName == getString(R.string.final_prescription_caption)){
+                            sectionName = getString(R.string.sales_order_from_selection)
+                            forms.sectionName = getString(R.string.sales_order_from_selection)
+                        }
+                        if (section == sectionName) newList.add(forms)
                     }
                 }
+//                for (section in orderOfSections) {
+//                    for (forms in sortedList) {
+//                        if (section == forms.sectionName) newList.add(forms)
+//                    }
+//                }
 
                 val navChipGroup = binding.navigationLayout
                 val children = newList.map { patientForm ->
@@ -330,9 +340,8 @@ class FinalPrescriptionFragment : Fragment() {
 
             if (refractionForms.lastIndex >= binding.spinnerFromRefraction.selectedItemPosition) {
                 val extractData =
-                    refractionForms[binding.spinnerFromRefraction.selectedItemPosition].sectionData.split(
-                        "|"
-                    )
+                    refractionForms[binding.spinnerFromRefraction.selectedItemPosition]
+                        .sectionData.split("|")
                 binding.apply {
                     for (i in 0 until spinnerRightSph.adapter.count) {
                         if (extractData[33].trim() != "" &&
@@ -476,7 +485,7 @@ class FinalPrescriptionFragment : Fragment() {
     private fun launchNavigator(option: String) {
         when (option) {
             "none" -> {
-                Log.d(TAG, "No navigation triggered")
+                fillTheForm(currentForm)
             }
             "back" -> this.findNavController().navigate(
                 FinalPrescriptionFragmentDirections
@@ -693,6 +702,35 @@ class FinalPrescriptionFragment : Fragment() {
                 ArrayAdapter(requireContext(), R.layout.spinner_list_basic, dataPractitioner)
             practitionerNameOptometrist.adapter = adapterPractitionerOptometrist
 
+            practitionerName.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    practitionerNameOptometrist.setSelection(position)
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                }
+            }
+
+            practitionerNameOptometrist.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    practitionerName.setSelection(position)
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                }
+            }
+
+
             editOr.setText(patientForm.or)
             editFrameSize.setText(patientForm.frameSize)
             editFrameType.setText(patientForm.frameType)
@@ -744,7 +782,6 @@ class FinalPrescriptionFragment : Fragment() {
             currentForm.sectionData = extractData.uppercase()
 
             val dataSelected = binding.practitionerName.selectedItem as String
-
             val dataPractitioner = StringBuilder(dataSelected)
             val count = binding.practitionerName.adapter.count
             for (i in 0 until count) {
@@ -753,10 +790,10 @@ class FinalPrescriptionFragment : Fragment() {
                     dataPractitioner.append("|$a")
                 }
             }
-            currentForm.practitioner = "$dataPractitioner"
-            currentForm.or = "${binding.editOr.text}"
-            currentForm.frameSize = "${binding.editFrameSize.text}"
-            currentForm.frameType = "${binding.editFrameType.text}"
+            currentForm.practitioner = "$dataPractitioner".uppercase()
+            currentForm.or = "${binding.editOr.text}".uppercase()
+            currentForm.frameType = "${binding.editFrameType.text}".uppercase()
+            currentForm.frameSize = "${binding.editFrameSize.text}".uppercase()
         }
         return !currentForm.assertEqual(priorPatient)
     }

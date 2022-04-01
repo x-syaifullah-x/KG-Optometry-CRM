@@ -218,6 +218,7 @@
     <string name="solution_misc_rm">Sol/Misc RM</string>
     <string name="hint_mm_input">MM</string>
     <string name="frame_type">Frame Type</string>
+    <string name="sales_order_from_selection">SALES ORDER</string>
 
     <string-array name="worth_four_dots">
         <item> </item>
@@ -297,7 +298,7 @@
         <item>SUPPLEMENTARY TESTS</item>
         <item>CONTACT LENS EXAM</item>
         <item>ORTHOK</item>
-        <item>FINAL PRESCRIPTION</item>
+        <item>SALES ORDER</item>
         <item>CASH ORDER</item>
     </string-array>
 

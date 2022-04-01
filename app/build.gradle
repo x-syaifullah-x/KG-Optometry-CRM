@@ -28,6 +28,24 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        debug {
+            def store_file_release = file("$rootDir/key_store/release/debug.jks")
+            storeFile store_file_release
+            storePassword "android"
+            keyAlias "androiddebugkey"
+            keyPassword "android"
+        }
+
+        release {
+            def store_file_release = file("$rootDir/key_store/release/debug.jks")
+            storeFile store_file_release
+            storePassword "android"
+            keyAlias "androiddebugkey"
+            keyPassword "android"
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -121,6 +139,9 @@ dependencies {
 //    implementation 'androidx.navigation:navigation-ui-ktx:2.3.5'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.4.1'
     implementation 'androidx.navigation:navigation-ui-ktx:2.4.1'
+
+//    implementation 'com.intuit.sdp:sdp-android:1.0.6'
+//    implementation 'com.intuit.ssp:ssp-android:1.0.6'
 
     // Testing
 //    testImplementation "junit:junit:$rootProject.junitVersion"

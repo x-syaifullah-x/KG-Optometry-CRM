@@ -52,6 +52,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="8dp"
+                android:scrollbarSize="0.1dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/delete_form"
                 app:layout_constraintStart_toEndOf="@+id/save_form_button"
@@ -66,7 +67,6 @@
                     android:orientation="horizontal" />
 
             </HorizontalScrollView>
-
 
             <ImageView
                 android:id="@+id/delete_form"
@@ -101,38 +101,61 @@
             app:layout_constraintTop_toBottomOf="@+id/top_navigation"
             tools:text="FATIN BT ABDUL RAZAK" />
 
-        <TextView
-            android:id="@+id/form_caption"
-            android:layout_width="wrap_content"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/base_info_layout_navigation"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="5dp"
             android:background="@color/cardBackgroundDarker"
-            android:fontFamily="@font/didact_gothic"
-            android:padding="4dp"
-            android:paddingStart="16dp"
-            android:text="@string/orthox_caption"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/patient_name" />
-
-        <TextView
-            android:id="@+id/date_caption"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:background="@color/cardBackgroundDarker"
-            android:fontFamily="@font/didact_gothic"
-            android:padding="4dp"
-            android:paddingEnd="16dp"
-            android:textAlignment="textEnd"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="18sp"
-            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/form_caption"
-            app:layout_constraintTop_toTopOf="@+id/form_caption"
-            tools:text="05/10/2020" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/oculo_top_on_off">
+
+            <TextView
+                android:id="@+id/form_caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@color/cardBackgroundDarker"
+                android:fontFamily="@font/didact_gothic"
+                android:padding="4dp"
+                android:paddingStart="16dp"
+                android:text="@string/orthox_caption"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Spinner
+                android:id="@+id/practitioner_name"
+                style="@style/Widget.AppCompat.Spinner.Underlined"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="15dp"
+                android:minWidth="100dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/date_caption"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/date_caption"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@color/cardBackgroundDarker"
+                android:fontFamily="@font/didact_gothic"
+                android:padding="4dp"
+                android:paddingEnd="16dp"
+                android:textAlignment="textEnd"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="05/10/2020" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <ImageView
             android:id="@+id/upper_layout_on_off"
@@ -175,7 +198,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/form_caption">
+            app:layout_constraintTop_toBottomOf="@+id/base_info_layout_navigation">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -185,6 +208,7 @@
                     android:id="@+id/aa"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:scrollbarSize="0.5dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
@@ -254,6 +278,17 @@
                             app:layout_constraintTop_toTopOf="@id/photo_button"
                             app:srcCompat="@drawable/visibility_32"
                             tools:ignore="ContentDescription" />
+
+                        <ImageView
+                            android:id="@+id/delete_photo"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="24dp"
+                            app:layout_constraintStart_toEndOf="@id/show_hide_button"
+                            app:layout_constraintTop_toTopOf="@id/show_hide_button"
+                            app:srcCompat="@drawable/ic_baseline_clear_24"
+                            app:tint="@color/redCircle"
+                            tools:ignore="ContentDescription,RtlSymmetry" />
 
                         <EditText
                             android:id="@+id/edit_left_va_top"

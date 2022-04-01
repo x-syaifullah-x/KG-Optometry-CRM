@@ -303,7 +303,7 @@
                 android:fontFamily="@font/didact_gothic"
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
-                android:text="@string/final_prescription_caption"
+                android:text="@string/sales_order"
                 android:textAlignment="center"
                 android:textColor="@color/blackFont"
                 android:textSize="18sp"

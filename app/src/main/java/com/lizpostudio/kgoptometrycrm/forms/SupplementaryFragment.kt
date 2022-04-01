@@ -10,7 +10,10 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.ArrayAdapter
+import android.widget.LinearLayout
+import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -27,12 +30,13 @@ import com.lizpostudio.kgoptometrycrm.databinding.FragmentSupplementaryTestBindi
 import com.lizpostudio.kgoptometrycrm.utils.*
 
 private const val TAG = "LogTrace"
-class SupplementaryFragment: Fragment() {
-    
+
+class SupplementaryFragment : Fragment() {
+
     private val patientViewModel: PatientsViewModel by viewModels {
         PatientsViewModelFactory((requireNotNull(this.activity).application as OptometryApplication).repository)
     }
-    
+
     private var isAdmin = false
     private var viewOnlyMode = false
 
@@ -41,7 +45,7 @@ class SupplementaryFragment: Fragment() {
     private var recordID = 0L
     private var patientID = ""
 
-     private var sectionEditDate = -1L
+    private var sectionEditDate = -1L
 
     private var currentForm = Patients()
     private var navigateFormName = ""
@@ -49,9 +53,9 @@ class SupplementaryFragment: Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-       requireActivity().onBackPressedDispatcher.addCallback(this) {
-           saveAndNavigate("back")
-       }
+        requireActivity().onBackPressedDispatcher.addCallback(this) {
+            saveAndNavigate("back")
+        }
     }
 
     @SuppressLint("ClickableViewAccessibility", "SetTextI18n")
@@ -70,27 +74,38 @@ class SupplementaryFragment: Fragment() {
         val app = requireNotNull(this.activity).application
 
         // change BINDING to Respective forms args!
-       val safeArgs:SupplementaryFragmentArgs by navArgs()
+        val safeArgs: SupplementaryFragmentArgs by navArgs()
         recordID = safeArgs.recordID
 
         // get Patient data
         patientViewModel.getPatientForm(recordID)
 
         binding.lifecycleOwner = this
-       val  navController = this.findNavController()
+        val navController = this.findNavController()
 
         // get if user is Admin
-        val sharedPref = app.getSharedPreferences("kgoptometry",
-            Context.MODE_PRIVATE)
-        isAdmin= sharedPref?.getString("admin", "")?: "" == "admin"
-        viewOnlyMode = sharedPref?.getBoolean("viewOnly", false)?:false
+        val sharedPref = app.getSharedPreferences(
+            "kgoptometry",
+            Context.MODE_PRIVATE
+        )
+        isAdmin = sharedPref?.getString("admin", "") ?: "" == "admin"
+        viewOnlyMode = sharedPref?.getBoolean("viewOnly", false) ?: false
         if (viewOnlyMode) {
-          binding.mainLayout.setBackgroundColor(ContextCompat.getColor(requireContext(),R.color.viewOnlyMode))
-          binding.saveFormButton.visibility = View.GONE
-        }
-        else  binding.mainLayout.setBackgroundColor(ContextCompat.getColor(requireContext(),R.color.lightBackground))
+            binding.mainLayout.setBackgroundColor(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.viewOnlyMode
+                )
+            )
+            binding.saveFormButton.visibility = View.GONE
+        } else binding.mainLayout.setBackgroundColor(
+            ContextCompat.getColor(
+                requireContext(),
+                R.color.lightBackground
+            )
+        )
 
-        binding.dateCaption.setOnClickListener{
+        binding.dateCaption.setOnClickListener {
             changeDate()
         }
 
@@ -106,7 +121,7 @@ class SupplementaryFragment: Fragment() {
             }
         })
 
-        patientViewModel.patientInitForms.observe(viewLifecycleOwner, { allForms ->
+        patientViewModel.patientInitForms.observe(viewLifecycleOwner) { allForms ->
             allForms?.let {
 
                 var pAge = it.first().patientName + " "
@@ -117,7 +132,8 @@ class SupplementaryFragment: Fragment() {
 
                         pAge += resources.getString(
                             R.string.number_of_years_patient,
-                            age, dob)
+                            age, dob
+                        )
                     }
                 }
                 binding.patientName.text = pAge
@@ -126,11 +142,22 @@ class SupplementaryFragment: Fragment() {
 
                 val sortedList = it.sortedBy { patientsForms -> patientsForms.dateOfSection }
                 val newList = mutableListOf<Patients>()
+
                 for (section in orderOfSections) {
                     for (forms in sortedList) {
-                        if (section == forms.sectionName) newList.add(forms)
+                        var sectionName = forms.sectionName
+                        if (sectionName == getString(R.string.final_prescription_caption)){
+                            sectionName = getString(R.string.sales_order_from_selection)
+                            forms.sectionName = getString(R.string.sales_order_from_selection)
+                        }
+                        if (section == sectionName) newList.add(forms)
                     }
                 }
+//                for (section in orderOfSections) {
+//                    for (forms in sortedList) {
+//                        if (section == forms.sectionName) newList.add(forms)
+//                    }
+//                }
 
                 val navChipGroup = binding.navigationLayout
                 val children = newList.map { patientForm ->
@@ -186,17 +213,22 @@ class SupplementaryFragment: Fragment() {
                     navChipGroup.addView(chipDivider)
                 }
 
-                val hPosList = newList.map {form ->  form.recordID }
+                val hPosList = newList.map { form -> form.recordID }
                 val hPos = hPosList.indexOf(recordID)
-                if (hPos >3) {
+                if (hPos > 3) {
                     val scrollWidth = binding.chipsScroll.width
-                    val scrollX = ((hPos -2)* (scrollWidth/6.25)).toInt()
-                      binding.chipsScroll.postDelayed(Runnable {     binding.chipsScroll.smoothScrollTo(scrollX, 0)}, 100L)
+                    val scrollX = ((hPos - 2) * (scrollWidth / 6.25)).toInt()
+                    binding.chipsScroll.postDelayed(Runnable {
+                        binding.chipsScroll.smoothScrollTo(
+                            scrollX,
+                            0
+                        )
+                    }, 100L)
                 }
 
             }
 
-        })
+        }
 
 
         ArrayAdapter.createFromResource(
@@ -243,17 +275,22 @@ class SupplementaryFragment: Fragment() {
             }
         })
         // DELETE FORM FUNCTIONALITY
-        patientViewModel.recordDeleted.observe(viewLifecycleOwner, {ifDeleted ->
+        patientViewModel.recordDeleted.observe(viewLifecycleOwner, { ifDeleted ->
             ifDeleted?.let {
-                if (ifDeleted) navController.navigate(SupplementaryFragmentDirections.
-                actionSupplementaryFragmentToFormSelectionFragment(patientID))   }
+                if (ifDeleted) navController.navigate(
+                    SupplementaryFragmentDirections.actionSupplementaryFragmentToFormSelectionFragment(
+                        patientID
+                    )
+                )
+            }
         })
 
         binding.deleteForm.setOnClickListener {
             if (context != null)
                 actionConfirmDeletion(
                     title = resources.getString(R.string.form_delete_title),
-                    message = resources.getString(R.string.customer_form_delete,
+                    message = resources.getString(
+                        R.string.customer_form_delete,
                         currentForm.sectionName,
                         currentForm.patientName
                     ),
@@ -267,10 +304,10 @@ class SupplementaryFragment: Fragment() {
                 }
         }
         // CHANGE DATA in THE FORM if record in FIREBASE was changed.
-        patientViewModel.patientFireForm.observe(viewLifecycleOwner, {patientNewRecord ->
-            patientNewRecord?.let{
+        patientViewModel.patientFireForm.observe(viewLifecycleOwner, { patientNewRecord ->
+            patientNewRecord?.let {
                 Log.d(TAG, "Reload ST Form? == ${!currentForm.assertEqual(it)}")
-                if (currentForm.recordID == it.recordID && !currentForm.assertEqual(it) ) {
+                if (currentForm.recordID == it.recordID && !currentForm.assertEqual(it)) {
                     Log.d(TAG, "ST Record from FB loaded")
                     currentForm.copyFrom(it)
                     fillTheForm(it)
@@ -288,14 +325,17 @@ class SupplementaryFragment: Fragment() {
         return binding.root
     }
 
-    private fun saveAndNavigate(navOption:String) {
+    private fun saveAndNavigate(navOption: String) {
         patientViewModel.removeRecordsChangesListener()
         if (viewOnlyMode) {
             launchNavigator(navOption)
         } else {
             if (formWasChanged()) {
                 Log.d(TAG, "ST form CHANGED")
-                patientViewModel.submitPatientToFirebase(currentForm.recordID.toString(), currentForm)
+                patientViewModel.submitPatientToFirebase(
+                    currentForm.recordID.toString(),
+                    currentForm
+                )
                 // trigger navigation after update
                 patientViewModel.updateRecord(currentForm, navOption)
             } else {
@@ -305,10 +345,12 @@ class SupplementaryFragment: Fragment() {
         }
     }
 
-    private fun launchNavigator(option:String) {
+    private fun launchNavigator(option: String) {
         when (option) {
-            "none" -> {Log.d(TAG, "No navigation triggered")}
-            "back" ->   this.findNavController().navigate(
+            "none" -> {
+                fillTheForm(currentForm)
+            }
+            "back" -> this.findNavController().navigate(
                 SupplementaryFragmentDirections.actionSupplementaryFragmentToFormSelectionFragment(
                     patientID
                 )
@@ -322,7 +364,7 @@ class SupplementaryFragment: Fragment() {
         val orderOfSections = listOf(*resources.getStringArray(R.array.forms_order))
         // if same fragment - load new record
         // info section could be onlyUnique
-        when(navigateFormName) {
+        when (navigateFormName) {
             // INFO=0  CURRENTRx=1  REFRACTION=2  OCULAR HEALTH=3
             // SUPPLEMENTARY TESTS =4  FINAL PRESCRIPTION=5
             // CONTACT LENS EXAM = 6  ORTHOK=7
@@ -362,15 +404,21 @@ class SupplementaryFragment: Fragment() {
             }
             orderOfSections[6] -> navController.navigate(
                 SupplementaryFragmentDirections.actionSupplementaryFragmentToContactLensFragment(
-                    navigateFormRecordID))
+                    navigateFormRecordID
+                )
+            )
 
             orderOfSections[7] -> navController.navigate(
                 SupplementaryFragmentDirections.actionSupplementaryFragmentToOrthokFragment(
-                    navigateFormRecordID))
+                    navigateFormRecordID
+                )
+            )
 
             orderOfSections[8] -> navController.navigate(
                 SupplementaryFragmentDirections.actionSupplementaryFragmentToFinalPrescriptionFragment(
-                    navigateFormRecordID))
+                    navigateFormRecordID
+                )
+            )
 
             orderOfSections[9] -> {
                 navController.navigate(
@@ -378,7 +426,8 @@ class SupplementaryFragment: Fragment() {
                         .actionSupplementaryFragmentToCashOrderFragment(navigateFormRecordID)
                 )
             }
-            else -> Toast.makeText(context, getString(R.string.navigation_else), Toast.LENGTH_SHORT).show()
+            else -> Toast.makeText(context, getString(R.string.navigation_else), Toast.LENGTH_SHORT)
+                .show()
 
         }
     }
@@ -388,15 +437,15 @@ class SupplementaryFragment: Fragment() {
 
         val extractData = patientForm.sectionData.split('|').toMutableList()
 //      Log.d(TAG, "extract data size before = ${extractData.size}")
-        if (extractData.size<19) {
-            for (index in extractData.size ..19) {
+        if (extractData.size < 19) {
+            for (index in extractData.size..19) {
                 extractData.add("")
             }
         }
 
         binding.apply {
 
-      //      patientName.text = patientForm.patientName
+            //      patientName.text = patientForm.patientName
             dateCaption.text = convertLongToDDMMYY(patientForm.dateOfSection)
             sectionEditDate = patientForm.dateOfSection
 
@@ -409,8 +458,10 @@ class SupplementaryFragment: Fragment() {
 
             var isEmpty = true
             if (extractData[4].trim() != "") {
-                for(i in 0 until spinnerIopWorth4Distance.adapter.count) {
-                    if (extractData[4].trim() == spinnerIopWorth4Distance.adapter.getItem(i).toString()) {
+                for (i in 0 until spinnerIopWorth4Distance.adapter.count) {
+                    if (extractData[4].trim() == spinnerIopWorth4Distance.adapter.getItem(i)
+                            .toString()
+                    ) {
                         spinnerIopWorth4Distance.setSelection(i)
                         isEmpty = false
                     }
@@ -420,8 +471,10 @@ class SupplementaryFragment: Fragment() {
 
             isEmpty = true
             if (extractData[5].trim() != "") {
-                for(i in 0 until spinnerIopWorth4Near.adapter.count) {
-                    if (extractData[5].trim() == spinnerIopWorth4Near.adapter.getItem(i).toString()) {
+                for (i in 0 until spinnerIopWorth4Near.adapter.count) {
+                    if (extractData[5].trim() == spinnerIopWorth4Near.adapter.getItem(i)
+                            .toString()
+                    ) {
                         spinnerIopWorth4Near.setSelection(i)
                         isEmpty = false
                     }
@@ -442,8 +495,10 @@ class SupplementaryFragment: Fragment() {
 
             isEmpty = true
             if (extractData[14].trim() != "") {
-                for(i in 0 until spinnerRangeOfMovement.adapter.count) {
-                    if (extractData[14].trim() == spinnerRangeOfMovement.adapter.getItem(i).toString()) {
+                for (i in 0 until spinnerRangeOfMovement.adapter.count) {
+                    if (extractData[14].trim() == spinnerRangeOfMovement.adapter.getItem(i)
+                            .toString()
+                    ) {
                         spinnerRangeOfMovement.setSelection(i)
                         isEmpty = false
                     }
@@ -453,8 +508,10 @@ class SupplementaryFragment: Fragment() {
 
             isEmpty = true
             if (extractData[15].trim() != "") {
-                for(i in 0 until spinnerEyeMovement.adapter.count) {
-                    if (extractData[15].trim() == spinnerEyeMovement.adapter.getItem(i).toString()) {
+                for (i in 0 until spinnerEyeMovement.adapter.count) {
+                    if (extractData[15].trim() == spinnerEyeMovement.adapter.getItem(i)
+                            .toString()
+                    ) {
                         spinnerEyeMovement.setSelection(i)
                         isEmpty = false
                     }
@@ -464,8 +521,10 @@ class SupplementaryFragment: Fragment() {
 
             isEmpty = true
             if (extractData[16].trim() != "") {
-                for(i in 0 until spinnerHeadMovement.adapter.count) {
-                    if (extractData[16].trim() == spinnerHeadMovement.adapter.getItem(i).toString()) {
+                for (i in 0 until spinnerHeadMovement.adapter.count) {
+                    if (extractData[16].trim() == spinnerHeadMovement.adapter.getItem(i)
+                            .toString()
+                    ) {
                         spinnerHeadMovement.setSelection(i)
                         isEmpty = false
                     }
@@ -475,7 +534,7 @@ class SupplementaryFragment: Fragment() {
 
             isEmpty = true
             if (extractData[17].trim() != "") {
-                for(i in 0 until spinnerOvershoot.adapter.count) {
+                for (i in 0 until spinnerOvershoot.adapter.count) {
                     if (extractData[17].trim() == spinnerOvershoot.adapter.getItem(i).toString()) {
                         spinnerOvershoot.setSelection(i)
                         isEmpty = false
@@ -496,7 +555,7 @@ class SupplementaryFragment: Fragment() {
     /**
      * If UI was changed - returns true
      */
-    private fun formWasChanged():Boolean {
+    private fun formWasChanged(): Boolean {
         // create new Record, fill it in with Form data and pass to ViewModel with recordID to update DB
         val priorPatient = currentForm.copy()
 
@@ -505,7 +564,7 @@ class SupplementaryFragment: Fragment() {
             currentForm.remarks = remarkInput.text.toString().uppercase()
             if (sectionEditDate != -1L) currentForm.dateOfSection = sectionEditDate
 
-            val extractData =  editColorVision.text.toString() + "|" +
+            val extractData = editColorVision.text.toString() + "|" +
                     editTno.text.toString() + "|" +
                     editRandot.text.toString() + "|" +
                     editNpc.text.toString() + "|" +
@@ -518,7 +577,7 @@ class SupplementaryFragment: Fragment() {
                     spinnerCoverTestDistance.text.toString() + "|" +
                     spinnerCoverTestNear.text.toString() + "|" +
                     spinnerHowellCardDistance.text.toString() + "|" +
-                    spinnerHowellCardNear.text.toString() +"|" +
+                    spinnerHowellCardNear.text.toString() + "|" +
                     spinnerRangeOfMovement.selectedItem.toString() + "|" +
                     spinnerEyeMovement.selectedItem.toString() + "|" +
                     spinnerHeadMovement.selectedItem.toString() + "|" +
@@ -535,7 +594,7 @@ class SupplementaryFragment: Fragment() {
         val (todayYear, todayMonth, todayDay) = dayMonthY()
         val myActivity = activity
 
-        myActivity?.let{
+        myActivity?.let {
             val datePickerDialog = DatePickerDialog(
                 it,
                 { _, year, monthOfYear, dayOfMonth -> // set day of month , month and year value in the edit text
@@ -548,6 +607,7 @@ class SupplementaryFragment: Fragment() {
             datePickerDialog.show()
         }
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

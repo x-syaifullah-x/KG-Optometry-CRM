@@ -172,11 +172,22 @@ class RefractionFragment : Fragment() {
 
                 val sortedList = it.sortedBy { patientsForms -> patientsForms.dateOfSection }
                 val newList = mutableListOf<Patients>()
+
                 for (section in orderOfSections) {
                     for (forms in sortedList) {
-                        if (section == forms.sectionName) newList.add(forms)
+                        var sectionName = forms.sectionName
+                        if (sectionName == getString(R.string.final_prescription_caption)){
+                            sectionName = getString(R.string.sales_order_from_selection)
+                            forms.sectionName = getString(R.string.sales_order_from_selection)
+                        }
+                        if (section == sectionName) newList.add(forms)
                     }
                 }
+//                for (section in orderOfSections) {
+//                    for (forms in sortedList) {
+//                        if (section == forms.sectionName) newList.add(forms)
+//                    }
+//                }
 
                 val navChipGroup = binding.navigationLayout
                 val children = newList.map { patientForm ->
@@ -505,7 +516,7 @@ class RefractionFragment : Fragment() {
     private fun launchNavigator(option: String) {
         when (option) {
             "none" -> {
-                Log.d(TAG, "No navigation triggered")
+                fillTheForm(currentForm)
             }
             "back" -> this.findNavController().navigate(
                 RefractionFragmentDirections.actionRefractionFragmentToFormSelectionFragment(

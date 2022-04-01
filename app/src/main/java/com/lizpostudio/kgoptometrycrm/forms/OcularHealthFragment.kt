@@ -35,12 +35,12 @@ import com.lizpostudio.kgoptometrycrm.utils.*
 private const val TAG = "KGOptoTag"
 private const val vaDefault = "6/"
 
-class OcularHealthFragment: Fragment() {
+class OcularHealthFragment : Fragment() {
 
     private val patientViewModel: PatientsViewModel by viewModels {
         PatientsViewModelFactory((requireNotNull(this.activity).application as OptometryApplication).repository)
     }
-    
+
     private var isAdmin = false
 
     private var fillMask = mutableListOf<MutableList<PointF>>()
@@ -57,7 +57,7 @@ class OcularHealthFragment: Fragment() {
 
     private var topOculusVisible = true
     private var bottomOculusVisible = true
-    
+
     private var sectionEditDate = -1L
 
     private var currentForm = Patients()
@@ -67,9 +67,9 @@ class OcularHealthFragment: Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-       requireActivity().onBackPressedDispatcher.addCallback(this) {
-           saveAndNavigate("back")
-       }
+        requireActivity().onBackPressedDispatcher.addCallback(this) {
+            saveAndNavigate("back")
+        }
     }
 
     @SuppressLint("ClickableViewAccessibility", "SetTextI18n")
@@ -93,8 +93,8 @@ class OcularHealthFragment: Fragment() {
         )
         val app = requireNotNull(this.activity).application
 
-        var selectedColor = ContextCompat.getColor(requireContext(),R.color.greenCircle)
-             // change BINDING to Respective forms args!
+        var selectedColor = ContextCompat.getColor(requireContext(), R.color.greenCircle)
+        // change BINDING to Respective forms args!
         val safeArgs: OcularHealthFragmentArgs by navArgs()
         recordID = safeArgs.recordID
 
@@ -102,17 +102,28 @@ class OcularHealthFragment: Fragment() {
         patientViewModel.getPatientForm(recordID)
 
         binding.lifecycleOwner = this
-         val navController = this.findNavController()
+        val navController = this.findNavController()
 
-        val sharedPref = app.getSharedPreferences("kgoptometry",
-            Context.MODE_PRIVATE)
-        isAdmin= sharedPref?.getString("admin", "")?: "" == "admin"
-        viewOnlyMode = sharedPref?.getBoolean("viewOnly", false)?:false
+        val sharedPref = app.getSharedPreferences(
+            "kgoptometry",
+            Context.MODE_PRIVATE
+        )
+        isAdmin = sharedPref?.getString("admin", "") ?: "" == "admin"
+        viewOnlyMode = sharedPref?.getBoolean("viewOnly", false) ?: false
         if (viewOnlyMode) {
-           binding.mainLayout.setBackgroundColor(ContextCompat.getColor(requireContext(),R.color.viewOnlyMode))
-           binding.saveFormButton.visibility = View.GONE
-        }
-        else  binding.mainLayout.setBackgroundColor(ContextCompat.getColor(requireContext(),R.color.lightBackground))
+            binding.mainLayout.setBackgroundColor(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.viewOnlyMode
+                )
+            )
+            binding.saveFormButton.visibility = View.GONE
+        } else binding.mainLayout.setBackgroundColor(
+            ContextCompat.getColor(
+                requireContext(),
+                R.color.lightBackground
+            )
+        )
 
         binding.imgColorSelected.setOnClickListener {
             binding.apply {
@@ -123,31 +134,31 @@ class OcularHealthFragment: Fragment() {
         }
 
         binding.imgColorRed.setOnClickListener {
-            selectedColor = ContextCompat.getColor(requireContext(),R.color.redCircle)
+            selectedColor = ContextCompat.getColor(requireContext(), R.color.redCircle)
             binding.imgColorSelected.setImageResource(R.drawable.red_circle)
             hideColors()
         }
 
         binding.imgColorYellow.setOnClickListener {
-            selectedColor = ContextCompat.getColor(requireContext(),R.color.yellowCircle)
+            selectedColor = ContextCompat.getColor(requireContext(), R.color.yellowCircle)
             binding.imgColorSelected.setImageResource(R.drawable.yellow_circle)
             hideColors()
         }
         binding.imgColorGreen.setOnClickListener {
-            selectedColor = ContextCompat.getColor(requireContext(),R.color.greenCircle)
+            selectedColor = ContextCompat.getColor(requireContext(), R.color.greenCircle)
             binding.imgColorSelected.setImageResource(R.drawable.green_circle)
             hideColors()
         }
 
         binding.imgEditTop1.setOnClickListener {
             textBoxActiveTop[0] = !textBoxActiveTop[0]
-            for (item in 1 .. 3) {
+            for (item in 1..3) {
                 textBoxActiveTop[item] = false
             }
             if (textBoxActiveTop.contains(true)) {
                 binding.editAddTextTop.visibility = View.VISIBLE
                 binding.editAddTextTop.setText(binding.extraTextTop1.text)
-            }  else {
+            } else {
                 binding.editAddTextTop.visibility = View.GONE
                 hideKeyBoard(app)
             }
@@ -163,7 +174,7 @@ class OcularHealthFragment: Fragment() {
             if (textBoxActiveTop.contains(true)) {
                 binding.editAddTextTop.visibility = View.VISIBLE
                 binding.editAddTextTop.setText(binding.extraTextTop2.text)
-            }  else {
+            } else {
                 binding.editAddTextTop.visibility = View.GONE
                 hideKeyBoard(app)
             }
@@ -179,7 +190,7 @@ class OcularHealthFragment: Fragment() {
             if (textBoxActiveTop.contains(true)) {
                 binding.editAddTextTop.visibility = View.VISIBLE
                 binding.editAddTextTop.setText(binding.extraTextTop3.text)
-            }  else {
+            } else {
                 binding.editAddTextTop.visibility = View.GONE
                 hideKeyBoard(app)
             }
@@ -195,7 +206,7 @@ class OcularHealthFragment: Fragment() {
             if (textBoxActiveTop.contains(true)) {
                 binding.editAddTextTop.visibility = View.VISIBLE
                 binding.editAddTextTop.setText(binding.extraTextTop4.text)
-            }  else {
+            } else {
                 binding.editAddTextTop.visibility = View.GONE
                 hideKeyBoard(app)
             }
@@ -203,13 +214,13 @@ class OcularHealthFragment: Fragment() {
 
         binding.imgEditBottom1.setOnClickListener {
             textBoxActiveBottom[0] = !textBoxActiveBottom[0]
-            for (item in 1 .. 3) {
+            for (item in 1..3) {
                 textBoxActiveBottom[item] = false
             }
             if (textBoxActiveBottom.contains(true)) {
                 binding.editAddTextBottom.visibility = View.VISIBLE
                 binding.editAddTextBottom.setText(binding.extraTextBottom1.text)
-            }  else {
+            } else {
                 binding.editAddTextBottom.visibility = View.GONE
                 hideKeyBoard(app)
             }
@@ -225,7 +236,7 @@ class OcularHealthFragment: Fragment() {
             if (textBoxActiveBottom.contains(true)) {
                 binding.editAddTextBottom.visibility = View.VISIBLE
                 binding.editAddTextBottom.setText(binding.extraTextBottom2.text)
-            }  else {
+            } else {
                 binding.editAddTextBottom.visibility = View.GONE
                 hideKeyBoard(app)
             }
@@ -241,7 +252,7 @@ class OcularHealthFragment: Fragment() {
             if (textBoxActiveBottom.contains(true)) {
                 binding.editAddTextBottom.visibility = View.VISIBLE
                 binding.editAddTextBottom.setText(binding.extraTextBottom3.text)
-            }  else {
+            } else {
                 binding.editAddTextBottom.visibility = View.GONE
                 hideKeyBoard(app)
             }
@@ -257,12 +268,12 @@ class OcularHealthFragment: Fragment() {
             if (textBoxActiveBottom.contains(true)) {
                 binding.editAddTextBottom.visibility = View.VISIBLE
                 binding.editAddTextBottom.setText(binding.extraTextBottom4.text)
-            }  else {
+            } else {
                 binding.editAddTextBottom.visibility = View.GONE
                 hideKeyBoard(app)
             }
         }
-        
+
         binding.editAddTextTop.addTextChangedListener(object :
             TextWatcher {
             @SuppressLint("DefaultLocale", "SetTextI18n")
@@ -277,8 +288,10 @@ class OcularHealthFragment: Fragment() {
                     }
                 }
             }
+
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
             }
+
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
             }
         })
@@ -297,8 +310,10 @@ class OcularHealthFragment: Fragment() {
                     }
                 }
             }
+
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
             }
+
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
             }
         })
@@ -310,11 +325,11 @@ class OcularHealthFragment: Fragment() {
             binding.topOculus.fillMask = fillMask
             binding.topOculus.invalidate()
 
-        //    Log.d(TAG, "size = ${fillMask.size}")
+            //    Log.d(TAG, "size = ${fillMask.size}")
         }
 
-        binding.dateCaption.setOnClickListener{
-          changeDate()
+        binding.dateCaption.setOnClickListener {
+            changeDate()
         }
 
         binding.undoTop.setOnClickListener {
@@ -347,15 +362,15 @@ class OcularHealthFragment: Fragment() {
             }
         }
         binding.oculoTopOnOff.setOnClickListener {
-        topOculusVisible = !topOculusVisible
+            topOculusVisible = !topOculusVisible
 
             if (topOculusVisible) {
-                binding.apply{
+                binding.apply {
                     frameTopOculus.visibility = View.VISIBLE
                     clearTopPicture.visibility = View.VISIBLE
                     undoTop.visibility = View.VISIBLE
-                   oculoTopOnOff.setImageResource(R.drawable.ic_oculo_icon)
-                   imgEditTop1.visibility = View.VISIBLE
+                    oculoTopOnOff.setImageResource(R.drawable.ic_oculo_icon)
+                    imgEditTop1.visibility = View.VISIBLE
                     imgEditTop2.visibility = View.VISIBLE
                     imgEditTop3.visibility = View.VISIBLE
                     imgEditTop4.visibility = View.VISIBLE
@@ -381,7 +396,7 @@ class OcularHealthFragment: Fragment() {
                     extraTextTop4.visibility = View.GONE
                     editAddTextTop.visibility = View.GONE
                 }
-                
+
             }
 
         }
@@ -404,7 +419,7 @@ class OcularHealthFragment: Fragment() {
                     extraTextBottom3.visibility = View.VISIBLE
                     extraTextBottom4.visibility = View.VISIBLE
                 }
-            
+
             } else {
                 binding.apply {
                     frameBottomOculus.visibility = View.GONE
@@ -421,7 +436,7 @@ class OcularHealthFragment: Fragment() {
                     extraTextBottom4.visibility = View.GONE
                     editAddTextBottom.visibility = View.GONE
                 }
-              
+
             }
 
         }
@@ -435,7 +450,7 @@ class OcularHealthFragment: Fragment() {
                 fillTheForm(it)
 
                 patientViewModel.getAllFormsForPatient(patientID)
-              }
+            }
         })
 
         patientViewModel.patientInitForms.observe(viewLifecycleOwner, { allForms ->
@@ -449,7 +464,8 @@ class OcularHealthFragment: Fragment() {
 
                         pAge += resources.getString(
                             R.string.number_of_years_patient,
-                            age, dob)
+                            age, dob
+                        )
                     }
                 }
                 binding.patientName.text = pAge
@@ -458,11 +474,23 @@ class OcularHealthFragment: Fragment() {
 
                 val sortedList = it.sortedBy { patientsForms -> patientsForms.dateOfSection }
                 val newList = mutableListOf<Patients>()
+
                 for (section in orderOfSections) {
                     for (forms in sortedList) {
-                        if (section == forms.sectionName) newList.add(forms)
+                        var sectionName = forms.sectionName
+                        if (sectionName == getString(R.string.final_prescription_caption)){
+                            sectionName = getString(R.string.sales_order_from_selection)
+                            forms.sectionName = getString(R.string.sales_order_from_selection)
+                        }
+                        if (section == sectionName) newList.add(forms)
                     }
                 }
+
+//                for (section in orderOfSections) {
+//                    for (forms in sortedList) {
+//                        if (section == forms.sectionName) newList.add(forms)
+//                    }
+//                }
 
                 val navChipGroup = binding.navigationLayout
                 val children = newList.map { patientForm ->
@@ -475,24 +503,36 @@ class OcularHealthFragment: Fragment() {
                         gravity = Gravity.CENTER
                     }
                     chip.layoutParams = params
-                    chip.setPadding((8*screenDst).toInt(), 0, (8*screenDst).toInt() ,0)
+                    chip.setPadding((8 * screenDst).toInt(), 0, (8 * screenDst).toInt(), 0)
 
                     if (patientForm.recordID == recordID)
-                        chip.setBackgroundColor(ContextCompat.getColor(app.applicationContext, R.color.lightBackground))
+                        chip.setBackgroundColor(
+                            ContextCompat.getColor(
+                                app.applicationContext,
+                                R.color.lightBackground
+                            )
+                        )
                     else
-                        chip.setBackgroundColor(ContextCompat.getColor(app.applicationContext, R.color.cardBackgroundDarker))
+                        chip.setBackgroundColor(
+                            ContextCompat.getColor(
+                                app.applicationContext,
+                                R.color.cardBackgroundDarker
+                            )
+                        )
 
                     val sectionShortName = makeShortSectionName(patientForm.sectionName)
                     chip.text = "$sectionShortName\n${
-                        convertLongToDDMMYY(patientForm.dateOfSection)}"
+                        convertLongToDDMMYY(patientForm.dateOfSection)
+                    }"
 
                     chip.tag = patientForm.sectionName + "\n" + "${patientForm.recordID}"
 
                     chip.setOnClickListener { button ->
                         navigateFormName = button.tag.toString().split("\n").first()
-                        navigateFormRecordID = button.tag.toString().split("\n").last().toLongOrNull()?:-1L
+                        navigateFormRecordID =
+                            button.tag.toString().split("\n").last().toLongOrNull() ?: -1L
 
-                        if (navigateFormRecordID !=-1L) {
+                        if (navigateFormRecordID != -1L) {
                             saveAndNavigate(navigateFormName)
                         }
                     }
@@ -506,12 +546,17 @@ class OcularHealthFragment: Fragment() {
                     navChipGroup.addView(chip)
                     navChipGroup.addView(chipDivider)
                 }
-                val hPosList = newList.map {form ->  form.recordID }
+                val hPosList = newList.map { form -> form.recordID }
                 val hPos = hPosList.indexOf(recordID)
-                if (hPos >3) {
+                if (hPos > 3) {
                     val scrollWidth = binding.chipsScroll.width
-                    val scrollX = ((hPos -2)* (scrollWidth/6.25)).toInt()
-                    binding.chipsScroll.postDelayed(Runnable {     binding.chipsScroll.smoothScrollTo(scrollX, 0)}, 100L)
+                    val scrollX = ((hPos - 2) * (scrollWidth / 6.25)).toInt()
+                    binding.chipsScroll.postDelayed(Runnable {
+                        binding.chipsScroll.smoothScrollTo(
+                            scrollX,
+                            0
+                        )
+                    }, 100L)
                 }
 
             }
@@ -521,25 +566,37 @@ class OcularHealthFragment: Fragment() {
 
             binding.frameTopOculus.visibility = View.VISIBLE
             binding.frameBottomOculus.visibility = View.VISIBLE
-       //     Log.d(TAG, "${screenWidthPx() / 2}")
+            //     Log.d(TAG, "${screenWidthPx() / 2}")
         })
-        
+
 
         val iopListItems = iopList()
         val iopSpinnerAdapter: ArrayAdapter<String> =
-            ArrayAdapter<String>(app.applicationContext, android.R.layout.simple_spinner_item, iopListItems)
+            ArrayAdapter<String>(
+                app.applicationContext,
+                android.R.layout.simple_spinner_item,
+                iopListItems
+            )
         binding.spinnerIopLeft.adapter = iopSpinnerAdapter
         binding.spinnerIopRight.adapter = iopSpinnerAdapter
 
         val cdRatioListItems = cdRatioList()
         val cdRatioSpinnerAdapter: ArrayAdapter<String> =
-            ArrayAdapter<String>(app.applicationContext, android.R.layout.simple_spinner_item, cdRatioListItems)
+            ArrayAdapter<String>(
+                app.applicationContext,
+                android.R.layout.simple_spinner_item,
+                cdRatioListItems
+            )
         binding.spinnerCdRatioLeft.adapter = cdRatioSpinnerAdapter
         binding.spinnerCdRatioRight.adapter = cdRatioSpinnerAdapter
 
         val tBUTListItems = tBUTList()
         val tBUTSpinnerAdapter: ArrayAdapter<String> =
-            ArrayAdapter<String>(app.applicationContext, android.R.layout.simple_spinner_item, tBUTListItems)
+            ArrayAdapter<String>(
+                app.applicationContext,
+                android.R.layout.simple_spinner_item,
+                tBUTListItems
+            )
         //  addSpinnerAdapter.setDropDownViewResource(R.layout.spinner_list_small_numbers)
         binding.spinnerTbutLeft.adapter = tBUTSpinnerAdapter
         binding.spinnerTbutRight.adapter = tBUTSpinnerAdapter
@@ -549,7 +606,7 @@ class OcularHealthFragment: Fragment() {
                 launchNavigator(navOption)
             }
         })
-        
+
         binding.topOculus.setOnTouchListener { v, m ->
             if (m.action == MotionEvent.ACTION_DOWN) {
                 // add starting point and increase index
@@ -558,27 +615,32 @@ class OcularHealthFragment: Fragment() {
                 // zero element = color
                 newMList.add(PointF(selectedColor.toFloat(), selectedColor.toFloat()))
 
-      //          Log.d(TAG, "selected color = ${selectedColor}")
+                //          Log.d(TAG, "selected color = ${selectedColor}")
                 fillMask.add(newMList)
-                fillMask[fillIndex].add(PointF(m.x+startPTRightTop.x,m.y+startPTRightTop.y))
+                fillMask[fillIndex].add(PointF(m.x + startPTRightTop.x, m.y + startPTRightTop.y))
 
-            //    Log.d(TAG, "fillMask = ${fillMask}")
+                //    Log.d(TAG, "fillMask = ${fillMask}")
 
                 binding.topOculus.fillMask = fillMask
                 binding.topOculus.invalidate()
 
-                 startPTRightTop = PointF(v.x, v.y)
+                startPTRightTop = PointF(v.x, v.y)
             }
             if (m.action == MotionEvent.ACTION_MOVE) {
 
                 // print mask
-                if (fillIndex>0) {
-                    if  (!(fillMask[fillIndex].last().x == m.x+startPTRightTop.x && fillMask[fillIndex].last().y == m.y+startPTRightTop.y))
-                        fillMask[fillIndex].add(PointF(m.x+startPTRightTop.x,m.y+startPTRightTop.y))
+                if (fillIndex > 0) {
+                    if (!(fillMask[fillIndex].last().x == m.x + startPTRightTop.x && fillMask[fillIndex].last().y == m.y + startPTRightTop.y))
+                        fillMask[fillIndex].add(
+                            PointF(
+                                m.x + startPTRightTop.x,
+                                m.y + startPTRightTop.y
+                            )
+                        )
                 }
 
-                    binding.topOculus.fillMask = fillMask
-                    binding.topOculus.invalidate()
+                binding.topOculus.fillMask = fillMask
+                binding.topOculus.invalidate()
 
             }
             true
@@ -591,7 +653,12 @@ class OcularHealthFragment: Fragment() {
                 fillIndexBottom++
                 newMList.add(PointF(selectedColor.toFloat(), selectedColor.toFloat()))
                 fillMaskBottom.add(newMList)
-                fillMaskBottom[fillIndexBottom].add(PointF(m.x+startPTRightBottom.x,m.y+startPTRightBottom.y))
+                fillMaskBottom[fillIndexBottom].add(
+                    PointF(
+                        m.x + startPTRightBottom.x,
+                        m.y + startPTRightBottom.y
+                    )
+                )
 
                 binding.bottomOculus.fillMask = fillMaskBottom
                 binding.bottomOculus.invalidate()
@@ -600,7 +667,7 @@ class OcularHealthFragment: Fragment() {
             }
             if (m.action == MotionEvent.ACTION_MOVE) {
 
-                if (fillIndexBottom>0) {
+                if (fillIndexBottom > 0) {
                     if (!(fillMaskBottom[fillIndexBottom].last().x == m.x + startPTRightBottom.x && fillMaskBottom[fillIndexBottom].last().y == m.y + startPTRightBottom.y))
                         fillMaskBottom[fillIndexBottom].add(
                             PointF(
@@ -618,10 +685,13 @@ class OcularHealthFragment: Fragment() {
 
         // DELETE FORM FUNCTIONALITY
 
-        patientViewModel.recordDeleted.observe(viewLifecycleOwner, {ifDeleted ->
+        patientViewModel.recordDeleted.observe(viewLifecycleOwner, { ifDeleted ->
             ifDeleted?.let {
                 if (ifDeleted) navController.navigate(
-                    OcularHealthFragmentDirections.actionOcularHealthFragmentToFormSelectionFragment(patientID))
+                    OcularHealthFragmentDirections.actionOcularHealthFragmentToFormSelectionFragment(
+                        patientID
+                    )
+                )
             }
         })
 
@@ -629,7 +699,8 @@ class OcularHealthFragment: Fragment() {
             if (context != null)
                 actionConfirmDeletion(
                     title = resources.getString(R.string.form_delete_title),
-                    message = resources.getString(R.string.customer_form_delete,
+                    message = resources.getString(
+                        R.string.customer_form_delete,
                         currentForm.sectionName,
                         currentForm.patientName
                     ),
@@ -643,10 +714,10 @@ class OcularHealthFragment: Fragment() {
                 }
         }
 
-        patientViewModel.patientFireForm.observe(viewLifecycleOwner, {patientNewRecord ->
-            patientNewRecord?.let{
+        patientViewModel.patientFireForm.observe(viewLifecycleOwner, { patientNewRecord ->
+            patientNewRecord?.let {
                 Log.d(TAG, "Reload OH Form? == ${!currentForm.assertEqual(it)}")
-                if (currentForm.recordID == it.recordID && !currentForm.assertEqual(it) ) {
+                if (currentForm.recordID == it.recordID && !currentForm.assertEqual(it)) {
                     Log.d(TAG, "OH Record from FB loaded")
                     currentForm.copyFrom(it)
                     fillTheForm(it)
@@ -664,14 +735,17 @@ class OcularHealthFragment: Fragment() {
         return binding.root
     }
 
-    private fun saveAndNavigate(navOption:String) {
+    private fun saveAndNavigate(navOption: String) {
         patientViewModel.removeRecordsChangesListener()
         if (viewOnlyMode) {
             launchNavigator(navOption)
         } else {
             if (formWasChanged()) {
                 Log.d(TAG, "OH was changed")
-                patientViewModel.submitPatientToFirebase(currentForm.recordID.toString(), currentForm)
+                patientViewModel.submitPatientToFirebase(
+                    currentForm.recordID.toString(),
+                    currentForm
+                )
                 // trigger navigation after update
                 patientViewModel.updateRecord(currentForm, navOption)
             } else {
@@ -681,10 +755,12 @@ class OcularHealthFragment: Fragment() {
         }
     }
 
-    private fun launchNavigator(option:String) {
+    private fun launchNavigator(option: String) {
         when (option) {
-            "none" -> {Log.d(TAG, "No navigation triggered")}
-            "back" ->   this.findNavController().navigate(
+            "none" -> {
+                fillTheForm(currentForm)
+            }
+            "back" -> this.findNavController().navigate(
                 OcularHealthFragmentDirections.actionOcularHealthFragmentToFormSelectionFragment(
                     patientID
                 )
@@ -699,15 +775,21 @@ class OcularHealthFragment: Fragment() {
         when (navigateFormName) {
 
             orderOfSections[0] -> navController.navigate(
-                OcularHealthFragmentDirections.actionOcularHealthFragmentToInfoFragment(navigateFormRecordID)
+                OcularHealthFragmentDirections.actionOcularHealthFragmentToInfoFragment(
+                    navigateFormRecordID
+                )
             )
 
             orderOfSections[1] -> navController.navigate(
-                OcularHealthFragmentDirections.actionOcularHealthFragmentToMemoFragment(navigateFormRecordID)
+                OcularHealthFragmentDirections.actionOcularHealthFragmentToMemoFragment(
+                    navigateFormRecordID
+                )
             )
 
             orderOfSections[2] -> navController.navigate(
-                OcularHealthFragmentDirections.actionOcularHealthFragmentToCurrentRxFragment(navigateFormRecordID)
+                OcularHealthFragmentDirections.actionOcularHealthFragmentToCurrentRxFragment(
+                    navigateFormRecordID
+                )
             )
 
             orderOfSections[3] -> navController.navigate(
@@ -724,19 +806,27 @@ class OcularHealthFragment: Fragment() {
             }
             orderOfSections[5] -> navController.navigate(
                 OcularHealthFragmentDirections.actionOcularHealthFragmentToSupplementaryFragment(
-                    navigateFormRecordID))
+                    navigateFormRecordID
+                )
+            )
 
             orderOfSections[6] -> navController.navigate(
-            OcularHealthFragmentDirections.actionOcularHealthFragmentToContactLensFragment(
-                navigateFormRecordID))
+                OcularHealthFragmentDirections.actionOcularHealthFragmentToContactLensFragment(
+                    navigateFormRecordID
+                )
+            )
 
             orderOfSections[7] -> navController.navigate(
                 OcularHealthFragmentDirections.actionOcularHealthFragmentToOrthokFragment(
-                    navigateFormRecordID))
+                    navigateFormRecordID
+                )
+            )
 
             orderOfSections[8] -> navController.navigate(
                 OcularHealthFragmentDirections.actionOcularHealthFragmentToFinalPrescriptionFragment(
-                    navigateFormRecordID))
+                    navigateFormRecordID
+                )
+            )
 
             orderOfSections[9] -> {
                 navController.navigate(
@@ -751,6 +841,7 @@ class OcularHealthFragment: Fragment() {
             ).show()
         }
     }
+
     private fun hideColors() {
         binding.apply {
             imgColorGreen.visibility = View.GONE
@@ -770,8 +861,8 @@ class OcularHealthFragment: Fragment() {
 
         val extractData = patientForm.sectionData.split('|').toMutableList()
 //      Log.d(TAG, "extract data size before = ${extractData.size}")
-        if (extractData.size<20) {
-            for (index in extractData.size ..20) {
+        if (extractData.size < 20) {
+            for (index in extractData.size..20) {
                 extractData.add("")
             }
         }
@@ -779,23 +870,29 @@ class OcularHealthFragment: Fragment() {
         val graphicsTop = patientForm.graphicsRight.split('|')
         val graphicsBottom = patientForm.graphicsLeft.split('|')
 
-        val widthHeightString = if  (graphicsTop.isNotEmpty()) graphicsTop[0].split(',') else emptyList()
+        val widthHeightString =
+            if (graphicsTop.isNotEmpty()) graphicsTop[0].split(',') else emptyList()
 
         val wH = if (widthHeightString.lastIndex == 1) {
-            Pair (widthHeightString[0].toFloatOrNull()?:0f, widthHeightString[1].toFloatOrNull()?:0f)
-        } else Pair (0f, 0f)
+            Pair(
+                widthHeightString[0].toFloatOrNull() ?: 0f,
+                widthHeightString[1].toFloatOrNull() ?: 0f
+            )
+        } else Pair(0f, 0f)
 
         val topOculusWidth = screenWidthPx().toFloat()
-        val widthRatio =  if (wH.first != 0f && topOculusWidth != 0f)  topOculusWidth / wH.first else 1f
+        val widthRatio =
+            if (wH.first != 0f && topOculusWidth != 0f) topOculusWidth / wH.first else 1f
 
-        val topOculusHeight = topOculusWidth/2
-        val heightRatio =  if (wH.second != 0f && topOculusHeight != 0f)  topOculusHeight/ wH.second else 1f
+        val topOculusHeight = topOculusWidth / 2
+        val heightRatio =
+            if (wH.second != 0f && topOculusHeight != 0f) topOculusHeight / wH.second else 1f
 
 
         fillMask = convertStringToFillMask(graphicsTop, widthRatio, heightRatio)
         fillIndex = if (fillMask.size > 0) fillMask.lastIndex else -1
         fillMaskBottom = convertStringToFillMask(graphicsBottom, widthRatio, heightRatio)
-        fillIndexBottom = if (fillMaskBottom.size > 0) fillMaskBottom.lastIndex  else -1
+        fillIndexBottom = if (fillMaskBottom.size > 0) fillMaskBottom.lastIndex else -1
 
         binding.apply {
 
@@ -805,19 +902,19 @@ class OcularHealthFragment: Fragment() {
             topOculus.fillMask = fillMask
             topOculus.invalidate()
 
-    //        patientName.text = patientForm.patientName
+            //        patientName.text = patientForm.patientName
             dateCaption.text = convertLongToDDMMYY(patientForm.dateOfSection)
             sectionEditDate = patientForm.dateOfSection
-         //   Log.d(TAG, " Extracted data: ${convertLongToDDMMYY(patientForm.dateOfSection)}" )
+            //   Log.d(TAG, " Extracted data: ${convertLongToDDMMYY(patientForm.dateOfSection)}" )
 
             editLensRight.setText(extractData[0])
             editLensLeft.setText(extractData[1])
 
             var isEmpty = true
             if (extractData[2].trim() != "") {
-                for(i in 0 until spinnerIopRight.adapter.count) {
+                for (i in 0 until spinnerIopRight.adapter.count) {
                     if (extractData[2].trim() == spinnerIopRight.adapter.getItem(i).toString()) {
-                         spinnerIopRight.setSelection(i)
+                        spinnerIopRight.setSelection(i)
                         isEmpty = false
                     }
                 }
@@ -826,7 +923,7 @@ class OcularHealthFragment: Fragment() {
 
             isEmpty = true
             if (extractData[3].trim() != "") {
-                for(i in 0 until spinnerIopLeft.adapter.count) {
+                for (i in 0 until spinnerIopLeft.adapter.count) {
                     if (extractData[3].trim() == spinnerIopLeft.adapter.getItem(i).toString()) {
                         spinnerIopLeft.setSelection(i)
                         isEmpty = false
@@ -840,8 +937,10 @@ class OcularHealthFragment: Fragment() {
 
             isEmpty = true
             if (extractData[6].trim() != "") {
-                for(i in 0 until spinnerCdRatioRight.adapter.count) {
-                    if (extractData[6].trim() == spinnerCdRatioRight.adapter.getItem(i).toString()) {
+                for (i in 0 until spinnerCdRatioRight.adapter.count) {
+                    if (extractData[6].trim() == spinnerCdRatioRight.adapter.getItem(i)
+                            .toString()
+                    ) {
                         spinnerCdRatioRight.setSelection(i)
                         isEmpty = false
                     }
@@ -851,7 +950,7 @@ class OcularHealthFragment: Fragment() {
 
             isEmpty = true
             if (extractData[7].trim() != "") {
-                for(i in 0 until spinnerCdRatioLeft.adapter.count) {
+                for (i in 0 until spinnerCdRatioLeft.adapter.count) {
                     if (extractData[7].trim() == spinnerCdRatioLeft.adapter.getItem(i).toString()) {
                         spinnerCdRatioLeft.setSelection(i)
                         isEmpty = false
@@ -863,7 +962,7 @@ class OcularHealthFragment: Fragment() {
 
             isEmpty = true
             if (extractData[8].trim() != "") {
-                for(i in 0 until spinnerTbutRight.adapter.count) {
+                for (i in 0 until spinnerTbutRight.adapter.count) {
                     if (extractData[8].trim() == spinnerTbutRight.adapter.getItem(i).toString()) {
                         spinnerTbutRight.setSelection(i)
                         isEmpty = false
@@ -874,7 +973,7 @@ class OcularHealthFragment: Fragment() {
 
             isEmpty = true
             if (extractData[9].trim() != "") {
-                for(i in 0 until spinnerTbutLeft.adapter.count) {
+                for (i in 0 until spinnerTbutLeft.adapter.count) {
                     if (extractData[9].trim() == spinnerTbutLeft.adapter.getItem(i).toString()) {
                         spinnerTbutLeft.setSelection(i)
                         isEmpty = false
@@ -900,31 +999,31 @@ class OcularHealthFragment: Fragment() {
     /**
      * If UI was changed - returns true
      */
-    private fun formWasChanged():Boolean {
+    private fun formWasChanged(): Boolean {
         // create new Record, fill it in with Form data and pass to ViewModel with recordID to update DB
 
         val priorPatient = currentForm.copy()
 
         val width = screenWidthPx()
-        val height =width/2
+        val height = width / 2
 
-    //    Log.d(TAG, "Fill mask = $fillMaskBottom")
+        //    Log.d(TAG, "Fill mask = $fillMaskBottom")
 
         val graphicsTop = convertFillMask(fillMask, width, height)
         val graphicsBottom = convertFillMask(fillMaskBottom, width, height)
 
-   //     Log.d(TAG, "at assign GL = $graphicsBottom")
+        //     Log.d(TAG, "at assign GL = $graphicsBottom")
 
         binding.apply {
 
             currentForm.remarks = remarkInput.text.toString().uppercase()
             currentForm.graphicsRight = graphicsTop
             currentForm.graphicsLeft = graphicsBottom
-           if (sectionEditDate != -1L) currentForm.dateOfSection = sectionEditDate
+            if (sectionEditDate != -1L) currentForm.dateOfSection = sectionEditDate
 
-      //      Log.d(TAG, "on save: ${convertLongToDDMMYY(patientForm.dateOfSection)}")
+            //      Log.d(TAG, "on save: ${convertLongToDDMMYY(patientForm.dateOfSection)}")
 
-            val extractData =  editLensRight.text.toString() + "|" +
+            val extractData = editLensRight.text.toString() + "|" +
                     editLensLeft.text.toString() + "|" +
                     spinnerIopRight.selectedItem.toString() + "|" +
                     spinnerIopLeft.selectedItem.toString() + "|" +
@@ -935,7 +1034,7 @@ class OcularHealthFragment: Fragment() {
                     spinnerTbutRight.selectedItem.toString() + "|" +
                     spinnerTbutLeft.selectedItem.toString() + "|" +
                     extraTextTop1.text.toString() + "|" +
-                    extraTextTop2.text.toString()+ "|" +
+                    extraTextTop2.text.toString() + "|" +
                     extraTextTop3.text.toString() + "|" +
                     extraTextTop4.text.toString() + "|" +
                     extraTextBottom1.text.toString() + "|" +
@@ -951,20 +1050,22 @@ class OcularHealthFragment: Fragment() {
         val (todayYear, todayMonth, todayDay) = dayMonthY()
         val myActivity = activity
 
-        myActivity?.let{
+        myActivity?.let {
             val datePickerDialog = DatePickerDialog(
                 it,
                 { _, year, monthOfYear, dayOfMonth -> // set day of month , month and year value in the edit text
                     sectionEditDate = convertYMDtoTimeMillis(year, monthOfYear, dayOfMonth)
-                    if (sectionEditDate != -1L) binding.dateCaption.text = convertLongToDDMMYY(sectionEditDate)
+                    if (sectionEditDate != -1L) binding.dateCaption.text =
+                        convertLongToDDMMYY(sectionEditDate)
                 }, todayYear, todayMonth, todayDay
             )
             datePickerDialog.show()
         }
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
-    //    Log.d(TAG, "Destroy at OCULAR")
+        //    Log.d(TAG, "Destroy at OCULAR")
         _binding = null
     }
 }
