@@ -37,6 +37,10 @@ class PatientsViewModel(private val repository: PatientRepository) : ViewModel()
     val refractionForms: LiveData<List<Patients>>
         get() = _refractionForms
 
+    private val _cashOrder = MutableLiveData<List<Patients>>()
+    val cashOrder: LiveData<List<Patients>>
+        get() = _cashOrder
+
     private val _searchDateForms = MutableLiveData<List<Patients>>()
     val searchDateForms: LiveData<List<Patients>>
         get() = _searchDateForms
@@ -393,7 +397,7 @@ class PatientsViewModel(private val repository: PatientRepository) : ViewModel()
 
     fun getCashOrder(patientID: String, sectionName: String) {
         viewModelScope.launch {
-            _refractionForms.value =
+            _cashOrder.value =
                 repository.getRecordsByIDAndSection(patientID, sectionName)
         }
     }

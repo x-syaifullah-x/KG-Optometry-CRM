@@ -79,8 +79,6 @@
                 app:srcCompat="@drawable/ic_baseline_clear_24"
                 app:tint="@color/redCircle"
                 tools:ignore="ContentDescription,RtlSymmetry" />
-
-
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
@@ -232,7 +230,7 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <EditText
-                    android:id="@+id/edit_or"
+                    android:id="@+id/edit_cs"
                     style="@style/fixedEditNoMarginTextBox18sp"
                     android:layout_width="80dp"
                     android:layout_marginEnd="8dp"
@@ -303,15 +301,15 @@
                     style="@style/primaryDark18sp"
                     android:layout_marginTop="8dp"
                     android:text="@string/sph"
-                    app:layout_constraintStart_toEndOf="@id/edit_or"
+                    app:layout_constraintStart_toEndOf="@id/edit_cs"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/hint_right"
                     style="@style/primaryDark18sp"
                     android:text="@string/right"
-                    app:layout_constraintBottom_toBottomOf="@id/edit_or"
-                    app:layout_constraintStart_toEndOf="@id/edit_or"
+                    app:layout_constraintBottom_toBottomOf="@id/edit_cs"
+                    app:layout_constraintStart_toEndOf="@id/edit_cs"
                     app:layout_constraintTop_toBottomOf="@id/hint_sph" />
 
                 <Spinner
@@ -319,7 +317,7 @@
                     style="@android:style/Widget.Holo.Light.Spinner"
                     android:layout_width="70dp"
                     android:layout_height="wrap_content"
-                    app:layout_constraintBottom_toBottomOf="@id/edit_or"
+                    app:layout_constraintBottom_toBottomOf="@id/edit_cs"
                     app:layout_constraintStart_toEndOf="@+id/hint_right"
                     app:layout_constraintTop_toBottomOf="@id/hint_sph" />
 
@@ -328,7 +326,7 @@
                     style="@style/primaryDark18sp"
                     android:layout_marginTop="20dp"
                     android:text="@string/left"
-                    app:layout_constraintStart_toEndOf="@id/edit_or"
+                    app:layout_constraintStart_toEndOf="@id/edit_cs"
                     app:layout_constraintTop_toBottomOf="@id/hint_right" />
 
                 <Spinner
@@ -353,7 +351,7 @@
                     style="@android:style/Widget.Holo.Light.Spinner"
                     android:layout_width="70dp"
                     android:layout_height="wrap_content"
-                    app:layout_constraintBottom_toBottomOf="@id/edit_or"
+                    app:layout_constraintBottom_toBottomOf="@id/edit_cs"
                     app:layout_constraintStart_toStartOf="@+id/hint_cyl"
                     app:layout_constraintTop_toBottomOf="@id/hint_sph" />
 

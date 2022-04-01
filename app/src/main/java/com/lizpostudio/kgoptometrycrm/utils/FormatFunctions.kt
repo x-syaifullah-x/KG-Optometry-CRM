@@ -34,7 +34,10 @@ fun convertFBRecordToPatients(f: FBRecords, key: Long): Patients {
         f.mm,
         f.or,
         f.frameSize,
-        f.frameType
+        f.frameType,
+        f.cs,
+        f.solutionMisc,
+        f.solutionMiscRm
     )
 }
 
@@ -59,7 +62,10 @@ fun convertFormToFBRecord(p: Patients): FBRecords {
         p.mm,
         p.or,
         p.frameSize,
-        p.frameType
+        p.frameType,
+        p.cs,
+        p.solutionMisc,
+        p.solutionMiscRm
     )
 }
 

@@ -65,7 +65,16 @@ data class Patients(
     var frameSize: String = "",
 
     @ColumnInfo(name = "frame_type")
-    var frameType: String = ""
+    var frameType: String = "",
+
+    @ColumnInfo(name = "cs")
+    var cs: String = "",
+
+    @ColumnInfo(name = "solution_misc")
+    var solutionMisc: String = "",
+
+    @ColumnInfo(name = "solution_misc_rm")
+    var solutionMiscRm: String = ""
 ) {
 
 
@@ -103,7 +112,10 @@ data class Patients(
                 this.mm == toForm.mm &&
                 this.or == toForm.or &&
                 this.frameSize == toForm.frameSize &&
-                this.frameType == toForm.frameSize)
+                this.frameType == toForm.frameSize &&
+                this.cs == toForm.cs &&
+                this.solutionMisc == toForm.solutionMisc &&
+                this.solutionMiscRm == toForm.solutionMiscRm)
     }
 
     fun copyFrom(from: Patients) {
@@ -127,6 +139,9 @@ data class Patients(
         this.or = from.or
         this.frameSize = from.frameSize
         this.frameType = from.frameType
+        this.cs = from.cs
+        this.solutionMisc = from.solutionMisc
+        this.solutionMiscRm = from.solutionMiscRm
     }
 }
 
@@ -149,5 +164,8 @@ data class FBRecords(
     var mm: String = "",
     var or: String = "",
     var frameSize: String = "",
-    var frameType: String = ""
+    var frameType: String = "",
+    var cs: String = "",
+    var solutionMisc: String = "",
+    var solutionMiscRm: String = ""
 )

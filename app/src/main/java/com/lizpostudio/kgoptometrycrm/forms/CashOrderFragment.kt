@@ -50,7 +50,7 @@ class CashOrderFragment : Fragment() {
     private var navigateFormName = ""
     private var navigateFormRecordID = -1L
     private var navigateBack = false
-    private var refractionForms = listOf<Patients>()
+    private var cashOrderForms = listOf<Patients>()
 
     private var recordSaved = false
     private var viewOnlyMode = false
@@ -120,7 +120,7 @@ class CashOrderFragment : Fragment() {
                 patientID = it.patientID
                 patientViewModel.getCashOrder(
                     patientID,
-                    resources.getString(R.string.refraction_caption)
+                    resources.getString(R.string.cash_order_caption)
                 )
 
                 patientViewModel.createRecordListener(currentForm.recordID)
@@ -130,13 +130,13 @@ class CashOrderFragment : Fragment() {
             }
         }
 
-        patientViewModel.refractionForms.observe(viewLifecycleOwner) { refForms ->
+        patientViewModel.cashOrder.observe(viewLifecycleOwner) { refForms ->
             refForms?.let { forms ->
                 if (forms.isNotEmpty()) {
 
                     // fill in spinner
                     val reversedForms = forms.sortedByDescending { it.dateOfSection }
-                    refractionForms = reversedForms
+                    cashOrderForms = reversedForms
 
 //                    val refListItems = reversedForms.map { convertLongToDDMMYY(it.dateOfSection) }
 
@@ -298,9 +298,8 @@ class CashOrderFragment : Fragment() {
         patientViewModel.recordDeleted.observe(viewLifecycleOwner) { ifDeleted ->
             ifDeleted?.let {
                 if (ifDeleted) navController.navigate(
-                    CashOrderFragmentDirections.actionFinalPrescriptionFragmentToFormSelectionFragment(
-                        patientID
-                    )
+                    CashOrderFragmentDirections
+                        .actionFinalPrescriptionFragmentToFormSelectionFragment(patientID)
                 )
             }
         }
@@ -469,9 +468,8 @@ class CashOrderFragment : Fragment() {
                 Log.d(TAG, "No navigation triggered")
             }
             "back" -> this.findNavController().navigate(
-                CashOrderFragmentDirections.actionFinalPrescriptionFragmentToFormSelectionFragment(
-                    patientID
-                )
+                CashOrderFragmentDirections
+                    .actionFinalPrescriptionFragmentToFormSelectionFragment(patientID)
             )
             else -> navigateToSelectedForm()
         }
@@ -678,7 +676,11 @@ class CashOrderFragment : Fragment() {
 
             remarkInput.setText(patientForm.remarks)
 
-            val dataPractitioner = arrayOf(patientForm.practitioner)
+            editCs.setText(patientForm.cs)
+            editSolutionMisc.setText(patientForm.solutionMisc)
+            editSolutionMiscRm.setText(patientForm.solutionMiscRm)
+
+            val dataPractitioner = patientForm.practitioner.split("|")
             val adapterPractitioner =
                 ArrayAdapter(requireContext(), R.layout.spinner_list_basic_, dataPractitioner)
             practitionerName.adapter = adapterPractitioner
@@ -764,6 +766,20 @@ class CashOrderFragment : Fragment() {
 
             currentForm.sectionData = extractData.uppercase()
 
+            currentForm.cs = "${binding.editCs.text}"
+            currentForm.solutionMisc = "${binding.editSolutionMisc.text}"
+            currentForm.solutionMiscRm = "${binding.editSolutionMiscRm.text}"
+
+            val dataSelected = binding.practitionerName.selectedItem as String
+            val dataPractitioner = StringBuilder(dataSelected)
+            val count = binding.practitionerName.adapter.count
+            for (i in 0 until count) {
+                val a = binding.practitionerName.adapter.getItem(i)
+                if (a.toString() != dataSelected) {
+                    dataPractitioner.append("|$a")
+                }
+            }
+            currentForm.practitioner = "$dataPractitioner"
         }
         return !currentForm.assertEqual(priorPatient)
     }
@@ -777,9 +793,8 @@ class CashOrderFragment : Fragment() {
                 it,
                 { _, year, monthOfYear, dayOfMonth -> // set day of month , month and year value in the edit text
                     sectionEditDate = convertYMDtoTimeMillis(year, monthOfYear, dayOfMonth)
-                    if (sectionEditDate != -1L) binding.dateCaption.text = convertLongToDDMMYY(
-                        sectionEditDate
-                    )
+                    if (sectionEditDate != -1L)
+                        binding.dateCaption.text = convertLongToDDMMYY(sectionEditDate)
                 }, todayYear, todayMonth, todayDay
             )
             datePickerDialog.show()

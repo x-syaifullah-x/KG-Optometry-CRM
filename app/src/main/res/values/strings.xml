@@ -26,6 +26,7 @@
     <string name="memo_form_caption">MEMO</string>
     <string name="current_rx_caption">CURRENT / OLD Rx</string>
     <string name="refraction_caption">REFRACTION</string>
+    <string name="cash_order_caption">CASH ORDER</string>
     <string name="ocular_health_caption">OCULAR HEALTH</string>
     <string name="supplementary_test_caption">SUPPLEMENTARY TESTS</string>
     <string name="final_prescription_caption">FINAL PRESCRIPTION</string>
@@ -217,7 +218,6 @@
     <string name="solution_misc_rm">Sol/Misc RM</string>
     <string name="hint_mm_input">MM</string>
     <string name="frame_type">Frame Type</string>
-    <string name="cash_order_caption">CASH ORDER</string>
 
     <string-array name="worth_four_dots">
         <item> </item>
