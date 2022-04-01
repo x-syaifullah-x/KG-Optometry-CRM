@@ -372,6 +372,12 @@ class SupplementaryFragment: Fragment() {
                 SupplementaryFragmentDirections.actionSupplementaryFragmentToFinalPrescriptionFragment(
                     navigateFormRecordID))
 
+            orderOfSections[9] -> {
+                navController.navigate(
+                    SupplementaryFragmentDirections
+                        .actionSupplementaryFragmentToCashOrderFragment(navigateFormRecordID)
+                )
+            }
             else -> Toast.makeText(context, getString(R.string.navigation_else), Toast.LENGTH_SHORT).show()
 
         }

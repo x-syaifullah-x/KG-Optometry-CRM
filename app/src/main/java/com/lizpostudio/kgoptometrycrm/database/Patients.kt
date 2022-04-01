@@ -58,7 +58,15 @@ data class Patients(
     @ColumnInfo(name = "mm")
     var mm: String = "",
 
-    ) {
+    @ColumnInfo(name = "or")
+    var or: String = "",
+
+    @ColumnInfo(name = "frame_size")
+    var frameSize: String = "",
+
+    @ColumnInfo(name = "frame_type")
+    var frameType: String = ""
+) {
 
 
     fun assertEqual(toForm: Patients): Boolean {
@@ -92,7 +100,10 @@ data class Patients(
                 this.syncStatus == toForm.syncStatus &&
                 this.reservedField == toForm.reservedField &&
                 this.practitioner == toForm.practitioner &&
-                this.mm == toForm.mm)
+                this.mm == toForm.mm &&
+                this.or == toForm.or &&
+                this.frameSize == toForm.frameSize &&
+                this.frameType == toForm.frameSize)
     }
 
     fun copyFrom(from: Patients) {
@@ -113,6 +124,9 @@ data class Patients(
         this.reservedField = from.reservedField
         this.practitioner = from.practitioner
         this.mm = from.mm
+        this.or = from.or
+        this.frameSize = from.frameSize
+        this.frameType = from.frameType
     }
 }
 
@@ -132,5 +146,8 @@ data class FBRecords(
     var sectionName: String = "",
     var syncStatus: String = "",
     var practitioner: String = "",
-    var mm: String = ""
+    var mm: String = "",
+    var or: String = "",
+    var frameSize: String = "",
+    var frameType: String = ""
 )

@@ -738,6 +738,12 @@ class OcularHealthFragment: Fragment() {
                 OcularHealthFragmentDirections.actionOcularHealthFragmentToFinalPrescriptionFragment(
                     navigateFormRecordID))
 
+            orderOfSections[9] -> {
+                navController.navigate(
+                    OcularHealthFragmentDirections
+                        .actionOcularHealthFragmentToCashOrderFragment(navigateFormRecordID)
+                )
+            }
             else -> Toast.makeText(
                 this.activity?.applicationContext,
                 getString(R.string.navigation_else),

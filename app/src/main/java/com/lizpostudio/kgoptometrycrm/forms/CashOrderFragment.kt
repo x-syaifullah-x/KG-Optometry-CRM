@@ -118,7 +118,7 @@ class CashOrderFragment : Fragment() {
             patientForm?.let {
                 currentForm = it
                 patientID = it.patientID
-                patientViewModel.getRefractions(
+                patientViewModel.getCashOrder(
                     patientID,
                     resources.getString(R.string.refraction_caption)
                 )
@@ -298,7 +298,7 @@ class CashOrderFragment : Fragment() {
         patientViewModel.recordDeleted.observe(viewLifecycleOwner) { ifDeleted ->
             ifDeleted?.let {
                 if (ifDeleted) navController.navigate(
-                    FinalPrescriptionFragmentDirections.actionFinalPrescriptionFragmentToFormSelectionFragment(
+                    CashOrderFragmentDirections.actionFinalPrescriptionFragmentToFormSelectionFragment(
                         patientID
                     )
                 )
@@ -453,8 +453,7 @@ class CashOrderFragment : Fragment() {
         } else {
             if (formWasChanged()) {
                 patientViewModel.submitPatientToFirebase(
-                    currentForm.recordID.toString(),
-                    currentForm
+                    currentForm.recordID.toString(), currentForm
                 )
                 // trigger navigation after update
                 patientViewModel.updateRecord(currentForm, navOption)
@@ -470,7 +469,7 @@ class CashOrderFragment : Fragment() {
                 Log.d(TAG, "No navigation triggered")
             }
             "back" -> this.findNavController().navigate(
-                FinalPrescriptionFragmentDirections.actionFinalPrescriptionFragmentToFormSelectionFragment(
+                CashOrderFragmentDirections.actionFinalPrescriptionFragmentToFormSelectionFragment(
                     patientID
                 )
             )
@@ -486,53 +485,59 @@ class CashOrderFragment : Fragment() {
         when (navigateFormName) {
 
             orderOfSections[0] -> navController.navigate(
-                FinalPrescriptionFragmentDirections
+                CashOrderFragmentDirections
                     .actionFinalPrescriptionFragmentToInfoFragment(navigateFormRecordID)
             )
 
             orderOfSections[1] -> navController.navigate(
-                FinalPrescriptionFragmentDirections.actionFinalPrescriptionFragmentToMemoFragment(
+                CashOrderFragmentDirections.actionFinalPrescriptionFragmentToMemoFragment(
                     navigateFormRecordID
                 )
             )
 
             orderOfSections[2] -> navController.navigate(
-                FinalPrescriptionFragmentDirections.actionFinalPrescriptionFragmentToCurrentRxFragment(
+                CashOrderFragmentDirections.actionFinalPrescriptionFragmentToCurrentRxFragment(
                     navigateFormRecordID
                 )
             )
 
             orderOfSections[3] -> navController.navigate(
-                FinalPrescriptionFragmentDirections.actionFinalPrescriptionFragmentToRefractionFragment(
+                CashOrderFragmentDirections.actionFinalPrescriptionFragmentToRefractionFragment(
                     navigateFormRecordID
                 )
             )
 
             orderOfSections[4] -> navController.navigate(
-                FinalPrescriptionFragmentDirections.actionFinalPrescriptionFragmentToOcularHealthFragment(
+                CashOrderFragmentDirections.actionFinalPrescriptionFragmentToOcularHealthFragment(
                     navigateFormRecordID
                 )
             )
 
             orderOfSections[5] -> navController.navigate(
-                FinalPrescriptionFragmentDirections.actionFinalPrescriptionFragmentToSupplementaryFragment(
+                CashOrderFragmentDirections.actionFinalPrescriptionFragmentToSupplementaryFragment(
                     navigateFormRecordID
                 )
             )
 
             orderOfSections[6] -> navController.navigate(
-                FinalPrescriptionFragmentDirections.actionFinalPrescriptionFragmentToContactLensFragment(
+                CashOrderFragmentDirections.actionFinalPrescriptionFragmentToContactLensFragment(
                     navigateFormRecordID
                 )
             )
 
             orderOfSections[7] -> navController.navigate(
-                FinalPrescriptionFragmentDirections.actionFinalPrescriptionFragmentToOrthokFragment(
+                CashOrderFragmentDirections.actionFinalPrescriptionFragmentToOrthokFragment(
                     navigateFormRecordID
                 )
             )
 
-            orderOfSections[8] -> {
+            orderOfSections[8] -> navController.navigate(
+                CashOrderFragmentDirections.actionFinalPrescriptionFragmentToFinalPrescriptionFragment(
+                    navigateFormRecordID
+                )
+            )
+
+            orderOfSections[9] -> {
                 if (recordID != navigateFormRecordID) {
                     recordID = navigateFormRecordID
                     patientViewModel.getPatientForm(navigateFormRecordID)

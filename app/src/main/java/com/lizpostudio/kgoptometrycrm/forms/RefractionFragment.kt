@@ -51,16 +51,16 @@ private const val PHOTO_W = 330
 private const val PHOTO_H = 528
 
 private lateinit var storageRef: StorageReference
-private lateinit var storageFile:Uri
+private lateinit var storageFile: Uri
 
-class RefractionFragment:Fragment() {
+class RefractionFragment : Fragment() {
 
     private var downloadPhotoTask: StorageTask<FileDownloadTask.TaskSnapshot>? = null
     private val patientViewModel: PatientsViewModel by viewModels {
         PatientsViewModelFactory((requireNotNull(this.activity).application as OptometryApplication).repository)
     }
 
-    private  var photoUri: Uri? = null
+    private var photoUri: Uri? = null
 
     private var _binding: FragmentRefractionBinding? = null
     private val binding get() = _binding!!
@@ -117,16 +117,27 @@ class RefractionFragment:Fragment() {
         val navController = this.findNavController()
 
         // get if user is Admin
-        val sharedPref = app.getSharedPreferences("kgoptometry",
-            Context.MODE_PRIVATE)
-        isAdmin= sharedPref?.getString("admin", "")?: "" == "admin"
-        viewOnlyMode = sharedPref?.getBoolean("viewOnly", false)?:false
+        val sharedPref = app.getSharedPreferences(
+            "kgoptometry",
+            Context.MODE_PRIVATE
+        )
+        isAdmin = sharedPref?.getString("admin", "") ?: "" == "admin"
+        viewOnlyMode = sharedPref?.getBoolean("viewOnly", false) ?: false
 
         if (viewOnlyMode) {
-            binding.mainLayout.setBackgroundColor(ContextCompat.getColor(requireContext(),R.color.viewOnlyMode))
+            binding.mainLayout.setBackgroundColor(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.viewOnlyMode
+                )
+            )
             binding.saveFormButton.visibility = View.GONE
-        }
-        else  binding.mainLayout.setBackgroundColor(ContextCompat.getColor(requireContext(),R.color.lightBackground))
+        } else binding.mainLayout.setBackgroundColor(
+            ContextCompat.getColor(
+                requireContext(),
+                R.color.lightBackground
+            )
+        )
 
         patientViewModel.patientForm.observe(viewLifecycleOwner, { patientForm ->
             patientForm?.let {
@@ -151,7 +162,8 @@ class RefractionFragment:Fragment() {
 
                         pAge += resources.getString(
                             R.string.number_of_years_patient,
-                            age, dob)
+                            age, dob
+                        )
                     }
                 }
                 binding.patientName.text = pAge
@@ -361,7 +373,7 @@ class RefractionFragment:Fragment() {
         })
 
         patientViewModel.photoFromFBReady.observe(viewLifecycleOwner, { ready ->
-            ready?.let{
+            ready?.let {
                 Log.d(TAG, "Photo file is $it")
                 if (it) uploadPhotoFileToImage()
             }
@@ -384,7 +396,8 @@ class RefractionFragment:Fragment() {
             if (context != null)
                 actionConfirmDeletion(
                     title = resources.getString(R.string.form_delete_title),
-                    message = resources.getString(R.string.customer_form_delete,
+                    message = resources.getString(
+                        R.string.customer_form_delete,
                         currentForm.sectionName,
                         currentForm.patientName
                     ),
@@ -413,7 +426,8 @@ class RefractionFragment:Fragment() {
                     }
                 }
             } else {
-                Toast.makeText(app.applicationContext,"Nothing to delete!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(app.applicationContext, "Nothing to delete!", Toast.LENGTH_SHORT)
+                    .show()
             }
         }
 
@@ -446,10 +460,10 @@ class RefractionFragment:Fragment() {
             }
         }
 
-        patientViewModel.patientFireForm.observe(viewLifecycleOwner, {patientNewRecord ->
-            patientNewRecord?.let{
+        patientViewModel.patientFireForm.observe(viewLifecycleOwner, { patientNewRecord ->
+            patientNewRecord?.let {
                 Log.d(TAG, "Reload RF Form? == ${!currentForm.assertEqual(it)}")
-                if (currentForm.recordID == it.recordID && !currentForm.assertEqual(it) ) {
+                if (currentForm.recordID == it.recordID && !currentForm.assertEqual(it)) {
                     Log.d(TAG, "Refraction Record from FB loaded")
                     currentForm.copyFrom(it)
                     fillTheForm(it)
@@ -467,7 +481,7 @@ class RefractionFragment:Fragment() {
         return binding.root
     }
 
-    private fun saveAndNavigate(navOption:String) {
+    private fun saveAndNavigate(navOption: String) {
         patientViewModel.removeRecordsChangesListener()
         if (viewOnlyMode) {
             launchNavigator(navOption)
@@ -475,7 +489,10 @@ class RefractionFragment:Fragment() {
             if (formWasChanged()) {
                 Log.d(TAG, "Ref form CHANGED")
                 Log.d(TAG, "Submiting to FDB record ID ${currentForm.recordID}")
-                patientViewModel.submitPatientToFirebase(currentForm.recordID.toString(), currentForm)
+                patientViewModel.submitPatientToFirebase(
+                    currentForm.recordID.toString(),
+                    currentForm
+                )
                 // trigger navigation after update
                 patientViewModel.updateRecord(currentForm, navOption)
             } else {
@@ -485,10 +502,12 @@ class RefractionFragment:Fragment() {
         }
     }
 
-    private fun launchNavigator(option:String) {
+    private fun launchNavigator(option: String) {
         when (option) {
-            "none" -> {Log.d(TAG, "No navigation triggered")}
-            "back" ->   this.findNavController().navigate(
+            "none" -> {
+                Log.d(TAG, "No navigation triggered")
+            }
+            "back" -> this.findNavController().navigate(
                 RefractionFragmentDirections.actionRefractionFragmentToFormSelectionFragment(
                     patientID
                 )
@@ -550,7 +569,7 @@ class RefractionFragment:Fragment() {
                 Log.d(TAG, "FB photo downloaded to local file")
                 patientViewModel.readyToShowPhoto()
                 currentForm.reservedField = photoFile.toString()
-            } .addOnFailureListener {
+            }.addOnFailureListener {
                 // delete local file
                 Log.d(TAG, "No such file exist or error downloading. Delete local file")
                 if (photoFile.exists()) photoFile.delete()
@@ -579,8 +598,8 @@ class RefractionFragment:Fragment() {
 
         val extractData = patientForm.sectionData.split('|').toMutableList()
         //      Log.d(TAG, "extract data size before = ${extractData.size}")
-        if (extractData.size< 47) {
-            for (index in extractData.size ..47) {
+        if (extractData.size < 47) {
+            for (index in extractData.size..47) {
                 extractData.add("")
             }
         }
@@ -592,15 +611,16 @@ class RefractionFragment:Fragment() {
             dateCaption.text = convertLongToDDMMYY(patientForm.dateOfSection)
 
             var isEmpty = true
-            for(i in 0 until spinnerRightSph1.adapter.count) {
+            for (i in 0 until spinnerRightSph1.adapter.count) {
                 if (extractData[0].trim() != "" &&
-                    extractData[0] == spinnerRightSph1.adapter.getItem(i).toString()) {
+                    extractData[0] == spinnerRightSph1.adapter.getItem(i).toString()
+                ) {
                     spinnerRightSph1.setSelection(i)
                     isEmpty = false
                 }
             }
             if (isEmpty) { // set " " as default value
-                for(i in 0 until spinnerRightSph1.adapter.count) {
+                for (i in 0 until spinnerRightSph1.adapter.count) {
                     if (" " == spinnerRightSph1.adapter.getItem(i).toString()) {
                         spinnerRightSph1.setSelection(i)
                     }
@@ -608,9 +628,11 @@ class RefractionFragment:Fragment() {
             }
             isEmpty = true
 
-            for(i in 0 until spinnerRightCyl1.adapter.count) {
+            for (i in 0 until spinnerRightCyl1.adapter.count) {
                 if (extractData[1].trim() != "" &&
-                    extractData[1].trim().toDoubleOrNull() == spinnerRightCyl1.adapter.getItem(i).toString().toDoubleOrNull()) {
+                    extractData[1].trim().toDoubleOrNull() == spinnerRightCyl1.adapter.getItem(i)
+                        .toString().toDoubleOrNull()
+                ) {
                     spinnerRightCyl1.setSelection(i)
                     isEmpty = false
                 }
@@ -620,15 +642,16 @@ class RefractionFragment:Fragment() {
 
             editRightAxis1.setText(extractData[2])
 
-            for(i in 0 until spinnerLeftSph1.adapter.count) {
+            for (i in 0 until spinnerLeftSph1.adapter.count) {
                 if (extractData[3].trim() != "" &&
-                    extractData[3] == spinnerLeftSph1.adapter.getItem(i).toString()) {
+                    extractData[3] == spinnerLeftSph1.adapter.getItem(i).toString()
+                ) {
                     spinnerLeftSph1.setSelection(i)
                     isEmpty = false
                 }
             }
             if (isEmpty) { // set " " as default value
-                for(i in 0 until spinnerLeftSph1.adapter.count) {
+                for (i in 0 until spinnerLeftSph1.adapter.count) {
                     if (" " == spinnerLeftSph1.adapter.getItem(i).toString()) {
                         spinnerLeftSph1.setSelection(i)
                     }
@@ -636,9 +659,11 @@ class RefractionFragment:Fragment() {
             }
             isEmpty = true
 
-            for(i in 0 until spinnerLeftCyl1.adapter.count) {
+            for (i in 0 until spinnerLeftCyl1.adapter.count) {
                 if (extractData[4].trim() != "" &&
-                    extractData[4].trim().toDoubleOrNull() == spinnerLeftCyl1.adapter.getItem(i).toString().toDoubleOrNull()) {
+                    extractData[4].trim().toDoubleOrNull() == spinnerLeftCyl1.adapter.getItem(i)
+                        .toString().toDoubleOrNull()
+                ) {
                     spinnerLeftCyl1.setSelection(i)
                     isEmpty = false
                 }
@@ -648,28 +673,30 @@ class RefractionFragment:Fragment() {
 
             editLeftAxis1.setText(extractData[5])
 
-            for(i in 0 until spinnerChart.adapter.count) {
+            for (i in 0 until spinnerChart.adapter.count) {
                 if (extractData[6] != "" &&
-                    extractData[6] == spinnerChart.adapter.getItem(i).toString()) {
+                    extractData[6] == spinnerChart.adapter.getItem(i).toString()
+                ) {
                     spinnerChart.setSelection(i)
                     isEmpty = false
                 }
             }
-            if (isEmpty)  spinnerChart.setSelection(1)
+            if (isEmpty) spinnerChart.setSelection(1)
 
 //      Log.d(TAG, "Chart value = ${extractData[6]} ")
 
             isEmpty = true
 
-            for(i in 0 until spinnerRightSph2.adapter.count) {
+            for (i in 0 until spinnerRightSph2.adapter.count) {
                 if (extractData[7].trim() != "" &&
-                    extractData[7] == spinnerRightSph2.adapter.getItem(i).toString()) {
+                    extractData[7] == spinnerRightSph2.adapter.getItem(i).toString()
+                ) {
                     spinnerRightSph2.setSelection(i)
                     isEmpty = false
                 }
             }
             if (isEmpty) { // set " " as default value
-                for(i in 0 until spinnerRightSph2.adapter.count) {
+                for (i in 0 until spinnerRightSph2.adapter.count) {
                     if (" " == spinnerRightSph2.adapter.getItem(i).toString()) {
                         spinnerRightSph2.setSelection(i)
                     }
@@ -677,27 +704,30 @@ class RefractionFragment:Fragment() {
             }
             isEmpty = true
 
-            for(i in 0 until spinnerRightCyl2.adapter.count) {
+            for (i in 0 until spinnerRightCyl2.adapter.count) {
                 if (extractData[8].trim() != "" &&
-                    extractData[8].trim().toDoubleOrNull() == spinnerRightCyl2.adapter.getItem(i).toString().toDoubleOrNull()) {
+                    extractData[8].trim().toDoubleOrNull() == spinnerRightCyl2.adapter.getItem(i)
+                        .toString().toDoubleOrNull()
+                ) {
                     spinnerRightCyl2.setSelection(i)
                     isEmpty = false
                 }
             }
-            if (isEmpty)  spinnerRightCyl2.setSelection(0)
+            if (isEmpty) spinnerRightCyl2.setSelection(0)
             isEmpty = true
 
             editRightAxis2.setText(extractData[9])
 
-            for(i in 0 until spinnerLeftSph2.adapter.count) {
+            for (i in 0 until spinnerLeftSph2.adapter.count) {
                 if (extractData[10].trim() != "" &&
-                    extractData[10] == spinnerLeftSph2.adapter.getItem(i).toString()) {
+                    extractData[10] == spinnerLeftSph2.adapter.getItem(i).toString()
+                ) {
                     spinnerLeftSph2.setSelection(i)
                     isEmpty = false
                 }
             }
             if (isEmpty) { // set " " as default value
-                for(i in 0 until spinnerLeftSph2.adapter.count) {
+                for (i in 0 until spinnerLeftSph2.adapter.count) {
                     if (" " == spinnerLeftSph2.adapter.getItem(i).toString()) {
                         spinnerLeftSph2.setSelection(i)
                     }
@@ -705,9 +735,11 @@ class RefractionFragment:Fragment() {
             }
             isEmpty = true
 
-            for(i in 0 until spinnerLeftCyl2.adapter.count) {
+            for (i in 0 until spinnerLeftCyl2.adapter.count) {
                 if (extractData[11].trim() != "" &&
-                    extractData[11].trim().toDoubleOrNull() == spinnerLeftCyl2.adapter.getItem(i).toString().toDoubleOrNull()) {
+                    extractData[11].trim().toDoubleOrNull() == spinnerLeftCyl2.adapter.getItem(i)
+                        .toString().toDoubleOrNull()
+                ) {
                     spinnerLeftCyl2.setSelection(i)
                     isEmpty = false
                 }
@@ -717,10 +749,13 @@ class RefractionFragment:Fragment() {
 
             editLeftAxis2.setText(extractData[12])
             if (extractData[13] != "") editRightVa.setText(extractData[13]) else editRightVa.setText(
-                vaDefault)
-            for(i in 0 until spinnerRightAdd.adapter.count) {
+                vaDefault
+            )
+            for (i in 0 until spinnerRightAdd.adapter.count) {
                 if (extractData[14].trim() != "" &&
-                    extractData[14].trim().toDoubleOrNull() == spinnerRightAdd.adapter.getItem(i).toString().toDoubleOrNull()) {
+                    extractData[14].trim().toDoubleOrNull() == spinnerRightAdd.adapter.getItem(i)
+                        .toString().toDoubleOrNull()
+                ) {
                     spinnerRightAdd.setSelection(i)
                     isEmpty = false
                 }
@@ -731,24 +766,29 @@ class RefractionFragment:Fragment() {
             editRightPd.setText(extractData[15])
 
             if (extractData[16] != "") editLeftVa.setText(extractData[16]) else editLeftVa.setText(
-                vaDefault)
-            for(i in 0 until spinnerLeftAdd.adapter.count) {
+                vaDefault
+            )
+            for (i in 0 until spinnerLeftAdd.adapter.count) {
                 if (extractData[17].trim() != "" &&
-                    extractData[17].trim().toDoubleOrNull() == spinnerLeftAdd.adapter.getItem(i).toString().toDoubleOrNull()) {
+                    extractData[17].trim().toDoubleOrNull() == spinnerLeftAdd.adapter.getItem(i)
+                        .toString().toDoubleOrNull()
+                ) {
                     spinnerLeftAdd.setSelection(i)
                     isEmpty = false
                 }
             }
-            if (isEmpty)  spinnerLeftAdd.setSelection(0)
+            if (isEmpty) spinnerLeftAdd.setSelection(0)
             isEmpty = true
 
             //       editLeftPd.setText(extractData[18])
             nearVa.setText(extractData[19])
             nearVa2.setText(extractData[20])
 
-            for(i in 0 until spinnerAdd2.adapter.count) {
+            for (i in 0 until spinnerAdd2.adapter.count) {
                 if (extractData[21].trim() != "" &&
-                    extractData[21].trim().toDoubleOrNull() == spinnerAdd2.adapter.getItem(i).toString().toDoubleOrNull()) {
+                    extractData[21].trim().toDoubleOrNull() == spinnerAdd2.adapter.getItem(i)
+                        .toString().toDoubleOrNull()
+                ) {
                     spinnerAdd2.setSelection(i)
                     isEmpty = false
                 }
@@ -756,15 +796,16 @@ class RefractionFragment:Fragment() {
             if (isEmpty) spinnerAdd2.setSelection(0)
             isEmpty = true
 
-            for(i in 0 until spinnerRightSph3.adapter.count) {
+            for (i in 0 until spinnerRightSph3.adapter.count) {
                 if (extractData[22].trim() != "" &&
-                    extractData[22] == spinnerRightSph3.adapter.getItem(i).toString()) {
+                    extractData[22] == spinnerRightSph3.adapter.getItem(i).toString()
+                ) {
                     spinnerRightSph3.setSelection(i)
                     isEmpty = false
                 }
             }
             if (isEmpty) { // set " " as default value
-                for(i in 0 until spinnerRightSph3.adapter.count) {
+                for (i in 0 until spinnerRightSph3.adapter.count) {
                     if (" " == spinnerRightSph3.adapter.getItem(i).toString()) {
                         spinnerRightSph3.setSelection(i)
                     }
@@ -772,9 +813,11 @@ class RefractionFragment:Fragment() {
             }
             isEmpty = true
 
-            for(i in 0 until spinnerRightCyl3.adapter.count) {
+            for (i in 0 until spinnerRightCyl3.adapter.count) {
                 if (extractData[23].trim() != "" &&
-                    extractData[23].trim().toDoubleOrNull() == spinnerRightCyl3.adapter.getItem(i).toString().toDoubleOrNull()) {
+                    extractData[23].trim().toDoubleOrNull() == spinnerRightCyl3.adapter.getItem(i)
+                        .toString().toDoubleOrNull()
+                ) {
                     spinnerRightCyl3.setSelection(i)
                     isEmpty = false
                 }
@@ -784,15 +827,16 @@ class RefractionFragment:Fragment() {
 
             editRightAxis3.setText(extractData[24])
 
-            for(i in 0 until spinnerLeftSph3.adapter.count) {
+            for (i in 0 until spinnerLeftSph3.adapter.count) {
                 if (extractData[25].trim() != "" &&
-                    extractData[25] == spinnerLeftSph3.adapter.getItem(i).toString()) {
+                    extractData[25] == spinnerLeftSph3.adapter.getItem(i).toString()
+                ) {
                     spinnerLeftSph3.setSelection(i)
                     isEmpty = false
                 }
             }
             if (isEmpty) { // set " " as default value
-                for(i in 0 until spinnerLeftSph3.adapter.count) {
+                for (i in 0 until spinnerLeftSph3.adapter.count) {
                     if (" " == spinnerLeftSph3.adapter.getItem(i).toString()) {
                         spinnerLeftSph3.setSelection(i)
                     }
@@ -800,9 +844,11 @@ class RefractionFragment:Fragment() {
             }
             isEmpty = true
 
-            for(i in 0 until spinnerLeftCyl3.adapter.count) {
+            for (i in 0 until spinnerLeftCyl3.adapter.count) {
                 if (extractData[26].trim() != "" &&
-                    extractData[26].trim().toDoubleOrNull() == spinnerLeftCyl3.adapter.getItem(i).toString().toDoubleOrNull()) {
+                    extractData[26].trim().toDoubleOrNull() == spinnerLeftCyl3.adapter.getItem(i)
+                        .toString().toDoubleOrNull()
+                ) {
                     spinnerLeftCyl3.setSelection(i)
                     isEmpty = false
                 }
@@ -813,9 +859,11 @@ class RefractionFragment:Fragment() {
             editLeftAxis3.setText(extractData[27])
             if (extractData[28] != "") ouVa.setText(extractData[28]) else ouVa.setText(vaDefault)
 
-            for(i in 0 until spinnerAddMp.adapter.count) {
+            for (i in 0 until spinnerAddMp.adapter.count) {
                 if (extractData[29].trim() != "" &&
-                    extractData[29].trim().toDoubleOrNull() == spinnerAddMp.adapter.getItem(i).toString().toDoubleOrNull()) {
+                    extractData[29].trim().toDoubleOrNull() == spinnerAddMp.adapter.getItem(i)
+                        .toString().toDoubleOrNull()
+                ) {
                     spinnerAddMp.setSelection(i)
                     isEmpty = false
                 }
@@ -824,21 +872,22 @@ class RefractionFragment:Fragment() {
 
             val mergedStatus = "${extractData[30]}${extractData[31]}${extractData[32]}"
             currentStatusInput.setText(mergedStatus)
-       /*     historyInput.setText(extractData[31])
-            mainComplaintInput.setText(extractData[32])*/
+            /*     historyInput.setText(extractData[31])
+                 mainComplaintInput.setText(extractData[32])*/
 
             // ===================TO PRESCRIBE SECTION 33 -40 ========================
             isEmpty = true
 
-            for(i in 0 until spinnerRightSph4.adapter.count) {
+            for (i in 0 until spinnerRightSph4.adapter.count) {
                 if (extractData[33].trim() != "" &&
-                    extractData[33] == spinnerRightSph4.adapter.getItem(i).toString()) {
+                    extractData[33] == spinnerRightSph4.adapter.getItem(i).toString()
+                ) {
                     spinnerRightSph4.setSelection(i)
                     isEmpty = false
                 }
             }
             if (isEmpty) { // set " " as default value
-                for(i in 0 until spinnerRightSph4.adapter.count) {
+                for (i in 0 until spinnerRightSph4.adapter.count) {
                     if (" " == spinnerRightSph4.adapter.getItem(i).toString()) {
                         spinnerRightSph4.setSelection(i)
                     }
@@ -846,9 +895,11 @@ class RefractionFragment:Fragment() {
             }
             isEmpty = true
 
-            for(i in 0 until spinnerRightCyl4.adapter.count) {
+            for (i in 0 until spinnerRightCyl4.adapter.count) {
                 if (extractData[34].trim() != "" &&
-                    extractData[34].trim().toDoubleOrNull() == spinnerRightCyl4.adapter.getItem(i).toString().toDoubleOrNull()) {
+                    extractData[34].trim().toDoubleOrNull() == spinnerRightCyl4.adapter.getItem(i)
+                        .toString().toDoubleOrNull()
+                ) {
                     spinnerRightCyl4.setSelection(i)
                     isEmpty = false
                 }
@@ -858,15 +909,16 @@ class RefractionFragment:Fragment() {
 
             editRightAxis4.setText(extractData[35])
 
-            for(i in 0 until spinnerLeftSph4.adapter.count) {
+            for (i in 0 until spinnerLeftSph4.adapter.count) {
                 if (extractData[36].trim() != "" &&
-                    extractData[36] == spinnerLeftSph4.adapter.getItem(i).toString()) {
+                    extractData[36] == spinnerLeftSph4.adapter.getItem(i).toString()
+                ) {
                     spinnerLeftSph4.setSelection(i)
                     isEmpty = false
                 }
             }
             if (isEmpty) { // set " " as default value
-                for(i in 0 until spinnerLeftSph4.adapter.count) {
+                for (i in 0 until spinnerLeftSph4.adapter.count) {
                     if (" " == spinnerLeftSph4.adapter.getItem(i).toString()) {
                         spinnerLeftSph4.setSelection(i)
                     }
@@ -874,9 +926,11 @@ class RefractionFragment:Fragment() {
             }
             isEmpty = true
 
-            for(i in 0 until spinnerLeftCyl4.adapter.count) {
+            for (i in 0 until spinnerLeftCyl4.adapter.count) {
                 if (extractData[37].trim() != "" &&
-                    extractData[37].trim().toDoubleOrNull() == spinnerLeftCyl4.adapter.getItem(i).toString().toDoubleOrNull()) {
+                    extractData[37].trim().toDoubleOrNull() == spinnerLeftCyl4.adapter.getItem(i)
+                        .toString().toDoubleOrNull()
+                ) {
                     spinnerLeftCyl4.setSelection(i)
                     isEmpty = false
                 }
@@ -885,13 +939,19 @@ class RefractionFragment:Fragment() {
 
             editLeftAxis4.setText(extractData[38])
 
-            if (extractData[42] != "") vaRight4.setText(extractData[42]) else vaRight4.setText(vaDefault)
-            if (extractData[43] != "") vaLeft4.setText(extractData[43]) else vaLeft4.setText(vaDefault)
+            if (extractData[42] != "") vaRight4.setText(extractData[42]) else vaRight4.setText(
+                vaDefault
+            )
+            if (extractData[43] != "") vaLeft4.setText(extractData[43]) else vaLeft4.setText(
+                vaDefault
+            )
 
             isEmpty = true
-            for(i in 0 until spinnerAddRight4.adapter.count) {
+            for (i in 0 until spinnerAddRight4.adapter.count) {
                 if (extractData[44].trim() != "" &&
-                    extractData[44].trim().toDoubleOrNull() == spinnerAddRight4.adapter.getItem(i).toString().toDoubleOrNull()) {
+                    extractData[44].trim().toDoubleOrNull() == spinnerAddRight4.adapter.getItem(i)
+                        .toString().toDoubleOrNull()
+                ) {
                     spinnerAddRight4.setSelection(i)
                     isEmpty = false
                 }
@@ -899,9 +959,11 @@ class RefractionFragment:Fragment() {
             if (isEmpty) spinnerAddRight4.setSelection(0)
 
             isEmpty = true
-            for(i in 0 until spinnerAddLeft4.adapter.count) {
+            for (i in 0 until spinnerAddLeft4.adapter.count) {
                 if (extractData[45].trim() != "" &&
-                    extractData[45].trim().toDoubleOrNull() == spinnerAddLeft4.adapter.getItem(i).toString().toDoubleOrNull()) {
+                    extractData[45].trim().toDoubleOrNull() == spinnerAddLeft4.adapter.getItem(i)
+                        .toString().toDoubleOrNull()
+                ) {
                     spinnerAddLeft4.setSelection(i)
                     isEmpty = false
                 }
@@ -922,18 +984,27 @@ class RefractionFragment:Fragment() {
         // if same fragment - load new record
         val navController = this.findNavController()
 
-        when(navigateFormName) {
+        when (navigateFormName) {
 
-            orderOfSections[0] -> navController.navigate(RefractionFragmentDirections.
-            actionRefractionFragmentToInfoFragment(navigateFormRecordID))
+            orderOfSections[0] -> navController.navigate(
+                RefractionFragmentDirections.actionRefractionFragmentToInfoFragment(
+                    navigateFormRecordID
+                )
+            )
 
-            orderOfSections[1] -> navController.navigate(RefractionFragmentDirections.
-            actionRefractionFragmentToMemoFragment(navigateFormRecordID))
+            orderOfSections[1] -> navController.navigate(
+                RefractionFragmentDirections.actionRefractionFragmentToMemoFragment(
+                    navigateFormRecordID
+                )
+            )
 
-            orderOfSections[2] -> navController.navigate(RefractionFragmentDirections.
-            actionRefractionFragmentToCurrentRxFragment(navigateFormRecordID))
+            orderOfSections[2] -> navController.navigate(
+                RefractionFragmentDirections.actionRefractionFragmentToCurrentRxFragment(
+                    navigateFormRecordID
+                )
+            )
 
-            orderOfSections[3] ->{
+            orderOfSections[3] -> {
                 Log.d(TAG, "Navigating to another RF form:")
                 Log.d(TAG, "Old Record ID = ${recordID}")
                 Log.d(TAG, "New Record ID = ${navigateFormRecordID}")
@@ -944,27 +1015,51 @@ class RefractionFragment:Fragment() {
                 }
 
             }
-            orderOfSections[4] -> navController.navigate(RefractionFragmentDirections.
-            actionRefractionFragmentToOcularHealthFragment(navigateFormRecordID))
+            orderOfSections[4] -> navController.navigate(
+                RefractionFragmentDirections.actionRefractionFragmentToOcularHealthFragment(
+                    navigateFormRecordID
+                )
+            )
 
-            orderOfSections[5] -> navController.navigate(RefractionFragmentDirections.
-            actionRefractionFragmentToSupplementaryFragment(navigateFormRecordID))
+            orderOfSections[5] -> navController.navigate(
+                RefractionFragmentDirections.actionRefractionFragmentToSupplementaryFragment(
+                    navigateFormRecordID
+                )
+            )
 
-            orderOfSections[6] -> navController.navigate(RefractionFragmentDirections.
-            actionRefractionFragmentToContactLensFragment(navigateFormRecordID))
+            orderOfSections[6] -> navController.navigate(
+                RefractionFragmentDirections.actionRefractionFragmentToContactLensFragment(
+                    navigateFormRecordID
+                )
+            )
 
-            orderOfSections[7] -> navController.navigate(RefractionFragmentDirections.
-            actionRefractionFragmentToOrthokFragment(navigateFormRecordID))
+            orderOfSections[7] -> navController.navigate(
+                RefractionFragmentDirections.actionRefractionFragmentToOrthokFragment(
+                    navigateFormRecordID
+                )
+            )
 
-            orderOfSections[8] -> navController.navigate(RefractionFragmentDirections.
-            actionRefractionFragmentToFinalPrescriptionFragment(navigateFormRecordID))
-            else -> Toast.makeText(context, getString(R.string.navigation_else), Toast.LENGTH_SHORT).show()
+            orderOfSections[8] -> navController.navigate(
+                RefractionFragmentDirections.actionRefractionFragmentToFinalPrescriptionFragment(
+                    navigateFormRecordID
+                )
+            )
+
+            orderOfSections[9] -> {
+                navController.navigate(
+                    RefractionFragmentDirections
+                        .actionRefractionFragmentToCashOrderFragment(navigateFormRecordID)
+                )
+            }
+            else -> Toast.makeText(context, getString(R.string.navigation_else), Toast.LENGTH_SHORT)
+                .show()
         }
     }
+
     /**
      * If UI was changed - returns true
      */
-    private fun formWasChanged():Boolean {
+    private fun formWasChanged(): Boolean {
         // create new Record, fill it in with Form data and pass to ViewModel with recordID to update DB
 
         val priorPatient = currentForm.copy()
@@ -1006,8 +1101,8 @@ class RefractionFragment:Fragment() {
                     ouVa.text.toString() + "|" +
                     spinnerAddMp.selectedItem.toString() + "|" +
                     currentStatusInput.text.toString() + "|" +
-                   "|" +  // history Input [OLD]
-                   "|" +  // main complaint [OLD]
+                    "|" +  // history Input [OLD]
+                    "|" +  // main complaint [OLD]
                     spinnerRightSph4.selectedItem.toString() + "|" +
                     spinnerRightCyl4.selectedItem.toString() + "|" +
                     editRightAxis4.text.toString() + "|" +
@@ -1016,10 +1111,10 @@ class RefractionFragment:Fragment() {
                     editLeftAxis4.text.toString() + "|" +
                     "|" +
                     "|" +
-                    editManagementRefraction.text.toString()  + "|" + // 41
-                    vaRight4.text.toString()  + "|" + //42
-                    vaLeft4.text.toString()  + "|" + //43
-                    spinnerAddRight4.selectedItem.toString()  + "|" + //44
+                    editManagementRefraction.text.toString() + "|" + // 41
+                    vaRight4.text.toString() + "|" + //42
+                    vaLeft4.text.toString() + "|" + //43
+                    spinnerAddRight4.selectedItem.toString() + "|" + //44
                     spinnerAddLeft4.selectedItem.toString() //45
 
             currentForm.sectionData = extractData.uppercase()
@@ -1033,12 +1128,13 @@ class RefractionFragment:Fragment() {
         val (todayYear, todayMonth, todayDay) = dayMonthY()
         val myActivity = activity
 
-        myActivity?.let{
+        myActivity?.let {
             val datePickerDialog = DatePickerDialog(
                 it,
                 { _, year, monthOfYear, dayOfMonth -> // set day of month , month and year value in the edit text
                     sectionEditDate = convertYMDtoTimeMillis(year, monthOfYear, dayOfMonth)
-                    if (sectionEditDate != -1L) binding.dateCaption.text = convertLongToDDMMYY(sectionEditDate)
+                    if (sectionEditDate != -1L) binding.dateCaption.text =
+                        convertLongToDDMMYY(sectionEditDate)
                 }, todayYear, todayMonth, todayDay
             )
             datePickerDialog.show()

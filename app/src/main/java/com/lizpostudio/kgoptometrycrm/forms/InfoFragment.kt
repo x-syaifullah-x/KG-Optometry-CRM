@@ -566,6 +566,12 @@ class InfoFragment : Fragment() {
                     navigateFormRecordID
                 )
             )
+            orderOfSections[9] -> {
+                navController.navigate(
+                    InfoFragmentDirections
+                        .actionInfoFragmentToCashOrderFragment(navigateFormRecordID)
+                )
+            }
             else -> Toast.makeText(
                 requireContext(),
                 "You are here!",

@@ -8,16 +8,16 @@
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.lizpostudio.kgoptometrycrm.LoginFragment"
-        android:label="LoginFragment" >
+        android:label="LoginFragment">
         <action
             android:id="@+id/action_loginFragment_to_databaseSearchFragment"
             app:destination="@id/databaseSearchFragment" />
     </fragment>
     <fragment
         android:id="@+id/databaseSearchFragment"
-        tools:layout="@layout/fragment_database_search"
         android:name="com.lizpostudio.kgoptometrycrm.DatabaseSearchFragment"
-        android:label="DatabaseSearchFragment" >
+        android:label="DatabaseSearchFragment"
+        tools:layout="@layout/fragment_database_search">
         <action
             android:id="@+id/action_databaseSearchFragment_to_formSelectionFragment"
             app:destination="@id/formSelectionFragment" />
@@ -32,7 +32,7 @@
     <fragment
         android:id="@+id/formSelectionFragment"
         android:name="com.lizpostudio.kgoptometrycrm.formselection.FormSelectionFragment"
-        android:label="FormSelectionFragment" >
+        android:label="FormSelectionFragment">
         <argument
             android:name="patientID"
             app:argType="string" />
@@ -69,6 +69,9 @@
             android:id="@+id/action_formSelectionFragment_to_finalPrescriptionFragment"
             app:destination="@id/finalPrescriptionFragment" />
         <action
+            android:id="@+id/action_formSelectionFragment_to_cashOrderFragment"
+            app:destination="@id/cashOrderFragment" />
+        <action
             android:id="@+id/action_formSelectionFragment_to_memoFragment"
             app:destination="@id/memoFragment" />
         <action
@@ -78,10 +81,13 @@
     <fragment
         android:id="@+id/infoFragment"
         android:name="com.lizpostudio.kgoptometrycrm.forms.InfoFragment"
-        android:label="InfoFragment" >
+        android:label="InfoFragment">
         <argument
             android:name="recordID"
             app:argType="long" />
+        <action
+            android:id="@+id/action_infoFragment_to_cashOrderFragment"
+            app:destination="@id/cashOrderFragment" />
         <action
             android:id="@+id/action_infoFragment_to_formSelectionFragment"
             app:destination="@id/formSelectionFragment"
@@ -121,10 +127,13 @@
     <fragment
         android:id="@+id/currentRxFragment"
         android:name="com.lizpostudio.kgoptometrycrm.forms.CurrentRxFragment"
-        android:label="CurrentRxFragment" >
+        android:label="CurrentRxFragment">
         <argument
             android:name="recordID"
             app:argType="long" />
+        <action
+            android:id="@+id/action_currentRxFragment_to_cashOrderFragment"
+            app:destination="@id/cashOrderFragment" />
         <action
             android:id="@+id/action_currentRxFragment_to_infoFragment"
             app:destination="@id/infoFragment"
@@ -161,10 +170,13 @@
     <fragment
         android:id="@+id/ocularHealthFragment"
         android:name="com.lizpostudio.kgoptometrycrm.forms.OcularHealthFragment"
-        android:label="OcularHealthFragment" >
+        android:label="OcularHealthFragment">
         <argument
             android:name="recordID"
             app:argType="long" />
+        <action
+            android:id="@+id/action_ocularHealthFragment_to_cashOrderFragment"
+            app:destination="@id/cashOrderFragment" />
         <action
             android:id="@+id/action_ocularHealthFragment_to_formSelectionFragment"
             app:destination="@id/formSelectionFragment"
@@ -202,10 +214,13 @@
     <fragment
         android:id="@+id/supplementaryFragment"
         android:name="com.lizpostudio.kgoptometrycrm.forms.SupplementaryFragment"
-        android:label="SupplementaryFragment" >
+        android:label="SupplementaryFragment">
         <argument
             android:name="recordID"
             app:argType="long" />
+        <action
+            android:id="@+id/action_supplementaryFragment_to_cashOrderFragment"
+            app:destination="@id/cashOrderFragment" />
         <action
             android:id="@+id/action_supplementaryFragment_to_ocularHealthFragment"
             app:destination="@id/ocularHealthFragment"
@@ -246,10 +261,13 @@
     <fragment
         android:id="@+id/contactLensFragment"
         android:name="com.lizpostudio.kgoptometrycrm.forms.ContactLensFragment"
-        android:label="ContactLensFragment" >
+        android:label="ContactLensFragment">
         <argument
             android:name="recordID"
             app:argType="long" />
+        <action
+            android:id="@+id/action_contactLensFragment_to_cashOrderFragment"
+            app:destination="@id/cashOrderFragment" />
         <action
             android:id="@+id/action_contactLensFragment_to_formSelectionFragment"
             app:destination="@id/formSelectionFragment"
@@ -287,10 +305,13 @@
     <fragment
         android:id="@+id/orthokFragment"
         android:name="com.lizpostudio.kgoptometrycrm.forms.OrthokFragment"
-        android:label="OrthokFragment" >
+        android:label="OrthokFragment">
         <argument
             android:name="recordID"
             app:argType="long" />
+        <action
+            android:id="@+id/action_orthokFragment_to_cashOrderFragment"
+            app:destination="@id/cashOrderFragment" />
         <action
             android:id="@+id/action_orthokFragment_to_contactLensFragment"
             app:destination="@id/contactLensFragment" />
@@ -322,7 +343,7 @@
     <fragment
         android:id="@+id/finalPrescriptionFragment"
         android:name="com.lizpostudio.kgoptometrycrm.forms.FinalPrescriptionFragment"
-        android:label="FinalPrescriptionFragment" >
+        android:label="FinalPrescriptionFragment">
         <argument
             android:name="recordID"
             app:argType="long" />
@@ -353,11 +374,17 @@
         <action
             android:id="@+id/action_finalPrescriptionFragment_to_refractionFragment"
             app:destination="@id/refractionFragment" />
+        <action
+            android:id="@+id/action_finalPrescriptionFragment_to_cashOrderFragment"
+            app:destination="@id/cashOrderFragment" />
     </fragment>
     <fragment
         android:id="@+id/memoFragment"
         android:name="com.lizpostudio.kgoptometrycrm.forms.MemoFragment"
-        android:label="MemoFragment" >
+        android:label="MemoFragment">
+        <action
+            android:id="@+id/action_memoFragment_to_cashOrderFragment"
+            app:destination="@id/cashOrderFragment" />
         <action
             android:id="@+id/action_memoFragment_to_formSelectionFragment"
             app:destination="@id/formSelectionFragment" />
@@ -392,7 +419,10 @@
     <fragment
         android:id="@+id/refractionFragment"
         android:name="com.lizpostudio.kgoptometrycrm.forms.RefractionFragment"
-        android:label="RefractionFragment" >
+        android:label="RefractionFragment">
+        <action
+            android:id="@+id/action_refractionFragment_to_cashOrderFragment"
+            app:destination="@id/cashOrderFragment" />
         <action
             android:id="@+id/action_refractionFragment_to_formSelectionFragment"
             app:destination="@id/formSelectionFragment" />
@@ -423,5 +453,43 @@
         <action
             android:id="@+id/action_refractionFragment_to_contactLensFragment"
             app:destination="@id/contactLensFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/cashOrderFragment"
+        android:name="com.lizpostudio.kgoptometrycrm.forms.CashOrderFragment"
+        android:label="CashOrderFragment">
+        <argument
+            android:name="recordID"
+            app:argType="long" />
+        <action
+            android:id="@+id/action_finalPrescriptionFragment_to_finalPrescriptionFragment"
+            app:destination="@id/finalPrescriptionFragment" />
+        <action
+            android:id="@+id/action_finalPrescriptionFragment_to_orthokFragment"
+            app:destination="@id/orthokFragment" />
+        <action
+            android:id="@+id/action_finalPrescriptionFragment_to_contactLensFragment"
+            app:destination="@id/contactLensFragment" />
+        <action
+            android:id="@+id/action_finalPrescriptionFragment_to_formSelectionFragment"
+            app:destination="@id/formSelectionFragment" />
+        <action
+            android:id="@+id/action_finalPrescriptionFragment_to_currentRxFragment"
+            app:destination="@id/currentRxFragment" />
+        <action
+            android:id="@+id/action_finalPrescriptionFragment_to_ocularHealthFragment"
+            app:destination="@id/ocularHealthFragment" />
+        <action
+            android:id="@+id/action_finalPrescriptionFragment_to_infoFragment"
+            app:destination="@id/infoFragment" />
+        <action
+            android:id="@+id/action_finalPrescriptionFragment_to_supplementaryFragment"
+            app:destination="@id/supplementaryFragment" />
+        <action
+            android:id="@+id/action_finalPrescriptionFragment_to_memoFragment"
+            app:destination="@id/memoFragment" />
+        <action
+            android:id="@+id/action_finalPrescriptionFragment_to_refractionFragment"
+            app:destination="@id/refractionFragment" />
     </fragment>
 </navigation>

@@ -521,6 +521,13 @@ class CurrentRxFragment : Fragment() {
                     navigateFormRecordID
                 )
             )
+
+            orderOfSections[9] -> {
+                navController.navigate(
+                    CurrentRxFragmentDirections
+                        .actionCurrentRxFragmentToCashOrderFragment(navigateFormRecordID)
+                )
+            }
         }
     }
 

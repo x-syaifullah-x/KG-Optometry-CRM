@@ -542,6 +542,13 @@ class MemoFragment : Fragment() {
                     navigateFormRecordID
                 )
             )
+
+            orderOfSections[9] -> {
+                navController.navigate(
+                    MemoFragmentDirections
+                        .actionMemoFragmentToCashOrderFragment(navigateFormRecordID)
+                )
+            }
         }
     }
 

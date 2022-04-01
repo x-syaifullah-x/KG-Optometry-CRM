@@ -342,6 +342,9 @@ class FormSelectionFragment: Fragment() {
         binding.memoButton.setOnClickListener {
             patientViewModel.createNewRecord(patientInfoForm, resources.getString(R.string.memo_form_caption))
         }
+        binding.cashOrderButton.setOnClickListener {
+            patientViewModel.createNewRecord(patientInfoForm, resources.getString(R.string.cash_order))
+        }
 
         patientViewModel.formAdded.observe(viewLifecycleOwner) { addedForm ->
             addedForm?.let {
@@ -394,6 +397,8 @@ class FormSelectionFragment: Fragment() {
                 navController.navigate(FormSelectionFragmentDirections.actionFormSelectionFragmentToOrthokFragment(recordSelected.recordID))
             resources.getString(R.string.final_prescription_caption) ->
                 navController.navigate(FormSelectionFragmentDirections.actionFormSelectionFragmentToFinalPrescriptionFragment(recordSelected.recordID))
+            resources.getString(R.string.cash_order) ->
+                navController.navigate(FormSelectionFragmentDirections.actionFormSelectionFragmentToCashOrderFragment(recordSelected.recordID))
             else ->{
                 Toast.makeText(context, " ${recordSelected.sectionName} not implemented yet", Toast.LENGTH_SHORT).show()
             }

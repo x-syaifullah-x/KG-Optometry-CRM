@@ -16,6 +16,7 @@ fun makeShortSectionName(sectionName:String) :String {
         "SUPPLEMENTARY TESTS" -> "SUP TST"
         "CONTACT LENS EXAM" -> "CON LENS"
         "ORTHOK" -> "ORTHOK"
+        "CASH ORDER" -> "CASH ORDER"
         else -> "FIN PRS"
     }
 }

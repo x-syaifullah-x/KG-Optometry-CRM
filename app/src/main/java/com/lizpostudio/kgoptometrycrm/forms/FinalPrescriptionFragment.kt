@@ -10,7 +10,9 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.ArrayAdapter
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.activity.addCallback
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -28,7 +30,7 @@ import com.lizpostudio.kgoptometrycrm.utils.*
 
 private const val TAG = "LogTrace"
 
-class FinalPrescriptionFragment: Fragment() {
+class FinalPrescriptionFragment : Fragment() {
 
     private val patientViewModel: PatientsViewModel by viewModels {
         PatientsViewModelFactory((requireNotNull(this.activity).application as OptometryApplication).repository)
@@ -42,7 +44,7 @@ class FinalPrescriptionFragment: Fragment() {
     private var recordID = 0L
     private var patientID = ""
 
-     private var sectionEditDate = -1L
+    private var sectionEditDate = -1L
 
     private var currentForm = Patients()
     private var navigateFormName = ""
@@ -76,28 +78,39 @@ class FinalPrescriptionFragment: Fragment() {
         )
         val app = requireNotNull(this.activity).application
 
-       val safeArgs:FinalPrescriptionFragmentArgs by navArgs()
+        val safeArgs: FinalPrescriptionFragmentArgs by navArgs()
         recordID = safeArgs.recordID
 
         // get Patient data
         patientViewModel.getPatientForm(recordID)
 
         binding.lifecycleOwner = this
-         val navController = this.findNavController()
+        val navController = this.findNavController()
 
         // get if user is Admin
-        val sharedPref = app.getSharedPreferences("kgoptometry",
-            Context.MODE_PRIVATE)
-        isAdmin= sharedPref?.getString("admin", "")?: "" == "admin"
+        val sharedPref = app.getSharedPreferences(
+            "kgoptometry",
+            Context.MODE_PRIVATE
+        )
+        isAdmin = sharedPref?.getString("admin", "") ?: "" == "admin"
 
-        viewOnlyMode = sharedPref?.getBoolean("viewOnly", false)?:false
+        viewOnlyMode = sharedPref?.getBoolean("viewOnly", false) ?: false
         if (viewOnlyMode) {
-            binding.mainLayout.setBackgroundColor(ContextCompat.getColor(requireContext(),R.color.viewOnlyMode))
+            binding.mainLayout.setBackgroundColor(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.viewOnlyMode
+                )
+            )
             binding.saveFormButton.visibility = View.GONE
-        }
-        else  binding.mainLayout.setBackgroundColor(ContextCompat.getColor(requireContext(),R.color.lightBackground))
+        } else binding.mainLayout.setBackgroundColor(
+            ContextCompat.getColor(
+                requireContext(),
+                R.color.lightBackground
+            )
+        )
 
-        binding.dateCaption.setOnClickListener{
+        binding.dateCaption.setOnClickListener {
             changeDate()
         }
 
@@ -138,7 +151,7 @@ class FinalPrescriptionFragment: Fragment() {
             }
         }
 
-        patientViewModel.patientInitForms.observe(viewLifecycleOwner, { allForms ->
+        patientViewModel.patientInitForms.observe(viewLifecycleOwner) { allForms ->
             allForms?.let {
 
                 var pAge = it.first().patientName + " "
@@ -149,7 +162,8 @@ class FinalPrescriptionFragment: Fragment() {
 
                         pAge += resources.getString(
                             R.string.number_of_years_patient,
-                            age, dob)
+                            age, dob
+                        )
                     }
                 }
                 binding.patientName.text = pAge
@@ -222,33 +236,47 @@ class FinalPrescriptionFragment: Fragment() {
                     navChipGroup.addView(chipDivider)
                 }
 
-                val hPosList = newList.map {form ->  form.recordID }
+                val hPosList = newList.map { form -> form.recordID }
                 val hPos = hPosList.indexOf(recordID)
-                if (hPos >3) {
+                if (hPos > 3) {
                     val scrollWidth = binding.chipsScroll.width
-                    val scrollX = ((hPos -2)* (scrollWidth/6.25)).toInt()
-                      binding.chipsScroll.postDelayed(Runnable {     binding.chipsScroll.smoothScrollTo(scrollX, 0)}, 100L)
+                    val scrollX = ((hPos - 2) * (scrollWidth / 6.25)).toInt()
+                    binding.chipsScroll.postDelayed({
+                        binding.chipsScroll.smoothScrollTo(scrollX, 0)
+                    }, 100L)
                 }
 
             }
 
-        })
+        }
 
         val sphListItems = sphList()
         val sphSpinnerAdapter: ArrayAdapter<String> =
-            ArrayAdapter<String>(app.applicationContext, android.R.layout.simple_spinner_item, sphListItems)
+            ArrayAdapter<String>(
+                app.applicationContext,
+                android.R.layout.simple_spinner_item,
+                sphListItems
+            )
         binding.spinnerLeftSph.adapter = sphSpinnerAdapter
         binding.spinnerRightSph.adapter = sphSpinnerAdapter
 
         val cylListItems = cylList()
         val cylSpinnerAdapter: ArrayAdapter<String> =
-            ArrayAdapter<String>(app.applicationContext, android.R.layout.simple_spinner_item, cylListItems)
+            ArrayAdapter<String>(
+                app.applicationContext,
+                android.R.layout.simple_spinner_item,
+                cylListItems
+            )
         binding.spinnerLeftCyl.adapter = cylSpinnerAdapter
         binding.spinnerRightCyl.adapter = cylSpinnerAdapter
 
         val addListItems = addList()
         val addSpinnerAdapter: ArrayAdapter<String> =
-            ArrayAdapter<String>(app.applicationContext, android.R.layout.simple_spinner_item, addListItems)
+            ArrayAdapter<String>(
+                app.applicationContext,
+                android.R.layout.simple_spinner_item,
+                addListItems
+            )
         binding.spinnerLeftAdd.adapter = addSpinnerAdapter
         binding.spinnerRightAdd.adapter = addSpinnerAdapter
 
@@ -261,43 +289,50 @@ class FinalPrescriptionFragment: Fragment() {
             binding.spinnerType.adapter = adapter
         }
 
-        patientViewModel.navTrigger.observe(viewLifecycleOwner, { navOption ->
+        patientViewModel.navTrigger.observe(viewLifecycleOwner) { navOption ->
             navOption?.let {
-                    launchNavigator(navOption)
+                launchNavigator(navOption)
             }
-        })
+        }
         // DELETE FORM FUNCTIONALITY
 
-        patientViewModel.recordDeleted.observe(viewLifecycleOwner, {ifDeleted ->
+        patientViewModel.recordDeleted.observe(viewLifecycleOwner) { ifDeleted ->
             ifDeleted?.let {
-                if (ifDeleted) navController.navigate(FinalPrescriptionFragmentDirections.
-                actionFinalPrescriptionFragmentToFormSelectionFragment(patientID))   }
-        })
+                if (ifDeleted) navController.navigate(
+                    FinalPrescriptionFragmentDirections
+                        .actionFinalPrescriptionFragmentToFormSelectionFragment(patientID)
+                )
+            }
+        }
 
-       binding.deleteForm.setOnClickListener {
-           if (context != null)
-               actionConfirmDeletion(
-                   title = resources.getString(R.string.form_delete_title),
-                   message = resources.getString(R.string.customer_form_delete,
-                       currentForm.sectionName,
-                       currentForm.patientName
-                   ),
-                   isAdmin, requireContext()
-               ) { allowed ->
-                   if (allowed) {
-                       patientViewModel.deleteRecord(currentForm)
-                       patientViewModel.deletePatientFromFirebase(currentForm.recordID.toString())
-                   }
-               }
+        binding.deleteForm.setOnClickListener {
+            if (context != null)
+                actionConfirmDeletion(
+                    title = resources.getString(R.string.form_delete_title),
+                    message = resources.getString(
+                        R.string.customer_form_delete,
+                        currentForm.sectionName,
+                        currentForm.patientName
+                    ),
+                    isAdmin, requireContext()
+                ) { allowed ->
+                    if (allowed) {
+                        patientViewModel.deleteRecord(currentForm)
+                        patientViewModel.deletePatientFromFirebase(currentForm.recordID.toString())
+                    }
+                }
         }
 
         binding.copyFromRefraction.setOnClickListener {
             // take out data from the form selected in spinner
 
-           var  isEmpty = true
+            var isEmpty = true
 
             if (refractionForms.lastIndex >= binding.spinnerFromRefraction.selectedItemPosition) {
-                val extractData = refractionForms[binding.spinnerFromRefraction.selectedItemPosition].sectionData.split("|")
+                val extractData =
+                    refractionForms[binding.spinnerFromRefraction.selectedItemPosition].sectionData.split(
+                        "|"
+                    )
                 binding.apply {
                     for (i in 0 until spinnerRightSph.adapter.count) {
                         if (extractData[33].trim() != "" &&
@@ -318,7 +353,9 @@ class FinalPrescriptionFragment: Fragment() {
                     isEmpty = true
                     for (i in 0 until spinnerRightCyl.adapter.count) {
                         if (extractData[34].trim() != "" &&
-                            extractData[34].trim().toDoubleOrNull() == spinnerRightCyl.adapter.getItem(i).toString().toDoubleOrNull()
+                            extractData[34].trim()
+                                .toDoubleOrNull() == spinnerRightCyl.adapter.getItem(i).toString()
+                                .toDoubleOrNull()
                         ) {
                             spinnerRightCyl.setSelection(i)
                             isEmpty = false
@@ -330,7 +367,9 @@ class FinalPrescriptionFragment: Fragment() {
                     isEmpty = true
                     for (i in 0 until spinnerRightAdd.adapter.count) {
                         if (extractData[44].trim() != "" &&
-                            extractData[44].trim().toDoubleOrNull() == spinnerRightAdd.adapter.getItem(i).toString().toDoubleOrNull()
+                            extractData[44].trim()
+                                .toDoubleOrNull() == spinnerRightAdd.adapter.getItem(i).toString()
+                                .toDoubleOrNull()
                         ) {
                             spinnerRightAdd.setSelection(i)
                             isEmpty = false
@@ -342,7 +381,9 @@ class FinalPrescriptionFragment: Fragment() {
                     isEmpty = true
                     for (i in 0 until spinnerLeftAdd.adapter.count) {
                         if (extractData[45].trim() != "" &&
-                            extractData[45].trim().toDoubleOrNull() == spinnerLeftAdd.adapter.getItem(i).toString().toDoubleOrNull()
+                            extractData[45].trim()
+                                .toDoubleOrNull() == spinnerLeftAdd.adapter.getItem(i).toString()
+                                .toDoubleOrNull()
                         ) {
                             spinnerLeftAdd.setSelection(i)
                             isEmpty = false
@@ -394,33 +435,36 @@ class FinalPrescriptionFragment: Fragment() {
         // CHANGE DATA in THE FORM if record in FIREBASE was changed.
 
         binding.saveFormButton.setOnClickListener {
-           saveAndNavigate("none")
+            saveAndNavigate("none")
         }
         binding.backFromFpToForms.setOnClickListener {
-           saveAndNavigate("back")
+            saveAndNavigate("back")
         }
 
-        patientViewModel.patientFireForm.observe(viewLifecycleOwner, {patientNewRecord ->
-            patientNewRecord?.let{
+        patientViewModel.patientFireForm.observe(viewLifecycleOwner) { patientNewRecord ->
+            patientNewRecord?.let {
                 Log.d(TAG, "Reload FP Form? == ${!currentForm.assertEqual(it)}")
-                if (currentForm.recordID == it.recordID && !currentForm.assertEqual(it) ) {
+                if (currentForm.recordID == it.recordID && !currentForm.assertEqual(it)) {
                     Log.d(TAG, "FP Record from FB loaded")
                     currentForm.copyFrom(it)
                     fillTheForm(it)
                 }
             }
-        })
+        }
 
         return binding.root
     }
 
-    private fun saveAndNavigate(navOption:String) {
+    private fun saveAndNavigate(navOption: String) {
         patientViewModel.removeRecordsChangesListener()
         if (viewOnlyMode) {
             launchNavigator(navOption)
         } else {
             if (formWasChanged()) {
-                patientViewModel.submitPatientToFirebase(currentForm.recordID.toString(), currentForm)
+                patientViewModel.submitPatientToFirebase(
+                    currentForm.recordID.toString(),
+                    currentForm
+                )
                 // trigger navigation after update
                 patientViewModel.updateRecord(currentForm, navOption)
             } else {
@@ -429,13 +473,14 @@ class FinalPrescriptionFragment: Fragment() {
         }
     }
 
-    private fun launchNavigator(option:String) {
+    private fun launchNavigator(option: String) {
         when (option) {
-            "none" -> {Log.d(TAG, "No navigation triggered")}
-            "back" ->   this.findNavController().navigate(
-                FinalPrescriptionFragmentDirections.actionFinalPrescriptionFragmentToFormSelectionFragment(
-                    patientID
-                )
+            "none" -> {
+                Log.d(TAG, "No navigation triggered")
+            }
+            "back" -> this.findNavController().navigate(
+                FinalPrescriptionFragmentDirections
+                    .actionFinalPrescriptionFragmentToFormSelectionFragment(patientID)
             )
             else -> navigateToSelectedForm()
         }
@@ -446,7 +491,7 @@ class FinalPrescriptionFragment: Fragment() {
         val orderOfSections = listOf(*resources.getStringArray(R.array.forms_order))
         // if same fragment - load new record
         // info section could be onlyUnique
-        when(navigateFormName) {
+        when (navigateFormName) {
 
             orderOfSections[0] -> navController.navigate(
                 FinalPrescriptionFragmentDirections
@@ -454,48 +499,52 @@ class FinalPrescriptionFragment: Fragment() {
             )
 
             orderOfSections[1] -> navController.navigate(
-                FinalPrescriptionFragmentDirections.actionFinalPrescriptionFragmentToMemoFragment(
-                    navigateFormRecordID
-                )
+                FinalPrescriptionFragmentDirections
+                    .actionFinalPrescriptionFragmentToMemoFragment(navigateFormRecordID)
             )
 
             orderOfSections[2] -> navController.navigate(
-                FinalPrescriptionFragmentDirections.actionFinalPrescriptionFragmentToCurrentRxFragment(
-                    navigateFormRecordID
-                )
+                FinalPrescriptionFragmentDirections
+                    .actionFinalPrescriptionFragmentToCurrentRxFragment(navigateFormRecordID)
             )
 
             orderOfSections[3] -> navController.navigate(
-                FinalPrescriptionFragmentDirections.actionFinalPrescriptionFragmentToRefractionFragment(
-                    navigateFormRecordID
-                )
+                FinalPrescriptionFragmentDirections
+                    .actionFinalPrescriptionFragmentToRefractionFragment(navigateFormRecordID)
             )
 
             orderOfSections[4] -> navController.navigate(
-                FinalPrescriptionFragmentDirections.actionFinalPrescriptionFragmentToOcularHealthFragment(
-                    navigateFormRecordID
-                )
+                FinalPrescriptionFragmentDirections
+                    .actionFinalPrescriptionFragmentToOcularHealthFragment(navigateFormRecordID)
             )
 
             orderOfSections[5] -> navController.navigate(
-                FinalPrescriptionFragmentDirections.actionFinalPrescriptionFragmentToSupplementaryFragment(
-                    navigateFormRecordID
-                )
+                FinalPrescriptionFragmentDirections
+                    .actionFinalPrescriptionFragmentToSupplementaryFragment(navigateFormRecordID)
             )
 
             orderOfSections[6] -> navController.navigate(
-                FinalPrescriptionFragmentDirections.actionFinalPrescriptionFragmentToContactLensFragment(
-                    navigateFormRecordID))
+                FinalPrescriptionFragmentDirections
+                    .actionFinalPrescriptionFragmentToContactLensFragment(navigateFormRecordID)
+            )
 
             orderOfSections[7] -> navController.navigate(
-                FinalPrescriptionFragmentDirections.actionFinalPrescriptionFragmentToOrthokFragment(
-                    navigateFormRecordID))
+                FinalPrescriptionFragmentDirections
+                    .actionFinalPrescriptionFragmentToOrthokFragment(navigateFormRecordID)
+            )
 
             orderOfSections[8] -> {
                 if (recordID != navigateFormRecordID) {
                     recordID = navigateFormRecordID
                     patientViewModel.getPatientForm(navigateFormRecordID)
                 }
+            }
+
+            orderOfSections[9] -> {
+                navController.navigate(
+                    FinalPrescriptionFragmentDirections
+                        .actionFinalPrescriptionFragmentToCashOrderFragment(navigateFormRecordID)
+                )
             }
         }
     }
@@ -505,21 +554,21 @@ class FinalPrescriptionFragment: Fragment() {
 
         val extractData = patientForm.sectionData.split('|').toMutableList()
 //      Log.d(TAG, "extract data size before = ${extractData.size}")
-        if (extractData.size<28) {
-            for (index in extractData.size ..28) {
+        if (extractData.size < 28) {
+            for (index in extractData.size..28) {
                 extractData.add("")
             }
         }
 
         binding.apply {
 
-     //       patientName.text = patientForm.patientName
+            //       patientName.text = patientForm.patientName
             dateCaption.text = convertLongToDDMMYY(patientForm.dateOfSection)
             sectionEditDate = patientForm.dateOfSection
 
             var isEmpty = true
             if (extractData[0].trim() != "") {
-                for(i in 0 until spinnerType.adapter.count) {
+                for (i in 0 until spinnerType.adapter.count) {
                     if (extractData[0].trim() == spinnerType.adapter.getItem(i).toString()) {
                         spinnerType.setSelection(i)
                         isEmpty = false
@@ -529,15 +578,16 @@ class FinalPrescriptionFragment: Fragment() {
             if (isEmpty) spinnerType.setSelection(0)
 
             isEmpty = true
-            for(i in 0 until spinnerRightSph.adapter.count) {
+            for (i in 0 until spinnerRightSph.adapter.count) {
                 if (extractData[1].trim() != "" &&
-                    extractData[1] == spinnerRightSph.adapter.getItem(i).toString()) {
+                    extractData[1] == spinnerRightSph.adapter.getItem(i).toString()
+                ) {
                     spinnerRightSph.setSelection(i)
                     isEmpty = false
                 }
             }
             if (isEmpty) { // set " " as default value
-                for(i in 0 until spinnerRightSph.adapter.count) {
+                for (i in 0 until spinnerRightSph.adapter.count) {
                     if (" " == spinnerRightSph.adapter.getItem(i).toString()) {
                         spinnerRightSph.setSelection(i)
                     }
@@ -545,9 +595,10 @@ class FinalPrescriptionFragment: Fragment() {
             }
 
             isEmpty = true
-            for(i in 0 until spinnerLeftSph.adapter.count) {
+            for (i in 0 until spinnerLeftSph.adapter.count) {
                 if (extractData[2].trim() != "" &&
-                    extractData[2] == spinnerLeftSph.adapter.getItem(i).toString()) {
+                    extractData[2] == spinnerLeftSph.adapter.getItem(i).toString()
+                ) {
                     spinnerLeftSph.setSelection(i)
                     isEmpty = false
                 }
@@ -561,9 +612,11 @@ class FinalPrescriptionFragment: Fragment() {
             }
 
             isEmpty = true
-            for(i in 0 until spinnerRightCyl.adapter.count) {
+            for (i in 0 until spinnerRightCyl.adapter.count) {
                 if (extractData[3].trim() != "" &&
-                    extractData[3].trim().toDoubleOrNull() == spinnerRightCyl.adapter.getItem(i).toString().toDoubleOrNull()) {
+                    extractData[3].trim().toDoubleOrNull() == spinnerRightCyl.adapter.getItem(i)
+                        .toString().toDoubleOrNull()
+                ) {
                     spinnerRightCyl.setSelection(i)
                     isEmpty = false
                 }
@@ -571,9 +624,11 @@ class FinalPrescriptionFragment: Fragment() {
             if (isEmpty) spinnerRightCyl.setSelection(0)
 
             isEmpty = true
-            for(i in 0 until spinnerLeftCyl.adapter.count) {
+            for (i in 0 until spinnerLeftCyl.adapter.count) {
                 if (extractData[4].trim() != "" &&
-                    extractData[4].trim().toDoubleOrNull() == spinnerLeftCyl.adapter.getItem(i).toString().toDoubleOrNull()) {
+                    extractData[4].trim().toDoubleOrNull() == spinnerLeftCyl.adapter.getItem(i)
+                        .toString().toDoubleOrNull()
+                ) {
                     spinnerLeftCyl.setSelection(i)
                     isEmpty = false
                 }
@@ -589,9 +644,10 @@ class FinalPrescriptionFragment: Fragment() {
             editLeftHt.setText(extractData[10])
 
             isEmpty = true
-            for(i in 0 until spinnerRightAdd.adapter.count) {
+            for (i in 0 until spinnerRightAdd.adapter.count) {
                 if (extractData[11].trim() != "" &&
-                    extractData[11].trim() == spinnerRightAdd.adapter.getItem(i).toString()) {
+                    extractData[11].trim() == spinnerRightAdd.adapter.getItem(i).toString()
+                ) {
                     spinnerRightAdd.setSelection(i)
                     isEmpty = false
                 }
@@ -599,9 +655,10 @@ class FinalPrescriptionFragment: Fragment() {
             if (isEmpty) spinnerRightAdd.setSelection(0)
 
             isEmpty = true
-            for(i in 0 until spinnerLeftAdd.adapter.count) {
+            for (i in 0 until spinnerLeftAdd.adapter.count) {
                 if (extractData[12].trim() != "" &&
-                    extractData[12].trim() == spinnerLeftAdd.adapter.getItem(i).toString()) {
+                    extractData[12].trim() == spinnerLeftAdd.adapter.getItem(i).toString()
+                ) {
                     spinnerLeftAdd.setSelection(i)
                     isEmpty = false
                 }
@@ -626,16 +683,19 @@ class FinalPrescriptionFragment: Fragment() {
 
             remarkInput.setText(patientForm.remarks)
 
-            val dataPractitioner = arrayOf(patientForm.practitioner)
+            val dataPractitioner = patientForm.practitioner.split("|")
+
             val adapterPractitioner =
                 ArrayAdapter(requireContext(), R.layout.spinner_list_basic_, dataPractitioner)
             practitionerName.adapter = adapterPractitioner
 
-            val dataPractitionerOptometrist = arrayOf(patientForm.practitioner)
             val adapterPractitionerOptometrist =
-                ArrayAdapter(requireContext(), R.layout.spinner_list_basic, dataPractitionerOptometrist)
+                ArrayAdapter(requireContext(), R.layout.spinner_list_basic, dataPractitioner)
             practitionerNameOptometrist.adapter = adapterPractitionerOptometrist
-// END of Binding
+
+            editOr.setText(patientForm.or)
+            editFrameSize.setText(patientForm.frameSize)
+            editFrameType.setText(patientForm.frameType)
         }
     }
 
@@ -643,7 +703,7 @@ class FinalPrescriptionFragment: Fragment() {
     /**
      * If UI was changed - returns true
      */
-    private fun formWasChanged():Boolean {
+    private fun formWasChanged(): Boolean {
         // create new Record, fill it in with Form data and pass to ViewModel with recordID to update DB
         val priorPatient = currentForm.copy()
 
@@ -652,8 +712,8 @@ class FinalPrescriptionFragment: Fragment() {
             currentForm.remarks = remarkInput.text.toString().toUpperCase()
             if (sectionEditDate != -1L) currentForm.dateOfSection = sectionEditDate
 
-            val extractData =  spinnerType.selectedItem.toString() + "|" +
-                                            spinnerRightSph.selectedItem.toString() + "|" +
+            val extractData = spinnerType.selectedItem.toString() + "|" +
+                    spinnerRightSph.selectedItem.toString() + "|" +
                     spinnerLeftSph.selectedItem.toString() + "|" +
                     spinnerRightCyl.selectedItem.toString() + "|" +
                     spinnerLeftCyl.selectedItem.toString() + "|" +
@@ -683,6 +743,20 @@ class FinalPrescriptionFragment: Fragment() {
 
             currentForm.sectionData = extractData.uppercase()
 
+            val dataSelected = binding.practitionerName.selectedItem as String
+
+            val dataPractitioner = StringBuilder(dataSelected)
+            val count = binding.practitionerName.adapter.count
+            for (i in 0 until count) {
+                val a = binding.practitionerName.adapter.getItem(i)
+                if (a.toString() != dataSelected) {
+                    dataPractitioner.append("|$a")
+                }
+            }
+            currentForm.practitioner = "$dataPractitioner"
+            currentForm.or = "${binding.editOr.text}"
+            currentForm.frameSize = "${binding.editFrameSize.text}"
+            currentForm.frameType = "${binding.editFrameType.text}"
         }
         return !currentForm.assertEqual(priorPatient)
     }
@@ -691,7 +765,7 @@ class FinalPrescriptionFragment: Fragment() {
         val (todayYear, todayMonth, todayDay) = dayMonthY()
         val myActivity = activity
 
-        myActivity?.let{
+        myActivity?.let {
             val datePickerDialog = DatePickerDialog(
                 it,
                 { _, year, monthOfYear, dayOfMonth -> // set day of month , month and year value in the edit text
@@ -704,6 +778,7 @@ class FinalPrescriptionFragment: Fragment() {
             datePickerDialog.show()
         }
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

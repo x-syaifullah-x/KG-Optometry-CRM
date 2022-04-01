@@ -457,7 +457,7 @@ class OrthokFragment: Fragment() {
             }
         }
 
-        patientViewModel.patientInitForms.observe(viewLifecycleOwner, { allForms ->
+        patientViewModel.patientInitForms.observe(viewLifecycleOwner) { allForms ->
             allForms?.let {
 
                 var pAge = it.first().patientName + " "
@@ -468,7 +468,8 @@ class OrthokFragment: Fragment() {
 
                         pAge += resources.getString(
                             R.string.number_of_years_patient,
-                            age, dob)
+                            age, dob
+                        )
                     }
                 }
                 binding.patientName.text = pAge
@@ -494,23 +495,35 @@ class OrthokFragment: Fragment() {
                         gravity = Gravity.CENTER
                     }
                     chip.layoutParams = params
-                    chip.setPadding((8*screenDst).toInt(), 0, (8*screenDst).toInt() ,0)
+                    chip.setPadding((8 * screenDst).toInt(), 0, (8 * screenDst).toInt(), 0)
 
                     if (patientForm.recordID == recordID)
-                        chip.setBackgroundColor(ContextCompat.getColor(app.applicationContext, R.color.lightBackground))
+                        chip.setBackgroundColor(
+                            ContextCompat.getColor(
+                                app.applicationContext,
+                                R.color.lightBackground
+                            )
+                        )
                     else
-                        chip.setBackgroundColor(ContextCompat.getColor(app.applicationContext, R.color.cardBackgroundDarker))
+                        chip.setBackgroundColor(
+                            ContextCompat.getColor(
+                                app.applicationContext,
+                                R.color.cardBackgroundDarker
+                            )
+                        )
 
                     val sectionShortName = makeShortSectionName(patientForm.sectionName)
                     chip.text = "$sectionShortName\n${
-                        convertLongToDDMMYY(patientForm.dateOfSection)}"
+                        convertLongToDDMMYY(patientForm.dateOfSection)
+                    }"
 
                     chip.tag = patientForm.sectionName + "\n" + "${patientForm.recordID}"
 
                     chip.setOnClickListener { button ->
                         navigateFormName = button.tag.toString().split("\n").first()
-                        navigateFormRecordID = button.tag.toString().split("\n").last().toLongOrNull()?:-1L
-                        if (navigateFormRecordID !=-1L) {
+                        navigateFormRecordID =
+                            button.tag.toString().split("\n").last().toLongOrNull() ?: -1L
+                        if (navigateFormRecordID != -1L) {
                             saveAndNavigate(navigateFormName)
                         }
                     }
@@ -524,16 +537,21 @@ class OrthokFragment: Fragment() {
                     navChipGroup.addView(chip)
                     navChipGroup.addView(chipDivider)
                 }
-                val hPosList = newList.map {form ->  form.recordID }
+                val hPosList = newList.map { form -> form.recordID }
                 val hPos = hPosList.indexOf(recordID)
-                if (hPos >3) {
+                if (hPos > 3) {
                     val scrollWidth = binding.chipsScroll.width
-                    val scrollX = ((hPos -2)* (scrollWidth/6.25)).toInt()
-                    binding.chipsScroll.postDelayed( {     binding.chipsScroll.smoothScrollTo(scrollX, 0)}, 100L)
+                    val scrollX = ((hPos - 2) * (scrollWidth / 6.25)).toInt()
+                    binding.chipsScroll.postDelayed({
+                        binding.chipsScroll.smoothScrollTo(
+                            scrollX,
+                            0
+                        )
+                    }, 100L)
                 }
 
             }
-        })
+        }
 
         patientViewModel.navTrigger.observe(viewLifecycleOwner, { navOption ->
             navOption?.let {
@@ -857,6 +875,13 @@ class OrthokFragment: Fragment() {
                     navigateFormRecordID
                 )
             )
+
+            orderOfSections[9] -> {
+                navController.navigate(
+                    OrthokFragmentDirections
+                        .actionOrthokFragmentToCashOrderFragment(navigateFormRecordID)
+                )
+            }
 
             else -> Toast.makeText(
                 this.activity?.applicationContext,

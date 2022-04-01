@@ -216,6 +216,8 @@
     <string name="solution_misc">Solution/Misc</string>
     <string name="solution_misc_rm">Sol/Misc RM</string>
     <string name="hint_mm_input">MM</string>
+    <string name="frame_type">Frame Type</string>
+    <string name="cash_order_caption">CASH ORDER</string>
 
     <string-array name="worth_four_dots">
         <item> </item>
@@ -296,6 +298,7 @@
         <item>CONTACT LENS EXAM</item>
         <item>ORTHOK</item>
         <item>FINAL PRESCRIPTION</item>
+        <item>CASH ORDER</item>
     </string-array>
 
     <string-array name="chart_choices">

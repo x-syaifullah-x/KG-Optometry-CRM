@@ -391,6 +391,13 @@ class PatientsViewModel(private val repository: PatientRepository) : ViewModel()
         }
     }
 
+    fun getCashOrder(patientID: String, sectionName: String) {
+        viewModelScope.launch {
+            _refractionForms.value =
+                repository.getRecordsByIDAndSection(patientID, sectionName)
+        }
+    }
+
     fun getFormsForSelectedDate(startDate: Long, endDate: Long) {
         viewModelScope.launch {
             _searchDateForms.value =

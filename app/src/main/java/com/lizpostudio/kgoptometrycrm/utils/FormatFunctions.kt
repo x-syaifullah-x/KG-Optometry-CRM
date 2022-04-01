@@ -5,15 +5,14 @@ import android.graphics.PointF
 import android.util.Log
 import com.lizpostudio.kgoptometrycrm.database.FBRecords
 import com.lizpostudio.kgoptometrycrm.database.Patients
-import java.lang.Exception
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.math.round
 import kotlin.random.Random
+
 private const val TAG = "LogTrace"
-private const val ONE_DAY = 24*3600*1000L
-fun convertFBRecordToPatients(f:FBRecords, key:Long):Patients {
+private const val ONE_DAY = 24 * 3600 * 1000L
+fun convertFBRecordToPatients(f: FBRecords, key: Long): Patients {
 
     return Patients(
         key,
@@ -23,7 +22,7 @@ fun convertFBRecordToPatients(f:FBRecords, key:Long):Patients {
         f.phone,
         f.address,
         f.familyCode,
-        f.dateOfSection.toLongOrNull()?:0L,
+        f.dateOfSection.toLongOrNull() ?: 0L,
         f.sectionName,
         f.sectionData,
         f.remarks,
@@ -32,11 +31,14 @@ fun convertFBRecordToPatients(f:FBRecords, key:Long):Patients {
         f.syncStatus == "true",
         f.reservedField,
         f.practitioner,
-        f.mm
+        f.mm,
+        f.or,
+        f.frameSize,
+        f.frameType
     )
 }
 
-fun convertFormToFBRecord(p:Patients):FBRecords {
+fun convertFormToFBRecord(p: Patients): FBRecords {
 
     return FBRecords(
         p.address,
@@ -54,7 +56,10 @@ fun convertFormToFBRecord(p:Patients):FBRecords {
         p.sectionName,
         "true",
         p.practitioner,
-        p.mm
+        p.mm,
+        p.or,
+        p.frameSize,
+        p.frameType
     )
 }
 
@@ -71,7 +76,11 @@ fun dayMonthY(): Triple<Int, Int, Int> {
  */
 
 
-fun convertStringToFillMask(inputAr:List<String>, widthRatio: Float=1f, heightRatio: Float =1f): MutableList<MutableList<PointF>> {
+fun convertStringToFillMask(
+    inputAr: List<String>,
+    widthRatio: Float = 1f,
+    heightRatio: Float = 1f
+): MutableList<MutableList<PointF>> {
 
     var firstIndex = -1
     val fillMask = mutableListOf<MutableList<PointF>>()
@@ -83,14 +92,17 @@ fun convertStringToFillMask(inputAr:List<String>, widthRatio: Float=1f, heightRa
             if (element.isNotEmpty()) {
                 for (points in 0 until element.lastIndex step 2) {
 
-                    val pointPosition = PointF(element[points].toFloatOrNull()?:0.0f, element[points+1].toFloatOrNull()?:0.0f)
-               //     Log.d("Orthok_Fragment", "x before = ${ pointPosition.x}, y before = ${ pointPosition.y}")
+                    val pointPosition = PointF(
+                        element[points].toFloatOrNull() ?: 0.0f,
+                        element[points + 1].toFloatOrNull() ?: 0.0f
+                    )
+                    //     Log.d("Orthok_Fragment", "x before = ${ pointPosition.x}, y before = ${ pointPosition.y}")
                     if (points != 0) {
-                        pointPosition.x *=widthRatio
+                        pointPosition.x *= widthRatio
                         pointPosition.y *= heightRatio
                     }
 
-            //        Log.d("Orthok_Fragment", "x after = ${ pointPosition.x}, y after = ${ pointPosition.y}")
+                    //        Log.d("Orthok_Fragment", "x after = ${ pointPosition.x}, y after = ${ pointPosition.y}")
                     fillMask[firstIndex].add(pointPosition)
                 }
             }
@@ -106,7 +118,7 @@ fun convertStringToFillMask(inputAr:List<String>, widthRatio: Float=1f, heightRa
  * Vector graphic in a way
  */
 
-fun convertFillMask(fillMask:List<List<PointF>>, width:Int=0, height: Int=0):String {
+fun convertFillMask(fillMask: List<List<PointF>>, width: Int = 0, height: Int = 0): String {
     // making 1 dimension string array from 2 dimensions vector coordinates
 
 
@@ -115,19 +127,21 @@ fun convertFillMask(fillMask:List<List<PointF>>, width:Int=0, height: Int=0):Str
     if (fillMask.isNotEmpty()) {
         for (index in 0..fillMask.lastIndex) {
             if (fillMask[index].isNotEmpty()) {
-                for (drawIndex in 0 .. fillMask[index].lastIndex) {
-                    vectorDrawingAr+= (fillMask[index][drawIndex].x).toInt().toString()
-                    vectorDrawingAr+=","
-                    vectorDrawingAr+= (fillMask[index][drawIndex].y).toInt().toString()
-                    vectorDrawingAr+= ","
+                for (drawIndex in 0..fillMask[index].lastIndex) {
+                    vectorDrawingAr += (fillMask[index][drawIndex].x).toInt().toString()
+                    vectorDrawingAr += ","
+                    vectorDrawingAr += (fillMask[index][drawIndex].y).toInt().toString()
+                    vectorDrawingAr += ","
                 }
-                if (vectorDrawingAr.length > 1) vectorDrawingAr = (vectorDrawingAr.substring(0, vectorDrawingAr.length - 1))
+                if (vectorDrawingAr.length > 1) vectorDrawingAr =
+                    (vectorDrawingAr.substring(0, vectorDrawingAr.length - 1))
                 vectorDrawingAr += "|"
             }
         }
-   //     if (vectorDrawingAr.length > 1) vectorDrawingAr = (vectorDrawingAr.substring(0, vectorDrawingAr.length - 1))
+        //     if (vectorDrawingAr.length > 1) vectorDrawingAr = (vectorDrawingAr.substring(0, vectorDrawingAr.length - 1))
     }
-    if (vectorDrawingAr.last() == '|') vectorDrawingAr = (vectorDrawingAr.substring(0, vectorDrawingAr.length - 1))
+    if (vectorDrawingAr.last() == '|') vectorDrawingAr =
+        (vectorDrawingAr.substring(0, vectorDrawingAr.length - 1))
 
     /*    for(index in 0 .. vectorDrawingAr.lastIndex) {
                Log.d(TAG, "${vectorDrawingAr[index]} \n")
@@ -142,15 +156,16 @@ fun convertFillMask(fillMask:List<List<PointF>>, width:Int=0, height: Int=0):Str
  * third comma _(6/
  */
 
-fun constructSphCyl(entryString: String) : String {
+fun constructSphCyl(entryString: String): String {
 
     var newString = entryString
 
-    val replacementList = listOf (" / ", " x ", " (6/")
+    val replacementList = listOf(" / ", " x ", " (6/")
 
     for (loop in 0..replacementList.lastIndex) {
         val comIndex = newString.indexOf(",")
-        if (comIndex != -1) newString =  newString.replaceRange(comIndex, comIndex+1, replacementList[loop])
+        if (comIndex != -1) newString =
+            newString.replaceRange(comIndex, comIndex + 1, replacementList[loop])
     }
 
     return newString
@@ -159,7 +174,7 @@ fun constructSphCyl(entryString: String) : String {
 /**
  * Creates string list with values "", "0", "1", ... "max" - for spinner
  */
-fun createNumbersList(max:Int): MutableList<String> {
+fun createNumbersList(max: Int): MutableList<String> {
     val list = mutableListOf<String>()
     list.add("")
     var add = 0
@@ -203,13 +218,13 @@ fun tBUTList(): MutableList<String> {
     var add = 1
     while (add < 11) {
         list.add("${add}S")
-        add ++
+        add++
     }
     list.add(">10S")
     return list
 }
 
- fun addList(): MutableList<String> {
+fun addList(): MutableList<String> {
     val df = DecimalFormat("#0.00")
     val list = mutableListOf<String>()
     list.add("")
@@ -220,7 +235,8 @@ fun tBUTList(): MutableList<String> {
     }
     return list
 }
- fun cylList(): MutableList<String> {
+
+fun cylList(): MutableList<String> {
     val df = DecimalFormat("#0.00")
     val list = mutableListOf<String>()
     list.add("")
@@ -231,7 +247,8 @@ fun tBUTList(): MutableList<String> {
     }
     return list
 }
- fun sphList(): MutableList<String> {
+
+fun sphList(): MutableList<String> {
     val df = DecimalFormat("#0.00")
     var sph = 8.00
     val list = mutableListOf<String>()
@@ -240,7 +257,7 @@ fun tBUTList(): MutableList<String> {
         sph -= 0.25
     }
     list.add("PL")
-     list.add(" ") // default selection
+    list.add(" ") // default selection
     sph = -0.25
     while (sph > -20.25) {
         list.add(df.format(sph))
@@ -253,11 +270,11 @@ fun tBUTList(): MutableList<String> {
  * corresponding to date (year, month, day) and time of selectedTime
  */
 @SuppressLint("SimpleDateFormat")
-fun convertYMDtoTimeMillis(year: Int, month: Int, day: Int):Long{
+fun convertYMDtoTimeMillis(year: Int, month: Int, day: Int): Long {
 
     return if ((year in 1801..2499) && (month in 0..11) && (day in 1..31)) {
         val parser = SimpleDateFormat("yyyy-MM-dd")
-        val source = year.toString() +"-" + (month+1).toString() + "-" + day.toString()
+        val source = year.toString() + "-" + (month + 1).toString() + "-" + day.toString()
         val output = parser.parse(source)
         output?.time ?: 0L
     } else 0L
@@ -295,7 +312,7 @@ fun computeAgeAndDOB(ic: String): Pair<String, String> {
 }
 
 
-fun getAgeFromIC(ic:String):String {
+fun getAgeFromIC(ic: String): String {
 
     var age = ""
 
@@ -325,13 +342,13 @@ fun getAgeFromIC(ic:String):String {
     return age
 }
 
- fun getAge(year: Int, month: Int, day: Int): String {
+fun getAge(year: Int, month: Int, day: Int): String {
     val dob: Calendar = Calendar.getInstance()
     val today: Calendar = Calendar.getInstance()
-    dob.set(year, month-1, day)
+    dob.set(year, month - 1, day)
 
-     val dobDay = dob.get(Calendar.DAY_OF_YEAR)
-     val todayDay = today.get(Calendar.DAY_OF_YEAR)
+    val dobDay = dob.get(Calendar.DAY_OF_YEAR)
+    val todayDay = today.get(Calendar.DAY_OF_YEAR)
 
     var age: Int = today.get(Calendar.YEAR) - dob.get(Calendar.YEAR)
     if (todayDay < dobDay) {
@@ -341,12 +358,12 @@ fun getAgeFromIC(ic:String):String {
     return ageInt.toString()
 }
 
-fun convertYYMMDDToDDMMYY(year: String, month: String, day: String):String {
+fun convertYYMMDDToDDMMYY(year: String, month: String, day: String): String {
     return "$day/$month/$year"
 }
 
-fun generateID():String {
-    val charPool : List<Char> = ('A'..'Z') + ('0'..'9')
+fun generateID(): String {
+    val charPool: List<Char> = ('A'..'Z') + ('0'..'9')
     return (1..10)
         .map { i -> Random.nextInt(i, charPool.size) }
         .map(charPool::get)
@@ -355,15 +372,15 @@ fun generateID():String {
 
 // used format dd/mm/yy
 @SuppressLint("SimpleDateFormat")
-fun getDateStartAEndMillis(date:String):Pair<Long, Long> {
+fun getDateStartAEndMillis(date: String): Pair<Long, Long> {
 
     val parser = SimpleDateFormat("dd/MM/yy")
     var dateStart = 0L
     var dateEnd = 0L
     try {
-        dateStart =  parser.parse(date.trim())?.time?:0L
+        dateStart = parser.parse(date.trim())?.time ?: 0L
         dateEnd = dateStart + ONE_DAY
-    } catch (e:Exception) {
+    } catch (e: Exception) {
         Log.d(TAG, "${e.message}")
     }
 
@@ -387,39 +404,40 @@ fun convertLongToDDMMYYHRSMIN(timeMillis: Long): String {
     return SimpleDateFormat("dd/MM/yy hh:mm a")
         .format(timeMillis).toString()
 }
+
 @SuppressLint("SimpleDateFormat")
-fun minutesAfterMidnight(timeOfDay: Long):Int{
+fun minutesAfterMidnight(timeOfDay: Long): Int {
     var minutesAfter = (SimpleDateFormat("mm").format(timeOfDay).toString()).toIntOrNull()
     val hoursAfter = (SimpleDateFormat("HH").format(timeOfDay).toString()).toIntOrNull()
     minutesAfter =
-        if (hoursAfter!=null && minutesAfter !=null) (hoursAfter*60 + minutesAfter) else 0
+        if (hoursAfter != null && minutesAfter != null) (hoursAfter * 60 + minutesAfter) else 0
 
     return minutesAfter
 }
 
 @SuppressLint("SimpleDateFormat")
-fun convertYYMMDDtoTimemillis(inputDate: String):Long{
+fun convertYYMMDDtoTimemillis(inputDate: String): Long {
     val parser = SimpleDateFormat("dd/MM/yy")
-    return  if (inputDate.length>6) parser.parse(inputDate.trim())?.time?:0L else 0L
+    return if (inputDate.length > 6) parser.parse(inputDate.trim())?.time ?: 0L else 0L
 }
 
-fun convertYYMMDDFROMRAWtoTimemillis(inputDate: String):Long{
+fun convertYYMMDDFROMRAWtoTimemillis(inputDate: String): Long {
 
     val currentTime = System.currentTimeMillis()
     val parser = SimpleDateFormat("yyyy-MM-dd")
 //    val output = if (inputDate.length>6) parser.parse(inputDate.trim())
     //   val savedMinutes = minutesAfterMidnight(currentTime)
 
-    return  if (inputDate.length>6) parser.parse(inputDate.trim())?.time?:0L else 0L
+    return if (inputDate.length > 6) parser.parse(inputDate.trim())?.time ?: 0L else 0L
 }
 
 @SuppressLint("SimpleDateFormat")
-fun convertDateFromRAWToTimemillis(inputDate: String):Long{
+fun convertDateFromRAWToTimemillis(inputDate: String): Long {
 
     val currentTime = System.currentTimeMillis()
     val parser = SimpleDateFormat("yy-MM-dd")
 //    val output = if (inputDate.length>6) parser.parse(inputDate.trim())
     //   val savedMinutes = minutesAfterMidnight(currentTime)
 
-    return  if (inputDate.length>6) parser.parse(inputDate.trim())?.time?:0L else 0L
+    return if (inputDate.length > 6) parser.parse(inputDate.trim())?.time ?: 0L else 0L
 }

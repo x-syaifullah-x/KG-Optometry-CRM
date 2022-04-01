@@ -928,7 +928,12 @@ class ContactLensFragment: Fragment() {
                      ContactLensFragmentDirections.actionContactLensFragmentToOrthokFragment(navigateFormRecordID))
                   orderOfSections[8] -> this.findNavController().navigate(
                       ContactLensFragmentDirections.actionContactLensFragmentToFinalPrescriptionFragment(navigateFormRecordID))
-
+                  orderOfSections[9] -> {
+                      this.findNavController().navigate(
+                          ContactLensFragmentDirections
+                              .actionContactLensFragmentToCashOrderFragment(navigateFormRecordID)
+                      )
+                  }
                 else -> Toast.makeText(context, getString(R.string.ok_hint), Toast.LENGTH_SHORT).show()
 
         }
