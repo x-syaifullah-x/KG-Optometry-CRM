@@ -457,6 +457,10 @@ class InfoFragment : Fragment() {
             saveAndNavigate("back")
         }
 
+        binding.homeButton.setOnClickListener {
+            saveAndNavigate("home")
+        }
+
         return binding.root
     }
 
@@ -490,10 +494,13 @@ class InfoFragment : Fragment() {
             "none" -> {
                 fillTheForm(currentForm)
             }
-            "back" -> this.findNavController().navigate(
+            "back" -> findNavController().navigate(
                 InfoFragmentDirections.actionInfoFragmentToFormSelectionFragment(
                     patientID
                 )
+            )
+            "home" -> findNavController().navigate(
+                InfoFragmentDirections.actionToDatabaseSearchFragment()
             )
             else -> navigateToSelectedForm()
         }

@@ -726,6 +726,10 @@ class OrthokFragment : Fragment() {
             saveAndNavigate("back")
         }
 
+        binding.homeButton.setOnClickListener {
+            saveAndNavigate("home")
+        }
+
         // Capture photo
         binding.photoButton.setOnClickListener {
             photoUri = FileProvider.getUriForFile(
@@ -896,6 +900,9 @@ class OrthokFragment : Fragment() {
                 OrthokFragmentDirections.actionOrthokFragmentToFormSelectionFragment(
                     patientID
                 )
+            )
+            "home" -> findNavController().navigate(
+                OrthokFragmentDirections.actionToDatabaseSearchFragment()
             )
             else -> navigateToSelectedForm()
         }

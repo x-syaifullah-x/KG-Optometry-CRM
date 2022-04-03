@@ -441,7 +441,7 @@ class OcularHealthFragment : Fragment() {
 
         }
 
-        patientViewModel.patientForm.observe(viewLifecycleOwner, { patientForm ->
+        patientViewModel.patientForm.observe(viewLifecycleOwner) { patientForm ->
             patientForm?.let {
                 patientID = it.patientID
                 currentForm.copyFrom(it)
@@ -451,9 +451,9 @@ class OcularHealthFragment : Fragment() {
 
                 patientViewModel.getAllFormsForPatient(patientID)
             }
-        })
+        }
 
-        patientViewModel.patientInitForms.observe(viewLifecycleOwner, { allForms ->
+        patientViewModel.patientInitForms.observe(viewLifecycleOwner) { allForms ->
             allForms?.let {
 
                 var pAge = it.first().patientName + " "
@@ -478,7 +478,7 @@ class OcularHealthFragment : Fragment() {
                 for (section in orderOfSections) {
                     for (forms in sortedList) {
                         var sectionName = forms.sectionName
-                        if (sectionName == getString(R.string.final_prescription_caption)){
+                        if (sectionName == getString(R.string.final_prescription_caption)) {
                             sectionName = getString(R.string.sales_order_from_selection)
                             forms.sectionName = getString(R.string.sales_order_from_selection)
                         }
@@ -567,7 +567,7 @@ class OcularHealthFragment : Fragment() {
             binding.frameTopOculus.visibility = View.VISIBLE
             binding.frameBottomOculus.visibility = View.VISIBLE
             //     Log.d(TAG, "${screenWidthPx() / 2}")
-        })
+        }
 
 
         val iopListItems = iopList()
@@ -601,11 +601,11 @@ class OcularHealthFragment : Fragment() {
         binding.spinnerTbutLeft.adapter = tBUTSpinnerAdapter
         binding.spinnerTbutRight.adapter = tBUTSpinnerAdapter
 
-        patientViewModel.navTrigger.observe(viewLifecycleOwner, { navOption ->
+        patientViewModel.navTrigger.observe(viewLifecycleOwner) { navOption ->
             navOption?.let {
                 launchNavigator(navOption)
             }
-        })
+        }
 
         binding.topOculus.setOnTouchListener { v, m ->
             if (m.action == MotionEvent.ACTION_DOWN) {
@@ -714,7 +714,7 @@ class OcularHealthFragment : Fragment() {
                 }
         }
 
-        patientViewModel.patientFireForm.observe(viewLifecycleOwner, { patientNewRecord ->
+        patientViewModel.patientFireForm.observe(viewLifecycleOwner) { patientNewRecord ->
             patientNewRecord?.let {
                 Log.d(TAG, "Reload OH Form? == ${!currentForm.assertEqual(it)}")
                 if (currentForm.recordID == it.recordID && !currentForm.assertEqual(it)) {
@@ -723,7 +723,7 @@ class OcularHealthFragment : Fragment() {
                     fillTheForm(it)
                 }
             }
-        })
+        }
 
         binding.saveFormButton.setOnClickListener {
             saveAndNavigate("none")
@@ -731,6 +731,10 @@ class OcularHealthFragment : Fragment() {
 
         binding.backFromOcHealthToForms.setOnClickListener {
             saveAndNavigate("back")
+        }
+
+        binding.homeButton.setOnClickListener {
+            saveAndNavigate("home")
         }
         return binding.root
     }
@@ -760,10 +764,13 @@ class OcularHealthFragment : Fragment() {
             "none" -> {
                 fillTheForm(currentForm)
             }
-            "back" -> this.findNavController().navigate(
+            "back" -> findNavController().navigate(
                 OcularHealthFragmentDirections.actionOcularHealthFragmentToFormSelectionFragment(
                     patientID
                 )
+            )
+            "home" -> findNavController().navigate(
+                OcularHealthFragmentDirections.actionToDatabaseSearchFragment()
             )
             else -> navigateToSelectedForm()
         }

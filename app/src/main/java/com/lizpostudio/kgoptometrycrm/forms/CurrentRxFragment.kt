@@ -434,6 +434,10 @@ class CurrentRxFragment : Fragment() {
             saveAndNavigate("back")
         }
 
+        binding.homeButton.setOnClickListener {
+            saveAndNavigate("home")
+        }
+
         return binding.root
     }
 
@@ -464,9 +468,10 @@ class CurrentRxFragment : Fragment() {
                 fillTheForm(currentForm)
             }
             "back" -> this.findNavController().navigate(
-                CurrentRxFragmentDirections.actionCurrentRxFragmentToFormSelectionFragment(
-                    patientID
-                )
+                CurrentRxFragmentDirections.actionCurrentRxFragmentToFormSelectionFragment(patientID)
+            )
+            "home" -> findNavController().navigate(
+                CurrentRxFragmentDirections.actionToDatabaseSearchFragment()
             )
             else -> navigateToSelectedForm()
         }

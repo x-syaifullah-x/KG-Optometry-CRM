@@ -72,8 +72,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/home_36"
-                tools:ignore="ContentDescription"
-                tools:visibility="visible" />
+                tools:ignore="ContentDescription" />
 
             <ImageView
                 android:id="@+id/create_new_patient"

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
@@ -20,7 +19,7 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
-                android:id="@+id/back_from_st_to_forms"
+                android:id="@+id/home_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -28,6 +27,19 @@
                 android:layout_marginBottom="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/home_42"
+                tools:ignore="ContentDescription" />
+
+            <ImageView
+                android:id="@+id/back_from_st_to_forms"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/home_button"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_baseline_arrow_back_24"
                 tools:ignore="ContentDescription" />
@@ -74,11 +86,11 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
                 android:paddingEnd="16dp"
-                app:tint="@color/redCircle"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_baseline_clear_24"
+                app:tint="@color/redCircle"
                 tools:ignore="ContentDescription,RtlSymmetry" />
 
 
@@ -284,7 +296,7 @@
                     android:layout_marginTop="8dp"
                     android:text="@string/right_aa"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/hint_accommodation"  />
+                    app:layout_constraintTop_toBottomOf="@+id/hint_accommodation" />
 
                 <TextView
                     android:id="@+id/hint_left_aa"
@@ -566,8 +578,8 @@
                     android:id="@+id/edit_additional_test"
                     style="@style/fixedConstraintInputTextBox18sp"
                     android:inputType="text"
-                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/hint_additional_tests"
                     tools:ignore="Autofill,LabelFor" />
 
@@ -585,8 +597,8 @@
                     style="@style/fixedConstraintInputTextBox18sp"
                     android:inputType="text"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/remark_hint"
                     tools:ignore="Autofill,LabelFor" />
 

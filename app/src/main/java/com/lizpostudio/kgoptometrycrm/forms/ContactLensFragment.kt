@@ -745,7 +745,7 @@ class ContactLensFragment : Fragment() {
             true
         }
         // ================ END OF PAINTINGS =============
-        patientViewModel.patientForm.observe(viewLifecycleOwner, { patientForm ->
+        patientViewModel.patientForm.observe(viewLifecycleOwner) { patientForm ->
             patientForm?.let {
                 currentForm.copyFrom(it)
                 patientID = it.patientID
@@ -755,7 +755,7 @@ class ContactLensFragment : Fragment() {
 
                 patientViewModel.getAllFormsForPatient(patientID)
             }
-        })
+        }
 
         patientViewModel.patientInitForms.observe(viewLifecycleOwner) { allForms ->
             allForms?.let {
@@ -924,6 +924,10 @@ class ContactLensFragment : Fragment() {
             saveAndNavigate("back")
         }
 
+        binding.homeButton.setOnClickListener {
+            saveAndNavigate("home")
+        }
+
         return binding.root
     }
 
@@ -956,6 +960,9 @@ class ContactLensFragment : Fragment() {
             "back" -> this.findNavController().navigate(
                 ContactLensFragmentDirections
                     .actionContactLensFragmentToFormSelectionFragment(patientID)
+            )
+            "home" -> findNavController().navigate(
+                ContactLensFragmentDirections.actionToDatabaseSearchFragment()
             )
             else -> navigateToSelectedForm()
         }

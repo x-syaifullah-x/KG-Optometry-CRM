@@ -13,22 +13,28 @@
         <entry key="..\:/android_projects/KGOptometryCRM/app/src/main/res/layout/fragment_refraction.xml" value="0.5" />
         <entry key="..\:/android_projects/KGOptometryCRM/app/src/main/res/layout/fragment_refraction_form.xml" value="0.4195804195804196" />
         <entry key="app/src/main/res/drawable/green_circle.xml" value="0.219" />
+        <entry key="app/src/main/res/drawable/home_36.xml" value="0.174" />
+        <entry key="app/src/main/res/drawable/home_42.xml" value="0.174" />
+        <entry key="app/src/main/res/drawable/ic_baseline_arrow_back_24.xml" value="0.174" />
         <entry key="app/src/main/res/drawable/save_42.xml" value="0.168" />
         <entry key="app/src/main/res/drawable/visibility_32.xml" value="0.219" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.21197916666666666" />
         <entry key="app/src/main/res/layout/final_prescription_contact_lens.xml" value="0.21197916666666666" />
         <entry key="app/src/main/res/layout/form_item_report.xml" value="0.10598958333333333" />
-        <entry key="app/src/main/res/layout/fragment_cash_order.xml" value="0.10598958333333333" />
+        <entry key="app/src/main/res/layout/fragment_cash_order.xml" value="0.21" />
+        <entry key="app/src/main/res/layout/fragment_contact_lens.xml" value="0.17400598546387344" />
         <entry key="app/src/main/res/layout/fragment_current_rx_form.xml" value="0.1" />
-        <entry key="app/src/main/res/layout/fragment_database_search.xml" value="0.21197916666666666" />
+        <entry key="app/src/main/res/layout/fragment_database_search.xml" value="0.10598958333333333" />
         <entry key="app/src/main/res/layout/fragment_final_prescription.xml" value="0.17" />
-        <entry key="app/src/main/res/layout/fragment_form_selection.xml" value="0.10598958333333333" />
+        <entry key="app/src/main/res/layout/fragment_form_selection.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_info_form.xml" value="0.10598958333333333" />
         <entry key="app/src/main/res/layout/fragment_info_form_copy.xml" value="0.11979166666666667" />
         <entry key="app/src/main/res/layout/fragment_login.xml" value="0.15291936978683968" />
         <entry key="app/src/main/res/layout/fragment_memo.xml" value="0.158984375" />
+        <entry key="app/src/main/res/layout/fragment_ocular_health.xml" value="0.17400598546387344" />
         <entry key="app/src/main/res/layout/fragment_orthok.xml" value="0.17" />
         <entry key="app/src/main/res/layout/fragment_refraction.xml" value="0.158984375" />
+        <entry key="app/src/main/res/layout/fragment_supplementary_test.xml" value="0.17400598546387344" />
         <entry key="app/src/main/res/layout/list_item_report.xml" value="0.21197916666666666" />
         <entry key="app/src/main/res/layout/popup_action_info.xml" value="0.10598958333333333" />
         <entry key="app/src/main/res/layout/spinner_list_basic.xml" value="0.21197916666666666" />

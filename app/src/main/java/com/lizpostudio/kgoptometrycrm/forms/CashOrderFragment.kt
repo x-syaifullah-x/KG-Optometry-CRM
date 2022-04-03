@@ -176,7 +176,7 @@ class CashOrderFragment : Fragment() {
                 for (section in orderOfSections) {
                     for (forms in sortedList) {
                         var sectionName = forms.sectionName
-                        if (sectionName == getString(R.string.final_prescription_caption)){
+                        if (sectionName == getString(R.string.final_prescription_caption)) {
                             sectionName = getString(R.string.sales_order_from_selection)
                             forms.sectionName = getString(R.string.sales_order_from_selection)
                         }
@@ -442,6 +442,10 @@ class CashOrderFragment : Fragment() {
             saveAndNavigate("back")
         }
 
+        binding.homeButton.setOnClickListener {
+            saveAndNavigate("home")
+        }
+
         patientViewModel.patientFireForm.observe(viewLifecycleOwner) { patientNewRecord ->
             patientNewRecord?.let {
                 Log.d(TAG, "Reload FP Form? == ${!currentForm.assertEqual(it)}")
@@ -478,9 +482,12 @@ class CashOrderFragment : Fragment() {
             "none" -> {
                 fillTheForm(currentForm)
             }
-            "back" -> this.findNavController().navigate(
+            "back" -> findNavController().navigate(
                 CashOrderFragmentDirections
                     .actionFinalPrescriptionFragmentToFormSelectionFragment(patientID)
+            )
+            "home" -> findNavController().navigate(
+                CashOrderFragmentDirections.actionToDatabaseSearchFragment()
             )
             else -> navigateToSelectedForm()
         }

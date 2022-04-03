@@ -146,7 +146,7 @@ class SupplementaryFragment : Fragment() {
                 for (section in orderOfSections) {
                     for (forms in sortedList) {
                         var sectionName = forms.sectionName
-                        if (sectionName == getString(R.string.final_prescription_caption)){
+                        if (sectionName == getString(R.string.final_prescription_caption)) {
                             sectionName = getString(R.string.sales_order_from_selection)
                             forms.sectionName = getString(R.string.sales_order_from_selection)
                         }
@@ -304,7 +304,7 @@ class SupplementaryFragment : Fragment() {
                 }
         }
         // CHANGE DATA in THE FORM if record in FIREBASE was changed.
-        patientViewModel.patientFireForm.observe(viewLifecycleOwner, { patientNewRecord ->
+        patientViewModel.patientFireForm.observe(viewLifecycleOwner) { patientNewRecord ->
             patientNewRecord?.let {
                 Log.d(TAG, "Reload ST Form? == ${!currentForm.assertEqual(it)}")
                 if (currentForm.recordID == it.recordID && !currentForm.assertEqual(it)) {
@@ -313,13 +313,17 @@ class SupplementaryFragment : Fragment() {
                     fillTheForm(it)
                 }
             }
-        })
+        }
         binding.saveFormButton.setOnClickListener {
             saveAndNavigate("none")
         }
 
         binding.backFromStToForms.setOnClickListener {
             saveAndNavigate("back")
+        }
+
+        binding.homeButton.setOnClickListener {
+            saveAndNavigate("home")
         }
 
         return binding.root
@@ -354,6 +358,9 @@ class SupplementaryFragment : Fragment() {
                 SupplementaryFragmentDirections.actionSupplementaryFragmentToFormSelectionFragment(
                     patientID
                 )
+            )
+            "home" -> findNavController().navigate(
+                SupplementaryFragmentDirections.actionToDatabaseSearchFragment()
             )
             else -> navigateToSelectedForm()
         }

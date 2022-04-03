@@ -176,7 +176,7 @@ class RefractionFragment : Fragment() {
                 for (section in orderOfSections) {
                     for (forms in sortedList) {
                         var sectionName = forms.sectionName
-                        if (sectionName == getString(R.string.final_prescription_caption)){
+                        if (sectionName == getString(R.string.final_prescription_caption)) {
                             sectionName = getString(R.string.sales_order_from_selection)
                             forms.sectionName = getString(R.string.sales_order_from_selection)
                         }
@@ -489,6 +489,10 @@ class RefractionFragment : Fragment() {
         binding.backFromRefractionToForms.setOnClickListener {
             saveAndNavigate("back")
         }
+
+        binding.homeButton.setOnClickListener {
+            saveAndNavigate("home")
+        }
         return binding.root
     }
 
@@ -522,6 +526,9 @@ class RefractionFragment : Fragment() {
                 RefractionFragmentDirections.actionRefractionFragmentToFormSelectionFragment(
                     patientID
                 )
+            )
+            "home" -> findNavController().navigate(
+                RefractionFragmentDirections.actionToDatabaseSearchFragment()
             )
             else -> navigateToSelectedForm()
         }

@@ -180,7 +180,7 @@ class MemoFragment : Fragment() {
                 for (section in orderOfSections) {
                     for (forms in sortedList) {
                         var sectionName = forms.sectionName
-                        if (sectionName == getString(R.string.final_prescription_caption)){
+                        if (sectionName == getString(R.string.final_prescription_caption)) {
                             sectionName = getString(R.string.sales_order_from_selection)
                             forms.sectionName = getString(R.string.sales_order_from_selection)
                         }
@@ -372,6 +372,10 @@ class MemoFragment : Fragment() {
             saveAndNavigate("back")
         }
 
+        binding.homeButton.setOnClickListener {
+            saveAndNavigate("home")
+        }
+
         patientViewModel.photoFromFBReady.observe(viewLifecycleOwner) { ready ->
             ready?.let {
                 if (it) uploadPhotoFileToImage()
@@ -478,10 +482,13 @@ class MemoFragment : Fragment() {
             "none" -> {
                 fillTheForm(currentForm)
             }
-            "back" -> this.findNavController().navigate(
+            "back" -> findNavController().navigate(
                 MemoFragmentDirections.actionMemoFragmentToFormSelectionFragment(
                     patientID
                 )
+            )
+            "home" -> findNavController().navigate(
+                MemoFragmentDirections.actionToDatabaseSearchFragment()
             )
             else -> navigateToSelectedForm()
         }

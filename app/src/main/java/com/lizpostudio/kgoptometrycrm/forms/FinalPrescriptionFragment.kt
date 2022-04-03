@@ -105,7 +105,8 @@ class FinalPrescriptionFragment : Fragment() {
             )
             binding.saveFormButton.visibility = View.GONE
         } else binding.mainLayout.setBackgroundColor(
-            ContextCompat.getColor(requireContext(), R.color.lightBackground
+            ContextCompat.getColor(
+                requireContext(), R.color.lightBackground
             )
         )
 
@@ -175,7 +176,7 @@ class FinalPrescriptionFragment : Fragment() {
                 for (section in orderOfSections) {
                     for (forms in sortedList) {
                         var sectionName = forms.sectionName
-                        if (sectionName == getString(R.string.final_prescription_caption)){
+                        if (sectionName == getString(R.string.final_prescription_caption)) {
                             sectionName = getString(R.string.sales_order_from_selection)
                             forms.sectionName = getString(R.string.sales_order_from_selection)
                         }
@@ -450,6 +451,10 @@ class FinalPrescriptionFragment : Fragment() {
             saveAndNavigate("back")
         }
 
+        binding.homeButton.setOnClickListener {
+            saveAndNavigate("home")
+        }
+
         patientViewModel.patientFireForm.observe(viewLifecycleOwner) { patientNewRecord ->
             patientNewRecord?.let {
                 Log.d(TAG, "Reload FP Form? == ${!currentForm.assertEqual(it)}")
@@ -490,6 +495,9 @@ class FinalPrescriptionFragment : Fragment() {
             "back" -> this.findNavController().navigate(
                 FinalPrescriptionFragmentDirections
                     .actionFinalPrescriptionFragmentToFormSelectionFragment(patientID)
+            )
+            "home" -> findNavController().navigate(
+                FinalPrescriptionFragmentDirections.actionToDatabaseSearchFragment()
             )
             else -> navigateToSelectedForm()
         }
@@ -716,19 +724,20 @@ class FinalPrescriptionFragment : Fragment() {
                 }
             }
 
-            practitionerNameOptometrist.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>?,
-                    view: View?,
-                    position: Int,
-                    id: Long
-                ) {
-                    practitionerName.setSelection(position)
-                }
+            practitionerNameOptometrist.onItemSelectedListener =
+                object : AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(
+                        parent: AdapterView<*>?,
+                        view: View?,
+                        position: Int,
+                        id: Long
+                    ) {
+                        practitionerName.setSelection(position)
+                    }
 
-                override fun onNothingSelected(parent: AdapterView<*>?) {
+                    override fun onNothingSelected(parent: AdapterView<*>?) {
+                    }
                 }
-            }
 
 
             editOr.setText(patientForm.or)
