@@ -34,7 +34,7 @@ private const val TAG = "LogTrace"
 class SupplementaryFragment : Fragment() {
 
     private val patientViewModel: PatientsViewModel by viewModels {
-        PatientsViewModelFactory((requireNotNull(this.activity).application as OptometryApplication).repository)
+        PatientsViewModelFactory(requireContext())
     }
 
     private var isAdmin = false
@@ -554,6 +554,15 @@ class SupplementaryFragment : Fragment() {
             editAdditionalTest.setText(extractData[19])
 
             remarkInput.setText(patientForm.remarks)
+
+            patientViewModel.practitioner.observe(viewLifecycleOwner) {
+                val adapterPractitioner =
+                    ArrayAdapter(requireContext(), R.layout.spinner_list_basic_, it)
+                practitionerName.adapter = adapterPractitioner
+                it.forEachIndexed { index, s ->
+                    if (s == patientForm.practitioner) practitionerName.setSelection(index)
+                }
+            }
 // END of Binding
         }
     }
@@ -593,6 +602,7 @@ class SupplementaryFragment : Fragment() {
                     editAdditionalTest.text.toString()
             currentForm.sectionData = extractData.uppercase()
 
+            currentForm.practitioner = (binding.practitionerName.selectedItem as String).uppercase()
         }
         return !currentForm.assertEqual(priorPatient)
     }

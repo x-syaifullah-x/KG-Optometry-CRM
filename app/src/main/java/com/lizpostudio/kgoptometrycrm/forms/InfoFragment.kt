@@ -39,7 +39,7 @@ private const val TAG = "LogTrace"
 class InfoFragment : Fragment() {
 
     private val patientViewModel: PatientsViewModel by viewModels {
-        PatientsViewModelFactory((requireNotNull(this.activity).application as OptometryApplication).repository)
+        PatientsViewModelFactory(requireContext())
     }
     private var viewOnlyMode = false
 
@@ -730,10 +730,19 @@ class InfoFragment : Fragment() {
 
             remarkInput.setText(patientForm.remarks)
 
-            val dataPractitioner = patientForm.practitioner.split("|")
-            val adapterPractitioner =
-                ArrayAdapter(requireContext(), R.layout.spinner_list_basic_, dataPractitioner)
-            practitionerName.adapter = adapterPractitioner
+//            val dataPractitioner = patientForm.practitioner.split("|")
+//            val adapterPractitioner =
+//                ArrayAdapter(requireContext(), R.layout.spinner_list_basic_, dataPractitioner)
+//            practitionerName.adapter = adapterPractitioner
+
+            patientViewModel.practitioner.observe(viewLifecycleOwner) {
+                val adapterPractitioner =
+                    ArrayAdapter(requireContext(), R.layout.spinner_list_basic_, it)
+                practitionerName.adapter = adapterPractitioner
+                it.forEachIndexed { index, s ->
+                    if (s == patientForm.practitioner) practitionerName.setSelection(index)
+                }
+            }
         }
     }
 
@@ -853,17 +862,16 @@ class InfoFragment : Fragment() {
             //       Log.d(TAG, "saving data [7] = ${extractData.split('|')[7]} and [9] = ${extractData.split('|')[9]}")
             currentForm.sectionData = extractData.uppercase()
 
-            val dataSelected = binding.practitionerName.selectedItem as String
-
-            val dataPractitioner = StringBuilder(dataSelected)
-            val count = binding.practitionerName.adapter.count
-            for (i in 0 until count) {
-                val a = binding.practitionerName.adapter.getItem(i)
-                if (a.toString() != dataSelected) {
-                    dataPractitioner.append("|$a")
-                }
-            }
-            currentForm.practitioner = "$dataPractitioner".uppercase()
+//            val dataSelected = binding.practitionerName.selectedItem as String
+//            val dataPractitioner = StringBuilder(dataSelected)
+//            val count = binding.practitionerName.adapter.count
+//            for (i in 0 until count) {
+//                val a = binding.practitionerName.adapter.getItem(i)
+//                if (a.toString() != dataSelected) {
+//                    dataPractitioner.append("|$a")
+//                }
+//            }
+            currentForm.practitioner = (binding.practitionerName.selectedItem as String).uppercase()
 
             return !currentForm.assertEqual(priorPatient)
         }

@@ -1,5 +1,6 @@
 package com.lizpostudio.kgoptometrycrm
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.*
 import com.google.firebase.database.DataSnapshot
@@ -7,18 +8,41 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.StorageReference
-import com.lizpostudio.kgoptometrycrm.database.FBRecords
-import com.lizpostudio.kgoptometrycrm.database.PatientRepository
-import com.lizpostudio.kgoptometrycrm.database.Patients
+import com.lizpostudio.kgoptometrycrm.database.*
 import com.lizpostudio.kgoptometrycrm.utils.convertFBRecordToPatients
 import com.lizpostudio.kgoptometrycrm.utils.convertFormToFBRecord
 import com.lizpostudio.kgoptometrycrm.utils.convertLongToDDMMYYHRSMIN
 import com.lizpostudio.kgoptometrycrm.utils.generateID
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 private const val TAG = "LogTrace"
 
-class PatientsViewModel(private val repository: PatientRepository) : ViewModel() {
+class PatientsViewModel(
+    private val repository: PatientRepository,
+    private val practitionerRepository: PractitionerRepository
+) : ViewModel() {
+
+    init {
+        CoroutineScope(Dispatchers.IO).launch {
+
+            val historyListener = object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()) {
+                        practitionerRepository.insert(PractitionerEntity(data = "${snapshot.value}"))
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {}
+            }
+            repository.practitionerReference?.addListenerForSingleValueEvent(historyListener)
+        }
+    }
+
+    val practitioner = practitionerRepository.get().map {
+        it.data.split(",")
+    }
 
     private var recordsChangesListener: ValueEventListener? = null
     private var listenToChange = false
@@ -472,12 +496,14 @@ class PatientsViewModel(private val repository: PatientRepository) : ViewModel()
     }
 }
 
-class PatientsViewModelFactory(private val repository: PatientRepository) :
-    ViewModelProvider.Factory {
+class PatientsViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(PatientsViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return PatientsViewModel(repository) as T
+            return PatientsViewModel(
+                PatientRepository.getInstance(context),
+                PractitionerRepository.getInstance(context)
+            ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

@@ -60,7 +60,7 @@ class FormSelectionFragment: Fragment() {
     private val binding get() = _binding!!
 
     private val patientViewModel: PatientsViewModel by viewModels {
-        PatientsViewModelFactory((requireNotNull(this.activity).application as OptometryApplication).repository)
+        PatientsViewModelFactory(requireContext())
     }
 
     private val allPatientForms = mutableListOf<Patients>()

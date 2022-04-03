@@ -36,7 +36,7 @@ private var TAG = "LogTrace"
 class ContactLensFragment : Fragment() {
 
     private val patientViewModel: PatientsViewModel by viewModels {
-        PatientsViewModelFactory((requireNotNull(this.activity).application as OptometryApplication).repository)
+        PatientsViewModelFactory(requireContext())
     }
 
     private var isAdmin = false
@@ -1531,6 +1531,15 @@ class ContactLensFragment : Fragment() {
             editLensLeft.setText(extractData[130])
 
             editRemark.setText(patientForm.remarks)
+
+            patientViewModel.practitioner.observe(viewLifecycleOwner) {
+                val adapterPractitioner =
+                    ArrayAdapter(requireContext(), R.layout.spinner_list_basic_, it)
+                practitionerName.adapter = adapterPractitioner
+                it.forEachIndexed { index, s ->
+                    if (s == patientForm.practitioner) practitionerName.setSelection(index)
+                }
+            }
 // END of Binding
         }
         // LOAD FITTINGS DATA
@@ -1705,6 +1714,8 @@ class ContactLensFragment : Fragment() {
                     editLLens.text.toString() + "|" + secondFittingElement
 
             currentForm.sectionData = extractData.uppercase()
+
+            currentForm.practitioner = (binding.practitionerName.selectedItem as String).uppercase()
         }
 
         return !currentForm.assertEqual(priorPatient)

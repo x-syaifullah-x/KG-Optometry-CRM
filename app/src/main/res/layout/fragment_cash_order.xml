@@ -190,17 +190,6 @@
                 app:layout_constraintBottom_toBottomOf="@id/date_caption"
                 app:layout_constraintEnd_toStartOf="@id/date_caption"
                 app:layout_constraintTop_toTopOf="@id/date_caption" />
-
-            <!--            <Spinner-->
-            <!--                android:id="@+id/practitioner_name"-->
-            <!--                style="@style/Widget.AppCompat.Spinner.Underlined"-->
-            <!--                android:layout_width="0dp"-->
-            <!--                android:layout_height="match_parent"-->
-            <!--                android:layout_marginEnd="15dp"-->
-            <!--                android:minWidth="100dp"-->
-            <!--                app:layout_constraintBottom_toBottomOf="parent"-->
-            <!--                app:layout_constraintEnd_toStartOf="@id/date_caption"-->
-            <!--                app:layout_constraintTop_toTopOf="parent" />-->
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 

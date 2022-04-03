@@ -56,7 +56,7 @@ class DatabaseSearchFragment : Fragment() {
     private var allowSync = true
 
     private val patientViewModel: PatientsViewModel by viewModels {
-        PatientsViewModelFactory((requireNotNull(this.activity).application as OptometryApplication).repository)
+        PatientsViewModelFactory(requireContext())
     }
 
     private val historyUpdateList = mutableListOf<Long>()

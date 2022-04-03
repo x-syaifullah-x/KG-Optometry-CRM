@@ -7,10 +7,15 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [Patients::class], version = 1, exportSchema = false)
-abstract class PatientsDatabase:RoomDatabase() {
+@Database(
+    entities = [Patients::class, PractitionerEntity::class],
+    version = 2,
+    exportSchema = false
+)
+abstract class PatientsDatabase : RoomDatabase() {
 
     abstract val patientsDao: PatientsDao
+    abstract val practitionerDao: PractitionerDao
 
     companion object {
         @Volatile
@@ -18,6 +23,7 @@ abstract class PatientsDatabase:RoomDatabase() {
 
         private val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(database: SupportSQLiteDatabase) {
+
             }
         }
 
@@ -36,6 +42,7 @@ abstract class PatientsDatabase:RoomDatabase() {
                     )
                         .fallbackToDestructiveMigration()
                         .addMigrations(MIGRATION_1_2)
+                        .allowMainThreadQueries()
                         .build()
 
                     PATIENTS_INSTANCE = instance

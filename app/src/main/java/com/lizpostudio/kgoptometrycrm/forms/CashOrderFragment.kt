@@ -20,7 +20,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.lizpostudio.kgoptometrycrm.OptometryApplication
 import com.lizpostudio.kgoptometrycrm.PatientsViewModel
 import com.lizpostudio.kgoptometrycrm.PatientsViewModelFactory
 import com.lizpostudio.kgoptometrycrm.R
@@ -33,7 +32,7 @@ private const val TAG = "LogTrace"
 class CashOrderFragment : Fragment() {
 
     private val patientViewModel: PatientsViewModel by viewModels {
-        PatientsViewModelFactory((requireNotNull(this.activity).application as OptometryApplication).repository)
+        PatientsViewModelFactory(requireContext())
     }
 
     private var isAdmin = false
@@ -698,10 +697,14 @@ class CashOrderFragment : Fragment() {
             editSolutionMisc.setText(patientForm.solutionMisc)
             editSolutionMiscRm.setText(patientForm.solutionMiscRm)
 
-            val dataPractitioner = patientForm.practitioner.split("|")
-            val adapterPractitioner =
-                ArrayAdapter(requireContext(), R.layout.spinner_list_basic_, dataPractitioner)
-            practitionerName.adapter = adapterPractitioner
+            patientViewModel.practitioner.observe(viewLifecycleOwner) {
+                val adapterPractitioner =
+                    ArrayAdapter(requireContext(), R.layout.spinner_list_basic_, it)
+                practitionerName.adapter = adapterPractitioner
+                it.forEachIndexed { index, s ->
+                    if (s == patientForm.practitioner) practitionerName.setSelection(index)
+                }
+            }
 
 //            val dataPractitionerOptometrist = arrayOf(patientForm.practitioner)
 //            val adapterPractitionerOptometrist =
@@ -788,16 +791,16 @@ class CashOrderFragment : Fragment() {
             currentForm.solutionMisc = "${binding.editSolutionMisc.text}".uppercase()
             currentForm.solutionMiscRm = "${binding.editSolutionMiscRm.text}".uppercase()
 
-            val dataSelected = binding.practitionerName.selectedItem as String
-            val dataPractitioner = StringBuilder(dataSelected)
-            val count = binding.practitionerName.adapter.count
-            for (i in 0 until count) {
-                val a = binding.practitionerName.adapter.getItem(i)
-                if (a.toString() != dataSelected) {
-                    dataPractitioner.append("|$a")
-                }
-            }
-            currentForm.practitioner = "$dataPractitioner".uppercase()
+//            val dataSelected = binding.practitionerName.selectedItem as String
+//            val dataPractitioner = StringBuilder(dataSelected)
+//            val count = binding.practitionerName.adapter.count
+//            for (i in 0 until count) {
+//                val a = binding.practitionerName.adapter.getItem(i)
+//                if (a.toString() != dataSelected) {
+//                    dataPractitioner.append("|$a")
+//                }
+//            }
+            currentForm.practitioner = (binding.practitionerName.selectedItem as String).uppercase()
         }
         return !currentForm.assertEqual(priorPatient)
     }

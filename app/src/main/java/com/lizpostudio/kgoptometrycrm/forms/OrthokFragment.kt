@@ -50,7 +50,7 @@ private const val vaDefault = "6/"
 class OrthokFragment : Fragment() {
 
     private val patientViewModel: PatientsViewModel by viewModels {
-        PatientsViewModelFactory((requireNotNull(this.activity).application as OptometryApplication).repository)
+        PatientsViewModelFactory(requireContext())
     }
     private var isAdmin = false
 
@@ -1164,11 +1164,20 @@ class OrthokFragment : Fragment() {
             /*    if (editLeftVa2.text.toString() == "") editLeftVa2.setText(vaDefault)
                 if (editRightVa2.text.toString() == "") editRightVa2.setText(vaDefault)*/
 
-            val dataPractitioner = patientForm.practitioner.split("|")
+//            val dataPractitioner = patientForm.practitioner.split("|")
+//
+//            val adapterPractitioner =
+//                ArrayAdapter(requireContext(), R.layout.spinner_list_basic_, dataPractitioner)
+//            practitionerName.adapter = adapterPractitioner
 
-            val adapterPractitioner =
-                ArrayAdapter(requireContext(), R.layout.spinner_list_basic_, dataPractitioner)
-            practitionerName.adapter = adapterPractitioner
+            patientViewModel.practitioner.observe(viewLifecycleOwner) {
+                val adapterPractitioner =
+                    ArrayAdapter(requireContext(), R.layout.spinner_list_basic_, it)
+                practitionerName.adapter = adapterPractitioner
+                it.forEachIndexed { index, s ->
+                    if (s == patientForm.practitioner) practitionerName.setSelection(index)
+                }
+            }
 
 // END of Binding
         }
@@ -1242,16 +1251,17 @@ class OrthokFragment : Fragment() {
 
             currentForm.sectionData = extractData.uppercase()
 
-            val dataSelected = binding.practitionerName.selectedItem as String
-            val dataPractitioner = StringBuilder(dataSelected)
-            val count = binding.practitionerName.adapter.count
-            for (i in 0 until count) {
-                val a = binding.practitionerName.adapter.getItem(i)
-                if (a.toString() != dataSelected) {
-                    dataPractitioner.append("|$a")
-                }
-            }
-            currentForm.practitioner = "$dataPractitioner".uppercase()
+//            val dataSelected = binding.practitionerName.selectedItem as String
+//            val dataPractitioner = StringBuilder(dataSelected)
+//            val count = binding.practitionerName.adapter.count
+//            for (i in 0 until count) {
+//                val a = binding.practitionerName.adapter.getItem(i)
+//                if (a.toString() != dataSelected) {
+//                    dataPractitioner.append("|$a")
+//                }
+//            }
+//            currentForm.practitioner = "$dataPractitioner".uppercase()
+            currentForm.practitioner = (binding.practitionerName.selectedItem as String).uppercase()
         }
 
         return !currentForm.assertEqual(priorPatient)

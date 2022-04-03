@@ -110,38 +110,87 @@
             app:layout_constraintTop_toBottomOf="@+id/top_navigation"
             tools:text="FATIN BT ABDUL RAZAK" />
 
-        <TextView
-            android:id="@+id/form_caption"
-            android:layout_width="wrap_content"
+<!--        <TextView-->
+<!--            android:id="@+id/form_caption"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginTop="8dp"-->
+<!--            android:background="@color/cardBackgroundDarker"-->
+<!--            android:fontFamily="@font/didact_gothic"-->
+<!--            android:padding="4dp"-->
+<!--            android:paddingStart="16dp"-->
+<!--            android:text="@string/refraction_caption"-->
+<!--            android:textColor="@color/colorPrimaryDark"-->
+<!--            android:textSize="18sp"-->
+<!--            android:textStyle="bold"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/patient_name" />-->
+
+<!--        <TextView-->
+<!--            android:id="@+id/date_caption"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:background="@color/cardBackgroundDarker"-->
+<!--            android:fontFamily="@font/didact_gothic"-->
+<!--            android:padding="4dp"-->
+<!--            android:paddingEnd="16dp"-->
+<!--            android:textAlignment="textEnd"-->
+<!--            android:textColor="@color/colorPrimaryDark"-->
+<!--            android:textSize="18sp"-->
+<!--            android:textStyle="bold"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toEndOf="@+id/form_caption"-->
+<!--            app:layout_constraintTop_toTopOf="@+id/form_caption"-->
+<!--            tools:text="05/10/2020" />-->
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/aa"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:background="@color/cardBackgroundDarker"
-            android:fontFamily="@font/didact_gothic"
             android:padding="4dp"
-            android:paddingStart="16dp"
-            android:text="@string/refraction_caption"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/patient_name" />
+            app:layout_constraintTop_toBottomOf="@+id/patient_name">
 
-        <TextView
-            android:id="@+id/date_caption"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:background="@color/cardBackgroundDarker"
-            android:fontFamily="@font/didact_gothic"
-            android:padding="4dp"
-            android:paddingEnd="16dp"
-            android:textAlignment="textEnd"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/form_caption"
-            app:layout_constraintTop_toTopOf="@+id/form_caption"
-            tools:text="05/10/2020" />
+            <TextView
+                android:id="@+id/form_caption"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:fontFamily="@font/didact_gothic"
+                android:paddingStart="16dp"
+                android:text="@string/refraction_caption"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/date_caption"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:fontFamily="@font/didact_gothic"
+                android:paddingEnd="16dp"
+                android:textAlignment="textEnd"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="05/10/2020" />
+
+            <Spinner
+                android:id="@+id/practitioner_name"
+                style="@android:style/Widget.Holo.Light.Spinner"
+                android:layout_width="@dimen/sph_width"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                app:layout_constraintBottom_toBottomOf="@id/date_caption"
+                app:layout_constraintEnd_toStartOf="@id/date_caption"
+                app:layout_constraintTop_toTopOf="@id/date_caption" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.core.widget.NestedScrollView
             android:id="@+id/scroll_view_layout"
@@ -150,7 +199,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/form_caption">
+            app:layout_constraintTop_toBottomOf="@+id/aa">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/main_layout_nested"
