@@ -534,6 +534,7 @@ class InfoFragment : Fragment() {
 
                     } else {
                         showPopup("ID was not changed! \nThe same ID [${binding.idInput.text}] belongs to the customer ${ifIDExists.first().patientName}!")
+                        return
                     }
                 }
                 // update current form
@@ -872,7 +873,7 @@ class InfoFragment : Fragment() {
 //                }
 //            }
             currentForm.practitioner = (binding.practitionerName.selectedItem as String).uppercase()
-
+            currentForm.patientID = "${binding.idInput.text}"
             return !currentForm.assertEqual(priorPatient)
         }
     }

@@ -41,7 +41,11 @@ class PatientsViewModel(
     }
 
     val practitioner = practitionerRepository.get().map {
-        it.data.split(",")
+        val dataBlank = mutableListOf("")
+        dataBlank.addAll(
+            it.data.split(",")
+        )
+        dataBlank.toList()
     }
 
     private var recordsChangesListener: ValueEventListener? = null

@@ -723,7 +723,6 @@ class CashOrderFragment : Fragment() {
         val priorPatient = currentForm.copy()
 
         binding.apply {
-
             currentForm.remarks = remarkInput.text.toString().uppercase()
             if (sectionEditDate != -1L) currentForm.dateOfSection = sectionEditDate
 

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
@@ -19,19 +20,6 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
-                android:id="@+id/home_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/home_42"
-                tools:ignore="ContentDescription" />
-
-            <ImageView
                 android:id="@+id/back_to_forms_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -39,7 +27,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/home_button"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_baseline_arrow_back_24"
                 tools:ignore="ContentDescription" />
@@ -77,6 +65,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="start|fill_horizontal"
                     android:orientation="horizontal" />
+
             </HorizontalScrollView>
 
 
@@ -87,11 +76,11 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
                 android:paddingEnd="16dp"
+                app:tint="@color/redCircle"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_baseline_clear_24"
-                app:tint="@color/redCircle"
                 tools:ignore="ContentDescription,RtlSymmetry" />
 
 
@@ -113,16 +102,50 @@
             app:layout_constraintTop_toBottomOf="@+id/top_navigation"
             tools:text="FATIN BT ABDUL RAZAK" />
 
+
+        <TextView
+            android:id="@+id/form_caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@color/cardBackgroundDarker"
+            android:fontFamily="@font/didact_gothic"
+            android:padding="4dp"
+            android:paddingStart="16dp"
+            android:text="@string/contact_lens_caption"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/patient_name" />
+
+        <TextView
+            android:id="@+id/date_caption"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@color/cardBackgroundDarker"
+            android:fontFamily="@font/didact_gothic"
+            android:padding="4dp"
+            android:paddingEnd="16dp"
+            android:textAlignment="textEnd"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/form_caption"
+            app:layout_constraintTop_toTopOf="@+id/form_caption"
+            tools:text="05/10/2020" />
+
         <ImageView
             android:id="@+id/patient_history_switch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
+            app:tint="@color/greenCircle"
             app:layout_constraintBottom_toBottomOf="@+id/patient_name"
             app:layout_constraintEnd_toStartOf="@+id/ocular_health_switch"
             app:layout_constraintTop_toTopOf="@+id/patient_name"
             app:srcCompat="@drawable/history_32"
-            app:tint="@color/greenCircle"
             tools:ignore="ContentDescription" />
 
         <ImageView
@@ -158,88 +181,6 @@
             app:srcCompat="@drawable/final_prescription"
             tools:ignore="ContentDescription" />
 
-        <!--        <TextView-->
-        <!--            android:id="@+id/form_caption"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:layout_marginTop="8dp"-->
-        <!--            android:background="@color/cardBackgroundDarker"-->
-        <!--            android:fontFamily="@font/didact_gothic"-->
-        <!--            android:padding="4dp"-->
-        <!--            android:paddingStart="16dp"-->
-        <!--            android:text="@string/contact_lens_caption"-->
-        <!--            android:textColor="@color/colorPrimaryDark"-->
-        <!--            android:textSize="18sp"-->
-        <!--            android:textStyle="bold"-->
-        <!--            app:layout_constraintStart_toStartOf="parent"-->
-        <!--            app:layout_constraintTop_toBottomOf="@+id/patient_name" />-->
-
-        <!--        <TextView-->
-        <!--            android:id="@+id/date_caption"-->
-        <!--            android:layout_width="0dp"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:background="@color/cardBackgroundDarker"-->
-        <!--            android:fontFamily="@font/didact_gothic"-->
-        <!--            android:padding="4dp"-->
-        <!--            android:paddingEnd="16dp"-->
-        <!--            android:textAlignment="textEnd"-->
-        <!--            android:textColor="@color/colorPrimaryDark"-->
-        <!--            android:textSize="18sp"-->
-        <!--            android:textStyle="bold"-->
-        <!--            app:layout_constraintEnd_toEndOf="parent"-->
-        <!--            app:layout_constraintStart_toEndOf="@+id/form_caption"-->
-        <!--            app:layout_constraintTop_toTopOf="@+id/form_caption"-->
-        <!--            tools:text="05/10/2020" />-->
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/aa"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="@color/cardBackgroundDarker"
-            android:padding="4dp"
-            app:layout_constraintTop_toBottomOf="@+id/patient_name">
-
-            <TextView
-                android:id="@+id/form_caption"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:fontFamily="@font/didact_gothic"
-                android:paddingStart="16dp"
-                android:text="@string/contact_lens_caption"
-                android:textColor="@color/colorPrimaryDark"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/date_caption"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:fontFamily="@font/didact_gothic"
-                android:paddingEnd="16dp"
-                android:textAlignment="textEnd"
-                android:textColor="@color/colorPrimaryDark"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="05/10/2020" />
-
-            <Spinner
-                android:id="@+id/practitioner_name"
-                style="@android:style/Widget.Holo.Light.Spinner"
-                android:layout_width="@dimen/sph_width"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                app:layout_constraintBottom_toBottomOf="@id/date_caption"
-                app:layout_constraintEnd_toStartOf="@id/date_caption"
-                app:layout_constraintTop_toTopOf="@id/date_caption" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
         <androidx.core.widget.NestedScrollView
             android:id="@+id/layout_patient_history"
             android:layout_width="match_parent"
@@ -248,8 +189,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/aa"
-            tools:visibility="gone">
+            app:layout_constraintTop_toBottomOf="@id/form_caption">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/inner_layout_patient_history"
@@ -659,6 +599,7 @@
         </androidx.core.widget.NestedScrollView>
 
         <androidx.constraintlayout.widget.ConstraintLayout
+
             android:id="@+id/layout_ocular_health"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -666,8 +607,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/aa"
-            tools:visibility="visible">
+            app:layout_constraintTop_toBottomOf="@id/form_caption">
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guideline50_cl"
@@ -1060,7 +1000,6 @@
                     <TextView
                         android:id="@+id/hint_lashes_right"
                         style="@style/primaryDark18sp"
-                        android:layout_width="wrap_content"
                         android:layout_marginTop="8dp"
                         android:text="@string/lashes"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -1094,7 +1033,6 @@
                     <TextView
                         android:id="@+id/hint_tbut_right"
                         style="@style/primaryDark18sp"
-                        android:layout_width="wrap_content"
                         android:layout_marginTop="8dp"
                         android:text="@string/tbut"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -1128,7 +1066,6 @@
                     <TextView
                         android:id="@+id/hint_tear_quality"
                         style="@style/primaryDark18sp"
-                        android:layout_width="wrap_content"
                         android:layout_marginTop="8dp"
                         android:text="@string/tear_quality"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -1197,7 +1134,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/aa">
+            app:layout_constraintTop_toBottomOf="@id/form_caption">
 
             <!-- FITTING  GRAPHICS CONTROL ELEMENTS -->
 
@@ -1810,10 +1747,11 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:visibility="gone"
+            tools:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/aa">
+            app:layout_constraintTop_toBottomOf="@id/form_caption">
 
             <TextView
                 android:id="@+id/section_final_prescription"
@@ -2233,11 +2171,10 @@
             android:layout_marginEnd="16dp"
             android:visibility="gone"
             app:layout_constraintEnd_toStartOf="@+id/fit_switch_2"
-            app:layout_constraintTop_toBottomOf="@+id/aa"
+            app:layout_constraintTop_toBottomOf="@+id/date_caption"
             app:srcCompat="@drawable/lens_fitting"
             app:tint="@color/greenCircle"
-            tools:ignore="ContentDescription"
-            tools:visibility="visible" />
+            tools:ignore="ContentDescription" />
 
         <ImageView
             android:id="@+id/fit_switch_2"
@@ -2247,10 +2184,9 @@
             android:layout_marginEnd="16dp"
             android:visibility="gone"
             app:layout_constraintEnd_toStartOf="@+id/fit_switch_3"
-            app:layout_constraintTop_toBottomOf="@+id/aa"
+            app:layout_constraintTop_toBottomOf="@+id/date_caption"
             app:srcCompat="@drawable/lens_fitting"
-            tools:ignore="ContentDescription"
-            tools:visibility="visible" />
+            tools:ignore="ContentDescription" />
 
         <ImageView
             android:id="@+id/fit_switch_3"
@@ -2260,10 +2196,9 @@
             android:layout_marginEnd="16dp"
             android:visibility="gone"
             app:layout_constraintEnd_toStartOf="@+id/fit_switch_4"
-            app:layout_constraintTop_toBottomOf="@+id/aa"
+            app:layout_constraintTop_toBottomOf="@+id/date_caption"
             app:srcCompat="@drawable/lens_fitting"
-            tools:ignore="ContentDescription"
-            tools:visibility="visible" />
+            tools:ignore="ContentDescription" />
 
         <ImageView
             android:id="@+id/fit_switch_4"
@@ -2273,9 +2208,10 @@
             android:layout_marginEnd="56dp"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/aa"
+            app:layout_constraintTop_toBottomOf="@+id/date_caption"
             app:srcCompat="@drawable/lens_fitting"
-            tools:ignore="ContentDescription"
-            tools:visibility="visible" />
+            tools:ignore="ContentDescription" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </layout>
