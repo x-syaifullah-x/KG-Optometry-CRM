@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">KG Optometry CRM</string>
-    <string name="kg_optometry">KG OPTOMETRY</string>
     <string name="kg_optometry_crm">KG OPTOMETRY CRM</string>
     <string name="login_hint">Your login</string>
     <string name="hello_user">Hello, %1$s!</string>
@@ -8,17 +7,11 @@
     <string name="logout">LOG OUT</string>
     <string name="please_login">You should login into the app to continue using it.</string>
     <string name="sign_in_failure">Sign in Failure!</string>
-    <string name="remember_me_checkbox">Remember me on this device</string>
-    <string name="forgot_password">Forgot password?</string>
     <string name="hint_search_by">Search by:</string>
     <string name="entries_found_in_database">Found %1$s customers</string>
-    <string name="data_import_completed">Completed! \nDatabase has now %1$s customers.</string>
-    <string name="refraction_overdue">Found %1$s customers with overdue RF</string>
     <string name="hint_start_typing">Start typing to search database</string>
     <string name="hint_phone">Phone:</string>
     <string name="hint_family_code">Family code:</string>
-    <string name="select_forms_to_add">Select FORM to add:</string>
-    <string name="number_of_years">- %1$s years</string>
 
     <string name="number_of_years_patient">- %1$s years, DOB: %2$s</string>
 
@@ -33,8 +26,6 @@
     <string name="sales_order">SALES ORDER</string>
     <string name="contact_lens_caption">CONTACT LENS EXAM</string>
     <string name="orthox_caption">ORTHOK</string>
-    <string name="save_button">SAVE</string>
-    <string name="delete_form">DELETE</string>
 
     <string name="hint_name_input">Name:</string>
     <string name="hint_id_input">ID:</string>
@@ -56,7 +47,6 @@
     <string name="hint_occupation">Occupation:</string>
 
     <string name="hint_contact_lens">Contact Lens:</string>
-    <string name="hint_vdu">VDU:</string>
     <string name="hint_driving">Driving:</string>
     <string name="yes_answer">Yes</string>
     <string name="no_answer">No</string>
@@ -70,8 +60,6 @@
     <string name="hint_glaucoma">Glaucoma:</string>
     <string name="hint_eye_surgery">Eye Surgery:</string>
     <string name="hint_current_status">Status/History/Main CO</string>
-    <string name="hint_history">History:</string>
-    <string name="hint_main_complaint">Main Complaint:</string>
     <string name="hint_remark">Remark:</string>
 
     <string name="right">R</string>
@@ -97,8 +85,6 @@
     <string name="mpmva">MPMVA</string>
     <string name="ouva">OU VA</string>
     <string name="x_sign">X</string>
-    <string name="previous">PREV</string>
-    <string name="next">NEXT</string>
 
     <string name="currently_using">Currently Using</string>
     <string name="current_lens">Current Lens</string>
@@ -182,7 +168,6 @@
     <string name="contact_lens_sun_glass">Contact Lens / Sunglasses</string>
     <string name="clsgrm">CL/SG RM</string>
     <string name="optometrist">Optometrist</string>
-    <string name="salesperson">Salesperson</string>
 
     <string name="unaided_va">Unaided VA</string>
     <string name="over_refraction_short">Over-ref.</string>
@@ -198,18 +183,10 @@
     <string name="photo_delete">Do you want to delete photo forever?</string>
 
     <string name="to_prescribe">TO PRESCRIBE</string>
-    <string name="t_slash_a">T/A</string>
-    <string name="t_slash_s">T/S</string>
     <string name="t_slash_h">T/H</string>
-    <string name="o_slash_r">O/R</string>
-    <string name="sph_cyl_axis_va">Sph / Cyl x Axis ( VA )</string>
-    <string name="wait_a_minute">Wait a minute - checking for new entries ..</string>
-    <string name="start_search">Customers</string>
     <string name="settled_checkbox_caption">SETTLED</string>
-    <string name="successfully_saved">Record was successfully saved!</string>
     <string name="navigation_else">Navigation was not defined</string>
     <string name="goto_customers">Customers</string>
-    <string name="need_admin_rights">You need ADMIN rights to DELETE the record!</string>
     <string name="or">OR</string>
     <string name="frame_size">Frame Size</string>
     <string name="total_rm">Total RM</string>
@@ -226,37 +203,6 @@
         <item>RE SUPPRESSED</item>
         <item>LE SUPPRESSED</item>
         <item>5 DOTS</item>
-    </string-array>
-
-    <string-array name="cover_test">
-        <item> </item>
-        <item>NMD</item>
-        <item>SXP</item>
-        <item>MXP</item>
-        <item>LXP</item>
-        <item>CUSTOM</item>
-    </string-array>
-
-    <string-array name="howell_card">
-        <item> </item>
-        <item>ORTHO</item>
-        <item>1XP</item>
-        <item>2XP</item>
-        <item>3XP</item>
-        <item>4XP</item>
-        <item>5XP</item>
-        <item>6XP</item>
-        <item>7XP</item>
-        <item>8XP</item>
-        <item>9XP</item>
-        <item>10XP</item>
-        <item>1EP</item>
-        <item>2EP</item>
-        <item>3EP</item>
-        <item>4EP</item>
-        <item>5EP</item>
-        <item>6EP</item>
-        <item>Custom</item>
     </string-array>
 
     <string-array name="range_movement">

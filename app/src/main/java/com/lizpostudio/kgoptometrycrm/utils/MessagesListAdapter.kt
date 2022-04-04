@@ -1,14 +1,11 @@
 package com.lizpostudio.kgoptometrycrm.utils
 
 
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.lizpostudio.kgoptometrycrm.database.Patients
 import com.lizpostudio.kgoptometrycrm.databinding.ItemMessageBinding
 import com.lizpostudio.kgoptometrycrm.firebase.KGMessage
 

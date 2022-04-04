@@ -145,7 +145,7 @@ dependencies {
 //    implementation 'com.intuit.ssp:ssp-android:1.0.6'
 
     // Testing
-//    testImplementation "junit:junit:$rootProject.junitVersion"
+    testImplementation "junit:junit:$rootProject.junitVersion"
 //    androidTestImplementation "androidx.arch.core:core-testing:$rootProject.coreTestingVersion"
 //    androidTestImplementation ("androidx.test.espresso:espresso-core:$rootProject.espressoVersion", {
 //        exclude group: 'com.android.support', module: 'support-annotations'

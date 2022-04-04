@@ -3,6 +3,7 @@ package com.lizpostudio.kgoptometrycrm
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.*
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -40,8 +41,19 @@ class PatientsViewModel(
         }
     }
 
+    private val userEmail = FirebaseAuth.getInstance()
+        .currentUser?.email
+
+    private val userName =
+        if (userEmail!!.contains("@")) {
+            userEmail.split("@".toRegex())
+                .dropLastWhile { it.isEmpty() }
+                .toTypedArray()[0].uppercase()
+        } else {
+            ""
+        }
     val practitioner = practitionerRepository.get().map {
-        val dataBlank = mutableListOf("")
+        val dataBlank = linkedSetOf(userName.uppercase())
         dataBlank.addAll(
             it.data.split(",")
         )

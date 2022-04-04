@@ -4,7 +4,7 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="../../../../../.gradle/caches/transforms-3/fe0ef4ee9de0f28a578a9fe268022eed/transformed/appcompat-1.4.1/res/drawable/abc_spinner_textfield_background_material.xml" value="0.186" />
-        <entry key="../../../../../.local/src/SDK/android/platforms/android-31/data/res/layout/simple_spinner_item.xml" value="0.158984375" />
+        <entry key="../../../../../.local/src/SDK/android/platforms/android-31/data/res/layout/simple_spinner_item.xml" value="0.10598958333333333" />
         <entry key="..\:/android_projects/KGOptometryCRM/app/src/main/res/layout/fragment_current_rx_form.xml" value="0.5" />
         <entry key="..\:/android_projects/KGOptometryCRM/app/src/main/res/layout/fragment_database_search.xml" value="0.48787446504992865" />
         <entry key="..\:/android_projects/KGOptometryCRM/app/src/main/res/layout/fragment_form_selection.xml" value="0.5" />
@@ -21,26 +21,28 @@
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.21197916666666666" />
         <entry key="app/src/main/res/layout/final_prescription_contact_lens.xml" value="0.21197916666666666" />
         <entry key="app/src/main/res/layout/form_item_report.xml" value="0.10598958333333333" />
-        <entry key="app/src/main/res/layout/fragment_cash_order.xml" value="0.10598958333333333" />
-        <entry key="app/src/main/res/layout/fragment_contact_lens.xml" value="0.17" />
+        <entry key="app/src/main/res/layout/fragment_cash_order.xml" value="0.14" />
+        <entry key="app/src/main/res/layout/fragment_contact_lens.xml" value="0.10598958333333333" />
         <entry key="app/src/main/res/layout/fragment_contact_lens_ori.xml" value="0.10598958333333333" />
-        <entry key="app/src/main/res/layout/fragment_current_rx_form.xml" value="0.17400598546387344" />
+        <entry key="app/src/main/res/layout/fragment_current_rx_form.xml" value="0.10598958333333333" />
         <entry key="app/src/main/res/layout/fragment_database_search.xml" value="0.10598958333333333" />
         <entry key="app/src/main/res/layout/fragment_final_prescription.xml" value="0.17" />
         <entry key="app/src/main/res/layout/fragment_form_selection.xml" value="0.25" />
-        <entry key="app/src/main/res/layout/fragment_info_form.xml" value="0.15" />
+        <entry key="app/src/main/res/layout/fragment_info_form.xml" value="0.17" />
         <entry key="app/src/main/res/layout/fragment_info_form_copy.xml" value="0.11979166666666667" />
-        <entry key="app/src/main/res/layout/fragment_info_form_ori.xml" value="0.17400598546387344" />
+        <entry key="app/src/main/res/layout/fragment_info_form_ori.xml" value="0.10598958333333333" />
         <entry key="app/src/main/res/layout/fragment_login.xml" value="0.15291936978683968" />
-        <entry key="app/src/main/res/layout/fragment_memo.xml" value="0.158984375" />
-        <entry key="app/src/main/res/layout/fragment_ocular_health.xml" value="0.17400598546387344" />
+        <entry key="app/src/main/res/layout/fragment_memo.xml" value="0.10598958333333333" />
+        <entry key="app/src/main/res/layout/fragment_memo_ori.xml" value="0.10598958333333333" />
+        <entry key="app/src/main/res/layout/fragment_ocular_health.xml" value="0.10598958333333333" />
         <entry key="app/src/main/res/layout/fragment_orthok.xml" value="0.10598958333333333" />
-        <entry key="app/src/main/res/layout/fragment_refraction.xml" value="0.158984375" />
-        <entry key="app/src/main/res/layout/fragment_supplementary_test.xml" value="0.17400598546387344" />
+        <entry key="app/src/main/res/layout/fragment_refraction.xml" value="0.10598958333333333" />
+        <entry key="app/src/main/res/layout/fragment_supplementary_test.xml" value="0.10598958333333333" />
         <entry key="app/src/main/res/layout/list_item_report.xml" value="0.21197916666666666" />
+        <entry key="app/src/main/res/layout/ocular_health_contact_lens.xml" value="0.10598958333333333" />
         <entry key="app/src/main/res/layout/popup_action_info.xml" value="0.10598958333333333" />
         <entry key="app/src/main/res/layout/spinner_list_basic.xml" value="0.21197916666666666" />
-        <entry key="app/src/main/res/layout/spinner_list_basic_.xml" value="0.158984375" />
+        <entry key="app/src/main/res/layout/spinner_list_basic_.xml" value="0.10598958333333333" />
         <entry key="app/src/main/res/layout/spinner_list_small_numbers.xml" value="0.10598958333333333" />
       </map>
     </option>

@@ -136,38 +136,38 @@
             app:srcCompat="@drawable/ic_oculo_triple_icon"
             tools:ignore="ContentDescription" />
 
-<!--        <TextView-->
-<!--            android:id="@+id/form_caption"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginTop="8dp"-->
-<!--            android:background="@color/cardBackgroundDarker"-->
-<!--            android:fontFamily="@font/didact_gothic"-->
-<!--            android:padding="4dp"-->
-<!--            android:paddingStart="16dp"-->
-<!--            android:text="@string/ocular_health_caption"-->
-<!--            android:textColor="@color/colorPrimaryDark"-->
-<!--            android:textSize="18sp"-->
-<!--            android:textStyle="bold"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintTop_toBottomOf="@+id/patient_name" />-->
+        <!--        <TextView-->
+        <!--            android:id="@+id/form_caption"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_marginTop="8dp"-->
+        <!--            android:background="@color/cardBackgroundDarker"-->
+        <!--            android:fontFamily="@font/didact_gothic"-->
+        <!--            android:padding="4dp"-->
+        <!--            android:paddingStart="16dp"-->
+        <!--            android:text="@string/ocular_health_caption"-->
+        <!--            android:textColor="@color/colorPrimaryDark"-->
+        <!--            android:textSize="18sp"-->
+        <!--            android:textStyle="bold"-->
+        <!--            app:layout_constraintStart_toStartOf="parent"-->
+        <!--            app:layout_constraintTop_toBottomOf="@+id/patient_name" />-->
 
-<!--        <TextView-->
-<!--            android:id="@+id/date_caption"-->
-<!--            android:layout_width="0dp"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:background="@color/cardBackgroundDarker"-->
-<!--            android:fontFamily="@font/didact_gothic"-->
-<!--            android:padding="4dp"-->
-<!--            android:paddingEnd="16dp"-->
-<!--            android:textAlignment="textEnd"-->
-<!--            android:textColor="@color/colorPrimaryDark"-->
-<!--            android:textSize="18sp"-->
-<!--            android:textStyle="bold"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintStart_toEndOf="@+id/form_caption"-->
-<!--            app:layout_constraintTop_toTopOf="@+id/form_caption"-->
-<!--            tools:text="05/10/2020" />-->
+        <!--        <TextView-->
+        <!--            android:id="@+id/date_caption"-->
+        <!--            android:layout_width="0dp"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:background="@color/cardBackgroundDarker"-->
+        <!--            android:fontFamily="@font/didact_gothic"-->
+        <!--            android:padding="4dp"-->
+        <!--            android:paddingEnd="16dp"-->
+        <!--            android:textAlignment="textEnd"-->
+        <!--            android:textColor="@color/colorPrimaryDark"-->
+        <!--            android:textSize="18sp"-->
+        <!--            android:textStyle="bold"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:layout_constraintStart_toEndOf="@+id/form_caption"-->
+        <!--            app:layout_constraintTop_toTopOf="@+id/form_caption"-->
+        <!--            tools:text="05/10/2020" />-->
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/aa"
@@ -175,7 +175,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:background="@color/cardBackgroundDarker"
-            android:padding="4dp"
             app:layout_constraintTop_toBottomOf="@+id/patient_name">
 
             <TextView
@@ -186,7 +185,7 @@
                 android:paddingStart="16dp"
                 android:text="@string/ocular_health_caption"
                 android:textColor="@color/colorPrimaryDark"
-                android:textSize="18sp"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -200,7 +199,7 @@
                 android:paddingEnd="16dp"
                 android:textAlignment="textEnd"
                 android:textColor="@color/colorPrimaryDark"
-                android:textSize="18sp"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -209,13 +208,25 @@
 
             <Spinner
                 android:id="@+id/practitioner_name"
-                style="@android:style/Widget.Holo.Light.Spinner"
-                android:layout_width="@dimen/sph_width"
+                style="@style/Widget.AppCompat.Spinner.Underlined"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                app:layout_constraintBottom_toBottomOf="@id/date_caption"
+                android:layout_marginEnd="15dp"
+                android:minWidth="100dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/date_caption"
-                app:layout_constraintTop_toTopOf="@id/date_caption" />
+                app:layout_constraintTop_toTopOf="parent" />
+
+<!--            <Spinner-->
+<!--                android:id="@+id/practitioner_name"-->
+<!--                style="@android:style/Widget.Holo.Light.Spinner"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginEnd="15dp"-->
+<!--                android:minWidth="100dp"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                app:layout_constraintEnd_toStartOf="@id/date_caption"-->
+<!--                app:layout_constraintTop_toTopOf="parent" />-->
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <FrameLayout

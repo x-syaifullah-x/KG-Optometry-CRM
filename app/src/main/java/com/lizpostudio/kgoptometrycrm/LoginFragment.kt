@@ -379,7 +379,7 @@ private fun updateUIOnSuccess() {
     private fun getUsernameFromEmail(email: String?): String {
 
         return if (email!!.contains("@")) {
-            email.split("@".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[0].toUpperCase()
+            email.split("@".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[0].uppercase()
         } else {
             email
         }

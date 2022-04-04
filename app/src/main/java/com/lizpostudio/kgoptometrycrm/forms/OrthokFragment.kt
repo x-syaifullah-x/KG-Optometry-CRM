@@ -34,7 +34,6 @@ import androidx.navigation.fragment.navArgs
 import com.google.firebase.storage.FileDownloadTask
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.StorageTask
-import com.lizpostudio.kgoptometrycrm.OptometryApplication
 import com.lizpostudio.kgoptometrycrm.PatientsViewModel
 import com.lizpostudio.kgoptometrycrm.PatientsViewModelFactory
 import com.lizpostudio.kgoptometrycrm.R

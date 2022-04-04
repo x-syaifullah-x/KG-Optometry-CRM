@@ -1,43 +1,30 @@
 package com.lizpostudio.kgoptometrycrm.formselection
 
 import android.annotation.SuppressLint
-import android.app.Application
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
-import android.widget.PopupWindow
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.addCallback
-import androidx.appcompat.app.AlertDialog
 import androidx.core.content.res.ResourcesCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.FirebaseApp
-import com.google.firebase.database.*
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
-import com.lizpostudio.kgoptometrycrm.*
+import com.lizpostudio.kgoptometrycrm.PatientsViewModel
+import com.lizpostudio.kgoptometrycrm.PatientsViewModelFactory
 import com.lizpostudio.kgoptometrycrm.R
-import com.lizpostudio.kgoptometrycrm.database.FBRecords
 import com.lizpostudio.kgoptometrycrm.database.Patients
-import com.lizpostudio.kgoptometrycrm.database.PatientsDatabase
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentFormSelectionBinding
-import com.lizpostudio.kgoptometrycrm.utils.*
-import java.util.*
+import com.lizpostudio.kgoptometrycrm.utils.FormsListAdapter
+import com.lizpostudio.kgoptometrycrm.utils.actionConfirmDeletion
+import com.lizpostudio.kgoptometrycrm.utils.computeAgeAndDOB
 
 private const val TAG = "LogTrace"
 private const val ONE_DAY = 24*3600*1000L

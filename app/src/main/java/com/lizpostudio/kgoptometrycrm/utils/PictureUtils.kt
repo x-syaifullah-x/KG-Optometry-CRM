@@ -1,10 +1,8 @@
 package com.lizpostudio.kgoptometrycrm.utils
 
-import android.app.Activity
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Point
 import kotlin.math.roundToInt
 
 fun screenWidthPx():Int {

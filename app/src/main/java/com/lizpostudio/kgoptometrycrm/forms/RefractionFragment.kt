@@ -32,13 +32,11 @@ import androidx.navigation.fragment.navArgs
 import com.google.firebase.storage.FileDownloadTask
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.StorageTask
-import com.lizpostudio.kgoptometrycrm.OptometryApplication
 import com.lizpostudio.kgoptometrycrm.PatientsViewModel
 import com.lizpostudio.kgoptometrycrm.PatientsViewModelFactory
 import com.lizpostudio.kgoptometrycrm.R
 import com.lizpostudio.kgoptometrycrm.database.Patients
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentRefractionBinding
-
 import com.lizpostudio.kgoptometrycrm.utils.*
 import java.io.File
 import java.io.FileOutputStream

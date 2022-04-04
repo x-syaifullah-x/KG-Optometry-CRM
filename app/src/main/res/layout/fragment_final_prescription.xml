@@ -151,7 +151,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:background="@color/cardBackgroundDarker"
-            android:padding="4dp"
             app:layout_constraintTop_toBottomOf="@+id/patient_name">
 
             <TextView
@@ -162,7 +161,7 @@
                 android:paddingStart="16dp"
                 android:text="@string/sales_order"
                 android:textColor="@color/colorPrimaryDark"
-                android:textSize="18sp"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -176,7 +175,7 @@
                 android:paddingEnd="16dp"
                 android:textAlignment="textEnd"
                 android:textColor="@color/colorPrimaryDark"
-                android:textSize="18sp"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -185,13 +184,25 @@
 
             <Spinner
                 android:id="@+id/practitioner_name"
-                style="@android:style/Widget.Holo.Light.Spinner"
-                android:layout_width="@dimen/sph_width"
+                style="@style/Widget.AppCompat.Spinner.Underlined"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                app:layout_constraintBottom_toBottomOf="@id/date_caption"
+                android:layout_marginEnd="15dp"
+                android:minWidth="100dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/date_caption"
-                app:layout_constraintTop_toTopOf="@id/date_caption" />
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <!--            <Spinner-->
+            <!--                android:id="@+id/practitioner_name"-->
+            <!--                style="@android:style/Widget.Holo.Light.Spinner"-->
+            <!--                android:layout_width="0dp"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:layout_marginEnd="15dp"-->
+            <!--                android:minWidth="100dp"-->
+            <!--                app:layout_constraintBottom_toBottomOf="parent"-->
+            <!--                app:layout_constraintEnd_toStartOf="@id/date_caption"-->
+            <!--                app:layout_constraintTop_toTopOf="parent" />-->
 
             <!--            <Spinner-->
             <!--                android:id="@+id/practitioner_name"-->
@@ -367,7 +378,6 @@
                             style="@android:style/Widget.Holo.Light.Spinner"
                             android:layout_width="@dimen/sph_width"
                             android:layout_height="wrap_content"
-                            app:layout_constraintBottom_toTopOf="@id/barrier_1"
                             app:layout_constraintStart_toEndOf="@+id/hint_right"
                             app:layout_constraintTop_toBottomOf="@id/hint_sph" />
 
@@ -384,7 +394,6 @@
                             style="@android:style/Widget.Holo.Light.Spinner"
                             android:layout_width="@dimen/cyl_width"
                             android:layout_height="wrap_content"
-                            app:layout_constraintBottom_toTopOf="@id/barrier_1"
                             app:layout_constraintStart_toEndOf="@+id/spinner_right_sph"
                             app:layout_constraintTop_toBottomOf="@id/hint_cyl" />
 
@@ -438,7 +447,6 @@
                             style="@android:style/Widget.Holo.Light.Spinner"
                             android:layout_width="@dimen/sph_width"
                             android:layout_height="wrap_content"
-                            app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toStartOf="@+id/spinner_right_sph"
                             app:layout_constraintTop_toTopOf="@+id/edit_left_axis" />
 
@@ -447,7 +455,6 @@
                             style="@android:style/Widget.Holo.Light.Spinner"
                             android:layout_width="@dimen/cyl_width"
                             android:layout_height="wrap_content"
-                            app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/spinner_left_sph"
                             app:layout_constraintTop_toTopOf="@+id/edit_left_axis" />
 
@@ -467,7 +474,6 @@
                             android:ems="2"
                             android:inputType="phone"
                             android:textAlignment="textStart"
-                            app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/hint_x_left"
                             app:layout_constraintTop_toBottomOf="@+id/barrier_1"
                             tools:ignore="Autofill,LabelFor" />
@@ -480,7 +486,6 @@
                             android:ems="3"
                             android:inputType="text"
                             android:textAlignment="textStart"
-                            app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/edit_left_axis"
                             app:layout_constraintTop_toBottomOf="@+id/barrier_1"
                             tools:ignore="Autofill,LabelFor" />
@@ -510,7 +515,6 @@
                             android:ems="5"
                             android:inputType="text"
                             android:textAlignment="textStart"
-                            app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/edit_left_va"
                             app:layout_constraintTop_toBottomOf="@+id/barrier_1"
                             tools:ignore="Autofill,LabelFor" />
@@ -540,7 +544,6 @@
                             android:ems="3"
                             android:inputType="number"
                             android:textAlignment="textStart"
-                            app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/edit_left_pd"
                             app:layout_constraintTop_toBottomOf="@+id/barrier_1"
                             tools:ignore="Autofill,LabelFor" />
@@ -558,7 +561,6 @@
                             style="@android:style/Widget.Holo.Light.Spinner"
                             android:layout_width="@dimen/cyl_width"
                             android:layout_height="wrap_content"
-                            app:layout_constraintBottom_toTopOf="@id/barrier_1"
                             app:layout_constraintStart_toEndOf="@+id/edit_right_ht"
                             app:layout_constraintTop_toBottomOf="@+id/hint_add" />
 
@@ -567,7 +569,6 @@
                             style="@android:style/Widget.Holo.Light.Spinner"
                             android:layout_width="@dimen/cyl_width"
                             android:layout_height="wrap_content"
-                            app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/edit_left_ht"
                             app:layout_constraintTop_toTopOf="@id/spinner_left_cyl" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -617,6 +618,13 @@
                     app:layout_constraintTop_toBottomOf="@id/hint_ed"
                     tools:ignore="Autofill,LabelFor" />
 
+                <androidx.constraintlayout.widget.Barrier
+                    android:id="@+id/barrier_2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:barrierDirection="bottom"
+                    app:constraint_referenced_ids="edit_frame_ht,edit_frame_size,edit_frame_type,edit_ed" />
+
                 <TextView
                     android:id="@+id/hint_frame"
                     style="@style/primaryDarkCenterCaption18sp"
@@ -624,7 +632,7 @@
                     android:layout_marginTop="8dp"
                     android:text="@string/frame"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/edit_frame_ht" />
+                    app:layout_constraintTop_toBottomOf="@+id/barrier_2" />
 
                 <EditText
                     android:id="@+id/edit_frame"
@@ -686,9 +694,10 @@
                 <TextView
                     android:id="@+id/hint_frame_rm"
                     style="@style/primaryDarkCenterCaption18sp"
+                    android:layout_marginTop="8dp"
                     android:text="@string/frameRM"
-                    app:layout_constraintStart_toStartOf="@+id/edit_frame_rm"
-                    app:layout_constraintTop_toTopOf="@+id/hint_frame" />
+                    app:layout_constraintStart_toEndOf="@id/guideline66"
+                    app:layout_constraintTop_toTopOf="@+id/barrier_2" />
 
                 <EditText
                     android:id="@+id/edit_frame_rm"
@@ -703,6 +712,13 @@
                     app:layout_constraintTop_toTopOf="@+id/edit_frame"
                     tools:ignore="Autofill,LabelFor" />
 
+                <androidx.constraintlayout.widget.Barrier
+                    android:id="@+id/barrier_3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:barrierDirection="bottom"
+                    app:constraint_referenced_ids="edit_frame,edit_frame_rm" />
+
                 <TextView
                     android:id="@+id/hint_lens"
                     style="@style/primaryDarkCenterCaption18sp"
@@ -710,7 +726,7 @@
                     android:layout_marginTop="8dp"
                     android:text="@string/lens"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/edit_frame" />
+                    app:layout_constraintTop_toBottomOf="@+id/barrier_3" />
 
                 <EditText
                     android:id="@+id/edit_lens"
@@ -728,9 +744,11 @@
                 <TextView
                     android:id="@+id/hint_lens_rm"
                     style="@style/primaryDarkCenterCaption18sp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginStart="4dp"
                     android:text="@string/lensRM"
-                    app:layout_constraintStart_toStartOf="@+id/edit_lens_rm"
-                    app:layout_constraintTop_toTopOf="@+id/hint_lens" />
+                    app:layout_constraintStart_toEndOf="@id/guideline66"
+                    app:layout_constraintTop_toBottomOf="@id/barrier_3" />
 
                 <EditText
                     android:id="@+id/edit_lens_rm"
@@ -745,6 +763,13 @@
                     app:layout_constraintTop_toTopOf="@+id/edit_lens"
                     tools:ignore="Autofill,LabelFor" />
 
+                <androidx.constraintlayout.widget.Barrier
+                    android:id="@+id/barrier_4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:barrierDirection="bottom"
+                    app:constraint_referenced_ids="edit_lens,edit_lens_rm" />
+
                 <TextView
                     android:id="@+id/hint_cl_sg"
                     style="@style/primaryDarkCenterCaption18sp"
@@ -752,7 +777,7 @@
                     android:layout_marginTop="8dp"
                     android:text="@string/contact_lens_sun_glass"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/edit_lens" />
+                    app:layout_constraintTop_toBottomOf="@+id/barrier_4" />
 
                 <EditText
                     android:id="@+id/edit_cl_sg"
@@ -770,9 +795,11 @@
                 <TextView
                     android:id="@+id/hint_cl_rm"
                     style="@style/primaryDarkCenterCaption18sp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginStart="4dp"
                     android:text="@string/clsgrm"
-                    app:layout_constraintStart_toStartOf="@+id/edit_cl_rm"
-                    app:layout_constraintTop_toTopOf="@+id/hint_cl_sg" />
+                    app:layout_constraintStart_toEndOf="@id/guideline66"
+                    app:layout_constraintTop_toBottomOf="@id/barrier_4" />
 
                 <EditText
                     android:id="@+id/edit_cl_rm"
@@ -787,55 +814,39 @@
                     app:layout_constraintTop_toTopOf="@+id/edit_cl_sg"
                     tools:ignore="Autofill,LabelFor" />
 
+                <androidx.constraintlayout.widget.Barrier
+                    android:id="@+id/barrier_5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:barrierDirection="bottom"
+                    app:constraint_referenced_ids="edit_cl_sg,edit_cl_rm" />
+
                 <TextView
                     android:id="@+id/hint_optometrist"
                     style="@style/primaryDarkCenterCaption18sp"
                     android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
                     android:text="@string/optometrist"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/edit_cl_sg" />
+                    app:layout_constraintTop_toBottomOf="@+id/barrier_5" />
 
                 <Spinner
                     android:id="@+id/practitioner_name_optometrist"
                     style="@android:style/Widget.Holo.Light.Spinner"
-                    android:layout_width="@dimen/sph_width"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    app:layout_constraintEnd_toStartOf="@id/guideline33"
-                    app:layout_constraintStart_toStartOf="parent"
+                    android:minWidth="100dp"
+                    app:layout_constraintStart_toStartOf="@id/hint_optometrist"
                     app:layout_constraintTop_toBottomOf="@id/hint_optometrist" />
-
-                <!--                <Spinner-->
-                <!--                    android:id="@+id/practitioner_name_optometrist"-->
-                <!--                    style="@style/Widget.AppCompat.Spinner.Underlined"-->
-                <!--                    android:layout_width="0dp"-->
-                <!--                    android:layout_height="match_parent"-->
-                <!--                    android:layout_marginEnd="15dp"-->
-                <!--                    android:minWidth="100dp"-->
-                <!--                    app:layout_constraintEnd_toStartOf="@id/guideline33"-->
-                <!--                    app:layout_constraintStart_toStartOf="parent"-->
-                <!--                    app:layout_constraintTop_toBottomOf="@id/hint_optometrist" />-->
-
-                <!--                <EditText-->
-                <!--                    android:id="@+id/edit_optometrist"-->
-                <!--                    style="@style/fixedEditNoMarginTextBox18sp"-->
-                <!--                    android:layout_marginStart="8dp"-->
-                <!--                    android:layout_marginEnd="8dp"-->
-                <!--                    android:ems="6"-->
-                <!--                    android:inputType="text"-->
-                <!--                    android:textAlignment="textStart"-->
-                <!--                    app:layout_constraintEnd_toStartOf="@id/guideline33"-->
-                <!--                    app:layout_constraintStart_toStartOf="parent"-->
-                <!--                    app:layout_constraintTop_toBottomOf="@id/hint_optometrist"-->
-                <!--                    tools:ignore="Autofill,LabelFor" />-->
 
                 <TextView
                     android:id="@+id/hint_total_rm"
                     style="@style/primaryDarkCenterCaption18sp"
-                    android:layout_marginStart="16dp"
                     android:layout_marginTop="8dp"
+                    android:layout_marginStart="4dp"
                     android:text="@string/total_rm"
                     app:layout_constraintStart_toEndOf="@id/guideline66"
-                    app:layout_constraintTop_toBottomOf="@+id/edit_cl_sg" />
+                    app:layout_constraintTop_toBottomOf="@+id/barrier_5" />
 
                 <EditText
                     android:id="@+id/edit_total"
@@ -850,43 +861,10 @@
                     app:layout_constraintTop_toBottomOf="@id/hint_total_rm"
                     tools:ignore="Autofill,LabelFor" />
 
-                <!--                <EditText-->
-                <!--                    android:id="@+id/edit_total"-->
-                <!--                    style="@style/fixedEditNoMarginTextBox18sp"-->
-                <!--                    android:layout_marginStart="16dp"-->
-                <!--                    android:layout_marginEnd="8dp"-->
-                <!--                    android:ems="6"-->
-                <!--                    android:inputType="number"-->
-                <!--                    android:textAlignment="textStart"-->
-                <!--                    app:layout_constraintEnd_toEndOf="parent"-->
-                <!--                    app:layout_constraintStart_toEndOf="@id/guideline66"-->
-                <!--                    app:layout_constraintTop_toBottomOf="@id/hint_total_rm"-->
-                <!--                    tools:ignore="Autofill,LabelFor" />-->
-
-                <!--                <TextView-->
-                <!--                    android:id="@+id/hint_salesperson"-->
-                <!--                    style="@style/primaryDarkCenterCaption18sp"-->
-                <!--                    android:text="@string/salesperson"-->
-                <!--                    app:layout_constraintStart_toStartOf="@+id/edit_salesperson"-->
-                <!--                    app:layout_constraintTop_toTopOf="@+id/hint_total" />-->
-
-                <!--                <EditText-->
-                <!--                    android:id="@+id/edit_salesperson"-->
-                <!--                    style="@style/fixedEditNoMarginTextBox18sp"-->
-                <!--                    android:layout_marginStart="8dp"-->
-                <!--                    android:layout_marginEnd="16dp"-->
-                <!--                    android:ems="6"-->
-                <!--                    android:inputType="text"-->
-                <!--                    android:textAlignment="textStart"-->
-                <!--                    app:layout_constraintEnd_toEndOf="parent"-->
-                <!--                    app:layout_constraintStart_toStartOf="@+id/guideline66"-->
-                <!--                    app:layout_constraintTop_toTopOf="@+id/edit_total"-->
-                <!--                    tools:ignore="Autofill,LabelFor" />-->
-
                 <TextView
                     android:id="@+id/remark_hint"
                     style="@style/primaryDark18sp"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="8dp"
                     android:text="@string/hint_remark"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
