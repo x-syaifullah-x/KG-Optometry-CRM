@@ -401,12 +401,11 @@ class InfoFragment : Fragment() {
             binding.radioContactLensYes.isChecked = false
             binding.radioContactLensNo.isChecked = false
         }
-
-        binding.drivingInputHint.setOnClickListener {
-            binding.radioDrivingYes.isChecked = false
-            binding.radioDrivingNo.isChecked = false
-            binding.radioDrivingOccasionally.isChecked = false
-        }
+//        binding.drivingInputHint.setOnClickListener {
+//            binding.radioDrivingYes.isChecked = false
+//            binding.radioDrivingNo.isChecked = false
+//            binding.radioDrivingOccasionally.isChecked = false
+//        }
         binding.hypertensionHint.setOnClickListener {
             binding.radioHypertensionYes.isChecked = false
             binding.radioHypertensionNo.isChecked = false
@@ -696,9 +695,9 @@ class InfoFragment : Fragment() {
             contactLensInfoInput.setText(extractData[12])
 //            vduInput.setText(extractData[13])
 
-            if (extractData[14] == YES) radioDrivingYes.isChecked = true
-            if (extractData[14] == NO) radioDrivingNo.isChecked = true
-            if (extractData[14] == OCCASSIONALLY) radioDrivingOccasionally.isChecked = true
+//            if (extractData[14] == YES) radioDrivingYes.isChecked = true
+//            if (extractData[14] == NO) radioDrivingNo.isChecked = true
+//            if (extractData[14] == OCCASSIONALLY) radioDrivingOccasionally.isChecked = true
 
             if (extractData[15] == YES) radioHypertensionYes.isChecked = true
             if (extractData[15] == NO) radioHypertensionNo.isChecked = true
@@ -802,8 +801,8 @@ class InfoFragment : Fragment() {
 
             val drivingYN = when {
                 radioDiabetesYes.isChecked -> YES
-                radioDrivingNo.isChecked -> NO
-                radioDrivingOccasionally.isChecked -> OCCASSIONALLY
+//                radioDrivingNo.isChecked -> NO
+//                radioDrivingOccasionally.isChecked -> OCCASSIONALLY
                 else -> ""
             }
 
@@ -853,7 +852,8 @@ class InfoFragment : Fragment() {
                     occupationInput.text.toString() + "|" + contactLensYN + "|" +
                     contactLensInfoInput.text.toString() + "|" + "" + "|" +
 //                    contactLensInfoInput.text.toString() + "|" + vduInput.text.toString() + "|" +
-                    drivingYN + "|" + hypertensionYN + "|" + hypertensionInfoInput.text.toString() + "|" +
+                    "" + "|" + hypertensionYN + "|" + hypertensionInfoInput.text.toString() + "|" +
+//                    drivingYN + "|" + hypertensionYN + "|" + hypertensionInfoInput.text.toString() + "|" +
                     diabetesYN + "|" + diabetesInfoInput.text.toString() + "|" + allergyYN + "|" +
                     allergyInfoInput.text.toString() + "|" + medicationYN + "|" + medicationsInfoInput.text.toString() + "|" +
                     cataractYN + "|" + cataractInfoInput.text.toString() + "|" + glaucomaYN + "|" +
