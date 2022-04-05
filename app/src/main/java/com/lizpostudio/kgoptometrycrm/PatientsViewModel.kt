@@ -184,10 +184,7 @@ class PatientsViewModel(
                                             val recordID = it.key?.toLongOrNull()
                                             if (newSection != null && recordID != null) {
                                                 recordsList.add(
-                                                    convertFBRecordToPatients(
-                                                        newSection,
-                                                        recordID
-                                                    )
+                                                    convertFBRecordToPatients(newSection, recordID)
                                                 )
                                             }
                                         }

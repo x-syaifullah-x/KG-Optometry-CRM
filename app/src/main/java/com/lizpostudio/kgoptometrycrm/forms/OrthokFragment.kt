@@ -878,8 +878,7 @@ class OrthokFragment : Fragment() {
             if (formWasChanged()) {
                 Log.d(TAG, "Orthok was CHANGED")
                 patientViewModel.submitPatientToFirebase(
-                    currentForm.recordID.toString(),
-                    currentForm
+                    currentForm.recordID.toString(), currentForm
                 )
                 // trigger navigation after update
                 patientViewModel.updateRecord(currentForm, navOption)

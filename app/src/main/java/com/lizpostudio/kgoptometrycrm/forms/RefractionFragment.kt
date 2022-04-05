@@ -149,9 +149,8 @@ class RefractionFragment : Fragment() {
             }
         }
 
-        patientViewModel.patientInitForms.observe(viewLifecycleOwner, { allForms ->
+        patientViewModel.patientInitForms.observe(viewLifecycleOwner) { allForms ->
             allForms?.let {
-
                 var pAge = it.first().patientName + " "
                 for (patientsRec in it) {
                     if (patientsRec.sectionName == resources.getString(R.string.info_form_caption)) {
@@ -247,16 +246,14 @@ class RefractionFragment : Fragment() {
                 if (hPos > 3) {
                     val scrollWidth = binding.chipsScroll.width
                     val scrollX = ((hPos - 2) * (scrollWidth / 6.25)).toInt()
-                    binding.chipsScroll.postDelayed(Runnable {
-                        binding.chipsScroll.smoothScrollTo(
-                            scrollX,
-                            0
-                        )
-                    }, 100L)
+                    binding.chipsScroll.postDelayed(
+                        Runnable {
+                            binding.chipsScroll.smoothScrollTo(scrollX, 0)
+                        }, 100L
+                    )
                 }
             }
-
-        })
+        }
 
         binding.dateCaption.setOnClickListener {
             changeDate()
@@ -374,23 +371,23 @@ class RefractionFragment : Fragment() {
             binding.spinnerChart.adapter = adapter
         }
 
-        patientViewModel.navTrigger.observe(viewLifecycleOwner, { navOption ->
+        patientViewModel.navTrigger.observe(viewLifecycleOwner) { navOption ->
             navOption?.let {
                 Log.d(TAG, "RF: Launching Navigator: Nav Option == ${navOption}")
                 launchNavigator(navOption)
             }
-        })
+        }
 
-        patientViewModel.photoFromFBReady.observe(viewLifecycleOwner, { ready ->
+        patientViewModel.photoFromFBReady.observe(viewLifecycleOwner) { ready ->
             ready?.let {
                 Log.d(TAG, "Photo file is $it")
                 if (it) uploadPhotoFileToImage()
             }
-        })
+        }
 
         // DELETE FORM FUNCTIONALITY
 
-        patientViewModel.recordDeleted.observe(viewLifecycleOwner, { ifDeleted ->
+        patientViewModel.recordDeleted.observe(viewLifecycleOwner) { ifDeleted ->
             ifDeleted?.let {
                 if (ifDeleted)
                     navController.navigate(
@@ -399,7 +396,7 @@ class RefractionFragment : Fragment() {
                         )
                     )
             }
-        })
+        }
 
         binding.deleteForm.setOnClickListener {
             if (context != null)
@@ -469,7 +466,7 @@ class RefractionFragment : Fragment() {
             }
         }
 
-        patientViewModel.patientFireForm.observe(viewLifecycleOwner, { patientNewRecord ->
+        patientViewModel.patientFireForm.observe(viewLifecycleOwner) { patientNewRecord ->
             patientNewRecord?.let {
                 Log.d(TAG, "Reload RF Form? == ${!currentForm.assertEqual(it)}")
                 if (currentForm.recordID == it.recordID && !currentForm.assertEqual(it)) {
@@ -478,7 +475,7 @@ class RefractionFragment : Fragment() {
                     fillTheForm(it)
                 }
             }
-        })
+        }
 
         binding.saveFormButton.setOnClickListener {
             saveAndNavigate("none")
@@ -580,17 +577,23 @@ class RefractionFragment : Fragment() {
 
     private fun updatePhotoView() {
         //   taskToGetFile
+        if (currentForm.reservedField.isBlank()){
+            currentForm.reservedField = storageRef.toString()
+        }
+
         if (currentForm.reservedField.isNotBlank() && currentForm.reservedField != "deleted") {
             downloadPhotoTask = storageRef.getFile(photoFile).addOnSuccessListener {
                 Log.d(TAG, "FB photo downloaded to local file")
                 patientViewModel.readyToShowPhoto()
-                currentForm.reservedField = photoFile.toString()
+//                currentForm.reservedField = photoFile.toString()
             }.addOnFailureListener {
                 // delete local file
                 Log.d(TAG, "No such file exist or error downloading. Delete local file")
                 if (photoFile.exists()) photoFile.delete()
                 patientViewModel.readyToShowPhoto()
                 currentForm.reservedField = ""
+            }.addOnFailureListener {
+                it.printStackTrace()
             }
         } else {
             binding.autorefPhoto.setImageDrawable(null)
@@ -1031,8 +1034,8 @@ class RefractionFragment : Fragment() {
 
             orderOfSections[3] -> {
                 Log.d(TAG, "Navigating to another RF form:")
-                Log.d(TAG, "Old Record ID = ${recordID}")
-                Log.d(TAG, "New Record ID = ${navigateFormRecordID}")
+                Log.d(TAG, "Old Record ID = $recordID")
+                Log.d(TAG, "New Record ID = $navigateFormRecordID")
                 if (recordID != navigateFormRecordID) {
                     recordID = navigateFormRecordID
                     createRefAssignPhFile()
@@ -1155,9 +1158,7 @@ class RefractionFragment : Fragment() {
         val myActivity = activity
 
         myActivity?.let {
-            val datePickerDialog = DatePickerDialog(
-                it,
-                { _, year, monthOfYear, dayOfMonth -> // set day of month , month and year value in the edit text
+            val datePickerDialog = DatePickerDialog(it, { _, year, monthOfYear, dayOfMonth -> // set day of month , month and year value in the edit text
                     sectionEditDate = convertYMDtoTimeMillis(year, monthOfYear, dayOfMonth)
                     if (sectionEditDate != -1L) binding.dateCaption.text =
                         convertLongToDDMMYY(sectionEditDate)

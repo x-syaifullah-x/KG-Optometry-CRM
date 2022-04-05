@@ -588,6 +588,9 @@ class CurrentRxFragment : Fragment() {
 
     private fun updatePhotoView(photoFile: File) {
         //   taskToGetFile
+        if (currentForm.reservedField.isBlank()){
+            currentForm.reservedField = storageRef.toString()
+        }
         if (currentForm.reservedField.isNotBlank() && currentForm.reservedField != "deleted") {
             downloadPhotoTask = storageRef.getFile(photoFile).addOnSuccessListener {
                 Log.d(TAG, "FB photo downloaded to local file")

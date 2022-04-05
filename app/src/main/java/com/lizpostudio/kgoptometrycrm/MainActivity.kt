@@ -25,6 +25,5 @@ class MainActivity : AppCompatActivity() {
             editor.putString("searchValue", searchValue)
             editor.apply()
         }
-
     }
 }
