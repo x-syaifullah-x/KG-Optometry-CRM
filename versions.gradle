@@ -1,0 +1,58 @@
+def build_versions = [:]
+build_versions.min_sdk = 21 // android 5.0
+build_versions.target_sdk = 31 // android 12
+build_versions.compile_sdk = build_versions.target_sdk
+build_versions.build_tools = "32.0.0"
+build_versions.version_code = 5
+build_versions.version_name = "1.5"
+ext.build_versions = build_versions
+
+ext {
+    vGradle = "7.1.3"
+    vKotlin = "1.6.20"
+
+    vCoroutines = "1.6.0"
+    vFirebaseBom = "29.0.3"
+    vFirebaseCrashlyticsGradle = "2.8.1"
+    vFirebaseUi = "8.0.0"
+    vFragmentKtx = "1.4.1"
+    vGoogleService = "4.3.10"
+    vGson = "2.8.8"
+    vNavigation = "2.4.2"
+    vPlayServicesAuth = "20.1.0"
+
+    // https://developer.android.com/jetpack/androidx/versions
+    // activityVersion = '1.2.3'
+//    appCompatVersion = '1.3.1'
+    appCompatVersion = '1.4.1'
+//    constraintLayoutVersion = '2.1.0'
+    constraintLayoutVersion = '2.1.3'
+//    coreTestingVersion = '2.1.0'
+    lifecycleVersion = '2.4.1'
+//    materialVersion = '1.3.0'
+    materialVersion = '1.5.0'
+//    roomVersion = '2.3.0'
+    roomVersion = '2.4.2'
+    // testing
+    junitVersion = '4.13.2'
+//    espressoVersion = '3.1.0'
+    espressoVersion = '3.4.0'
+    androidxJunitVersion = '1.1.3'
+}
+
+def addRepos(RepositoryHandler handler) {
+    handler.gradlePluginPortal()
+    handler.google()
+    handler.mavenCentral()
+    handler.maven {
+        url "https://jcenter.bintray.com"
+        url "https://oss.sonatype.org/content/repositories/snapshots"
+        url "https://jitpack.io"
+    }
+    handler.mavenLocal()
+    handler.mavenLocal {
+        it.url("${rootDir}/.m2/repository")
+    }
+}
+
+ext.addRepos = this.&addRepos

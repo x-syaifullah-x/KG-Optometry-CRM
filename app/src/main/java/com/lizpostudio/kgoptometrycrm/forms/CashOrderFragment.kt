@@ -77,7 +77,8 @@ class CashOrderFragment : Fragment() {
         )
         val app = requireNotNull(this.activity).application
 
-        val safeArgs: FinalPrescriptionFragmentArgs by navArgs()
+        val safeArgs: CashOrderFragmentArgs by navArgs()
+
         recordID = safeArgs.recordID
 
         // get Patient data

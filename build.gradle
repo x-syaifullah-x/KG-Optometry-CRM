@@ -1,52 +1,20 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
-    ext.kotlin_version = "1.6.10"
-    repositories {
-        google()
-        mavenCentral()
-        mavenLocal()
-    }
+    apply from: "versions.gradle"
+
+    addRepos(repositories)
+
     dependencies {
 
-        classpath 'com.android.tools.build:gradle:7.1.2'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-//        classpath 'androidx.navigation:navigation-safe-args-gradle-plugin:2.3.5'
-        classpath 'androidx.navigation:navigation-safe-args-gradle-plugin:2.4.1'
-        classpath 'com.google.gms:google-services:4.3.10'
-//        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.7.1'
-        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.8.1'
-
+        classpath "com.android.tools.build:gradle:$vGradle"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$vKotlin"
+        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$vNavigation"
+        classpath "com.google.gms:google-services:$vGoogleService"
+        classpath "com.google.firebase:firebase-crashlytics-gradle:$vFirebaseCrashlyticsGradle"
     }
-}
-
-ext {
-
-    // https://developer.android.com/jetpack/androidx/versions
-   // activityVersion = '1.2.3'
-//    appCompatVersion = '1.3.1'
-    appCompatVersion = '1.4.1'
-//    constraintLayoutVersion = '2.1.0'
-    constraintLayoutVersion = '2.1.3'
-//    coreTestingVersion = '2.1.0'
-    coroutines = '1.6.0'
-    lifecycleVersion = '2.3.1'
-//    materialVersion = '1.3.0'
-    materialVersion = '1.5.0'
-//    roomVersion = '2.3.0'
-    roomVersion = '2.4.1'
-    // testing
-    junitVersion = '4.13.2'
-//    espressoVersion = '3.1.0'
-    espressoVersion = '3.4.0'
-    androidxJunitVersion = '1.1.3'
 }
 
 allprojects {
-    repositories {
-        google()
-        mavenCentral()
-        mavenLocal()
-    }
+    addRepos(repositories)
 }
 
 task clean(type: Delete) {

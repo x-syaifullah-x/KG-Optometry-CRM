@@ -24,12 +24,18 @@ jobs:
             cat gradle.properties | grep org.gradle.jvmargs
 
       - run:
-          name: gradle clean build
+          name: generate keystore debug
+          command: |
+            [ ! -d ~/.android ] && mkdir ~/.android
+            echo y | keytool -genkey -dname "cn=debug, ou=debug, o=debug, c=debug" -alias androiddebugkey -keypass android --storepass android -keyalg RSA -keystore ~/.android/debug.keystore -validity 10000
+
+      - run:
+          name: grand access gradlew
           command: |
             chmod +x gradlew
 
       - run:
-          name: gradle clean build
+          name: gradlew dependencies
           command: |
             ./gradlew dependencies
 
@@ -71,6 +77,12 @@ jobs:
           key: gradle-v0-{{ arch }}-{{ checksum "/tmp/gradle_cache_seed" }}
 
       - run:
+          name: generate keystore debug
+          command: |
+            [ ! -d ~/.android ] && mkdir ~/.android
+            echo y | keytool -genkey -dname "cn=debug, ou=debug, o=debug, c=debug" -alias androiddebugkey -keypass android --storepass android -keyalg RSA -keystore ~/.android/debug.keystore -validity 10000
+
+      - run:
           name: replace gradle properties
           command: |
             ORG_GRADLE_JVM=`cat gradle.properties | grep org.gradle.jvmargs`
@@ -78,7 +90,7 @@ jobs:
             cat gradle.properties | grep org.gradle.jvmargs
 
       - run:
-          name: chmood gradlew
+          name: gradlew grand access
           command: |
             chmod +x gradlew
 
@@ -129,7 +141,13 @@ jobs:
             cat gradle.properties | grep org.gradle.jvmargs
 
       - run:
-          name: chmood gradlew
+          name: generate keystore debug
+          command: |
+            [ ! -d ~/.android ] && mkdir ~/.android
+            echo y | keytool -genkey -dname "cn=debug, ou=debug, o=debug, c=debug" -alias androiddebugkey -keypass android --storepass android -keyalg RSA -keystore ~/.android/debug.keystore -validity 10000
+
+      - run:
+          name: gradlew grand access
           command: |
             chmod +x gradlew
 
@@ -178,6 +196,12 @@ jobs:
             ORG_GRADLE_JVM=`cat gradle.properties | grep org.gradle.jvmargs`
             sed -i 's/'"${ORG_GRADLE_JVM}"'/org.gradle.jvmargs=-Xmx8192m -Dfile.encoding=UTF-8/g' gradle.properties
             cat gradle.properties | grep org.gradle.jvmargs
+
+      - run:
+          name: generate keystore debug
+          command: |
+            [ ! -d ~/.android ] && mkdir ~/.android
+            echo y | keytool -genkey -dname "cn=debug, ou=debug, o=debug, c=debug" -alias androiddebugkey -keypass android --storepass android -keyalg RSA -keystore ~/.android/debug.keystore -validity 10000
 
       - run:
           name: chmood gradlew

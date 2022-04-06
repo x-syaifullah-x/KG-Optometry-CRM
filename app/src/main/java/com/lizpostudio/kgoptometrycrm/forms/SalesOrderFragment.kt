@@ -30,7 +30,7 @@ import com.lizpostudio.kgoptometrycrm.utils.*
 
 private const val TAG = "LogTrace"
 
-class FinalPrescriptionFragment : Fragment() {
+class SalesOrderFragment : Fragment() {
 
     private val patientViewModel: PatientsViewModel by viewModels {
         PatientsViewModelFactory(requireContext())
@@ -78,7 +78,7 @@ class FinalPrescriptionFragment : Fragment() {
         )
         val app = requireNotNull(this.activity).application
 
-        val safeArgs: FinalPrescriptionFragmentArgs by navArgs()
+        val safeArgs: SalesOrderFragmentArgs by navArgs()
         recordID = safeArgs.recordID
 
         // get Patient data
@@ -309,7 +309,7 @@ class FinalPrescriptionFragment : Fragment() {
         patientViewModel.recordDeleted.observe(viewLifecycleOwner) { ifDeleted ->
             ifDeleted?.let {
                 if (ifDeleted) navController.navigate(
-                    FinalPrescriptionFragmentDirections
+                    SalesOrderFragmentDirections
                         .actionFinalPrescriptionFragmentToFormSelectionFragment(patientID)
                 )
             }
@@ -492,11 +492,11 @@ class FinalPrescriptionFragment : Fragment() {
                 fillTheForm(currentForm)
             }
             "back" -> this.findNavController().navigate(
-                FinalPrescriptionFragmentDirections
+                SalesOrderFragmentDirections
                     .actionFinalPrescriptionFragmentToFormSelectionFragment(patientID)
             )
             "home" -> findNavController().navigate(
-                FinalPrescriptionFragmentDirections.actionToDatabaseSearchFragment()
+                SalesOrderFragmentDirections.actionToDatabaseSearchFragment()
             )
             else -> navigateToSelectedForm()
         }
@@ -510,42 +510,42 @@ class FinalPrescriptionFragment : Fragment() {
         when (navigateFormName) {
 
             orderOfSections[0] -> navController.navigate(
-                FinalPrescriptionFragmentDirections
+                SalesOrderFragmentDirections
                     .actionFinalPrescriptionFragmentToInfoFragment(navigateFormRecordID)
             )
 
             orderOfSections[1] -> navController.navigate(
-                FinalPrescriptionFragmentDirections
+                SalesOrderFragmentDirections
                     .actionFinalPrescriptionFragmentToMemoFragment(navigateFormRecordID)
             )
 
             orderOfSections[2] -> navController.navigate(
-                FinalPrescriptionFragmentDirections
+                SalesOrderFragmentDirections
                     .actionFinalPrescriptionFragmentToCurrentRxFragment(navigateFormRecordID)
             )
 
             orderOfSections[3] -> navController.navigate(
-                FinalPrescriptionFragmentDirections
+                SalesOrderFragmentDirections
                     .actionFinalPrescriptionFragmentToRefractionFragment(navigateFormRecordID)
             )
 
             orderOfSections[4] -> navController.navigate(
-                FinalPrescriptionFragmentDirections
+                SalesOrderFragmentDirections
                     .actionFinalPrescriptionFragmentToOcularHealthFragment(navigateFormRecordID)
             )
 
             orderOfSections[5] -> navController.navigate(
-                FinalPrescriptionFragmentDirections
+                SalesOrderFragmentDirections
                     .actionFinalPrescriptionFragmentToSupplementaryFragment(navigateFormRecordID)
             )
 
             orderOfSections[6] -> navController.navigate(
-                FinalPrescriptionFragmentDirections
+                SalesOrderFragmentDirections
                     .actionFinalPrescriptionFragmentToContactLensFragment(navigateFormRecordID)
             )
 
             orderOfSections[7] -> navController.navigate(
-                FinalPrescriptionFragmentDirections
+                SalesOrderFragmentDirections
                     .actionFinalPrescriptionFragmentToOrthokFragment(navigateFormRecordID)
             )
 
@@ -558,7 +558,7 @@ class FinalPrescriptionFragment : Fragment() {
 
             orderOfSections[9] -> {
                 navController.navigate(
-                    FinalPrescriptionFragmentDirections
+                    SalesOrderFragmentDirections
                         .actionFinalPrescriptionFragmentToCashOrderFragment(navigateFormRecordID)
                 )
             }
@@ -701,18 +701,19 @@ class FinalPrescriptionFragment : Fragment() {
 
             patientViewModel.practitioner.observe(viewLifecycleOwner) {
 
-                val dataPractitioner = it
+                val dataList = it.toMutableList()
+                dataList.add(0, "")
 
                 val adapterPractitioner =
-                    ArrayAdapter(requireContext(), R.layout.spinner_list_basic_, dataPractitioner)
+                    ArrayAdapter(requireContext(), R.layout.spinner_list_basic_, dataList)
                 practitionerName.adapter = adapterPractitioner
 
                 val adapterPractitionerOptometrist =
-                    ArrayAdapter(requireContext(), R.layout.spinner_list_basic, dataPractitioner)
+                    ArrayAdapter(requireContext(), R.layout.spinner_list_basic, dataList)
                 practitionerNameOptometrist.adapter = adapterPractitionerOptometrist
 
-                it.forEachIndexed { index, s ->
-                    if (s == patientForm.practitioner) {
+                dataList.forEachIndexed { index, data ->
+                    if (data == patientForm.practitioner) {
                         practitionerNameOptometrist.setSelection(index)
                         practitionerName.setSelection(index)
                     }

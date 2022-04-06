@@ -592,8 +592,6 @@ class RefractionFragment : Fragment() {
                 if (photoFile.exists()) photoFile.delete()
                 patientViewModel.readyToShowPhoto()
                 currentForm.reservedField = ""
-            }.addOnFailureListener {
-                it.printStackTrace()
             }
         } else {
             binding.autorefPhoto.setImageDrawable(null)

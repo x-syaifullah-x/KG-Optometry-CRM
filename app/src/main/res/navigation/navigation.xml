@@ -360,7 +360,7 @@
     </fragment>
     <fragment
         android:id="@+id/finalPrescriptionFragment"
-        android:name="com.lizpostudio.kgoptometrycrm.forms.FinalPrescriptionFragment"
+        android:name="com.lizpostudio.kgoptometrycrm.forms.SalesOrderFragment"
         android:label="FinalPrescriptionFragment">
         <argument
             android:name="recordID"
