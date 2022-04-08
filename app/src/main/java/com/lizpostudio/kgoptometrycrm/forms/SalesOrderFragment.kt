@@ -813,6 +813,9 @@ class SalesOrderFragment : Fragment() {
             currentForm.or = "${binding.editOr.text}".uppercase()
             currentForm.frameType = "${binding.editFrameType.text}".uppercase()
             currentForm.frameSize = "${binding.editFrameSize.text}".uppercase()
+            currentForm.frame = "${editFrame.text}".uppercase()
+            currentForm.lens = "${editLens.text}".uppercase()
+            currentForm.contactLensSunglasses = "${editClSg.text}".uppercase()
         }
         return !currentForm.assertEqual(priorPatient)
     }

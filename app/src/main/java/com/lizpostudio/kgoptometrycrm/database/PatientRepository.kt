@@ -18,7 +18,10 @@ private const val USERS_CHILD = "users"
 private const val ADMIN_CHILD = "admin"
 private const val PRACTITIONERS_CHILD = "practitioners"
 
-class PatientRepository private constructor(fireApp: FirebaseApp?, private val patientsDao: PatientsDao) {
+class PatientRepository private constructor(
+    fireApp: FirebaseApp?,
+    private val patientsDao: PatientsDao
+) {
 
     companion object {
         @Volatile
@@ -27,7 +30,7 @@ class PatientRepository private constructor(fireApp: FirebaseApp?, private val p
         fun getInstance(context: Context) = INSTANCE ?: synchronized(this) {
             INSTANCE ?: PatientRepository(
                 FirebaseApp.initializeApp(context),
-                PatientsDatabase.getInstance(context).patientsDao
+                AppDB.getInstance(context).patientsDao
             ).also { INSTANCE = it }
         }
     }
@@ -157,4 +160,12 @@ class PatientRepository private constructor(fireApp: FirebaseApp?, private val p
         }
     }
 
+    suspend fun getPatientByCashOrder(cs: String) =
+        patientsDao.queryCashOrder(cs)
+
+    suspend fun getPatientBySalesOrder(or: String) =
+        patientsDao.querySalesOrder(or)
+
+    suspend fun getPatientByProduct(value: String) =
+        patientsDao.queryProduct(value)
 }

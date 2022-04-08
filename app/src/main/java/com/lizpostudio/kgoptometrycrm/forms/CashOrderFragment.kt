@@ -790,7 +790,8 @@ class CashOrderFragment : Fragment() {
             currentForm.cs = "${binding.editCs.text}".uppercase()
             currentForm.solutionMisc = "${binding.editSolutionMisc.text}".uppercase()
             currentForm.solutionMiscRm = "${binding.editSolutionMiscRm.text}".uppercase()
-
+            currentForm.frame = "${editFrame.text}".uppercase()
+            currentForm.lens = "${editLens.text}".uppercase()
 //            val dataSelected = binding.practitionerName.selectedItem as String
 //            val dataPractitioner = StringBuilder(dataSelected)
 //            val count = binding.practitionerName.adapter.count

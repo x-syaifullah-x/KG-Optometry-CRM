@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="database_search_choices">
+        <item>NAME</item>
+        <item>DATE</item>
+        <item>ID</item>
+        <item>IC</item>
+        <item>PHONE</item>
+        <item>FAMILY CODE</item>
+        <item>ADDRESS</item>
+        <item>OCCUPATION</item>
+        <item>CASH ORDER</item>
+        <item>SALES ORDER</item>
+        <item>PRODUCT</item>
+        <item>OTHER ID</item>
+    </string-array>
+
+    <string-array name="worth_four_dots">
+        <item> </item>
+        <item>4 DOTS</item>
+        <item>RE SUPPRESSED</item>
+        <item>LE SUPPRESSED</item>
+        <item>5 DOTS</item>
+    </string-array>
+
+    <string-array name="range_movement">
+        <item> </item>
+        <item>FULL</item>
+        <item>LIMITED</item>
+    </string-array>
+
+    <string-array name="eye_movement">
+        <item> </item>
+        <item>SMOOTH</item>
+        <item>SLIGHT JERKY</item>
+        <item>JERKY</item>
+    </string-array>
+
+    <string-array name="yes_no">
+        <item> </item>
+        <item>YES</item>
+        <item>NO</item>
+    </string-array>
+
+    <string-array name="forms_order">
+        <item>INFO</item>
+        <item>MEMO</item>
+        <item>CURRENT / OLD Rx</item>
+        <item>REFRACTION</item>
+        <item>OCULAR HEALTH</item>
+        <item>SUPPLEMENTARY TESTS</item>
+        <item>CONTACT LENS EXAM</item>
+        <item>ORTHOK</item>
+        <item>SALES ORDER</item>
+        <item>CASH ORDER</item>
+    </string-array>
+
+    <string-array name="chart_choices">
+        <item> </item>
+        <item>SHERIDAN GARDINER</item>
+        <item>SLOAN</item>
+        <item>ILLITERATE E</item>
+        <item>LANDOLT C</item>
+        <item>KAY PICTURE</item>
+        <item>NUMBER</item>
+    </string-array>
+
+    <string-array name="currently_using_choices">
+        <item> </item>
+        <item>UNAIDED</item>
+        <item>SINGLE VISION</item>
+        <item>SV-DISTANCE</item>
+        <item>SV-READING</item>
+        <item>SV-INTERMEDIATE</item>
+        <item>OFFICE LENS</item>
+        <item>MONOVISION</item>
+        <item>BIFOCAL RS</item>
+        <item>BIFOCAL UD</item>
+        <item>PROGRESSIVE</item>
+        <item>MYOPIA CONTROL</item>
+        <item>ANTI FATIGUE</item>
+        <!--        <item>BIFOCAL</item>-->
+    </string-array>
+
+    <string-array name="type_final_choices">
+        <item> </item>
+        <item>SINGLE VISION</item>
+        <item>SV-DISTANCE</item>
+        <item>SV-READING</item>
+        <item>SV-INTERMEDIATE</item>
+        <item>OFFICE LENS</item>
+        <item>MONOVISION</item>
+        <item>BIFOCAL RS</item>
+        <item>BIFOCAL UD</item>
+        <item>PROGRESSIVE</item>
+        <item>MYOPIA CONTROL</item>
+        <item>ANTI FATIGUE</item>
+    </string-array>
+
+    <string-array name="sex_choices">
+        <item> </item>
+        <item>MALE</item>
+        <item>FEMALE</item>
+    </string-array>
+
+    <string-array name="race_choices">
+        <item>OTHER</item>
+        <item>CHINESE</item>
+        <item>MALAY</item>
+        <item>INDIAN</item>
+    </string-array>
+
+    <string-array name="state_choices">
+        <item> </item>
+        <item>KEDAH</item>
+        <item>PENANG</item>
+        <item>PERLIS</item>
+        <item>PERAK</item>
+        <item>KELANTAN</item>
+        <item>SELANGOR</item>
+        <item>NEGERI SEMBILIAN</item>
+        <item>TERENGGANU</item>
+        <item>PAHANG</item>
+        <item>MELAKA</item>
+        <item>JOHOR</item>
+        <item>SABAH</item>
+        <item>SARAWAK</item>
+        <item>WP KL</item>
+        <item>WP PUTRAJAYA</item>
+        <item>WP LABUAN</item>
+    </string-array>
+</resources>

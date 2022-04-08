@@ -21,16 +21,21 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.widget.doOnTextChanged
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.asLiveData
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.lizpostudio.kgoptometrycrm.database.Patients
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentDatabaseSearchBinding
 import com.lizpostudio.kgoptometrycrm.utils.*
-
+import id.xxx.module.view.binding.ktx.viewBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.*
 
 private const val INFO_SECTION = "INFO"
@@ -42,6 +47,10 @@ private const val FAMILY_CODE = "FAMILY CODE"
 private const val IC_SELECTED = "IC"
 private const val ADDRESS = "ADDRESS"
 private const val OCCUPATION = "OCCUPATION"
+private const val CASH_ORDER = "CASH ORDER"
+private const val SALES_ORDER = "SALES ORDER"
+private const val PRODUCT = "PRODUCT"
+private const val OTHER_ID = "OTHER ID"
 
 private const val ONE_DAY = 24 * 3600 * 1000L
 private const val TWO_WEEKS = 14 * ONE_DAY
@@ -64,12 +73,10 @@ class DatabaseSearchFragment : Fragment() {
 
     private var isAdmin = false
 
-
     private var searchValues = SaveSearch()
     private var filterByFamily = false
 
-    private var _binding: FragmentDatabaseSearchBinding? = null
-    private val binding get() = _binding!!
+    private val binding by viewBinding<FragmentDatabaseSearchBinding>()
 
     private val allInfoForms = mutableListOf<Patients>()
 
@@ -79,6 +86,7 @@ class DatabaseSearchFragment : Fragment() {
 
     private var shareText = ""
 
+    private val stateSearch = MutableStateFlow("")
     // temp vat to keep record of when sync was started
     //  private var latestDeletedHistorySynched = 0L
 
@@ -101,10 +109,8 @@ class DatabaseSearchFragment : Fragment() {
 
     private fun persistFBCompletedToStore() {
 
-        val sharedPref = activity?.getSharedPreferences(
-            "kgoptometry",
-            Context.MODE_PRIVATE
-        )
+        val sharedPref = activity
+            ?.getSharedPreferences("kgoptometry", Context.MODE_PRIVATE)
         Log.d(TAG, "Saving isFetched frin FB as === $isfetchedFromFirebaseCompleted")
         if (sharedPref != null) {
             val editor = sharedPref.edit()
@@ -117,8 +123,7 @@ class DatabaseSearchFragment : Fragment() {
     private fun persistDataToStore() {
 
         val sharedPref = activity?.getSharedPreferences(
-            "kgoptometry",
-            Context.MODE_PRIVATE
+            "kgoptometry", Context.MODE_PRIVATE
         )
 
         if (sharedPref != null) {
@@ -143,14 +148,15 @@ class DatabaseSearchFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding =
-            DataBindingUtil.inflate(inflater, R.layout.fragment_database_search, container, false)
+//        _binding =
+//            DataBindingUtil.inflate(inflater, R.layout.fragment_database_search, container, false)
         val app = requireNotNull(this.activity).application
 
         binding.lifecycleOwner = this
         val navController = this.findNavController()
 
         val spinner: Spinner = binding.searchBySpinner
+
         ArrayAdapter.createFromResource(
             requireContext(),
             R.array.database_search_choices,
@@ -398,19 +404,15 @@ class DatabaseSearchFragment : Fragment() {
         }
 
         recyclerAdapter.patientSelected.observe(viewLifecycleOwner) { patient ->
-
             if (filterByFamily) {
                 if (patient.familyCode != "") {
                     val newList = allInfoForms
                         .filter { it.familyCode == patient.familyCode }
                         .sortedBy { it.patientName }
-
                     updateRecyclerView(newList)
                 } else {
                     Toast.makeText(context, "Empty Family Code!", Toast.LENGTH_SHORT).show()
                 }
-
-
             } else {
                 hideKeyboard(app)
                 navController.navigate(
@@ -418,11 +420,9 @@ class DatabaseSearchFragment : Fragment() {
                         .actionDatabaseSearchFragmentToFormSelectionFragment(patient.patientID)
                 )
             }
-
         }
 
         //  add patient functionality
-
         patientViewModel.patientAdded.observe(viewLifecycleOwner) { newRecordID ->
             newRecordID?.let {
                 navController.navigate(
@@ -443,8 +443,7 @@ class DatabaseSearchFragment : Fragment() {
             Toast.makeText(context, "Working on it!\nWait a second ...", Toast.LENGTH_SHORT).show()
             val yearAgoMillis = System.currentTimeMillis() - ONE_DAY * 365L
             patientViewModel.getOldRecordsBySectionAndDate(
-                getString(R.string.refraction_caption),
-                yearAgoMillis
+                getString(R.string.refraction_caption), yearAgoMillis
             )
         }
 
@@ -458,8 +457,7 @@ class DatabaseSearchFragment : Fragment() {
                 if (newList.size > 500) shareText = "First 500 overdue refraction forms:\n"
                 shareText += newList.map { patient ->
                     "ID:  ${patient.patientID}, Name: ${patient.patientName}\n"
-                }.take(500)
-                    .joinToString(separator = " ")
+                }.take(500).joinToString(separator = " ")
             }
         }
 
@@ -485,57 +483,95 @@ class DatabaseSearchFragment : Fragment() {
             }
         }
 
+        binding.salesButton.setOnClickListener {
+            Toast.makeText(container?.context, "on progress", Toast.LENGTH_LONG).show()
+        }
 
         return binding.root
     }
 
+    private val dispatcherFilterRecyclerList = CoroutineScope(Dispatchers.IO)
+
     private fun filterRecyclerList() {
+        dispatcherFilterRecyclerList.launch {
+            val inputText = searchValues.value
+            recyclerList.clear()
 
-        val inputText = searchValues.value
-        recyclerList.clear()
+            val newList =
+                if (inputText.isNotBlank()) {
+                    when (searchValues.search) {
+                        PATIENT_NAME -> allInfoForms
+                            .filter { it.patientName.contains(inputText, true) }
+                            .sortedBy { it.patientName }
 
-        val newList = if (inputText.isNotBlank()) {
-            when (searchValues.search) {
-                PATIENT_NAME -> allInfoForms
-                    .filter { it.patientName.contains(inputText, true) }
-                    .sortedBy { it.patientName }
+                        ID_SELECTED -> allInfoForms
+                            .filter { it.patientID.contains(inputText, true) }
+                            .sortedBy { it.patientName }
 
-                ID_SELECTED -> allInfoForms
-                    .filter { it.patientID.contains(inputText, true) }
-                    .sortedBy { it.patientName }
+                        IC_SELECTED -> allInfoForms
+                            .filter { it.patientIC.contains(inputText) }
+                            .sortedBy { it.patientName }
 
-                IC_SELECTED -> allInfoForms
-                    .filter { it.patientIC.contains(inputText) }
-                    .sortedBy { it.patientName }
+                        PHONE -> allInfoForms
+                            .filter { it.phone.contains(inputText, true) }
+                            .sortedBy { it.patientName }
 
-                PHONE -> allInfoForms
-                    .filter { it.phone.contains(inputText, true) }
-                    .sortedBy { it.patientName }
+                        ADDRESS -> allInfoForms
+                            .filter { it.address.contains(inputText, true) }
+                            .sortedBy { it.patientName }
 
-                ADDRESS -> allInfoForms
-                    .filter { it.address.contains(inputText, true) }
-                    .sortedBy { it.patientName }
+                        OCCUPATION -> allInfoForms
+                            .filter { patientForm ->
+                                val extractData =
+                                    if (patientForm.sectionData.split('|')
+                                            .toMutableList().size > 10
+                                    )
+                                        patientForm.sectionData.split('|')
+                                            .toMutableList()[10] else ""
+                                extractData.contains(inputText, true)
+                            }
+                            .sortedBy { it.patientName }
 
-                OCCUPATION -> allInfoForms
-                    .filter { patientForm ->
-                        val extractData =
-                            if (patientForm.sectionData.split('|').toMutableList().size > 10)
-                                patientForm.sectionData.split('|').toMutableList()[10] else ""
-                        extractData.contains(inputText, true)
+                        CASH_ORDER -> {
+                            patientViewModel.getPatientByCashOrder(inputText)
+                                .flatMap { cs ->
+                                    allInfoForms.filter { cs.patientID == it.patientID }
+                                }
+                                .sortedBy { it.patientName }
+                        }
+
+                        SALES_ORDER -> {
+                            patientViewModel.getPatientBySalesOrder(inputText)
+                                .flatMap { cs ->
+                                    allInfoForms.filter { cs.patientID == it.patientID }
+                                        .sortedBy { it.patientName }
+                                }
+                        }
+
+                        PRODUCT -> {
+                            patientViewModel.getPatientByProduct(inputText)
+                                .flatMap { cs ->
+                                    allInfoForms.filter { cs.patientID == it.patientID }
+                                }.toHashSet().toList().sortedBy { it.patientName }
+
+                        }
+
+                        OTHER_ID -> allInfoForms
+                            .filter { it.sectionData.contains(inputText, true) }
+                            .sortedBy { it.patientName }
+
+                        else -> allInfoForms
+                            .filter { it.familyCode.contains(inputText, true) }
+                            .sortedBy { it.patientName }
                     }
-                    .sortedBy { it.patientName }
+                } else {
+                    allInfoForms.sortedBy { it.patientName }
+                }
 
-                else -> allInfoForms
-                    .filter { it.familyCode.contains(inputText, true) }
-                    .sortedBy { it.patientName }
+            withContext(Dispatchers.Main) {
+                updateRecyclerView(newList)
             }
-
-        } else {
-            allInfoForms.sortedBy { it.patientName }
         }
-
-        updateRecyclerView(newList)
-
     }
 
     private fun updateRecyclerView(newList: List<Patients>) {
@@ -548,7 +584,6 @@ class DatabaseSearchFragment : Fragment() {
         recyclerAdapter.notifyDataSetChanged()
     }
 
-
     private fun hideKeyboard(app: Application) {
         val imm =
             (app.applicationContext).getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -556,20 +591,10 @@ class DatabaseSearchFragment : Fragment() {
         binding.searchInputText.clearFocus()
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
     private fun spinnerSearchListener(): AdapterView.OnItemSelectedListener {
 
         val adapterItemListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
+            override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
                 searchValues.search = when (position) {
                     0 -> PATIENT_NAME
                     1 -> DATE_SELECTED
@@ -578,11 +603,17 @@ class DatabaseSearchFragment : Fragment() {
                     4 -> PHONE
                     5 -> FAMILY_CODE
                     6 -> ADDRESS
-                    else -> OCCUPATION
+                    7 -> OCCUPATION
+                    8 -> CASH_ORDER
+                    9 -> SALES_ORDER
+                    10 -> PRODUCT
+                    11 -> OTHER_ID
+                    else -> throw Throwable("NOT SELECTED")
                 }
                 Log.d(TAG, "onItem Spinner selected: ${searchValues.search} ")
 
                 if (position == 1) {
+//                if (searchValues.search == DATE_SELECTED) {
                     binding.searchIcon.setImageResource(R.drawable.ic_baseline_calendar_today_24)
                     if (listenToSearchSpinner) filterByDate()
                 } else {
@@ -671,9 +702,8 @@ class DatabaseSearchFragment : Fragment() {
         searchValues.value = sharedPref?.getString("searchValue", "") ?: ""
 
         for (i in 0 until binding.searchBySpinner.adapter.count) {
-            if (searchValues.search.isNotBlank() &&
-                searchValues.search == binding.searchBySpinner.adapter.getItem(i).toString()
-            ) {
+            val item = binding.searchBySpinner.adapter.getItem(i).toString()
+            if (searchValues.search.isNotBlank() && searchValues.search == item) {
                 binding.searchBySpinner.setSelection(i)
                 Log.d(TAG, "Setting search spinner to ${searchValues.search}")
             }

@@ -272,17 +272,16 @@ private fun updateUIOnSuccess() {
         binding.messageRecyclerView.addItemDecoration(itemDecor)
         binding.messageRecyclerView.adapter = recyclerAdapter
 
-        messagesLiveList.observe(viewLifecycleOwner, {mList ->
-            mList?.let{
+        messagesLiveList.observe(viewLifecycleOwner) { mList ->
+            mList?.let {
 
-                   recyclerAdapter.submitList(it)
-                   recyclerAdapter.notifyDataSetChanged()
+                recyclerAdapter.submitList(it)
+                recyclerAdapter.notifyDataSetChanged()
 
-  //              Log.d(TAG, "messages LIVE list sisze  =  ${it.size}")
-
-                if (it.size>5) binding.messageRecyclerView.smoothScrollToPosition(it.size-1)
+                if (it.size > 5)
+                    binding.messageRecyclerView.smoothScrollToPosition(it.size - 1)
             }
-        })
+        }
 
         binding.sendButton.setOnClickListener {
             submitMessage()

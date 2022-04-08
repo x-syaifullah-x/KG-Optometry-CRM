@@ -7,16 +7,19 @@ import androidx.recyclerview.widget.RecyclerView
 import com.lizpostudio.kgoptometrycrm.database.Patients
 import com.lizpostudio.kgoptometrycrm.databinding.ListItemReportBinding
 
-class PatientsListAdapter (private val patients:List<Patients>) : RecyclerView.Adapter<PatientsListAdapter.ViewHolder>(){
+class PatientsListAdapter(private val patients: List<Patients>) :
+    RecyclerView.Adapter<PatientsListAdapter.ViewHolder>() {
 
     var patientSelected = MutableLiveData<Patients>()
 
-    class ViewHolder private constructor(val binding: ListItemReportBinding): RecyclerView.ViewHolder(binding.root) {
+    class ViewHolder private constructor(val binding: ListItemReportBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: Patients) {
             binding.patients = item
             binding.executePendingBindings()
         }
+
         companion object {
             fun from(parent: ViewGroup): ViewHolder {
                 val layoutInflater = LayoutInflater.from(parent.context)
@@ -39,6 +42,6 @@ class PatientsListAdapter (private val patients:List<Patients>) : RecyclerView.A
     }
 
     override fun getItemCount(): Int {
-       return patients.size
+        return patients.size
     }
 }

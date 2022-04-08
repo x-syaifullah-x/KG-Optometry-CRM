@@ -13,59 +13,74 @@ import kotlin.random.Random
 private const val TAG = "LogTrace"
 private const val ONE_DAY = 24 * 3600 * 1000L
 fun convertFBRecordToPatients(f: FBRecords, key: Long): Patients {
+    val aa = f.sectionData.split("|")
 
     return Patients(
         key,
-        f.patientID,
-        f.patientIC,
-        f.patientName,
-        f.phone,
-        f.address,
-        f.familyCode,
-        f.dateOfSection.toLongOrNull() ?: 0L,
-        f.sectionName,
-        f.sectionData,
-        f.remarks,
-        f.graphicsLeft,
-        f.graphicsRight,
-        f.syncStatus == "true",
-        f.reservedField,
-        f.practitioner,
-        f.mm,
-        f.or,
-        f.frameSize,
-        f.frameType,
-        f.cs,
-        f.solutionMisc,
-        f.solutionMiscRm
+        patientID = f.patientID,
+        patientIC = f.patientIC,
+        patientName = f.patientName,
+        phone = f.phone,
+        address = f.address,
+        familyCode = f.familyCode,
+        dateOfSection = f.dateOfSection.toLongOrNull() ?: 0L,
+        sectionName = f.sectionName,
+        sectionData = f.sectionData,
+        remarks = f.remarks,
+        graphicsLeft = f.graphicsLeft,
+        graphicsRight = f.graphicsRight,
+        syncStatus = f.syncStatus == "true",
+        reservedField = f.reservedField,
+        practitioner = f.practitioner,
+        mm = f.mm,
+        or = f.or,
+        frameSize = f.frameSize,
+        frameType = f.frameType,
+        cs = f.cs,
+        solutionMisc = f.solutionMisc,
+        solutionMiscRm = f.solutionMiscRm,
+        frame = try {
+            aa[15]
+        } catch (t: Throwable) {
+            ""
+        },
+        lens = try {
+            aa[17]
+        } catch (t: Throwable) {
+            ""
+        },
+        contactLensSunglasses = try {
+            aa[19]
+        } catch (t: Throwable) {
+            ""
+        }
     )
 }
 
 fun convertFormToFBRecord(p: Patients): FBRecords {
-
     return FBRecords(
-        p.address,
-        p.dateOfSection.toString(),
-        p.familyCode,
-        p.graphicsLeft,
-        p.graphicsRight,
-        p.patientIC,
-        p.patientID,
-        p.patientName,
-        p.phone,
-        p.remarks,
-        p.reservedField,
-        p.sectionData,
-        p.sectionName,
-        "true",
-        p.practitioner,
-        p.mm,
-        p.or,
-        p.frameSize,
-        p.frameType,
-        p.cs,
-        p.solutionMisc,
-        p.solutionMiscRm
+        address = p.address,
+        dateOfSection = p.dateOfSection.toString(),
+        familyCode = p.familyCode,
+        graphicsLeft = p.graphicsLeft,
+        graphicsRight = p.graphicsRight,
+        patientIC = p.patientIC,
+        patientID = p.patientID,
+        patientName = p.patientName,
+        phone = p.phone,
+        remarks = p.remarks,
+        reservedField = p.reservedField,
+        sectionData = p.sectionData,
+        sectionName = p.sectionName,
+        syncStatus = "true",
+        practitioner = p.practitioner,
+        mm = p.mm,
+        or = p.or,
+        frameSize = p.frameSize,
+        frameType = p.frameType,
+        cs = p.cs,
+        solutionMisc = p.solutionMisc,
+        solutionMiscRm = p.solutionMiscRm
     )
 }
 

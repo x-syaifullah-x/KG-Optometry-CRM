@@ -507,6 +507,12 @@ class PatientsViewModel(
             _patientInitForms.value = repository.getRecordsByPatientID(patientID)
         }
     }
+
+    suspend fun getPatientByCashOrder(cs: String) = repository.getPatientByCashOrder(cs)
+
+    suspend fun getPatientBySalesOrder(or: String) = repository.getPatientBySalesOrder(or)
+
+    suspend fun getPatientByProduct(value: String) = repository.getPatientByProduct(value)
 }
 
 class PatientsViewModelFactory(private val context: Context) : ViewModelProvider.Factory {

@@ -74,26 +74,19 @@ data class Patients(
     var solutionMisc: String = "",
 
     @ColumnInfo(name = "solution_misc_rm")
-    var solutionMiscRm: String = ""
+    var solutionMiscRm: String = "",
+
+    @ColumnInfo(name = "frame")
+    var frame: String = "",
+
+    @ColumnInfo(name = "lens")
+    var lens: String = "",
+
+    @ColumnInfo(name = "contact_lens_sunglasses")
+    var contactLensSunglasses: String = ""
 ) {
 
-
     fun assertEqual(toForm: Patients): Boolean {
-/*        Log.d(TAG, "\n${this.patientID}: ${this.patientID == toForm.patientID}\n" +
-                "                ${this.patientIC}: ${this.patientIC == toForm.patientIC}\n" +
-                "               ${this.patientName}: ${this.patientName == toForm.patientName}\n" +
-                "                ${this.phone}: ${this.phone == toForm.phone}\n" +
-                "                ${this.address}: ${this.address == toForm.address}\n" +
-                "                ${this.familyCode}: ${this.familyCode == toForm.familyCode}\n" +
-                "                ${this.dateOfSection}:${this.dateOfSection == toForm.dateOfSection}\n" +
-                "                ${this.sectionName}: ${this.sectionName == toForm.sectionName}\n" +
-                "               ${this.sectionData}:${this.sectionData == toForm.sectionData}\n" +
-                "                ${this.remarks}:${this.remarks == toForm.remarks}\n" +
-                "                ${this.graphicsLeft}:${this.graphicsLeft == toForm.graphicsLeft}\n" +
-                "                ${this.graphicsRight}:${this.graphicsRight == toForm.graphicsRight}\n" +
-                "                ${this.syncStatus}:${this.syncStatus == toForm.syncStatus}\n" +
-                "                ${this.reservedField}:${this.reservedField == toForm.reservedField}")*/
-
         return (this.patientID == toForm.patientID &&
                 this.patientIC == toForm.patientIC &&
                 this.patientName == toForm.patientName &&
@@ -112,7 +105,7 @@ data class Patients(
                 this.mm == toForm.mm &&
                 this.or == toForm.or &&
                 this.frameSize == toForm.frameSize &&
-                this.frameType == toForm.frameSize &&
+                this.frameType == toForm.frameType &&
                 this.cs == toForm.cs &&
                 this.solutionMisc == toForm.solutionMisc &&
                 this.solutionMiscRm == toForm.solutionMiscRm)
@@ -142,6 +135,9 @@ data class Patients(
         this.cs = from.cs
         this.solutionMisc = from.solutionMisc
         this.solutionMiscRm = from.solutionMiscRm
+        this.frame = from.frame
+        this.lens = from.lens
+        this.contactLensSunglasses = from.contactLensSunglasses
     }
 }
 

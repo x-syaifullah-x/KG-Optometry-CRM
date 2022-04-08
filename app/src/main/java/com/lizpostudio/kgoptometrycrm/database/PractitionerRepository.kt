@@ -10,7 +10,7 @@ class PractitionerRepository(private val dao: PractitionerDao) {
 
         fun getInstance(context: Context) = INSTANCE ?: synchronized(this) {
             INSTANCE
-                ?: PractitionerRepository(PatientsDatabase.getInstance(context).practitionerDao)
+                ?: PractitionerRepository(AppDB.getInstance(context).practitionerDao)
                     .also { INSTANCE = it }
         }
     }
