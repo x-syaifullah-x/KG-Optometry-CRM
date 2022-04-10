@@ -83,7 +83,10 @@ data class Patients(
     var lens: String = "",
 
     @ColumnInfo(name = "contact_lens_sunglasses")
-    var contactLensSunglasses: String = ""
+    var contactLensSunglasses: String = "",
+
+    @ColumnInfo(name = "practitioner_name_optometrist")
+    var practitionerNameOptometrist:String = ""
 ) {
 
     fun assertEqual(toForm: Patients): Boolean {
@@ -108,7 +111,8 @@ data class Patients(
                 this.frameType == toForm.frameType &&
                 this.cs == toForm.cs &&
                 this.solutionMisc == toForm.solutionMisc &&
-                this.solutionMiscRm == toForm.solutionMiscRm)
+                this.solutionMiscRm == toForm.solutionMiscRm &&
+                this.practitionerNameOptometrist == toForm.practitionerNameOptometrist)
     }
 
     fun copyFrom(from: Patients) {
@@ -138,6 +142,7 @@ data class Patients(
         this.frame = from.frame
         this.lens = from.lens
         this.contactLensSunglasses = from.contactLensSunglasses
+        this.practitionerNameOptometrist = from.practitionerNameOptometrist
     }
 }
 
@@ -163,5 +168,6 @@ data class FBRecords(
     var frameType: String = "",
     var cs: String = "",
     var solutionMisc: String = "",
-    var solutionMiscRm: String = ""
+    var solutionMiscRm: String = "",
+    var practitionerNameOptometrist:String = ""
 )

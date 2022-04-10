@@ -35,6 +35,7 @@ import com.google.firebase.storage.StorageTask
 import com.lizpostudio.kgoptometrycrm.PatientsViewModel
 import com.lizpostudio.kgoptometrycrm.PatientsViewModelFactory
 import com.lizpostudio.kgoptometrycrm.R
+import com.lizpostudio.kgoptometrycrm.constant.Constants
 import com.lizpostudio.kgoptometrycrm.database.Patients
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentCurrentRxFormBinding
 import com.lizpostudio.kgoptometrycrm.utils.*
@@ -562,8 +563,7 @@ class CurrentRxFragment : Fragment() {
                 }
             if (photoUri != null) {
                 requireActivity().revokeUriPermission(
-                    photoUri,
-                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                    photoUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                 )
             }
         }
@@ -751,8 +751,15 @@ class CurrentRxFragment : Fragment() {
                 val adapterPractitioner =
                     ArrayAdapter(requireContext(), R.layout.spinner_list_basic_, it)
                 practitionerName.adapter = adapterPractitioner
-                it.forEachIndexed { index, s ->
-                    if (s == patientForm.practitioner) practitionerName.setSelection(index)
+                val isCreated = Constants.isCreatedForm(requireContext())
+                if (isCreated) {
+                    practitionerName.setSelection(1)
+                    saveAndNavigate("none")
+                } else {
+                    it.forEachIndexed { index, s ->
+                        if (s == patientForm.practitioner)
+                            practitionerName.setSelection(index)
+                    }
                 }
             }
 // END of Binding
@@ -824,4 +831,8 @@ class CurrentRxFragment : Fragment() {
         _binding = null
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.clear()
+    }
 }

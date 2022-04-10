@@ -1,5 +1,6 @@
 package com.lizpostudio.kgoptometrycrm.database
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow
 
@@ -21,7 +22,7 @@ interface PatientsDao {
     @Query("SELECT * FROM patients_table WHERE recordID = (:idToGet)")
     suspend fun getOneRecord(idToGet: Long): Patients?
 
-    @Query("SELECT * FROM patients_table WHERE sales_id = (:patientID)")
+    @Query("SELECT * FROM patients_table WHERE sales_id =:patientID")
     suspend fun getRecordsByID(patientID: String): List<Patients>?
 
     @Query("SELECT * FROM patients_table WHERE sales_id = (:patientID) AND section_name =(:nameOfSection)")
@@ -70,4 +71,13 @@ interface PatientsDao {
 
     @Query("SELECT * FROM patients_table WHERE frame || lens || contact_lens_sunglasses || solution_misc LIKE :query || '%'")
     suspend fun queryProduct(query: String): List<Patients>
+
+    @Query("SELECT sales_id FROM patients_table WHERE section_name='INFO'")
+    fun getInfoPatients(): Flow<List<String>>
+
+    @Query("SELECT * FROM patients_table WHERE section_name='INFO' AND sales_id=:patientID")
+    fun getPatients(patientID: String): List<Patients>
+
+    @Query("SELECT * FROM patients_table WHERE section_name='CASH ORDER' or section_name='FINAL PRESCRIPTION'")
+    fun getCsAndOr(): LiveData<List<Patients>>
 }

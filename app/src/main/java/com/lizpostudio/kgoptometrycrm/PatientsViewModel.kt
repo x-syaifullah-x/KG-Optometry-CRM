@@ -10,6 +10,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.StorageReference
 import com.lizpostudio.kgoptometrycrm.database.*
+import com.lizpostudio.kgoptometrycrm.model.Patient
 import com.lizpostudio.kgoptometrycrm.utils.convertFBRecordToPatients
 import com.lizpostudio.kgoptometrycrm.utils.convertFormToFBRecord
 import com.lizpostudio.kgoptometrycrm.utils.convertLongToDDMMYYHRSMIN
@@ -53,11 +54,11 @@ class PatientsViewModel(
             ""
         }
     val practitioner = practitionerRepository.get().map {
-        val dataBlank = linkedSetOf(userName.uppercase())
-        dataBlank.addAll(
+        val default = linkedSetOf("", userName.uppercase())
+        default.addAll(
             it.data.split(",")
         )
-        dataBlank.toList()
+        default.toList()
     }
 
     private var recordsChangesListener: ValueEventListener? = null
@@ -353,7 +354,7 @@ class PatientsViewModel(
         }
     }
 
-    fun updateDeleteHistoryFBReference(newDelHistory: Map<String, String>) {
+    private fun updateDeleteHistoryFBReference(newDelHistory: Map<String, String>) {
         repository.deleteHistoryReference?.setValue(newDelHistory)
     }
 
@@ -513,6 +514,10 @@ class PatientsViewModel(
     suspend fun getPatientBySalesOrder(or: String) = repository.getPatientBySalesOrder(or)
 
     suspend fun getPatientByProduct(value: String) = repository.getPatientByProduct(value)
+
+    val patient: LiveData<List<Patient>> = repository.getPatient()
+
+    val csAndOr = repository.getCsAndOr()
 }
 
 class PatientsViewModelFactory(private val context: Context) : ViewModelProvider.Factory {

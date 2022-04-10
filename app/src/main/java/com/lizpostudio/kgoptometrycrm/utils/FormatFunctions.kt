@@ -53,7 +53,8 @@ fun convertFBRecordToPatients(f: FBRecords, key: Long): Patients {
             aa[19]
         } catch (t: Throwable) {
             ""
-        }
+        },
+        practitionerNameOptometrist = f.practitionerNameOptometrist
     )
 }
 
@@ -80,7 +81,8 @@ fun convertFormToFBRecord(p: Patients): FBRecords {
         frameType = p.frameType,
         cs = p.cs,
         solutionMisc = p.solutionMisc,
-        solutionMiscRm = p.solutionMiscRm
+        solutionMiscRm = p.solutionMiscRm,
+        practitionerNameOptometrist = p.practitionerNameOptometrist
     )
 }
 
@@ -410,6 +412,12 @@ fun getDateStartAEndMillis(date: String): Pair<Long, Long> {
 
 @SuppressLint("SimpleDateFormat")
 fun convertLongToDDMMYY(timeMillis: Long): String {
+    return SimpleDateFormat("dd/MM/yy")
+        .format(timeMillis).toString()
+}
+
+@SuppressLint("SimpleDateFormat")
+fun convertLongToDDMMYY(timeMillis: String): String {
     return SimpleDateFormat("dd/MM/yy")
         .format(timeMillis).toString()
 }

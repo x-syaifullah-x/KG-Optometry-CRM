@@ -8,7 +8,7 @@
     <string name="please_login">You should login into the app to continue using it.</string>
     <string name="sign_in_failure">Sign in Failure!</string>
     <string name="hint_search_by">Search by:</string>
-    <string name="entries_found_in_database">Found %1$s customers</string>
+    <string name="entries_found_in_database">Found %1$s Sales</string>
     <string name="hint_start_typing">Start typing to search database</string>
     <string name="hint_phone">Phone:</string>
     <string name="hint_family_code">Family code:</string>

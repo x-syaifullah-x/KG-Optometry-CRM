@@ -23,6 +23,7 @@ import androidx.navigation.fragment.navArgs
 import com.lizpostudio.kgoptometrycrm.PatientsViewModel
 import com.lizpostudio.kgoptometrycrm.PatientsViewModelFactory
 import com.lizpostudio.kgoptometrycrm.R
+import com.lizpostudio.kgoptometrycrm.constant.Constants
 import com.lizpostudio.kgoptometrycrm.database.Patients
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentCashOrderBinding
 import com.lizpostudio.kgoptometrycrm.utils.*
@@ -506,9 +507,8 @@ class CashOrderFragment : Fragment() {
             )
 
             orderOfSections[1] -> navController.navigate(
-                CashOrderFragmentDirections.actionFinalPrescriptionFragmentToMemoFragment(
-                    navigateFormRecordID
-                )
+                CashOrderFragmentDirections
+                    .actionFinalPrescriptionFragmentToMemoFragment(navigateFormRecordID)
             )
 
             orderOfSections[2] -> navController.navigate(
@@ -698,12 +698,20 @@ class CashOrderFragment : Fragment() {
             editSolutionMisc.setText(patientForm.solutionMisc)
             editSolutionMiscRm.setText(patientForm.solutionMiscRm)
 
+
             patientViewModel.practitioner.observe(viewLifecycleOwner) {
                 val adapterPractitioner =
                     ArrayAdapter(requireContext(), R.layout.spinner_list_basic_, it)
                 practitionerName.adapter = adapterPractitioner
-                it.forEachIndexed { index, s ->
-                    if (s == patientForm.practitioner) practitionerName.setSelection(index)
+                val isCreated = Constants.isCreatedForm(requireContext())
+                if (isCreated) {
+                    practitionerName.setSelection(1)
+                    saveAndNavigate("none")
+                } else {
+                    it.forEachIndexed { index, s ->
+                        if (s == patientForm.practitioner)
+                            practitionerName.setSelection(index)
+                    }
                 }
             }
 

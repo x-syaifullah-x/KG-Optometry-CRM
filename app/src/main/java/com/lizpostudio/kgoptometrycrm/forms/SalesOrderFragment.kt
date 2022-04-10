@@ -24,6 +24,7 @@ import androidx.navigation.fragment.navArgs
 import com.lizpostudio.kgoptometrycrm.PatientsViewModel
 import com.lizpostudio.kgoptometrycrm.PatientsViewModelFactory
 import com.lizpostudio.kgoptometrycrm.R
+import com.lizpostudio.kgoptometrycrm.constant.Constants
 import com.lizpostudio.kgoptometrycrm.database.Patients
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentFinalPrescriptionBinding
 import com.lizpostudio.kgoptometrycrm.utils.*
@@ -700,22 +701,31 @@ class SalesOrderFragment : Fragment() {
             remarkInput.setText(patientForm.remarks)
 
             patientViewModel.practitioner.observe(viewLifecycleOwner) {
-
-                val dataList = it.toMutableList()
-                dataList.add(0, "")
-
                 val adapterPractitioner =
-                    ArrayAdapter(requireContext(), R.layout.spinner_list_basic_, dataList)
+                    ArrayAdapter(requireContext(), R.layout.spinner_list_basic_, it)
                 practitionerName.adapter = adapterPractitioner
+                val isCreated = Constants.isCreatedForm(requireContext())
+                if (isCreated) {
+                    practitionerName.setSelection(1)
+                    saveAndNavigate("none")
+                } else {
+                    it.forEachIndexed { index, s ->
+                        if (s == patientForm.practitioner)
+                            practitionerName.setSelection(index)
+                    }
+                }
 
                 val adapterPractitionerOptometrist =
-                    ArrayAdapter(requireContext(), R.layout.spinner_list_basic, dataList)
+                    ArrayAdapter(requireContext(), R.layout.spinner_list_basic, it)
                 practitionerNameOptometrist.adapter = adapterPractitionerOptometrist
 
-                dataList.forEachIndexed { index, data ->
-                    if (data == patientForm.practitioner) {
-                        practitionerNameOptometrist.setSelection(index)
-                        practitionerName.setSelection(index)
+                if (isCreated) {
+                    practitionerNameOptometrist.setSelection(1)
+                    saveAndNavigate("none")
+                } else {
+                    it.forEachIndexed { index, s ->
+                        if (s == patientForm.practitionerNameOptometrist)
+                            practitionerNameOptometrist.setSelection(index)
                     }
                 }
             }
@@ -809,13 +819,14 @@ class SalesOrderFragment : Fragment() {
 //                    dataPractitioner.append("|$a")
 //                }
 //            }
-            currentForm.practitioner = (binding.practitionerName.selectedItem as String).uppercase()
+            currentForm.practitioner = "${binding.practitionerName.selectedItem}".uppercase()
             currentForm.or = "${binding.editOr.text}".uppercase()
             currentForm.frameType = "${binding.editFrameType.text}".uppercase()
             currentForm.frameSize = "${binding.editFrameSize.text}".uppercase()
             currentForm.frame = "${editFrame.text}".uppercase()
             currentForm.lens = "${editLens.text}".uppercase()
             currentForm.contactLensSunglasses = "${editClSg.text}".uppercase()
+            currentForm.practitionerNameOptometrist = "${practitionerNameOptometrist.selectedItem}".uppercase()
         }
         return !currentForm.assertEqual(priorPatient)
     }

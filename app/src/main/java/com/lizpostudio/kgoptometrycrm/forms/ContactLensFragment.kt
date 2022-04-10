@@ -26,6 +26,7 @@ import androidx.navigation.fragment.navArgs
 import com.lizpostudio.kgoptometrycrm.PatientsViewModel
 import com.lizpostudio.kgoptometrycrm.PatientsViewModelFactory
 import com.lizpostudio.kgoptometrycrm.R
+import com.lizpostudio.kgoptometrycrm.constant.Constants
 import com.lizpostudio.kgoptometrycrm.database.Patients
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentContactLensBinding
 import com.lizpostudio.kgoptometrycrm.utils.*
@@ -1535,8 +1536,15 @@ class ContactLensFragment : Fragment() {
                 val adapterPractitioner =
                     ArrayAdapter(requireContext(), R.layout.spinner_list_basic_, it)
                 practitionerName.adapter = adapterPractitioner
-                it.forEachIndexed { index, s ->
-                    if (s == patientForm.practitioner) practitionerName.setSelection(index)
+                val isCreated = Constants.isCreatedForm(requireContext())
+                if (isCreated) {
+                    practitionerName.setSelection(1)
+                    saveAndNavigate("none")
+                } else {
+                    it.forEachIndexed { index, s ->
+                        if (s == patientForm.practitioner)
+                            practitionerName.setSelection(index)
+                    }
                 }
             }
 // END of Binding

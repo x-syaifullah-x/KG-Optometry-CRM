@@ -24,7 +24,6 @@ import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -35,9 +34,11 @@ import com.google.firebase.storage.StorageTask
 import com.lizpostudio.kgoptometrycrm.PatientsViewModel
 import com.lizpostudio.kgoptometrycrm.PatientsViewModelFactory
 import com.lizpostudio.kgoptometrycrm.R
+import com.lizpostudio.kgoptometrycrm.constant.Constants
 import com.lizpostudio.kgoptometrycrm.database.Patients
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentMemoBinding
 import com.lizpostudio.kgoptometrycrm.utils.*
+import id.xxx.module.view.binding.ktx.viewBinding
 import java.io.File
 import java.io.FileOutputStream
 
@@ -57,14 +58,13 @@ class MemoFragment : Fragment() {
     }
 
     private var photoUri: Uri? = null
-    private var photoFile: File = File("com.lizpostudio.kgoptometrycrm")
-    private var filesDir: File = File("com.lizpostudio.kgoptometrycrm")
+    private var photoFile: File = File(Constants.APPLICATION_ID)
+    private var filesDir: File = File(Constants.APPLICATION_ID)
 
     private var isAdmin = false
     private var viewOnlyMode = false
 
-    private var _binding: FragmentMemoBinding? = null
-    private val binding get() = _binding!!
+    private val binding by viewBinding<FragmentMemoBinding>()
 
     private var recordID = 0L
     private var patientID = ""
@@ -89,13 +89,6 @@ class MemoFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
-        _binding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.fragment_memo,
-            container,
-            false
-        )
         val app = requireNotNull(this.activity).application
 
         filesDir = app.applicationContext.filesDir
@@ -113,25 +106,18 @@ class MemoFragment : Fragment() {
 
         // get if user is Admin
         val sharedPref = app.getSharedPreferences(
-            "kgoptometry",
-            Context.MODE_PRIVATE
+            Constants.PREF_NAME, Context.MODE_PRIVATE
         )
         isAdmin = sharedPref?.getString("admin", "") ?: "" == "admin"
 
         viewOnlyMode = sharedPref?.getBoolean("viewOnly", false) ?: false
         if (viewOnlyMode) {
             binding.mainLayout.setBackgroundColor(
-                ContextCompat.getColor(
-                    requireContext(),
-                    R.color.viewOnlyMode
-                )
+                ContextCompat.getColor(requireContext(), R.color.viewOnlyMode)
             )
             binding.saveFormButton.visibility = View.GONE
         } else binding.mainLayout.setBackgroundColor(
-            ContextCompat.getColor(
-                requireContext(),
-                R.color.lightBackground
-            )
+            ContextCompat.getColor(requireContext(), R.color.lightBackground)
         )
 
         binding.dateCaption.setOnClickListener {
@@ -312,9 +298,7 @@ class MemoFragment : Fragment() {
 
         binding.photoButton.setOnClickListener {
             photoUri = FileProvider.getUriForFile(
-                requireActivity(),
-                "com.lizpostudio.kgoptometrycrm.fileprovider",
-                photoFile
+                requireActivity(), Constants.FILE_PROVIDER_AUTHORITY, photoFile
             )
             val packageManager: PackageManager = requireActivity().packageManager
 
@@ -325,13 +309,10 @@ class MemoFragment : Fragment() {
                     PackageManager.MATCH_DEFAULT_ONLY
                 )
             if (resolvedActivity != null && photoUri != null) {
-                captureImage.putExtra(
-                    MediaStore.EXTRA_OUTPUT, photoUri
-                )
+                captureImage.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
                 val cameraActivities: List<ResolveInfo> =
                     packageManager.queryIntentActivities(
-                        captureImage,
-                        PackageManager.MATCH_DEFAULT_ONLY
+                        captureImage, PackageManager.MATCH_DEFAULT_ONLY
                     )
                 for (cameraActivity in cameraActivities) {
                     requireActivity().grantUriPermission(
@@ -340,9 +321,7 @@ class MemoFragment : Fragment() {
                         Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                     )
                 }
-                startActivityForResult(
-                    captureImage, REQUEST_PHOTO
-                )
+                startActivityForResult(captureImage, REQUEST_PHOTO)
             }
         }
 
@@ -362,8 +341,7 @@ class MemoFragment : Fragment() {
                     }
                 }
             } else {
-                Toast.makeText(app.applicationContext, "Nothing to delete!", Toast.LENGTH_SHORT)
-                    .show()
+                Toast.makeText(context, "Nothing to delete!", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -388,13 +366,10 @@ class MemoFragment : Fragment() {
     private fun scaleBitmap(photoFile: File) {
         //take photoFile, compress it, delete original and replace with scaled
         val bitmap = getScaledBitmap(
-            photoFile.path,
-            PHOTO_W,
-            PHOTO_H
+            photoFile.path, PHOTO_W, PHOTO_H
         )
 //    photoFile.delete()
         if (bitmap != null) {
-
             try {
                 val os = FileOutputStream(photoFile)
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os)
@@ -436,7 +411,7 @@ class MemoFragment : Fragment() {
     @SuppressLint("SetTextI18n")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        //       Log.d(TAG, "initial file size = ${photoFile.length() / 1024} kBytes")
+        Log.d(TAG, "initial file size = ${photoFile.length() / 1024} kBytes")
         if (requestCode == REQUEST_PHOTO && resultCode == Activity.RESULT_OK) {
             scaleBitmap(photoFile)
             currentForm.reservedField = storageRef.toString()
@@ -447,8 +422,7 @@ class MemoFragment : Fragment() {
             }
             if (photoUri != null) {
                 requireActivity().revokeUriPermission(
-                    photoUri,
-                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                    photoUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                 )
             }
 
@@ -591,8 +565,15 @@ class MemoFragment : Fragment() {
                 val adapterPractitioner =
                     ArrayAdapter(requireContext(), R.layout.spinner_list_basic_, it)
                 practitionerName.adapter = adapterPractitioner
-                it.forEachIndexed { index, s ->
-                    if (s == patientForm.practitioner) practitionerName.setSelection(index)
+                val isCreated = Constants.isCreatedForm(requireContext())
+                if (isCreated) {
+                    practitionerName.setSelection(1)
+                    saveAndNavigate("none")
+                } else {
+                    it.forEachIndexed { index, s ->
+                        if (s == patientForm.practitioner)
+                            practitionerName.setSelection(index)
+                    }
                 }
             }
 
@@ -650,6 +631,10 @@ class MemoFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         downloadPhotoTask?.cancel()
-        _binding = null
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.clear()
     }
 }

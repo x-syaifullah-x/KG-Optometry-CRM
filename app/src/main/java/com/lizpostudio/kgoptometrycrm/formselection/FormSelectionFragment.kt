@@ -10,7 +10,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.core.content.res.ResourcesCompat
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -20,20 +19,23 @@ import androidx.recyclerview.widget.RecyclerView
 import com.lizpostudio.kgoptometrycrm.PatientsViewModel
 import com.lizpostudio.kgoptometrycrm.PatientsViewModelFactory
 import com.lizpostudio.kgoptometrycrm.R
+import com.lizpostudio.kgoptometrycrm.constant.Constants
 import com.lizpostudio.kgoptometrycrm.database.Patients
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentFormSelectionBinding
+import com.lizpostudio.kgoptometrycrm.search.DatabaseSearchSalesFragment
 import com.lizpostudio.kgoptometrycrm.utils.FormsListAdapter
 import com.lizpostudio.kgoptometrycrm.utils.actionConfirmDeletion
 import com.lizpostudio.kgoptometrycrm.utils.computeAgeAndDOB
+import id.xxx.module.view.binding.ktx.viewBinding
 
 private const val TAG = "LogTrace"
-private const val ONE_DAY = 24*3600*1000L
-private const val TWO_WEEKS = 14* ONE_DAY
+private const val ONE_DAY = 24 * 3600 * 1000L
+private const val TWO_WEEKS = 14 * ONE_DAY
 
-class FormSelectionFragment: Fragment() {
+class FormSelectionFragment : Fragment() {
 
     private var isAdmin = false
-    private val patientInfoForm =Patients()
+    private val patientInfoForm = Patients()
 
     private var allowSync = true
     private var syncHistoryStart = 0L
@@ -43,8 +45,7 @@ class FormSelectionFragment: Fragment() {
     private val recordsToBeInserted = mutableListOf<Patients>()
 
     private val recyclerAdapter = FormsListAdapter()
-    private var _binding: FragmentFormSelectionBinding? = null
-    private val binding get() = _binding!!
+    private val binding by viewBinding<FragmentFormSelectionBinding>()
 
     private val patientViewModel: PatientsViewModel by viewModels {
         PatientsViewModelFactory(requireContext())
@@ -57,11 +58,13 @@ class FormSelectionFragment: Fragment() {
         super.onCreate(savedInstanceState)
 
         val navController = this.findNavController()
+        val dest = context?.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE)
+            ?.getString(Constants.PREF_KEY_SEARCH_STATE, "")
         requireActivity().onBackPressedDispatcher.addCallback(this) {
-            try {
+            if (dest == DatabaseSearchSalesFragment::class.java.name) {
+                navController.navigate(FormSelectionFragmentDirections.actionToDatabaseSearchSalesFragment())
+            } else {
                 navController.navigate(FormSelectionFragmentDirections.actionFormSelectionFragmentToDatabaseSearchFragment())
-            } catch (e:Exception) {
-                Toast.makeText(context, "Too fast to navigate!", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -72,7 +75,6 @@ class FormSelectionFragment: Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = DataBindingUtil.inflate(inflater, R.layout.fragment_form_selection, container, false)
         val app = requireNotNull(this.activity).application
 
         var addFormVisibility = false
@@ -81,9 +83,9 @@ class FormSelectionFragment: Fragment() {
         val navController = this.findNavController()
 
         // get if user is Admin
-        val sharedPref = app.getSharedPreferences("kgoptometry", Context.MODE_PRIVATE)
-        isAdmin= sharedPref?.getString("admin", "")?: "" == "admin"
-        latestDataSynched = sharedPref?.getLong("lastSynch", 0L)?:0L
+        val sharedPref = app.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE)
+        isAdmin = sharedPref?.getString("admin", "") ?: "" == "admin"
+        latestDataSynched = sharedPref?.getLong(Constants.PREF_KEY_LAST_SYNC, 0L) ?: 0L
 
         val safeArgs: FormSelectionFragmentArgs by navArgs()
         val patientID = safeArgs.patientID
@@ -101,7 +103,11 @@ class FormSelectionFragment: Fragment() {
                 allowSync = false
                 patientViewModel.updateLocalDBFromFirebase(latestDataSynched, TWO_WEEKS)
             } else {
-                Toast.makeText(context, "Previous Sync was not completed!\nHold on ...", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context,
+                    "Previous Sync was not completed!\nHold on ...",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
         // create Recycler View
@@ -114,7 +120,8 @@ class FormSelectionFragment: Fragment() {
         )
 
         myDecorLine?.also {
-            itemDecor.setDrawable(it) }
+            itemDecor.setDrawable(it)
+        }
 
         binding.formsList.addItemDecoration(itemDecor)
         binding.formsList.adapter = recyclerAdapter
@@ -124,8 +131,13 @@ class FormSelectionFragment: Fragment() {
                 allPatientForms.clear()
                 if (patientForms.isNotEmpty()) {
                     allPatientForms.addAll(patientForms)
-                    patientInfoForm.copyFrom(
-                        patientForms.first { form -> form.sectionName == getString(R.string.info_form_caption) })
+                    try {
+                        patientInfoForm.copyFrom(
+                            patientForms.first { form -> form.sectionName == getString(R.string.info_form_caption) }
+                        )
+                    } catch (e: Throwable) {
+                        e.printStackTrace()
+                    }
 
                     val (dob, age) = computeAgeAndDOB(patientInfoForm.patientIC)
                     val pCaption = "${patientInfoForm.patientName} ${
@@ -146,7 +158,7 @@ class FormSelectionFragment: Fragment() {
                     for (section in orderOfSections) {
                         for (forms in sortedForms) {
                             var sectionName = forms.sectionName
-                            if (sectionName == getString(R.string.final_prescription_caption)){
+                            if (sectionName == getString(R.string.final_prescription_caption)) {
                                 sectionName = getString(R.string.sales_order_from_selection)
                                 forms.sectionName = getString(R.string.sales_order_from_selection)
                             }
@@ -171,7 +183,8 @@ class FormSelectionFragment: Fragment() {
             // delete all forms and navigate bCK TO DATABASE Fragment
             actionConfirmDeletion(
                 title = resources.getString(R.string.patient_delete_title),
-                message = resources.getString(R.string.customer_form_delete,
+                message = resources.getString(
+                    R.string.customer_form_delete,
                     "all Forms",
                     patientInfoForm.patientName
                 ),
@@ -179,10 +192,13 @@ class FormSelectionFragment: Fragment() {
             ) { allowed ->
                 if (allowed) {
                     patientViewModel.deleteListOfRecords(allPatientForms)
-                    Log.d(TAG, "These list of records will be eliminated from Firebase: ${allPatientForms.map{forms->forms.recordID.toString()}}")
+                    Log.d(
+                        TAG,
+                        "These list of records will be eliminated from Firebase: ${allPatientForms.map { forms -> forms.recordID.toString() }}"
+                    )
 
-                        patientViewModel.deleteListOfRecordsFromFirebase(
-                        allPatientForms.map{forms->forms.recordID.toString()})
+                    patientViewModel.deleteListOfRecordsFromFirebase(
+                        allPatientForms.map { forms -> forms.recordID.toString() })
                 }
             }
         }
@@ -289,10 +305,15 @@ class FormSelectionFragment: Fragment() {
                             "Patient ${patientInfoForm.patientName} deleted!",
                             Toast.LENGTH_SHORT
                         ).show()
-                        navController.navigate(
-                            FormSelectionFragmentDirections
-                                .actionFormSelectionFragmentToDatabaseSearchFragment()
-                        )
+
+                        val dest =
+                            context?.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE)
+                                ?.getString(Constants.PREF_KEY_SEARCH_STATE, "")
+                        if (dest == DatabaseSearchSalesFragment::class.java.name) {
+                            navController.navigate(FormSelectionFragmentDirections.actionToDatabaseSearchSalesFragment())
+                        } else {
+                            navController.navigate(FormSelectionFragmentDirections.actionFormSelectionFragmentToDatabaseSearchFragment())
+                        }
                     }
                 }
             } else {
@@ -311,35 +332,57 @@ class FormSelectionFragment: Fragment() {
         }
 
         binding.refractionButton.setOnClickListener {
-            patientViewModel.createNewRecord(patientInfoForm, resources.getString(R.string.refraction_caption))
+            patientViewModel.createNewRecord(
+                patientInfoForm,
+                resources.getString(R.string.refraction_caption)
+            )
         }
         binding.currentRxButton.setOnClickListener {
-            patientViewModel.createNewRecord(patientInfoForm, resources.getString(R.string.current_rx_caption))
+            patientViewModel.createNewRecord(
+                patientInfoForm,
+                resources.getString(R.string.current_rx_caption)
+            )
         }
         binding.ocularHealthButton.setOnClickListener {
-            patientViewModel.createNewRecord(patientInfoForm, resources.getString(R.string.ocular_health_caption))
+            patientViewModel.createNewRecord(
+                patientInfoForm,
+                resources.getString(R.string.ocular_health_caption)
+            )
         }
         binding.supplementaryTestsButton.setOnClickListener {
-            patientViewModel.createNewRecord(patientInfoForm, resources.getString(R.string.supplementary_test_caption))
+            patientViewModel.createNewRecord(
+                patientInfoForm, resources.getString(R.string.supplementary_test_caption)
+            )
         }
         binding.contactLensButton.setOnClickListener {
-            patientViewModel.createNewRecord(patientInfoForm, resources.getString(R.string.contact_lens_caption))
+            patientViewModel.createNewRecord(
+                patientInfoForm, resources.getString(R.string.contact_lens_caption)
+            )
         }
         binding.orthokButton.setOnClickListener {
-            patientViewModel.createNewRecord(patientInfoForm, resources.getString(R.string.orthox_caption))
+            patientViewModel.createNewRecord(
+                patientInfoForm, resources.getString(R.string.orthox_caption)
+            )
         }
         binding.finalPrescriptionButton.setOnClickListener {
-            patientViewModel.createNewRecord(patientInfoForm, resources.getString(R.string.final_prescription_caption))
+            patientViewModel.createNewRecord(
+                patientInfoForm, resources.getString(R.string.final_prescription_caption)
+            )
         }
         binding.memoButton.setOnClickListener {
-            patientViewModel.createNewRecord(patientInfoForm, resources.getString(R.string.memo_form_caption))
+            patientViewModel.createNewRecord(
+                patientInfoForm, resources.getString(R.string.memo_form_caption)
+            )
         }
         binding.cashOrderButton.setOnClickListener {
-            patientViewModel.createNewRecord(patientInfoForm, resources.getString(R.string.cash_order))
+            patientViewModel.createNewRecord(
+                patientInfoForm, resources.getString(R.string.cash_order)
+            )
         }
 
         patientViewModel.formAdded.observe(viewLifecycleOwner) { addedForm ->
             addedForm?.let {
+                Constants.setCreatedFrom(requireContext())
                 navigateToSelectedForm(addedForm)
             }
         }
@@ -355,8 +398,8 @@ class FormSelectionFragment: Fragment() {
             if (viewOnlyMode) binding.viewOnlyButton.setImageResource(R.drawable.visibility_32)
             else binding.viewOnlyButton.setImageResource(R.drawable.ic_baseline_edit_24)
 
-            val shared = activity?.getSharedPreferences("kgoptometry",
-                Context.MODE_PRIVATE)
+            val shared = activity
+                ?.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE)
             if (shared != null) {
                 val editor = shared.edit()
                 editor.putBoolean("viewOnly", viewOnlyMode)
@@ -367,40 +410,71 @@ class FormSelectionFragment: Fragment() {
         return binding.root
     }
 
-    private fun navigateToSelectedForm(recordSelected: Patients) {
-
-        val navController = this.findNavController()
-        when (recordSelected.sectionName) {
+    private fun navigateToSelectedForm(p: Patients) {
+        when (p.sectionName) {
             resources.getString(R.string.info_form_caption) ->
-                navController.navigate(FormSelectionFragmentDirections.actionFormSelectionFragmentToInfoFragment(recordSelected.recordID))
+                findNavController().navigate(
+                    FormSelectionFragmentDirections
+                        .actionFormSelectionFragmentToInfoFragment(p.recordID)
+                )
             resources.getString(R.string.memo_form_caption) ->
-                navController.navigate(FormSelectionFragmentDirections.actionFormSelectionFragmentToMemoFragment(recordSelected.recordID))
+                findNavController().navigate(
+                    FormSelectionFragmentDirections
+                        .actionFormSelectionFragmentToMemoFragment(p.recordID)
+                )
             resources.getString(R.string.refraction_caption) ->
-                navController.navigate(FormSelectionFragmentDirections.actionFormSelectionFragmentToRefractionFragment(recordSelected.recordID))
+                findNavController().navigate(
+                    FormSelectionFragmentDirections
+                        .actionFormSelectionFragmentToRefractionFragment(p.recordID)
+                )
             resources.getString(R.string.current_rx_caption) ->
-                navController.navigate(FormSelectionFragmentDirections.actionFormSelectionFragmentToCurrentRxFragment(recordSelected.recordID))
+                findNavController().navigate(
+                    FormSelectionFragmentDirections
+                        .actionFormSelectionFragmentToCurrentRxFragment(p.recordID)
+                )
             resources.getString(R.string.ocular_health_caption) ->
-                navController.navigate(FormSelectionFragmentDirections.actionFormSelectionFragmentToOcularHealthFragment(recordSelected.recordID))
+                findNavController().navigate(
+                    FormSelectionFragmentDirections
+                        .actionFormSelectionFragmentToOcularHealthFragment(p.recordID)
+                )
             resources.getString(R.string.supplementary_test_caption) ->
-                navController.navigate(FormSelectionFragmentDirections.actionFormSelectionFragmentToSupplementaryFragment(recordSelected.recordID))
+                findNavController().navigate(
+                    FormSelectionFragmentDirections
+                        .actionFormSelectionFragmentToSupplementaryFragment(p.recordID)
+                )
             resources.getString(R.string.contact_lens_caption) ->
-                navController.navigate(FormSelectionFragmentDirections.actionFormSelectionFragmentToContactLensFragment(recordSelected.recordID))
+                findNavController().navigate(
+                    FormSelectionFragmentDirections
+                        .actionFormSelectionFragmentToContactLensFragment(p.recordID)
+                )
             resources.getString(R.string.orthox_caption) ->
-                navController.navigate(FormSelectionFragmentDirections.actionFormSelectionFragmentToOrthokFragment(recordSelected.recordID))
+                findNavController().navigate(
+                    FormSelectionFragmentDirections
+                        .actionFormSelectionFragmentToOrthokFragment(p.recordID)
+                )
             resources.getString(R.string.sales_order_from_selection) ->
-                navController.navigate(FormSelectionFragmentDirections.actionFormSelectionFragmentToFinalPrescriptionFragment(recordSelected.recordID))
+                findNavController().navigate(
+                    FormSelectionFragmentDirections
+                        .actionFormSelectionFragmentToFinalPrescriptionFragment(p.recordID)
+                )
             resources.getString(R.string.final_prescription_caption) ->
-                navController.navigate(FormSelectionFragmentDirections.actionFormSelectionFragmentToFinalPrescriptionFragment(recordSelected.recordID))
+                findNavController().navigate(
+                    FormSelectionFragmentDirections
+                        .actionFormSelectionFragmentToFinalPrescriptionFragment(p.recordID)
+                )
             resources.getString(R.string.cash_order) ->
-                navController.navigate(FormSelectionFragmentDirections.actionFormSelectionFragmentToCashOrderFragment(recordSelected.recordID))
-            else ->{
-                Toast.makeText(context, " ${recordSelected.sectionName} not implemented yet", Toast.LENGTH_SHORT).show()
+                findNavController().navigate(
+                    FormSelectionFragmentDirections
+                        .actionFormSelectionFragmentToCashOrderFragment(p.recordID)
+                )
+            else -> {
+                Toast.makeText(
+                    context,
+                    " ${p.sectionName} not implemented yet",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
-    }
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }
 

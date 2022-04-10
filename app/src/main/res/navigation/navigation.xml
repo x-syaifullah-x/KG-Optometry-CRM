@@ -15,7 +15,7 @@
     </fragment>
     <fragment
         android:id="@+id/databaseSearchFragment"
-        android:name="com.lizpostudio.kgoptometrycrm.DatabaseSearchFragment"
+        android:name="com.lizpostudio.kgoptometrycrm.search.DatabaseSearchFragment"
         android:label="DatabaseSearchFragment"
         tools:layout="@layout/fragment_database_search">
         <action
@@ -28,17 +28,44 @@
         <action
             android:id="@+id/action_databaseSearchFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_to_database_sales_screen"
+            app:destination="@id/databaseSearchSalesFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/databaseSearchSalesFragment"
+        android:name="com.lizpostudio.kgoptometrycrm.search.DatabaseSearchSalesFragment"
+        android:label="DatabaseSearchSalesScreenFragment"
+        tools:layout="@layout/fragment_database_search_sales_screen">
+        <action
+            android:id="@+id/action_to_database_search"
+            app:destination="@id/databaseSearchFragment" />
+        <action
+            android:id="@+id/action_to_formSelectionFragment"
+            app:destination="@id/formSelectionFragment" />
+        <action
+            android:id="@+id/action_to_infoFragment"
+            app:destination="@id/infoFragment"
+            app:popUpToInclusive="false" />
+        <action
+            android:id="@+id/action_to_loginFragment"
+            app:destination="@id/loginFragment" />
     </fragment>
     <fragment
         android:id="@+id/formSelectionFragment"
         android:name="com.lizpostudio.kgoptometrycrm.formselection.FormSelectionFragment"
-        android:label="FormSelectionFragment">
+        android:label="FormSelectionFragment"
+        tools:layout="@layout/fragment_form_selection">
         <argument
             android:name="patientID"
             app:argType="string" />
         <action
             android:id="@+id/action_formSelectionFragment_to_databaseSearchFragment"
             app:destination="@id/databaseSearchFragment" />
+        <action
+            android:id="@+id/action_to_databaseSearchSalesFragment"
+            app:destination="@id/databaseSearchSalesFragment" />
         <action
             android:id="@+id/action_formSelectionFragment_to_infoFragment"
             app:destination="@id/infoFragment"

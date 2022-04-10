@@ -13,7 +13,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
     entities = [
         Patients::class, PractitionerEntity::class
     ],
-    version = 3,
+    version = 5,
     exportSchema = false
 )
 abstract class AppDB : RoomDatabase() {

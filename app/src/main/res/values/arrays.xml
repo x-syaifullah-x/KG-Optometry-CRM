@@ -15,6 +15,13 @@
         <item>OTHER ID</item>
     </string-array>
 
+    <string-array name="database_search_sales_choices">
+        <item>NAME</item>
+        <item>CS</item>
+        <item>OR</item>
+        <item>DATE</item>
+    </string-array>
+
     <string-array name="worth_four_dots">
         <item> </item>
         <item>4 DOTS</item>

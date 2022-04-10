@@ -2,12 +2,17 @@ package com.lizpostudio.kgoptometrycrm.database
 
 import android.content.Context
 import androidx.annotation.WorkerThread
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.switchMap
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
+import com.lizpostudio.kgoptometrycrm.model.Patient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
 private const val RECORDS_CHILD = "records"
@@ -168,4 +173,24 @@ class PatientRepository private constructor(
 
     suspend fun getPatientByProduct(value: String) =
         patientsDao.queryProduct(value)
+
+    fun getPatient() = patientsDao.getInfoPatients()
+        .map { ids ->
+            ids.map { id ->
+                val data = patientsDao.getPatients(id)
+                val patientInfo = Patients()
+                val patientCashOrder = Patients()
+                val patientSalesOrder = Patients()
+                data.map { patient ->
+                    when (patient.sectionName) {
+                        "INFO" -> patientInfo.copyFrom(patient)
+                        "CASH ORDER" -> patientCashOrder.copyFrom(patient)
+                        "FINAL PRESCRIPTION" -> patientSalesOrder.copyFrom(patient)
+                    }
+                }
+                Patient(id = id, info = patientInfo, cs = patientCashOrder, or = patientSalesOrder)
+            }
+        }.asLiveData()
+
+    fun getCsAndOr() = patientsDao.getCsAndOr()
 }

@@ -35,6 +35,7 @@ import com.google.firebase.storage.StorageTask
 import com.lizpostudio.kgoptometrycrm.PatientsViewModel
 import com.lizpostudio.kgoptometrycrm.PatientsViewModelFactory
 import com.lizpostudio.kgoptometrycrm.R
+import com.lizpostudio.kgoptometrycrm.constant.Constants
 import com.lizpostudio.kgoptometrycrm.database.Patients
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentRefractionBinding
 import com.lizpostudio.kgoptometrycrm.utils.*
@@ -550,8 +551,7 @@ class RefractionFragment : Fragment() {
                 }
             if (photoUri != null) {
                 requireActivity().revokeUriPermission(
-                    photoUri,
-                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                    photoUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                 )
             }
         }
@@ -997,8 +997,15 @@ class RefractionFragment : Fragment() {
                 val adapterPractitioner =
                     ArrayAdapter(requireContext(), R.layout.spinner_list_basic_, it)
                 practitionerName.adapter = adapterPractitioner
-                it.forEachIndexed { index, s ->
-                    if (s == patientForm.practitioner) practitionerName.setSelection(index)
+                val isCreated = Constants.isCreatedForm(requireContext())
+                if (isCreated) {
+                    practitionerName.setSelection(1)
+                    saveAndNavigate("none")
+                } else {
+                    it.forEachIndexed { index, s ->
+                        if (s == patientForm.practitioner)
+                            practitionerName.setSelection(index)
+                    }
                 }
             }
 // END of Binding
@@ -1013,9 +1020,8 @@ class RefractionFragment : Fragment() {
         when (navigateFormName) {
 
             orderOfSections[0] -> navController.navigate(
-                RefractionFragmentDirections.actionRefractionFragmentToInfoFragment(
-                    navigateFormRecordID
-                )
+                RefractionFragmentDirections
+                    .actionRefractionFragmentToInfoFragment(navigateFormRecordID)
             )
 
             orderOfSections[1] -> navController.navigate(
@@ -1170,5 +1176,10 @@ class RefractionFragment : Fragment() {
         super.onDestroyView()
         downloadPhotoTask?.cancel()
         _binding = null
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.clear()
     }
 }

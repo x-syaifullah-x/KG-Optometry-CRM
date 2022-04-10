@@ -15,7 +15,6 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.activity.addCallback
 import androidx.core.content.ContextCompat
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -23,9 +22,11 @@ import androidx.navigation.fragment.navArgs
 import com.lizpostudio.kgoptometrycrm.PatientsViewModel
 import com.lizpostudio.kgoptometrycrm.PatientsViewModelFactory
 import com.lizpostudio.kgoptometrycrm.R
+import com.lizpostudio.kgoptometrycrm.constant.Constants
 import com.lizpostudio.kgoptometrycrm.database.Patients
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentInfoFormBinding
 import com.lizpostudio.kgoptometrycrm.utils.*
+import id.xxx.module.view.binding.ktx.viewBinding
 import java.util.*
 
 private const val YES = "YES"
@@ -42,8 +43,7 @@ class InfoFragment : Fragment() {
     }
     private var viewOnlyMode = false
 
-    private var _binding: FragmentInfoFormBinding? = null
-    private val binding get() = _binding!!
+    private val binding by viewBinding<FragmentInfoFormBinding>()
     private var recordID = 0L
     private var patientID = ""
     private var sectionEditDate = -1L
@@ -54,6 +54,8 @@ class InfoFragment : Fragment() {
     private var currentForm = Patients()
     private var navigateFormName = ""
     private var navigateFormRecordID = -1L
+
+    private val safeArgs: InfoFragmentArgs by navArgs()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,10 +71,8 @@ class InfoFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        _binding = DataBindingUtil.inflate(inflater, R.layout.fragment_info_form, container, false)
         val app = requireNotNull(this.activity).application
 
-        val safeArgs: InfoFragmentArgs by navArgs()
         recordID = safeArgs.recordID
 
         // get Patient data
@@ -81,16 +81,14 @@ class InfoFragment : Fragment() {
         binding.lifecycleOwner = this
 
         val sharedPref = app.getSharedPreferences(
-            "kgoptometry",
-            Context.MODE_PRIVATE
+            Constants.PREF_NAME, Context.MODE_PRIVATE
         )
         //     isAdmin= sharedPref?.getString("admin", "")?: "" == "admin"
         viewOnlyMode = sharedPref?.getBoolean("viewOnly", false) ?: false
         if (viewOnlyMode) {
             binding.mainLayout.setBackgroundColor(
                 ContextCompat.getColor(
-                    requireContext(),
-                    R.color.viewOnlyMode
+                    requireContext(), R.color.viewOnlyMode
                 )
             )
             binding.saveFormButton.visibility = View.GONE
@@ -493,9 +491,8 @@ class InfoFragment : Fragment() {
                 fillTheForm(currentForm)
             }
             "back" -> findNavController().navigate(
-                InfoFragmentDirections.actionInfoFragmentToFormSelectionFragment(
-                    patientID
-                )
+                InfoFragmentDirections
+                    .actionInfoFragmentToFormSelectionFragment(patientID)
             )
             "home" -> findNavController().navigate(
                 InfoFragmentDirections.actionToDatabaseSearchFragment()
@@ -633,9 +630,9 @@ class InfoFragment : Fragment() {
 
             var itemFound = false
             for (i in 0 until binding.raceInput.adapter.count) {
-                if (extractData[4].trim().toUpperCase() == binding.raceInput.adapter.getItem(i)
-                        .toString().toUpperCase()
-                ) {
+                val eq = extractData[4].trim()
+                    .uppercase() == "${binding.raceInput.adapter.getItem(i)}".uppercase()
+                if (eq) {
                     binding.raceInput.setSelection(i)
                     itemFound = true
                 }
@@ -648,9 +645,9 @@ class InfoFragment : Fragment() {
 
             itemFound = false
             for (i in 0 until binding.sexInput.adapter.count) {
-                if (extractData[5].trim().toUpperCase() == binding.sexInput.adapter.getItem(i)
-                        .toString().toUpperCase()
-                ) {
+                val eq = extractData[5].trim()
+                    .uppercase() == "${binding.sexInput.adapter.getItem(i)}".uppercase()
+                if (eq) {
                     binding.sexInput.setSelection(i)
                     itemFound = true
                 }
@@ -738,8 +735,15 @@ class InfoFragment : Fragment() {
                 val adapterPractitioner =
                     ArrayAdapter(requireContext(), R.layout.spinner_list_basic_, it)
                 practitionerName.adapter = adapterPractitioner
-                it.forEachIndexed { index, s ->
-                    if (s == patientForm.practitioner) practitionerName.setSelection(index)
+                val isCreated = Constants.isCreatedForm(requireContext())
+                if (isCreated) {
+                    practitionerName.setSelection(1)
+                    saveAndNavigate("none")
+                } else {
+                    it.forEachIndexed { index, s ->
+                        if (s == patientForm.practitioner)
+                            practitionerName.setSelection(index)
+                    }
                 }
             }
         }
@@ -888,7 +892,10 @@ class InfoFragment : Fragment() {
                     sectionEditDate = convertYMDtoTimeMillis(year, monthOfYear, dayOfMonth)
                     if (sectionEditDate != -1L) binding.dateCaption.text =
                         convertLongToDDMMYY(sectionEditDate)
-                }, todayYear, todayMonth, todayDay
+                },
+                todayYear,
+                todayMonth,
+                todayDay
             )
             datePickerDialog.show()
         }
@@ -917,10 +924,5 @@ class InfoFragment : Fragment() {
             popupWindow.dismiss()
             true
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }
