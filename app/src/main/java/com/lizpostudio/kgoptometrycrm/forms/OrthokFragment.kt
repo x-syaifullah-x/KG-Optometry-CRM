@@ -1255,17 +1255,6 @@ class OrthokFragment : Fragment() {
                     editThLeft.text.toString()
 
             currentForm.sectionData = extractData.uppercase()
-
-//            val dataSelected = binding.practitionerName.selectedItem as String
-//            val dataPractitioner = StringBuilder(dataSelected)
-//            val count = binding.practitionerName.adapter.count
-//            for (i in 0 until count) {
-//                val a = binding.practitionerName.adapter.getItem(i)
-//                if (a.toString() != dataSelected) {
-//                    dataPractitioner.append("|$a")
-//                }
-//            }
-//            currentForm.practitioner = "$dataPractitioner".uppercase()
             currentForm.practitioner = (binding.practitionerName.selectedItem as String).uppercase()
         }
 

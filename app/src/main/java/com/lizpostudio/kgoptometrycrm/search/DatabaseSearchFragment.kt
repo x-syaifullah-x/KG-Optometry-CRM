@@ -556,9 +556,12 @@ class DatabaseSearchFragment : Fragment() {
 
                         PRODUCT -> {
                             patientViewModel.getPatientByProduct(inputText)
-                                .flatMap { cs ->
-                                    allInfoForms.filter { cs.patientID == it.patientID }
-                                }.toHashSet().toList().sortedBy { it.patientName }
+                                .flatMap { patients ->
+                                    allInfoForms.filter { patients.patientID == it.patientID }
+                                }
+                                .toHashSet()
+                                .toList()
+                                .sortedBy { it.patientName }
 
                         }
 
@@ -703,10 +706,8 @@ class DatabaseSearchFragment : Fragment() {
     }
 
     private fun restoreDataAndSearch() {
-
         val sharedPref = activity?.getSharedPreferences(
-            "kgoptometry",
-            Context.MODE_PRIVATE
+            Constants.PREF_NAME, Context.MODE_PRIVATE
         )
 
         searchValues.search = sharedPref?.getString("searchBy", PATIENT_NAME) ?: PATIENT_NAME

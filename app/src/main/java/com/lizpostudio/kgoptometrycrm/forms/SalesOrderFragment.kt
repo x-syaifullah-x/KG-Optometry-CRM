@@ -10,13 +10,11 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.addCallback
 import androidx.core.content.ContextCompat
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -28,6 +26,7 @@ import com.lizpostudio.kgoptometrycrm.constant.Constants
 import com.lizpostudio.kgoptometrycrm.database.Patients
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentFinalPrescriptionBinding
 import com.lizpostudio.kgoptometrycrm.utils.*
+import id.xxx.module.view.binding.ktx.viewBinding
 
 private const val TAG = "LogTrace"
 
@@ -39,8 +38,7 @@ class SalesOrderFragment : Fragment() {
 
     private var isAdmin = false
 
-    private var _binding: FragmentFinalPrescriptionBinding? = null
-    private val binding get() = _binding!!
+    private val binding by viewBinding<FragmentFinalPrescriptionBinding>()
 
     private var recordID = 0L
     private var patientID = ""
@@ -71,12 +69,6 @@ class SalesOrderFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        _binding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.fragment_final_prescription,
-            container,
-            false
-        )
         val app = requireNotNull(this.activity).application
 
         val safeArgs: SalesOrderFragmentArgs by navArgs()
@@ -90,24 +82,18 @@ class SalesOrderFragment : Fragment() {
 
         // get if user is Admin
         val sharedPref = app.getSharedPreferences(
-            "kgoptometry",
-            Context.MODE_PRIVATE
+            Constants.PREF_NAME, Context.MODE_PRIVATE
         )
         isAdmin = sharedPref?.getString("admin", "") ?: "" == "admin"
 
         viewOnlyMode = sharedPref?.getBoolean("viewOnly", false) ?: false
         if (viewOnlyMode) {
             binding.mainLayout.setBackgroundColor(
-                ContextCompat.getColor(
-                    requireContext(),
-                    R.color.viewOnlyMode
-                )
+                ContextCompat.getColor(requireContext(), R.color.viewOnlyMode)
             )
             binding.saveFormButton.visibility = View.GONE
         } else binding.mainLayout.setBackgroundColor(
-            ContextCompat.getColor(
-                requireContext(), R.color.lightBackground
-            )
+            ContextCompat.getColor(requireContext(), R.color.lightBackground)
         )
 
         binding.dateCaption.setOnClickListener {
@@ -693,7 +679,7 @@ class SalesOrderFragment : Fragment() {
             editClRm.setText(extractData[20])
 
             editTotal.setText(extractData[21])
-//            editOptometrist.setText(extractData[22])
+            val practitionerOptometrist = extractData[22]
 //            editSalesperson.setText(extractData[23])
             editRightVa.setText(extractData[24])
             editLeftVa.setText(extractData[25])
@@ -709,8 +695,8 @@ class SalesOrderFragment : Fragment() {
                     practitionerName.setSelection(1)
                     saveAndNavigate("none")
                 } else {
-                    it.forEachIndexed { index, s ->
-                        if (s == patientForm.practitioner)
+                    it.forEachIndexed { index, practitioner ->
+                        if (practitioner == patientForm.practitioner)
                             practitionerName.setSelection(index)
                     }
                 }
@@ -723,42 +709,12 @@ class SalesOrderFragment : Fragment() {
                     practitionerNameOptometrist.setSelection(1)
                     saveAndNavigate("none")
                 } else {
-                    it.forEachIndexed { index, s ->
-                        if (s == patientForm.practitionerNameOptometrist)
+                    it.forEachIndexed { index, practitioner ->
+                        if (practitioner == practitionerOptometrist)
                             practitionerNameOptometrist.setSelection(index)
                     }
                 }
             }
-
-            practitionerName.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>?,
-                    view: View?,
-                    position: Int,
-                    id: Long
-                ) {
-                    practitionerNameOptometrist.setSelection(position)
-                }
-
-                override fun onNothingSelected(parent: AdapterView<*>?) {
-                }
-            }
-
-            practitionerNameOptometrist.onItemSelectedListener =
-                object : AdapterView.OnItemSelectedListener {
-                    override fun onItemSelected(
-                        parent: AdapterView<*>?,
-                        view: View?,
-                        position: Int,
-                        id: Long
-                    ) {
-                        practitionerName.setSelection(position)
-                    }
-
-                    override fun onNothingSelected(parent: AdapterView<*>?) {
-                    }
-                }
-
 
             editOr.setText(patientForm.or)
             editFrameSize.setText(patientForm.frameSize)
@@ -776,8 +732,16 @@ class SalesOrderFragment : Fragment() {
 
         binding.apply {
 
-            currentForm.remarks = remarkInput.text.toString().toUpperCase()
+            currentForm.remarks = "${remarkInput.text}".uppercase()
             if (sectionEditDate != -1L) currentForm.dateOfSection = sectionEditDate
+
+            val extractDataOld = currentForm.sectionData.split("|")
+            val editSalesperson =
+                try {
+                    extractDataOld[23]
+                } catch (t: Throwable) {
+                    ""
+                }
 
             val extractData = spinnerType.selectedItem.toString() + "|" +
                     spinnerRightSph.selectedItem.toString() + "|" +
@@ -801,24 +765,12 @@ class SalesOrderFragment : Fragment() {
                     editClSg.text.toString() + "|" +
                     editClRm.text.toString() + "|" +
                     editTotal.text.toString() + "|" +
-//                    editOptometrist.text.toString() + "|" +
-//                    editSalesperson.text.toString() + "|" +
-                    "" + "|" +
-                    "" + "|" +
+                    "${practitionerNameOptometrist.selectedItem}" + "|" +
+                    editSalesperson + "|" +
                     editRightVa.text.toString() + "|" +
                     editLeftVa.text.toString()
 
             currentForm.sectionData = extractData.uppercase()
-
-//            val dataSelected = binding.practitionerName.selectedItem as String
-//            val dataPractitioner = StringBuilder(dataSelected)
-//            val count = binding.practitionerName.adapter.count
-//            for (i in 0 until count) {
-//                val a = binding.practitionerName.adapter.getItem(i)
-//                if (a.toString() != dataSelected) {
-//                    dataPractitioner.append("|$a")
-//                }
-//            }
             currentForm.practitioner = "${binding.practitionerName.selectedItem}".uppercase()
             currentForm.or = "${binding.editOr.text}".uppercase()
             currentForm.frameType = "${binding.editFrameType.text}".uppercase()
@@ -826,7 +778,8 @@ class SalesOrderFragment : Fragment() {
             currentForm.frame = "${editFrame.text}".uppercase()
             currentForm.lens = "${editLens.text}".uppercase()
             currentForm.contactLensSunglasses = "${editClSg.text}".uppercase()
-            currentForm.practitionerNameOptometrist = "${practitionerNameOptometrist.selectedItem}".uppercase()
+            currentForm.practitionerNameOptometrist =
+                "${practitionerNameOptometrist.selectedItem}".uppercase()
         }
         return !currentForm.assertEqual(priorPatient)
     }
@@ -847,10 +800,5 @@ class SalesOrderFragment : Fragment() {
             )
             datePickerDialog.show()
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }

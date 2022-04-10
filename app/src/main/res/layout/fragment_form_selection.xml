@@ -114,6 +114,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            tools:listitem="@layout/form_item_report"
             app:layout_constraintTop_toBottomOf="@+id/patient_name" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton

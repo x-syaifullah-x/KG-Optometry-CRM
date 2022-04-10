@@ -11,18 +11,37 @@ import com.lizpostudio.kgoptometrycrm.database.Patients
 import com.lizpostudio.kgoptometrycrm.databinding.FormItemReportBinding
 
 
-class FormsListAdapter : ListAdapter<Patients, FormsListAdapter.ViewHolder>(FormItemDiffCallback()){
+class FormsListAdapter :
+    ListAdapter<Patients, FormsListAdapter.ViewHolder>(FormItemDiffCallback()) {
 
     var finalItemSelected = MutableLiveData<Patients>()
 
     private var selectedNightColor = Color.rgb(137, 221, 215)
     private var backgroundColor = Color.rgb(238, 238, 238)
 
+    private val color = arrayOf(
+        "#efebff",
+        "#ece8f8",
+        "#dfd9f4",
+        "#d2caef",
+        "#c9beeb",
+        "#bfb3e8",
+        "#b9ace5",
+        "#b1a3e2",
+        "#a99ade",
+        "#9b8bd8",
+    )
+
+    private var index = 0
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val patientItem = getItem(position)
-        // val res = holder.itemView.context.resources // for future reference to application resources
-
+        val colorCount = color.size
+        if (position % colorCount == 0) {
+            index = 0
+        }
+        holder.binding.reportCard.setBackgroundColor(Color.parseColor(color[index]))
+        index += 1
         holder.bind(patientItem)
         /*       if (position == selectedItem) holder.binding.reportCard.setBackgroundColor(selectedNightColor)
                else  holder.binding.reportCard.setBackgroundColor(backgroundColor) */
@@ -42,12 +61,19 @@ class FormsListAdapter : ListAdapter<Patients, FormsListAdapter.ViewHolder>(Form
         return ViewHolder.from(parent)
     }
 
-    class ViewHolder private constructor(val binding: FormItemReportBinding): RecyclerView.ViewHolder(binding.root) {
+    class ViewHolder private constructor(val binding: FormItemReportBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: Patients) {
             binding.patients = item
+            if (item.sectionName == "CASH ORDER") {
+                binding.csOrOr.text = if (item.cs.isNotBlank()) " CS ${item.cs}" else " CS -"
+            } else if (item.sectionName == "SALES ORDER") {
+                binding.csOrOr.text = if (item.or.isNotBlank()) "OR ${item.or}" else "OR -"
+            }
             binding.executePendingBindings()
         }
+
         companion object {
             fun from(parent: ViewGroup): ViewHolder {
                 val layoutInflater = LayoutInflater.from(parent.context)

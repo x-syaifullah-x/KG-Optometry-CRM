@@ -69,7 +69,7 @@ interface PatientsDao {
     @Query("SELECT * FROM patients_table WHERE section_name='FINAL PRESCRIPTION' AND `or` LIKE :or || '%'")
     suspend fun querySalesOrder(or: String): List<Patients>
 
-    @Query("SELECT * FROM patients_table WHERE frame || lens || contact_lens_sunglasses || solution_misc LIKE :query || '%'")
+    @Query("SELECT * FROM patients_table WHERE frame || lens || contact_lens_sunglasses || solution_misc LIKE '%' || :query || '%'")
     suspend fun queryProduct(query: String): List<Patients>
 
     @Query("SELECT sales_id FROM patients_table WHERE section_name='INFO'")

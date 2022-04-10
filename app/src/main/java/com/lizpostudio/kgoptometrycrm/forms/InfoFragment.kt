@@ -803,12 +803,12 @@ class InfoFragment : Fragment() {
                 else -> ""
             }
 
-            val drivingYN = when {
-                radioDiabetesYes.isChecked -> YES
+//            val drivingYN = when {
+//                radioDiabetesYes.isChecked -> YES
 //                radioDrivingNo.isChecked -> NO
 //                radioDrivingOccasionally.isChecked -> OCCASSIONALLY
-                else -> ""
-            }
+//                else -> ""
+//            }
 
             val hypertensionYN = when {
                 radioHypertensionYes.isChecked -> YES
@@ -848,16 +848,27 @@ class InfoFragment : Fragment() {
                 else -> ""
             }
 
+            val extractDataOld = currentForm.sectionData.split("|")
+            val vduInput =
+                try {
+                    extractDataOld[13]
+                } catch (t: Throwable) {
+                    ""
+                }
+            val drivingYN =
+                try {
+                    extractDataOld[14]
+                } catch (t: Throwable) {
+                    ""
+                }
             val extractData = icInput.text.toString() + "|" + otherIdInput.text.toString() + "|" +
                     phone2Input.text.toString() + "|" + phone3Input.text.toString() + "|" +
                     raceInput.selectedItem.toString() + "|" + sexInput.selectedItem.toString() + "|" +
                     postCodeInput.text.toString() + "|" + cityInput.text.toString() + "|" +
                     stateInput.selectedItem.toString() + "|" + countryInput.text.toString() + "|" +
                     occupationInput.text.toString() + "|" + contactLensYN + "|" +
-                    contactLensInfoInput.text.toString() + "|" + "" + "|" +
-//                    contactLensInfoInput.text.toString() + "|" + vduInput.text.toString() + "|" +
-                    "" + "|" + hypertensionYN + "|" + hypertensionInfoInput.text.toString() + "|" +
-//                    drivingYN + "|" + hypertensionYN + "|" + hypertensionInfoInput.text.toString() + "|" +
+                    contactLensInfoInput.text.toString() + "|" + vduInput + "|" +
+                    drivingYN + "|" + hypertensionYN + "|" + hypertensionInfoInput.text.toString() + "|" +
                     diabetesYN + "|" + diabetesInfoInput.text.toString() + "|" + allergyYN + "|" +
                     allergyInfoInput.text.toString() + "|" + medicationYN + "|" + medicationsInfoInput.text.toString() + "|" +
                     cataractYN + "|" + cataractInfoInput.text.toString() + "|" + glaucomaYN + "|" +
@@ -875,7 +886,7 @@ class InfoFragment : Fragment() {
 //                    dataPractitioner.append("|$a")
 //                }
 //            }
-            currentForm.practitioner = (binding.practitionerName.selectedItem as String).uppercase()
+            currentForm.practitioner = "${binding.practitionerName.selectedItem}".uppercase()
             currentForm.patientID = "${binding.idInput.text}"
             return !currentForm.assertEqual(priorPatient)
         }

@@ -98,18 +98,18 @@
                 app:srcCompat="@drawable/ic_baseline_sync_24"
                 tools:ignore="ContentDescription" />
 
-            <!--            <ImageView-->
-            <!--                android:id="@+id/sales_button"-->
-            <!--                android:layout_width="wrap_content"-->
-            <!--                android:layout_height="wrap_content"-->
-            <!--                android:layout_marginStart="16dp"-->
-            <!--                android:layout_marginTop="16dp"-->
-            <!--                android:layout_marginBottom="16dp"-->
-            <!--                app:layout_constraintBottom_toBottomOf="parent"-->
-            <!--                app:layout_constraintStart_toEndOf="@+id/synch_db_button"-->
-            <!--                app:layout_constraintTop_toTopOf="parent"-->
-            <!--                app:srcCompat="@drawable/ic_monetization_36"-->
-            <!--                tools:ignore="ContentDescription" />-->
+            <ImageView
+                android:id="@+id/sales_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/synch_db_button"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_monetization_36"
+                tools:ignore="ContentDescription" />
 
             <ImageView
                 android:id="@+id/data_process"
@@ -120,7 +120,7 @@
                 android:layout_marginBottom="16dp"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/synch_db_button"
+                app:layout_constraintStart_toEndOf="@+id/sales_button"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/history_32"
                 tools:ignore="ContentDescription"

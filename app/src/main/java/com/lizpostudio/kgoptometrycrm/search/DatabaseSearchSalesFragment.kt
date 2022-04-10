@@ -40,19 +40,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
 
-private const val INFO_SECTION = "INFO"
 private const val PATIENT_NAME = "NAME"
 private const val DATE_SELECTED = "DATE"
-private const val ID_SELECTED = "ID"
-private const val PHONE = "PHONE"
-private const val FAMILY_CODE = "FAMILY CODE"
-private const val IC_SELECTED = "IC"
-private const val ADDRESS = "ADDRESS"
-private const val OCCUPATION = "OCCUPATION"
-private const val CASH_ORDER = "CASH ORDER"
-private const val SALES_ORDER = "SALES ORDER"
-private const val PRODUCT = "PRODUCT"
-private const val OTHER_ID = "OTHER ID"
+private const val CASH_ORDER = "CS"
+private const val SALES_ORDER = "OR"
 
 private const val ONE_DAY = 24 * 3600 * 1000L
 private const val TWO_WEEKS = 14 * ONE_DAY
@@ -80,7 +71,7 @@ class DatabaseSearchSalesFragment : Fragment() {
 
     private val binding by viewBinding<FragmentDatabaseSearchSalesScreenBinding>()
 
-        private val allInfoForms = mutableListOf<Patients>()
+    private val allInfoForms = mutableListOf<Patients>()
 
     // recycler adapter reference list
     private val recyclerList = mutableListOf<Patients>()
@@ -488,11 +479,11 @@ class DatabaseSearchSalesFragment : Fragment() {
             }
         }
 
-//        binding.salesButton.setOnClickListener {
-//            findNavController().navigate(
-//                DatabaseSearchSalesScreenFragmentDirections.actionToDatabaseSearch()
-//            )
-//        }
+        binding.salesButton.setOnClickListener {
+            findNavController().navigate(
+                DatabaseSearchSalesFragmentDirections.actionToDatabaseSearch()
+            )
+        }
 
         return binding.root
     }
@@ -664,12 +655,11 @@ class DatabaseSearchSalesFragment : Fragment() {
 
     private fun restoreDataAndSearch() {
 
-        val sharedPref = activity
+        val pref = activity
             ?.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE)
 
-        searchValues.search =
-            sharedPref?.getString(KEY_SEARCH_BY_SALES, PATIENT_NAME) ?: PATIENT_NAME
-        searchValues.value = sharedPref?.getString(KEY_SEARCH_VALUE_SALES, "") ?: ""
+        searchValues.search = pref?.getString(KEY_SEARCH_BY_SALES, PATIENT_NAME) ?: PATIENT_NAME
+        searchValues.value = pref?.getString(KEY_SEARCH_VALUE_SALES, "") ?: ""
 
         for (i in 0 until binding.searchBySpinner.adapter.count) {
             val item = binding.searchBySpinner.adapter.getItem(i).toString()
@@ -685,9 +675,9 @@ class DatabaseSearchSalesFragment : Fragment() {
             Log.d(TAG, "Setting search Text to ${searchValues.value}")
         }
 
-        latestDataSynched = sharedPref?.getLong(Constants.PREF_KEY_LAST_SYNC, 0L) ?: 0L
-        isfetchedFromFirebaseCompleted = sharedPref?.getBoolean("fireFetched", false) ?: false
-        isAdmin = sharedPref?.getString("admin", "") ?: "" == "admin"
+        latestDataSynched = pref?.getLong(Constants.PREF_KEY_LAST_SYNC, 0L) ?: 0L
+        isfetchedFromFirebaseCompleted = pref?.getBoolean("fireFetched", false) ?: false
+        isAdmin = pref?.getString("admin", "") ?: "" == "admin"
 
         if (isAdmin) {
             binding.refractionReport.visibility = View.VISIBLE
