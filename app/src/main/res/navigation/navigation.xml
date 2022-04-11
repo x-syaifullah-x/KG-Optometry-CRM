@@ -26,7 +26,7 @@
             app:destination="@id/infoFragment"
             app:popUpToInclusive="false" />
         <action
-            android:id="@+id/action_databaseSearchFragment_to_loginFragment"
+            android:id="@+id/action_to_loginFragment"
             app:destination="@id/loginFragment" />
         <action
             android:id="@+id/action_to_database_sales_screen"
@@ -41,6 +41,9 @@
         <action
             android:id="@+id/action_to_database_search"
             app:destination="@id/databaseSearchFragment" />
+        <action
+            android:id="@+id/action_to_login"
+            app:destination="@id/loginFragment" />
         <action
             android:id="@+id/action_to_formSelectionFragment"
             app:destination="@id/formSelectionFragment" />

@@ -40,19 +40,22 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
 
-private const val PATIENT_NAME = "NAME"
-private const val DATE_SELECTED = "DATE"
-private const val CASH_ORDER = "CS"
-private const val SALES_ORDER = "OR"
-
-private const val ONE_DAY = 24 * 3600 * 1000L
-private const val TWO_WEEKS = 14 * ONE_DAY
-
-private const val KEY_SEARCH_BY_SALES = "KEY_SEARCH_BY_SALES"
-private const val KEY_SEARCH_VALUE_SALES = "KEY_SEARCH_VALUE_SALES"
-private const val TAG = "LogTrace"
-
 class DatabaseSearchSalesFragment : Fragment() {
+
+    companion object {
+        private const val PATIENT_NAME = "NAME"
+        private const val DATE_SELECTED = "DATE"
+        private const val CASH_ORDER = "CS"
+        private const val SALES_ORDER = "OR"
+
+        private const val ONE_DAY = 24 * 3600 * 1000L
+        private const val TWO_WEEKS = 14 * ONE_DAY
+
+        private const val TAG = "LogTrace"
+
+        const val KEY_SEARCH_BY_SALES = "KEY_SEARCH_BY_SALES"
+        const val KEY_SEARCH_VALUE_SALES = "KEY_SEARCH_VALUE_SALES"
+    }
 
     private var listenToSearchSpinner = false
     private var allowSync = true
@@ -92,10 +95,8 @@ class DatabaseSearchSalesFragment : Fragment() {
         context?.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE)
             ?.edit()
             ?.putString(
-                Constants.PREF_KEY_SEARCH_STATE,
-                DatabaseSearchSalesFragment::class.java.name
-            )
-            ?.apply()
+                Constants.PREF_KEY_SEARCH_STATE, DatabaseSearchSalesFragment::class.java.name
+            )?.apply()
         requireActivity().onBackPressedDispatcher.addCallback(this) {
             try {
                 findNavController().navigate(DatabaseSearchSalesFragmentDirections.actionToDatabaseSearch())
@@ -106,7 +107,6 @@ class DatabaseSearchSalesFragment : Fragment() {
     }
 
     private fun persistFBCompletedToStore() {
-
         val sharedPref = activity
             ?.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE)
         Log.d(TAG, "Saving isFetched frin FB as === $isfetchedFromFirebaseCompleted")
@@ -195,7 +195,12 @@ class DatabaseSearchSalesFragment : Fragment() {
         }
 
         binding.home.setOnClickListener {
-            navController.navigate(DatabaseSearchSalesFragmentDirections.actionToDatabaseSearch())
+//            if ("${binding.searchInputText.text}".isNotBlank()) {
+//                binding.searchInputText.setText("")
+//            } else {
+//                navController.navigate(DatabaseSearchSalesFragmentDirections.actionToLogin())
+//            }
+            navController.navigate(DatabaseSearchSalesFragmentDirections.actionToLogin())
         }
 
         binding.uploadDb.setOnClickListener {
@@ -493,7 +498,6 @@ class DatabaseSearchSalesFragment : Fragment() {
     private fun filterRecyclerList() {
         dispatcherFilterRecyclerList.launch {
             val inputText = searchValues.value
-
             val newList =
                 if (inputText.isNotBlank()) {
                     when (searchValues.search) {
@@ -531,21 +535,20 @@ class DatabaseSearchSalesFragment : Fragment() {
                     allInfoForms.sortedByDescending { it.dateOfSection }
                 }
 
-            recyclerList.clear()
             withContext(Dispatchers.Main) {
                 updateRecyclerView(newList)
             }
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun updateRecyclerView(newList: List<Patients>) {
-        binding.foundItemsText.text = resources.getString(
-            R.string.entries_found_in_database, newList.size.toString()
-        )
-
+        binding.foundItemsText.text = resources
+            .getString(R.string.entries_found_in_database_sales, newList.size.toString())
         recyclerList.clear()
         recyclerList.addAll(newList)
         recyclerAdapter.notifyDataSetChanged()
+        binding.patientsList.smoothScrollToPosition(0)
     }
 
     private fun hideKeyboard(app: Application) {

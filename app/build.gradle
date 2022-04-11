@@ -60,7 +60,14 @@ android {
     }
 
     packagingOptions {
-        exclude "META-INF/atomicfu.kotlin_module"
+        exclude "META-INF/**"
+        exclude "id/**"
+        exclude "okhttp3/**"
+        exclude "kotlin/**"
+        exclude "org/**"
+        exclude "**.properties"
+        exclude "**.bin"
+        exclude "kotlin-tooling-metadata.json"
     }
 }
 

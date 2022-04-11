@@ -61,8 +61,6 @@ interface PatientsDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertRecord(record: Patients)
 
-//    @Query("SELECT * FROM patients_table WHERE section_name='CASH ORDER' AND cs LIKE '%' || :cs || '%'")
-
     @Query("SELECT * FROM patients_table WHERE section_name='CASH ORDER' AND cs LIKE :cs || '%'")
     suspend fun queryCashOrder(cs: String): List<Patients>
 
@@ -72,12 +70,11 @@ interface PatientsDao {
     @Query("SELECT * FROM patients_table WHERE frame || lens || contact_lens_sunglasses || solution_misc LIKE '%' || :query || '%'")
     suspend fun queryProduct(query: String): List<Patients>
 
-    @Query("SELECT sales_id FROM patients_table WHERE section_name='INFO'")
-    fun getInfoPatients(): Flow<List<String>>
-
-    @Query("SELECT * FROM patients_table WHERE section_name='INFO' AND sales_id=:patientID")
-    fun getPatients(patientID: String): List<Patients>
-
     @Query("SELECT * FROM patients_table WHERE section_name='CASH ORDER' or section_name='FINAL PRESCRIPTION'")
     fun getCsAndOr(): LiveData<List<Patients>>
+
+    @Query("SELECT EXISTS(SELECT * FROM patients_table WHERE sales_id=:id)")
+    fun idIsExist(id: String): Boolean
+//    @Query("SELECT * FROM patients_table WHERE section_name='SALES ORDER'")
+//    fun updateSectionNameSalesOrder(): List<Patients>
 }

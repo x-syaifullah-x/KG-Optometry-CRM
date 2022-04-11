@@ -18,6 +18,7 @@
         <entry key="app/src/main/res/drawable/home_42.xml" value="0.174" />
         <entry key="app/src/main/res/drawable/ic_baseline_arrow_back_24.xml" value="0.174" />
         <entry key="app/src/main/res/drawable/ic_baseline_calendar_today_24.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/ic_baseline_clear_24.xml" value="0.187" />
         <entry key="app/src/main/res/drawable/ic_search_icon.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/person_add_36.xml" value="0.182" />
         <entry key="app/src/main/res/drawable/save_42.xml" value="0.168" />
@@ -32,16 +33,16 @@
         <entry key="app/src/main/res/layout/fragment_current_rx_form.xml" value="0.10598958333333333" />
         <entry key="app/src/main/res/layout/fragment_database_search.xml" value="0.17" />
         <entry key="app/src/main/res/layout/fragment_database_search_sales_screen.xml" value="0.10598958333333333" />
-        <entry key="app/src/main/res/layout/fragment_final_prescription.xml" value="0.21" />
+        <entry key="app/src/main/res/layout/fragment_final_prescription.xml" value="0.19851116625310175" />
         <entry key="app/src/main/res/layout/fragment_form_selection.xml" value="0.17" />
         <entry key="app/src/main/res/layout/fragment_info_form.xml" value="0.17" />
         <entry key="app/src/main/res/layout/fragment_info_form_copy.xml" value="0.11979166666666667" />
         <entry key="app/src/main/res/layout/fragment_info_form_ori.xml" value="0.10598958333333333" />
         <entry key="app/src/main/res/layout/fragment_login.xml" value="0.15291936978683968" />
-        <entry key="app/src/main/res/layout/fragment_memo.xml" value="0.10598958333333333" />
+        <entry key="app/src/main/res/layout/fragment_memo.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_memo_ori.xml" value="0.10598958333333333" />
         <entry key="app/src/main/res/layout/fragment_ocular_health.xml" value="0.10598958333333333" />
-        <entry key="app/src/main/res/layout/fragment_orthok.xml" value="0.17" />
+        <entry key="app/src/main/res/layout/fragment_orthok.xml" value="0.10598958333333333" />
         <entry key="app/src/main/res/layout/fragment_orthok_ori.xml" value="0.10598958333333333" />
         <entry key="app/src/main/res/layout/fragment_refraction.xml" value="0.10598958333333333" />
         <entry key="app/src/main/res/layout/fragment_supplementary_test.xml" value="0.10598958333333333" />

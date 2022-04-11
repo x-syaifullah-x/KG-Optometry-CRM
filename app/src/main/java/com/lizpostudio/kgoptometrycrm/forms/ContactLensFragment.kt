@@ -31,8 +31,6 @@ import com.lizpostudio.kgoptometrycrm.database.Patients
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentContactLensBinding
 import com.lizpostudio.kgoptometrycrm.utils.*
 
-private var TAG = "LogTrace"
-
 class ContactLensFragment : Fragment() {
 
     private val patientViewModel: PatientsViewModel by viewModels {
@@ -113,8 +111,7 @@ class ContactLensFragment : Fragment() {
 
         // get if user is Admin
         val sharedPref = app.getSharedPreferences(
-            "kgoptometry",
-            Context.MODE_PRIVATE
+            Constants.PREF_NAME, Context.MODE_PRIVATE
         )
         isAdmin = sharedPref?.getString("admin", "") ?: "" == "admin"
         viewOnlyMode = sharedPref?.getBoolean("viewOnly", false) ?: false
@@ -127,12 +124,9 @@ class ContactLensFragment : Fragment() {
             )
             binding.saveFormButton.visibility = View.GONE
         } else binding.mainLayout.setBackgroundColor(
-            ContextCompat.getColor(
-                requireContext(),
-                R.color.lightBackground
-            )
+            ContextCompat.getColor(requireContext(), R.color.lightBackground)
         )
-        //   Log.d(TAG, "is Admin = $isAdmin")
+        //   Log.d(Constants.TAG, "is Admin = $isAdmin")
 
         binding.dateCaption.setOnClickListener {
             changeDate()
@@ -484,11 +478,11 @@ class ContactLensFragment : Fragment() {
                 // zero element = color
                 newMList.add(PointF(selectedColor.toFloat(), selectedColor.toFloat()))
 
-                //          Log.d(TAG, "selected color = ${selectedColor}")
+                //          Log.d(Constants.TAG, "selected color = ${selectedColor}")
                 fillMaskTop.add(newMList)
                 fillMaskTop[fillIndexTop].add(PointF(m.x + startPTTop.x, m.y + startPTTop.y))
 
-                //    Log.d(TAG, "fillMask = ${fillMask}")
+                //    Log.d(Constants.TAG, "fillMask = ${fillMask}")
 
                 binding.oculoHealthCl.fillMask = fillMaskTop
                 binding.oculoHealthCl.invalidate()
@@ -664,7 +658,7 @@ class ContactLensFragment : Fragment() {
                 // zero element = color
                 newMList.add(PointF(selectedColorFitting.toFloat(), selectedColorFitting.toFloat()))
 
-                //          Log.d(TAG, "selected color = ${selectedColor}")
+                //          Log.d(Constants.TAG, "selected color = ${selectedColor}")
                 fillMaskRight[fitIndex].add(newMList)
                 fillMaskRight[fitIndex][fillIndexRight[fitIndex]].add(
                     PointF(
@@ -673,7 +667,7 @@ class ContactLensFragment : Fragment() {
                     )
                 )
 
-                //               Log.d(TAG, "fillMask RIGHT = ${fillMaskRight[FITINDEX]}")
+                //               Log.d(Constants.TAG, "fillMask RIGHT = ${fillMaskRight[FITINDEX]}")
 
                 binding.imageFittingRightCl.fillMask = fillMaskRight[fitIndex]
                 binding.imageFittingRightCl.invalidate()
@@ -708,7 +702,7 @@ class ContactLensFragment : Fragment() {
                 // zero element = color
                 newMList.add(PointF(selectedColorFitting.toFloat(), selectedColorFitting.toFloat()))
 
-                //          Log.d(TAG, "selected color = ${selectedColor}")
+                //          Log.d(Constants.TAG, "selected color = ${selectedColor}")
                 fillMaskLeft[fitIndex].add(newMList)
                 fillMaskLeft[fitIndex][fillIndexLeft[fitIndex]].add(
                     PointF(
@@ -717,7 +711,7 @@ class ContactLensFragment : Fragment() {
                     )
                 )
 
-                // Log.d(TAG, "fillMask LEFT = ${fillMaskLeft[fitIndex]}")
+                // Log.d(Constants.TAG, "fillMask LEFT = ${fillMaskLeft[fitIndex]}")
 
 
                 binding.imageFittingLeftCl.fillMask = fillMaskLeft[fitIndex]
@@ -759,12 +753,9 @@ class ContactLensFragment : Fragment() {
 
         patientViewModel.patientInitForms.observe(viewLifecycleOwner) { allForms ->
             allForms?.let {
-
-                val screenDst = Resources.getSystem().displayMetrics.density
                 var pAge = it.first().patientName + " "
                 for (patientsRec in it) {
                     if (patientsRec.sectionName == resources.getString(R.string.info_form_caption)) {
-
                         val ic = patientsRec.patientIC
                         val (dob, age) = computeAgeAndDOB(ic)
 
@@ -772,11 +763,11 @@ class ContactLensFragment : Fragment() {
                             R.string.number_of_years_patient,
                             age, dob
                         )
-
                     }
                 }
                 binding.patientName.text = pAge
                 val orderOfSections = listOf(*resources.getStringArray(R.array.forms_order))
+                val screenDst = Resources.getSystem().displayMetrics.density
 
                 val sortedList = it.sortedBy { patientsForms -> patientsForms.dateOfSection }
                 val newList = mutableListOf<Patients>()
@@ -784,54 +775,74 @@ class ContactLensFragment : Fragment() {
                 for (section in orderOfSections) {
                     for (forms in sortedList) {
                         var sectionName = forms.sectionName
-                        if (sectionName == getString(R.string.final_prescription_caption)){
+                        if (sectionName == getString(R.string.final_prescription_caption)) {
                             sectionName = getString(R.string.sales_order_from_selection)
                             forms.sectionName = getString(R.string.sales_order_from_selection)
                         }
-                        if (section == sectionName) newList.add(forms)
+                        if (section == sectionName)
+                            newList.add(forms)
                     }
                 }
 
-//                for (section in orderOfSections) {
-//                    for (forms in sortedList) {
-//                        if (section == forms.sectionName) newList.add(forms)
-//                    }
-//                }
+                val newSectionName = newList
+                    .map { patientsForms -> patientsForms.sectionName }
+                    .toSet()
 
+                /* FOR BOTTOM NAVIGATION */
+                val mapSectionName = mutableMapOf<String, MutableList<Patients>>()
+                newList.forEach { patient ->
+                    val key = mapSectionName[patient.sectionName]
+                    if (key == null) {
+                        mapSectionName[patient.sectionName] = mutableListOf()
+                    }
+                    mapSectionName[patient.sectionName]?.add(patient)
+                }
+
+                var sectionName = ""
                 val navChipGroup = binding.navigationLayout
-                val children = newList.map { patientForm ->
+                val navChipGroup2 = binding.navigationLayout2
+//                val children = newList.map { patientForm ->
+                val children = newSectionName.map { patientForm ->
                     val chip = TextView(app.applicationContext)
 
                     val params = LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.WRAP_CONTENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
-                    ).apply {
-                        gravity = Gravity.CENTER
-                    }
+                    )
+                    params.gravity = Gravity.CENTER
                     chip.layoutParams = params
-                    chip.setPadding((8 * screenDst).toInt(), 0, (8 * screenDst).toInt(), 0)
+                    chip.setPadding(
+                        (8 * screenDst).toInt(),
+                        (8 * screenDst).toInt(),
+                        (8 * screenDst).toInt(),
+                        (8 * screenDst).toInt()
+                    )
 
-                    if (patientForm.recordID == recordID)
+//                    if (patientForm.recordID == recordID)
+                    if (patientForm == "CONTACT LENS EXAM") {
+                        sectionName = patientForm
                         chip.setBackgroundColor(
                             ContextCompat.getColor(
-                                app.applicationContext,
-                                R.color.lightBackground
+                                app.applicationContext, R.color.lightBackground
                             )
                         )
-                    else
+                    } else {
                         chip.setBackgroundColor(
                             ContextCompat.getColor(
                                 app.applicationContext,
                                 R.color.cardBackgroundDarker
                             )
                         )
+                    }
 
-                    val sectionShortName = makeShortSectionName(patientForm.sectionName)
-                    chip.text = "$sectionShortName\n${
-                        convertLongToDDMMYY(patientForm.dateOfSection)
-                    }"
+//                    val sectionShortName = makeShortSectionName(patientForm.sectionName)
+                    val sectionShortName = makeShortSectionName(patientForm)
+//                    chip.text = "$sectionShortName\n${convertLongToDDMMYY(patientForm.dateOfSection)}"
+                    chip.text = sectionShortName
 
-                    chip.tag = patientForm.sectionName + "\n" + "${patientForm.recordID}"
+//                    chip.tag = patientForm.sectionName + "\n" + "${patientForm.recordID}"
+                    chip.tag =
+                        patientForm + "\n" + "${mapSectionName[patientForm]?.firstOrNull()?.recordID}"
 
                     chip.setOnClickListener { button ->
                         navigateFormName = button.tag.toString().split("\n").first()
@@ -845,6 +856,57 @@ class ContactLensFragment : Fragment() {
                     chip
                 }
 
+                val children2 = mapSectionName[sectionName]
+                    ?.sortedBy { p -> p.dateOfSection }
+                    ?.map { patientForm ->
+                        val chip = TextView(app.applicationContext)
+
+                        val params = LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT
+                        ).apply {
+                            gravity = Gravity.CENTER
+                        }
+                        chip.layoutParams = params
+                        chip.setPadding(
+                            (8 * screenDst).toInt(),
+                            (4 * screenDst).toInt(),
+                            (8 * screenDst).toInt(),
+                            (4 * screenDst).toInt()
+                        )
+
+                        if (patientForm.recordID == recordID)
+                            chip.setBackgroundColor(
+                                ContextCompat.getColor(
+                                    app.applicationContext, R.color.lightBackground
+                                )
+                            )
+                        else
+                            chip.setBackgroundColor(
+                                ContextCompat.getColor(
+                                    app.applicationContext,
+                                    R.color.cardBackgroundDarker
+                                )
+                            )
+
+                        val sectionShortName = makeShortSectionName(patientForm.sectionName)
+                        chip.text =
+                            "$sectionShortName\n${convertLongToDDMMYY(patientForm.dateOfSection)}"
+
+                        chip.tag = patientForm.sectionName + "\n" + "${patientForm.recordID}"
+
+                        chip.setOnClickListener { button ->
+                            navigateFormName = button.tag.toString().split("\n").first()
+                            navigateFormRecordID =
+                                button.tag.toString().split("\n").last().toLongOrNull() ?: -1L
+
+                            if (navigateFormRecordID != -1L) {
+                                saveAndNavigate(navigateFormName)
+                            }
+                        }
+                        chip
+                    }
+
                 navChipGroup.removeAllViews()
                 for (chip in children) {
                     val chipDivider = TextView(app.applicationContext)
@@ -853,25 +915,42 @@ class ContactLensFragment : Fragment() {
                     navChipGroup.addView(chipDivider)
                 }
 
-                val hPosList = newList.map { form -> form.recordID }
-                val hPos = hPosList.indexOf(recordID)
+                navChipGroup2.removeAllViews()
+                children2?.forEach { chip ->
+                    val chipDivider = TextView(app.applicationContext)
+                    chipDivider.text = "  "
+                    navChipGroup2.addView(chip)
+                    navChipGroup2.addView(chipDivider)
+                }
+
+                val hPos = newSectionName.indexOf("CONTACT LENS EXAM")
                 if (hPos > 3) {
                     val scrollWidth = binding.chipsScroll.width
                     val scrollX = ((hPos - 2) * (scrollWidth / 6.25)).toInt()
                     binding.chipsScroll.postDelayed({
-                        if (_binding != null)
+                        if (context != null)
                             binding.chipsScroll.smoothScrollTo(scrollX, 0)
                     }, 100L)
                 }
-            }
 
+                val hPosList = mapSectionName[sectionName]?.map { form -> form.recordID }?: listOf()
+                val hPosBottomNav = hPosList.indexOf(recordID)
+                if (hPosBottomNav > 3) {
+                    val scrollWidth = binding.chipsScroll2.width
+                    val scrollX = ((hPosBottomNav - 2) * (scrollWidth / 6.25)).toInt()
+                    binding.chipsScroll2.postDelayed({
+                        if (context != null)
+                            binding.chipsScroll2.smoothScrollTo(scrollX, 0)
+                    }, 100L)
+                }
+            }
         }
 
-        patientViewModel.navTrigger.observe(viewLifecycleOwner, { navOption ->
+        patientViewModel.navTrigger.observe(viewLifecycleOwner) { navOption ->
             navOption?.let {
                 launchNavigator(navOption)
             }
-        })
+        }
 
         // DELETE FORM FUNCTIONALITY
 
@@ -907,9 +986,9 @@ class ContactLensFragment : Fragment() {
 
         patientViewModel.patientFireForm.observe(viewLifecycleOwner) { patientNewRecord ->
             patientNewRecord?.let {
-                Log.d(TAG, "Reload CL Form? == ${!currentForm.assertEqual(it)}")
+                Log.d(Constants.TAG, "Reload CL Form? == ${!currentForm.assertEqual(it)}")
                 if (currentForm.recordID == it.recordID && !currentForm.assertEqual(it)) {
-                    Log.d(TAG, "CL Record from FB loaded")
+                    Log.d(Constants.TAG, "CL Record from FB loaded")
                     currentForm.copyFrom(it)
                     fillTheForm(it)
                 }
@@ -920,7 +999,7 @@ class ContactLensFragment : Fragment() {
             saveAndNavigate("none")
         }
 
-        binding.backToFormsButton.setOnClickListener {
+        binding.backButton.setOnClickListener {
             saveAndNavigate("back")
         }
 
@@ -937,8 +1016,8 @@ class ContactLensFragment : Fragment() {
             launchNavigator(navOption)
         } else {
             if (formWasChanged()) {
-                Log.d(TAG, "CL form CHANGED")
-                Log.d(TAG, "Submiting to FDB record ID ${currentForm.recordID}")
+                Log.d(Constants.TAG, "CL form CHANGED")
+                Log.d(Constants.TAG, "Submiting to FDB record ID ${currentForm.recordID}")
                 patientViewModel.submitPatientToFirebase(
                     currentForm.recordID.toString(),
                     currentForm
@@ -946,7 +1025,7 @@ class ContactLensFragment : Fragment() {
                 // trigger navigation after update
                 patientViewModel.updateRecord(currentForm, navOption)
             } else {
-                Log.d(TAG, "CL form the SAME!!!")
+                Log.d(Constants.TAG, "CL form the SAME!!!")
                 launchNavigator(navOption)
             }
         }
@@ -1123,21 +1202,19 @@ class ContactLensFragment : Fragment() {
                 }
             }
             orderOfSections[7] -> this.findNavController().navigate(
-                ContactLensFragmentDirections.actionContactLensFragmentToOrthokFragment(
-                    navigateFormRecordID
-                )
+                ContactLensFragmentDirections
+                    .actionContactLensFragmentToOrthokFragment(navigateFormRecordID)
             )
-            orderOfSections[8] -> this.findNavController().navigate(
-                ContactLensFragmentDirections.actionContactLensFragmentToFinalPrescriptionFragment(
-                    navigateFormRecordID
-                )
-            )
-            orderOfSections[9] -> {
+            orderOfSections[8] -> {
                 this.findNavController().navigate(
                     ContactLensFragmentDirections
                         .actionContactLensFragmentToCashOrderFragment(navigateFormRecordID)
                 )
             }
+            orderOfSections[9] -> this.findNavController().navigate(
+                ContactLensFragmentDirections
+                    .actionContactLensFragmentToFinalPrescriptionFragment(navigateFormRecordID)
+            )
             else -> Toast.makeText(context, getString(R.string.ok_hint), Toast.LENGTH_SHORT).show()
 
         }
@@ -1153,7 +1230,7 @@ class ContactLensFragment : Fragment() {
     private fun fillTheForm(patientForm: Patients) {
 
         val extractData = patientForm.sectionData.split('|').toMutableList()
-//      Log.d(TAG, "extract data size before = ${extractData.size}")
+//      Log.d(Constants.TAG, "extract data size before = ${extractData.size}")
         if (extractData.size < 138) {
             for (index in extractData.size..138) {
                 extractData.add("")

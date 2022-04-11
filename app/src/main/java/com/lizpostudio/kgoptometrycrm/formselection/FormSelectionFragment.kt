@@ -28,11 +28,13 @@ import com.lizpostudio.kgoptometrycrm.utils.actionConfirmDeletion
 import com.lizpostudio.kgoptometrycrm.utils.computeAgeAndDOB
 import id.xxx.module.view.binding.ktx.viewBinding
 
-private const val TAG = "LogTrace"
-private const val ONE_DAY = 24 * 3600 * 1000L
-private const val TWO_WEEKS = 14 * ONE_DAY
-
 class FormSelectionFragment : Fragment() {
+
+    companion object {
+        private const val TAG = "LogTrace"
+        private const val ONE_DAY = 24 * 3600 * 1000L
+        private const val TWO_WEEKS = 14 * ONE_DAY
+    }
 
     private var isAdmin = false
     private val patientInfoForm = Patients()

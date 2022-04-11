@@ -1,6 +1,5 @@
 package com.lizpostudio.kgoptometrycrm
 
-import android.content.Context
 import android.util.Log
 import androidx.lifecycle.*
 import com.google.firebase.auth.FirebaseAuth
@@ -9,8 +8,8 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.StorageReference
+import com.lizpostudio.kgoptometrycrm.constant.Constants
 import com.lizpostudio.kgoptometrycrm.database.*
-import com.lizpostudio.kgoptometrycrm.model.Patient
 import com.lizpostudio.kgoptometrycrm.utils.convertFBRecordToPatients
 import com.lizpostudio.kgoptometrycrm.utils.convertFormToFBRecord
 import com.lizpostudio.kgoptometrycrm.utils.convertLongToDDMMYYHRSMIN
@@ -18,8 +17,6 @@ import com.lizpostudio.kgoptometrycrm.utils.generateID
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-
-private const val TAG = "LogTrace"
 
 class PatientsViewModel(
     private val repository: PatientRepository,
@@ -153,16 +150,16 @@ class PatientsViewModel(
     // getting all records from Firebase
     fun getAllRecordsFromFirebase() {
         // todo - rework for smaller portions queries
-        Log.d(TAG, "Launching get request")
+        Log.d(Constants.TAG, "Launching get request")
         if (repository.recordsReference != null) {
             val recordsList = mutableListOf<Patients>()
             repository.recordsReference.limitToFirst(30000).get().addOnCompleteListener { task ->
-                Log.d(TAG, "Request for first completed")
+                Log.d(Constants.TAG, "Request for first completed")
                 if (task.isSuccessful) {
                     val result = task.result
-                    Log.d(TAG, "Task is successful")
+                    Log.d(Constants.TAG, "Task is successful")
                     result?.let {
-                        Log.d(TAG, "${result.childrenCount} received")
+                        Log.d(Constants.TAG, "${result.childrenCount} received")
                         result.children.forEach {
                             val newSection = it.getValue(FBRecords::class.java)
                             val recordID = it.key?.toLongOrNull()
@@ -170,16 +167,16 @@ class PatientsViewModel(
                                 recordsList.add(convertFBRecordToPatients(newSection, recordID))
                             }
                         }
-                        Log.d(TAG, "Got first ${recordsList.size} records from Firebase!")
+                        Log.d(Constants.TAG, "Got first ${recordsList.size} records from Firebase!")
 
                         repository.recordsReference.limitToLast(30000).get()
                             .addOnCompleteListener { lastTask ->
-                                Log.d(TAG, "Request for last completed")
+                                Log.d(Constants.TAG, "Request for last completed")
                                 if (lastTask.isSuccessful) {
                                     val lastResult = lastTask.result
-                                    Log.d(TAG, "Last Task is successful")
+                                    Log.d(Constants.TAG, "Last Task is successful")
                                     lastResult?.let {
-                                        Log.d(TAG, "${lastResult.childrenCount} received")
+                                        Log.d(Constants.TAG, "${lastResult.childrenCount} received")
                                         lastResult.children.forEach {
                                             val newSection = it.getValue(FBRecords::class.java)
                                             val recordID = it.key?.toLongOrNull()
@@ -189,10 +186,13 @@ class PatientsViewModel(
                                                 )
                                             }
                                         }
-                                        Log.d(TAG, "Final size is = ${recordsList.size} ")
+                                        Log.d(Constants.TAG, "Final size is = ${recordsList.size} ")
 
                                         val finalList = recordsList.toSet().toList()
-                                        Log.d(TAG, "Without dublicates = ${finalList.size} ")
+                                        Log.d(
+                                            Constants.TAG,
+                                            "Without dublicates = ${finalList.size} "
+                                        )
                                         _allFirebaseDB.value = finalList
                                     }
                                 }
@@ -206,7 +206,7 @@ class PatientsViewModel(
     fun updateLocalDBFromFirebase(latestDataSynched: Long, period: Long) {
         // deleted history listener
         setupListener(repository.deleteHistoryReference) { deletedHistoryList ->
-            Log.d(TAG, "Deleted History List arrived. Size = ${deletedHistoryList.size}")
+            Log.d(Constants.TAG, "Deleted History List arrived. Size = ${deletedHistoryList.size}")
             if (deletedHistoryList.isNotEmpty()) {
 
                 val backTime = System.currentTimeMillis() - period
@@ -224,10 +224,10 @@ class PatientsViewModel(
                         .map { it.second }.toSet().toList()
 
                 Log.d(
-                    TAG,
+                    Constants.TAG,
                     "Based on deleted synch time ${convertLongToDDMMYYHRSMIN(latestDataSynched)}"
                 )
-                Log.d(TAG, "We are going to delete these records: ${recordsToDelete}")
+                Log.d(Constants.TAG, "We are going to delete these records: ${recordsToDelete}")
 
                 if (recordsToDelete.isNotEmpty()) {
                     deleteListOfRecordsByID(recordsToDelete)
@@ -309,7 +309,7 @@ class PatientsViewModel(
         repository.fireStorage.reference.child(childName)
 
     fun removeRecordsChangesListener() {
-        Log.d(TAG, "Removing record listener")
+        Log.d(Constants.TAG, "Removing record listener")
         recordsChangesListener?.let {
             repository.recordsReference?.removeEventListener(recordsChangesListener!!)
         }
@@ -369,7 +369,7 @@ class PatientsViewModel(
     fun createNewRecord(sectionName: String) {
         viewModelScope.launch {
             val newRecord = Patients()
-            newRecord.patientID = generateID()
+            newRecord.patientID = generateID(repository)
             newRecord.sectionName = sectionName
             newRecord.dateOfSection = System.currentTimeMillis()
             addPatient(newRecord)
@@ -494,7 +494,7 @@ class PatientsViewModel(
     fun getPatientForm(recordID: Long) {
         if (recordID != -1L)
             viewModelScope.launch {
-                Log.d(TAG, "Getting patient from Repo")
+                Log.d(Constants.TAG, "Getting patient from Repo")
                 _patientForm.value = repository.getOneRecord(recordID)
             }
     }
@@ -515,20 +515,5 @@ class PatientsViewModel(
 
     suspend fun getPatientByProduct(value: String) = repository.getPatientByProduct(value)
 
-    val patient: LiveData<List<Patient>> = repository.getPatient()
-
     val csAndOr = repository.getCsAndOr()
-}
-
-class PatientsViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(PatientsViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return PatientsViewModel(
-                PatientRepository.getInstance(context),
-                PractitionerRepository.getInstance(context)
-            ) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
 }

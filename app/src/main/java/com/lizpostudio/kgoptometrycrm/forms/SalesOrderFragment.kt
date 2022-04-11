@@ -28,8 +28,6 @@ import com.lizpostudio.kgoptometrycrm.databinding.FragmentFinalPrescriptionBindi
 import com.lizpostudio.kgoptometrycrm.utils.*
 import id.xxx.module.view.binding.ktx.viewBinding
 
-private const val TAG = "LogTrace"
-
 class SalesOrderFragment : Fragment() {
 
     private val patientViewModel: PatientsViewModel by viewModels {
@@ -139,7 +137,6 @@ class SalesOrderFragment : Fragment() {
 
         patientViewModel.patientInitForms.observe(viewLifecycleOwner) { allForms ->
             allForms?.let {
-
                 var pAge = it.first().patientName + " "
                 for (patientsRec in it) {
                     if (patientsRec.sectionName == resources.getString(R.string.info_form_caption)) {
@@ -166,64 +163,133 @@ class SalesOrderFragment : Fragment() {
                             sectionName = getString(R.string.sales_order_from_selection)
                             forms.sectionName = getString(R.string.sales_order_from_selection)
                         }
-                        if (section == sectionName) newList.add(forms)
+                        if (section == sectionName)
+                            newList.add(forms)
                     }
                 }
-//                for (section in orderOfSections) {
-//                    for (forms in sortedList) {
-//                        if (section == forms.sectionName) newList.add(forms)
-//                    }
-//                }
 
+                val newSectionName = newList
+                    .map { patientsForms -> patientsForms.sectionName }
+                    .toSet()
+
+                /* FOR BOTTOM NAVIGATION */
+                val mapSectionName = mutableMapOf<String, MutableList<Patients>>()
+                newList.forEach { patient ->
+                    val key = mapSectionName[patient.sectionName]
+                    if (key == null) {
+                        mapSectionName[patient.sectionName] = mutableListOf()
+                    }
+                    mapSectionName[patient.sectionName]?.add(patient)
+                }
+
+                var sectionName = ""
                 val navChipGroup = binding.navigationLayout
-                val children = newList.map { patientForm ->
+                val navChipGroup2 = binding.navigationLayout2
+//                val children = newList.map { patientForm ->
+                val children = newSectionName.map { patientForm ->
                     val chip = TextView(app.applicationContext)
 
                     val params = LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.WRAP_CONTENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
-                    ).apply {
-                        gravity = Gravity.CENTER
-                    }
+                    )
+                    params.gravity = Gravity.CENTER
                     chip.layoutParams = params
-                    chip.setPadding((8 * screenDst).toInt(), 0, (8 * screenDst).toInt(), 0)
+                    chip.setPadding(
+                        (8 * screenDst).toInt(),
+                        (8 * screenDst).toInt(),
+                        (8 * screenDst).toInt(),
+                        (8 * screenDst).toInt()
+                    )
 
-                    if (patientForm.recordID == recordID)
+//                    if (patientForm.recordID == recordID)
+                    if (patientForm == "SALES ORDER") {
+                        sectionName = patientForm
                         chip.setBackgroundColor(
                             ContextCompat.getColor(
-                                app.applicationContext,
-                                R.color.lightBackground
+                                app.applicationContext, R.color.lightBackground
                             )
                         )
-                    else
+                    } else {
                         chip.setBackgroundColor(
                             ContextCompat.getColor(
                                 app.applicationContext,
                                 R.color.cardBackgroundDarker
                             )
                         )
+                    }
 
-                    val sectionShortName = makeShortSectionName(patientForm.sectionName)
-                    chip.text = "$sectionShortName\n${
-                        convertLongToDDMMYY(patientForm.dateOfSection)
-                    }"
+//                    val sectionShortName = makeShortSectionName(patientForm.sectionName)
+                    val sectionShortName = makeShortSectionName(patientForm)
+//                    chip.text = "$sectionShortName\n${convertLongToDDMMYY(patientForm.dateOfSection)}"
+                    chip.text = sectionShortName
 
-                    chip.tag = patientForm.sectionName + "\n" + "${patientForm.recordID}"
+//                    chip.tag = patientForm.sectionName + "\n" + "${patientForm.recordID}"
+                    chip.tag =
+                        patientForm + "\n" + "${mapSectionName[patientForm]?.firstOrNull()?.recordID}"
 
                     chip.setOnClickListener { button ->
-
-                        recordSaved = true
                         navigateFormName = button.tag.toString().split("\n").first()
                         navigateFormRecordID =
                             button.tag.toString().split("\n").last().toLongOrNull() ?: -1L
 
                         if (navigateFormRecordID != -1L) {
-                            navigateBack = false
                             saveAndNavigate(navigateFormName)
                         }
                     }
                     chip
                 }
+
+                val children2 = mapSectionName[sectionName]
+                    ?.sortedBy { p -> p.dateOfSection }
+                    ?.map { patientForm ->
+                        val chip = TextView(app.applicationContext)
+
+                        val params = LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT
+                        ).apply {
+                            gravity = Gravity.CENTER
+                        }
+                        chip.layoutParams = params
+                        chip.setPadding(
+                            (8 * screenDst).toInt(),
+                            (4 * screenDst).toInt(),
+                            (8 * screenDst).toInt(),
+                            (4 * screenDst).toInt()
+                        )
+
+                        if (patientForm.recordID == recordID)
+                            chip.setBackgroundColor(
+                                ContextCompat.getColor(
+                                    app.applicationContext, R.color.lightBackground
+                                )
+                            )
+                        else
+                            chip.setBackgroundColor(
+                                ContextCompat.getColor(
+                                    app.applicationContext,
+                                    R.color.cardBackgroundDarker
+                                )
+                            )
+
+                        val sectionShortName = makeShortSectionName(patientForm.sectionName)
+                        chip.text =
+                            "$sectionShortName\n${convertLongToDDMMYY(patientForm.dateOfSection)}"
+
+                        chip.tag = patientForm.sectionName + "\n" + "${patientForm.recordID}"
+
+                        chip.setOnClickListener { button ->
+                            navigateFormName = button.tag.toString().split("\n").first()
+                            navigateFormRecordID =
+                                button.tag.toString().split("\n").last().toLongOrNull() ?: -1L
+
+                            if (navigateFormRecordID != -1L) {
+                                saveAndNavigate(navigateFormName)
+                            }
+                        }
+                        chip
+                    }
 
                 navChipGroup.removeAllViews()
                 for (chip in children) {
@@ -233,18 +299,35 @@ class SalesOrderFragment : Fragment() {
                     navChipGroup.addView(chipDivider)
                 }
 
-                val hPosList = newList.map { form -> form.recordID }
-                val hPos = hPosList.indexOf(recordID)
+                navChipGroup2.removeAllViews()
+                children2?.forEach { chip ->
+                    val chipDivider = TextView(app.applicationContext)
+                    chipDivider.text = "  "
+                    navChipGroup2.addView(chip)
+                    navChipGroup2.addView(chipDivider)
+                }
+
+                val hPos = newSectionName.indexOf("SALES ORDER")
                 if (hPos > 3) {
                     val scrollWidth = binding.chipsScroll.width
                     val scrollX = ((hPos - 2) * (scrollWidth / 6.25)).toInt()
                     binding.chipsScroll.postDelayed({
-                        binding.chipsScroll.smoothScrollTo(scrollX, 0)
+                        if (context != null)
+                            binding.chipsScroll.smoothScrollTo(scrollX, 0)
                     }, 100L)
                 }
 
+                val hPosList = mapSectionName[sectionName]?.map { form -> form.recordID }?: listOf()
+                val hPosBottomNav = hPosList.indexOf(recordID)
+                if (hPosBottomNav > 3) {
+                    val scrollWidth = binding.chipsScroll2.width
+                    val scrollX = ((hPosBottomNav - 2) * (scrollWidth / 6.25)).toInt()
+                    binding.chipsScroll2.postDelayed({
+                        if (context != null)
+                            binding.chipsScroll2.smoothScrollTo(scrollX, 0)
+                    }, 100L)
+                }
             }
-
         }
 
         val sphListItems = sphList()
@@ -433,7 +516,7 @@ class SalesOrderFragment : Fragment() {
         binding.saveFormButton.setOnClickListener {
             saveAndNavigate("none")
         }
-        binding.backFromFpToForms.setOnClickListener {
+        binding.backButton.setOnClickListener {
             saveAndNavigate("back")
         }
 
@@ -443,9 +526,9 @@ class SalesOrderFragment : Fragment() {
 
         patientViewModel.patientFireForm.observe(viewLifecycleOwner) { patientNewRecord ->
             patientNewRecord?.let {
-                Log.d(TAG, "Reload FP Form? == ${!currentForm.assertEqual(it)}")
+                Log.d(Constants.TAG, "Reload FP Form? == ${!currentForm.assertEqual(it)}")
                 if (currentForm.recordID == it.recordID && !currentForm.assertEqual(it)) {
-                    Log.d(TAG, "FP Record from FB loaded")
+                    Log.d(Constants.TAG, "FP Record from FB loaded")
                     currentForm.copyFrom(it)
                     fillTheForm(it)
                 }
@@ -537,17 +620,17 @@ class SalesOrderFragment : Fragment() {
             )
 
             orderOfSections[8] -> {
-                if (recordID != navigateFormRecordID) {
-                    recordID = navigateFormRecordID
-                    patientViewModel.getPatientForm(navigateFormRecordID)
-                }
-            }
-
-            orderOfSections[9] -> {
                 navController.navigate(
                     SalesOrderFragmentDirections
                         .actionFinalPrescriptionFragmentToCashOrderFragment(navigateFormRecordID)
                 )
+            }
+
+            orderOfSections[9] -> {
+                if (recordID != navigateFormRecordID) {
+                    recordID = navigateFormRecordID
+                    patientViewModel.getPatientForm(navigateFormRecordID)
+                }
             }
         }
     }
@@ -556,7 +639,7 @@ class SalesOrderFragment : Fragment() {
     private fun fillTheForm(patientForm: Patients) {
 
         val extractData = patientForm.sectionData.split('|').toMutableList()
-//      Log.d(TAG, "extract data size before = ${extractData.size}")
+//      Log.d(Constants.TAG, "extract data size before = ${extractData.size}")
         if (extractData.size < 28) {
             for (index in extractData.size..28) {
                 extractData.add("")
@@ -732,6 +815,7 @@ class SalesOrderFragment : Fragment() {
 
         binding.apply {
 
+            currentForm.sectionName = "FINAL PRESCRIPTION"
             currentForm.remarks = "${remarkInput.text}".uppercase()
             if (sectionEditDate != -1L) currentForm.dateOfSection = sectionEditDate
 

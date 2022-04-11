@@ -29,14 +29,18 @@ import com.lizpostudio.kgoptometrycrm.utils.*
 import id.xxx.module.view.binding.ktx.viewBinding
 import java.util.*
 
-private const val YES = "YES"
-private const val NO = "NO"
-private const val defaultCity = "SP"
-private const val defaultCountry = "MALAYSIA"
-private const val OCCASSIONALLY = "O"
-private const val TAG = "LogTrace"
-
 class InfoFragment : Fragment() {
+
+    companion object {
+        private const val YES = "YES"
+        private const val NO = "NO"
+        private const val defaultCity = "SP"
+        private const val defaultCountry = "MALAYSIA"
+        private const val OCCASSIONALLY = "O"
+        private const val TAG = "LogTrace"
+
+        const val OTHER_ID_INDEX = 1
+    }
 
     private val patientViewModel: PatientsViewModel by viewModels {
         PatientsViewModelFactory(requireContext())
@@ -333,7 +337,12 @@ class InfoFragment : Fragment() {
                         gravity = Gravity.CENTER
                     }
                     chip.layoutParams = params
-                    chip.setPadding((8 * screenDst).toInt(), 0, (8 * screenDst).toInt(), 0)
+                    chip.setPadding(
+                        (8 * screenDst).toInt(),
+                        (4 * screenDst).toInt(),
+                        (8 * screenDst).toInt(),
+                        (4 * screenDst).toInt(),
+                    )
 
                     if (patientForm.recordID == recordID)
                         chip.setBackgroundColor(
@@ -526,7 +535,6 @@ class InfoFragment : Fragment() {
 
                         patientViewModel.submitListOfPatientsToFB(formsWithNewID)
                         patientViewModel.updateListOfRecords(formsWithNewID)
-
                     } else {
                         showPopup("ID was not changed! \nThe same ID [${binding.idInput.text}] belongs to the customer ${ifIDExists.first().patientName}!")
                         return
@@ -567,27 +575,25 @@ class InfoFragment : Fragment() {
                 InfoFragmentDirections.actionInfoFragmentToOcularHealthFragment(navigateFormRecordID)
             )
             orderOfSections[5] -> navController.navigate(
-                InfoFragmentDirections.actionInfoFragmentToSupplementaryFragment(
-                    navigateFormRecordID
-                )
+                InfoFragmentDirections
+                    .actionInfoFragmentToSupplementaryFragment(navigateFormRecordID)
             )
             orderOfSections[6] -> navController.navigate(
-                InfoFragmentDirections.actionInfoFragmentToContactLensFragment(navigateFormRecordID)
+                InfoFragmentDirections
+                    .actionInfoFragmentToContactLensFragment(navigateFormRecordID)
             )
             orderOfSections[7] -> navController.navigate(
-                InfoFragmentDirections.actionInfoFragmentToOrthokFragment(navigateFormRecordID)
+                InfoFragmentDirections
+                    .actionInfoFragmentToOrthokFragment(navigateFormRecordID)
             )
             orderOfSections[8] -> navController.navigate(
-                InfoFragmentDirections.actionInfoFragmentToFinalPrescriptionFragment(
-                    navigateFormRecordID
-                )
+                InfoFragmentDirections
+                    .actionInfoFragmentToCashOrderFragment(navigateFormRecordID)
             )
-            orderOfSections[9] -> {
-                navController.navigate(
-                    InfoFragmentDirections
-                        .actionInfoFragmentToCashOrderFragment(navigateFormRecordID)
-                )
-            }
+            orderOfSections[9] -> navController.navigate(
+                InfoFragmentDirections
+                    .actionInfoFragmentToFinalPrescriptionFragment(navigateFormRecordID)
+            )
             else -> Toast.makeText(
                 requireContext(),
                 "You are here!",
@@ -620,7 +626,7 @@ class InfoFragment : Fragment() {
             idInput.setText(patientForm.patientID)
             familyCodeInput.setText(patientForm.familyCode)
             icInput.setText(ic)
-            otherIdInput.setText(extractData[1])
+            otherIdInput.setText(extractData[OTHER_ID_INDEX])
             dobInput.text = dob
             ageInput.text = age
             phone1Input.setText(patientForm.phone)

@@ -20,9 +20,9 @@ import androidx.activity.addCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
-import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
@@ -32,36 +32,36 @@ import com.lizpostudio.kgoptometrycrm.R
 import com.lizpostudio.kgoptometrycrm.constant.Constants
 import com.lizpostudio.kgoptometrycrm.database.Patients
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentDatabaseSearchBinding
+import com.lizpostudio.kgoptometrycrm.forms.InfoFragment
 import com.lizpostudio.kgoptometrycrm.utils.*
 import id.xxx.module.view.binding.ktx.viewBinding
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.withContext
 import java.util.*
 
-private const val INFO_SECTION = "INFO"
-private const val PATIENT_NAME = "NAME"
-private const val DATE_SELECTED = "DATE"
-private const val ID_SELECTED = "ID"
-private const val PHONE = "PHONE"
-private const val FAMILY_CODE = "FAMILY CODE"
-private const val IC_SELECTED = "IC"
-private const val ADDRESS = "ADDRESS"
-private const val OCCUPATION = "OCCUPATION"
-private const val CASH_ORDER = "CASH ORDER"
-private const val SALES_ORDER = "SALES ORDER"
-private const val PRODUCT = "PRODUCT"
-private const val OTHER_ID = "OTHER ID"
-
-private const val ONE_DAY = 24 * 3600 * 1000L
-private const val TWO_WEEKS = 14 * ONE_DAY
-
-private const val TAG = "LogTrace"
-
-data class SaveSearch(var search: String = "", var value: String = "")
-
 class DatabaseSearchFragment : Fragment() {
+
+    companion object {
+        private const val INFO_SECTION = "INFO"
+        private const val PATIENT_NAME = "NAME"
+        private const val DATE_SELECTED = "DATE"
+        private const val ID_SELECTED = "ID"
+        private const val PHONE = "PHONE"
+        private const val FAMILY_CODE = "FAMILY CODE"
+        private const val IC_SELECTED = "IC"
+        private const val ADDRESS = "ADDRESS"
+        private const val OCCUPATION = "OCCUPATION"
+        private const val CASH_ORDER = "CASH ORDER"
+        private const val SALES_ORDER = "SALES ORDER"
+        private const val PRODUCT = "PRODUCT"
+        private const val OTHER_ID = "OTHER ID"
+
+        private const val ONE_DAY = 24 * 3600 * 1000L
+        private const val TWO_WEEKS = 14 * ONE_DAY
+
+        private const val TAG = "LogTrace"
+    }
 
     private var listenToSearchSpinner = false
     private var allowSync = true
@@ -105,7 +105,7 @@ class DatabaseSearchFragment : Fragment() {
         val navController = this.findNavController()
         requireActivity().onBackPressedDispatcher.addCallback(this) {
             try {
-                navController.navigate(DatabaseSearchFragmentDirections.actionDatabaseSearchFragmentToLoginFragment())
+                navController.navigate(DatabaseSearchFragmentDirections.actionToLoginFragment())
             } catch (e: Exception) {
                 Log.d(TAG, "Back navigation error")
             }
@@ -113,7 +113,6 @@ class DatabaseSearchFragment : Fragment() {
     }
 
     private fun persistFBCompletedToStore() {
-
         val sharedPref = activity
             ?.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE)
         Log.d(TAG, "Saving isFetched frin FB as === $isfetchedFromFirebaseCompleted")
@@ -169,6 +168,15 @@ class DatabaseSearchFragment : Fragment() {
             spinner.adapter = adapter
         }
 
+        lifecycleScope.launchWhenCreated {
+            binding.searchInputText.asFlow().collectLatest {
+                if (searchValues.search != DATE_SELECTED) {
+                    searchValues.value = it
+                    filterRecyclerList()
+                }
+            }
+        }
+
         restoreDataAndSearch()
         checkFirebaseSetup()
 
@@ -202,7 +210,12 @@ class DatabaseSearchFragment : Fragment() {
         }
 
         binding.home.setOnClickListener {
-            navController.navigate(DatabaseSearchFragmentDirections.actionDatabaseSearchFragmentToLoginFragment())
+//            if ("${binding.searchInputText.text}".isNotBlank()) {
+//                binding.searchInputText.setText("")
+//            } else {
+//                navController.navigate(DatabaseSearchFragmentDirections.actionToLoginFragment())
+//            }
+            navController.navigate(DatabaseSearchFragmentDirections.actionToLoginFragment())
         }
 
         binding.uploadDb.setOnClickListener {
@@ -378,7 +391,7 @@ class DatabaseSearchFragment : Fragment() {
                 val (startDate, endDate) = getDateStartAEndMillis(searchValues.value)
                 patientViewModel.getFormsForSelectedDate(startDate, endDate)
             } else {
-                filterRecyclerList()
+                lifecycleScope.launchWhenCreated { filterRecyclerList() }
             }
             listenToSearchSpinner = true
         }
@@ -392,14 +405,6 @@ class DatabaseSearchFragment : Fragment() {
         binding.cleanSearch.setOnClickListener {
             binding.searchInputText.setText("")
             searchValues.value = ""
-        }
-
-
-        binding.searchInputText.doOnTextChanged { text, _, _, _ ->
-            if (searchValues.search != DATE_SELECTED) {
-                searchValues.value = text.toString()
-                filterRecyclerList()
-            }
         }
 
         binding.searchIcon.setOnClickListener {
@@ -420,8 +425,8 @@ class DatabaseSearchFragment : Fragment() {
             } else {
                 hideKeyboard(app)
                 navController.navigate(
-                   DatabaseSearchFragmentDirections
-                       .actionDatabaseSearchFragmentToFormSelectionFragment(patient.patientID)
+                    DatabaseSearchFragmentDirections
+                        .actionDatabaseSearchFragmentToFormSelectionFragment(patient.patientID)
                 )
             }
         }
@@ -496,13 +501,9 @@ class DatabaseSearchFragment : Fragment() {
         return binding.root
     }
 
-    private val dispatcherFilterRecyclerList = CoroutineScope(Dispatchers.IO)
-
-    private fun filterRecyclerList() {
-        dispatcherFilterRecyclerList.launch {
+    private suspend fun filterRecyclerList() {
+        withContext(Dispatchers.IO) {
             val inputText = searchValues.value
-            recyclerList.clear()
-
             val newList =
                 if (inputText.isNotBlank()) {
                     when (searchValues.search) {
@@ -528,12 +529,8 @@ class DatabaseSearchFragment : Fragment() {
 
                         OCCUPATION -> allInfoForms
                             .filter { patientForm ->
-                                val extractData =
-                                    if (patientForm.sectionData.split('|')
-                                            .toMutableList().size > 10
-                                    )
-                                        patientForm.sectionData.split('|')
-                                            .toMutableList()[10] else ""
+                                val occupation = patientForm.sectionData.split('|').toMutableList()
+                                val extractData = if (occupation.size > 10) occupation[10] else ""
                                 extractData.contains(inputText, true)
                             }
                             .sortedBy { it.patientName }
@@ -559,14 +556,20 @@ class DatabaseSearchFragment : Fragment() {
                                 .flatMap { patients ->
                                     allInfoForms.filter { patients.patientID == it.patientID }
                                 }
-                                .toHashSet()
-                                .toList()
                                 .sortedBy { it.patientName }
 
                         }
 
                         OTHER_ID -> allInfoForms
-                            .filter { it.sectionData.contains(inputText, true) }
+                            .filter {
+                                val otherId =
+                                    try {
+                                        it.sectionData.split("|")[InfoFragment.OTHER_ID_INDEX]
+                                    } catch (t: Throwable) {
+                                        ""
+                                    }
+                                otherId.contains(inputText, true)
+                            }
                             .sortedBy { it.patientName }
 
                         else -> allInfoForms
@@ -583,14 +586,14 @@ class DatabaseSearchFragment : Fragment() {
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun updateRecyclerView(newList: List<Patients>) {
-        binding.foundItemsText.text = resources.getString(
-            R.string.entries_found_in_database, newList.size.toString()
-        )
-
+        binding.foundItemsText.text = resources
+            .getString(R.string.entries_found_in_database, newList.size.toString())
         recyclerList.clear()
         recyclerList.addAll(newList)
         recyclerAdapter.notifyDataSetChanged()
+        binding.patientsList.smoothScrollToPosition(0)
     }
 
     private fun hideKeyboard(app: Application) {
@@ -684,7 +687,7 @@ class DatabaseSearchFragment : Fragment() {
         }
     }
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint("SetTextI18n", "NotifyDataSetChanged")
     private fun actionConfirm(message: String) {
         val dialogBuilder = AlertDialog.Builder(context as Context)
 

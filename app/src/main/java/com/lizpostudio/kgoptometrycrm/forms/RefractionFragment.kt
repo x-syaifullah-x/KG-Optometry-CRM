@@ -42,17 +42,18 @@ import com.lizpostudio.kgoptometrycrm.utils.*
 import java.io.File
 import java.io.FileOutputStream
 
-
-private const val TAG = "LogTrace"
-private const val vaDefault = "6/"
-private const val REQUEST_PHOTO = 2
-private const val PHOTO_W = 330
-private const val PHOTO_H = 528
-
-private lateinit var storageRef: StorageReference
-private lateinit var storageFile: Uri
-
 class RefractionFragment : Fragment() {
+
+    companion object {
+        private const val TAG = "LogTrace"
+        private const val vaDefault = "6/"
+        private const val REQUEST_PHOTO = 2
+        private const val PHOTO_W = 330
+        private const val PHOTO_H = 528
+
+        private lateinit var storageRef: StorageReference
+        private lateinit var storageFile: Uri
+    }
 
     private var downloadPhotoTask: StorageTask<FileDownloadTask.TaskSnapshot>? = null
     private val patientViewModel: PatientsViewModel by viewModels {
@@ -178,48 +179,70 @@ class RefractionFragment : Fragment() {
                             sectionName = getString(R.string.sales_order_from_selection)
                             forms.sectionName = getString(R.string.sales_order_from_selection)
                         }
-                        if (section == sectionName) newList.add(forms)
+                        if (section == sectionName)
+                            newList.add(forms)
                     }
                 }
-//                for (section in orderOfSections) {
-//                    for (forms in sortedList) {
-//                        if (section == forms.sectionName) newList.add(forms)
-//                    }
-//                }
 
+                val newSectionName = newList
+                    .map { patientsForms -> patientsForms.sectionName }
+                    .toSet()
+
+                /* FOR BOTTOM NAVIGATION */
+                val mapSectionName = mutableMapOf<String, MutableList<Patients>>()
+                newList.forEach { patient ->
+                    val key = mapSectionName[patient.sectionName]
+                    if (key == null) {
+                        mapSectionName[patient.sectionName] = mutableListOf()
+                    }
+                    mapSectionName[patient.sectionName]?.add(patient)
+                }
+
+                var sectionName = ""
                 val navChipGroup = binding.navigationLayout
-                val children = newList.map { patientForm ->
+                val navChipGroup2 = binding.navigationLayout2
+//                val children = newList.map { patientForm ->
+                val children = newSectionName.map { patientForm ->
                     val chip = TextView(app.applicationContext)
 
                     val params = LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.WRAP_CONTENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
-                    ).apply {
-                        gravity = Gravity.CENTER
-                    }
+                    )
+                    params.gravity = Gravity.CENTER
                     chip.layoutParams = params
-                    chip.setPadding((8 * screenDst).toInt(), 0, (8 * screenDst).toInt(), 0)
+                    chip.setPadding(
+                        (8 * screenDst).toInt(),
+                        (8 * screenDst).toInt(),
+                        (8 * screenDst).toInt(),
+                        (8 * screenDst).toInt()
+                    )
 
-                    if (patientForm.recordID == recordID)
+//                    if (patientForm.recordID == recordID)
+                    if (patientForm == "REFRACTION") {
+                        sectionName = patientForm
                         chip.setBackgroundColor(
                             ContextCompat.getColor(
-                                app.applicationContext,
-                                R.color.lightBackground
+                                app.applicationContext, R.color.lightBackground
                             )
                         )
-                    else
+                    } else {
                         chip.setBackgroundColor(
                             ContextCompat.getColor(
                                 app.applicationContext,
                                 R.color.cardBackgroundDarker
                             )
                         )
+                    }
 
-                    val sectionShortName = makeShortSectionName(patientForm.sectionName)
-                    chip.text =
-                        "$sectionShortName\n${convertLongToDDMMYY(patientForm.dateOfSection)}"
+//                    val sectionShortName = makeShortSectionName(patientForm.sectionName)
+                    val sectionShortName = makeShortSectionName(patientForm)
+//                    chip.text = "$sectionShortName\n${convertLongToDDMMYY(patientForm.dateOfSection)}"
+                    chip.text = sectionShortName
 
-                    chip.tag = patientForm.sectionName + "\n" + "${patientForm.recordID}"
+//                    chip.tag = patientForm.sectionName + "\n" + "${patientForm.recordID}"
+                    chip.tag =
+                        patientForm + "\n" + "${mapSectionName[patientForm]?.firstOrNull()?.recordID}"
 
                     chip.setOnClickListener { button ->
                         navigateFormName = button.tag.toString().split("\n").first()
@@ -229,10 +252,60 @@ class RefractionFragment : Fragment() {
                         if (navigateFormRecordID != -1L) {
                             saveAndNavigate(navigateFormName)
                         }
-                        //                     Log.d(TAG, "recordID = ${newRecordID} section Name = ${sectionName}")
                     }
                     chip
                 }
+
+                val children2 = mapSectionName[sectionName]
+                    ?.sortedBy { p -> p.dateOfSection }
+                    ?.map { patientForm ->
+                        val chip = TextView(app.applicationContext)
+
+                        val params = LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT
+                        ).apply {
+                            gravity = Gravity.CENTER
+                        }
+                        chip.layoutParams = params
+                        chip.setPadding(
+                            (8 * screenDst).toInt(),
+                            (4 * screenDst).toInt(),
+                            (8 * screenDst).toInt(),
+                            (4 * screenDst).toInt()
+                        )
+
+                        if (patientForm.recordID == recordID)
+                            chip.setBackgroundColor(
+                                ContextCompat.getColor(
+                                    app.applicationContext, R.color.lightBackground
+                                )
+                            )
+                        else
+                            chip.setBackgroundColor(
+                                ContextCompat.getColor(
+                                    app.applicationContext,
+                                    R.color.cardBackgroundDarker
+                                )
+                            )
+
+                        val sectionShortName = makeShortSectionName(patientForm.sectionName)
+                        chip.text =
+                            "$sectionShortName\n${convertLongToDDMMYY(patientForm.dateOfSection)}"
+
+                        chip.tag = patientForm.sectionName + "\n" + "${patientForm.recordID}"
+
+                        chip.setOnClickListener { button ->
+                            navigateFormName = button.tag.toString().split("\n").first()
+                            navigateFormRecordID =
+                                button.tag.toString().split("\n").last().toLongOrNull() ?: -1L
+
+                            if (navigateFormRecordID != -1L) {
+                                saveAndNavigate(navigateFormName)
+                            }
+                        }
+                        chip
+                    }
 
                 navChipGroup.removeAllViews()
                 for (chip in children) {
@@ -242,16 +315,33 @@ class RefractionFragment : Fragment() {
                     navChipGroup.addView(chipDivider)
                 }
 
-                val hPosList = newList.map { form -> form.recordID }
-                val hPos = hPosList.indexOf(recordID)
+                navChipGroup2.removeAllViews()
+                children2?.forEach { chip ->
+                    val chipDivider = TextView(app.applicationContext)
+                    chipDivider.text = "  "
+                    navChipGroup2.addView(chip)
+                    navChipGroup2.addView(chipDivider)
+                }
+
+                val hPos = newSectionName.indexOf("REFRACTION")
                 if (hPos > 3) {
                     val scrollWidth = binding.chipsScroll.width
                     val scrollX = ((hPos - 2) * (scrollWidth / 6.25)).toInt()
-                    binding.chipsScroll.postDelayed(
-                        Runnable {
+                    binding.chipsScroll.postDelayed({
+                        if (context != null)
                             binding.chipsScroll.smoothScrollTo(scrollX, 0)
-                        }, 100L
-                    )
+                    }, 100L)
+                }
+
+                val hPosList = mapSectionName[sectionName]?.map { form -> form.recordID }?: listOf()
+                val hPosBottomNav = hPosList.indexOf(recordID)
+                if (hPosBottomNav > 3) {
+                    val scrollWidth = binding.chipsScroll2.width
+                    val scrollX = ((hPosBottomNav - 2) * (scrollWidth / 6.25)).toInt()
+                    binding.chipsScroll2.postDelayed({
+                        if (context != null)
+                            binding.chipsScroll2.smoothScrollTo(scrollX, 0)
+                    }, 100L)
                 }
             }
         }
@@ -482,7 +572,7 @@ class RefractionFragment : Fragment() {
             saveAndNavigate("none")
         }
 
-        binding.backFromRefractionToForms.setOnClickListener {
+        binding.backButton.setOnClickListener {
             saveAndNavigate("back")
         }
 
@@ -1071,18 +1161,18 @@ class RefractionFragment : Fragment() {
                 )
             )
 
-            orderOfSections[8] -> navController.navigate(
-                RefractionFragmentDirections.actionRefractionFragmentToFinalPrescriptionFragment(
-                    navigateFormRecordID
-                )
-            )
-
-            orderOfSections[9] -> {
+            orderOfSections[8] -> {
                 navController.navigate(
                     RefractionFragmentDirections
                         .actionRefractionFragmentToCashOrderFragment(navigateFormRecordID)
                 )
             }
+
+            orderOfSections[9] -> navController.navigate(
+                RefractionFragmentDirections.actionRefractionFragmentToFinalPrescriptionFragment(
+                    navigateFormRecordID
+                )
+            )
             else -> Toast.makeText(context, getString(R.string.navigation_else), Toast.LENGTH_SHORT)
                 .show()
         }

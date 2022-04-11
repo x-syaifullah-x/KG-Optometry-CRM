@@ -179,16 +179,6 @@
             tools:ignore="Autofill" />
 
         <ImageView
-            android:id="@+id/search_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/search_input_text"
-            app:srcCompat="@drawable/ic_search_icon"
-            tools:ignore="ContentDescription" />
-
-        <ImageView
             android:id="@+id/clean_search"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -197,6 +187,17 @@
             app:layout_constraintTop_toTopOf="@+id/search_input_text"
             app:srcCompat="@drawable/ic_baseline_clear_24"
             app:tint="@color/colorPrimaryDark"
+            tools:ignore="ContentDescription" />
+
+        <ImageView
+            android:id="@+id/search_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/clean_search"
+            app:layout_constraintBottom_toBottomOf="@id/clean_search"
+            app:srcCompat="@drawable/ic_search_icon"
             tools:ignore="ContentDescription" />
 
         <TextView

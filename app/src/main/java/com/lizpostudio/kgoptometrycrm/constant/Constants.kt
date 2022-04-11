@@ -5,6 +5,8 @@ import com.lizpostudio.kgoptometrycrm.BuildConfig
 
 object Constants {
 
+    const val TAG = "LogTrace"
+
     const val APPLICATION_ID = BuildConfig.APPLICATION_ID
     const val FILE_PROVIDER_AUTHORITY = "${APPLICATION_ID}.fileprovider"
 

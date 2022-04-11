@@ -2,7 +2,6 @@ package com.lizpostudio.kgoptometrycrm.error
 
 import android.app.Activity
 import android.os.Bundle
-import android.os.Process
 import androidx.appcompat.widget.AppCompatTextView
 import com.lizpostudio.kgoptometrycrm.R
 import kotlin.system.exitProcess

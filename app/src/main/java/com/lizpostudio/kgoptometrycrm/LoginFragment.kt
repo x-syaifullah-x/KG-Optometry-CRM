@@ -30,29 +30,33 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.lizpostudio.kgoptometrycrm.constant.Constants
+import com.lizpostudio.kgoptometrycrm.database.PatientRepository
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentLoginBinding
 import com.lizpostudio.kgoptometrycrm.firebase.KGMessage
+import com.lizpostudio.kgoptometrycrm.search.DatabaseSearchSalesFragment
 import com.lizpostudio.kgoptometrycrm.utils.MessagesListAdapter
 import com.lizpostudio.kgoptometrycrm.utils.convertLongToDDKey
 import com.lizpostudio.kgoptometrycrm.utils.convertLongToDDMMYYHRSMIN
 import com.lizpostudio.kgoptometrycrm.utils.generateID
-
-private const val TAG = "LoginFragment"
-private const val RECORDS_CHILD = "records"
-private const val MESSAGES_CHILD = "messages"
-private const val SETTINGS_CHILD = "settings"
-private const val USERS_CHILD = "users"
-private const val DEVICES_CHILD = "devices"
-private const val NEW_CHILD = "new"
-private const val TRUSTED_CHILD = "trusted"
-private const val ADMIN_KEY = "admin"
-private const val USERS_KEY = "user"
-private const val RC_SIGN_IN = 123
-
-private lateinit var app: Application
+import id.xxx.module.view.binding.ktx.viewBinding
 
 class LoginFragment :Fragment() {
 
+    companion object {
+        private const val RECORDS_CHILD = "records"
+        private const val MESSAGES_CHILD = "messages"
+        private const val SETTINGS_CHILD = "settings"
+        private const val USERS_CHILD = "users"
+        private const val DEVICES_CHILD = "devices"
+        private const val NEW_CHILD = "new"
+        private const val TRUSTED_CHILD = "trusted"
+        private const val ADMIN_KEY = "admin"
+        private const val USERS_KEY = "user"
+        private const val RC_SIGN_IN = 123
+    }
+
+    private lateinit var app: Application
     private var deviceCode = "NO"
     private var trustedDevice = false
     private var listOfTrustedDevices  = MutableLiveData<List<String>>()
@@ -77,8 +81,7 @@ class LoginFragment :Fragment() {
 
     // Recycler View for Messages
 
-    private var _binding: FragmentLoginBinding? = null
-    private val binding get() = _binding!!
+    private val binding by viewBinding<FragmentLoginBinding>()
 
     private val providers = arrayListOf(
         AuthUI.IdpConfig.EmailBuilder().build()
@@ -167,8 +170,6 @@ private fun updateUIOnSuccess() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = DataBindingUtil.inflate(inflater, R.layout.fragment_login, container, false)
-
         binding.lifecycleOwner = this
 
         val navController = this.findNavController()
@@ -445,7 +446,7 @@ private fun updateUIOnSuccess() {
            if (deviceCode == "NO" && mFirebaseUser !=null) {
             // record device code to Firebase
             val timeStamp = System.currentTimeMillis()
-            deviceCode = generateID()
+            deviceCode = generateID(PatientRepository.getInstance(requireContext()))
 
             val devicesFBReference = firebaseDatabase!!.reference.child(SETTINGS_CHILD)
                 .child(DEVICES_CHILD).child(NEW_CHILD)
@@ -520,14 +521,15 @@ private fun updateUIOnSuccess() {
 private fun cleanSearch() {
 
     val sharedPref = activity?.getSharedPreferences(
-        "kgoptometry",
-        Context.MODE_PRIVATE
+        Constants.PREF_NAME, Context.MODE_PRIVATE
     )
 
     if (sharedPref != null) {
         val editor = sharedPref.edit()
         editor.putString("searchBy", "NAME")
         editor.putString("searchValue", "")
+        editor.putString(DatabaseSearchSalesFragment.KEY_SEARCH_BY_SALES, "NAME")
+        editor.putString(DatabaseSearchSalesFragment.KEY_SEARCH_VALUE_SALES, "")
         editor.apply()
     }
 
@@ -535,7 +537,6 @@ private fun cleanSearch() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding = null
         if (msgListener !=null) {
             messagesReference!!.removeEventListener(msgListener!!)
       //      Log.d(TAG, "REMOVE Listener")

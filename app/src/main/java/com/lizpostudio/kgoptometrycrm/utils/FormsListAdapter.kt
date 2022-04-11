@@ -10,50 +10,32 @@ import androidx.recyclerview.widget.RecyclerView
 import com.lizpostudio.kgoptometrycrm.database.Patients
 import com.lizpostudio.kgoptometrycrm.databinding.FormItemReportBinding
 
-
 class FormsListAdapter :
     ListAdapter<Patients, FormsListAdapter.ViewHolder>(FormItemDiffCallback()) {
 
     var finalItemSelected = MutableLiveData<Patients>()
 
-    private var selectedNightColor = Color.rgb(137, 221, 215)
-    private var backgroundColor = Color.rgb(238, 238, 238)
-
-    private val color = arrayOf(
-        "#efebff",
-        "#ece8f8",
-        "#dfd9f4",
-        "#d2caef",
-        "#c9beeb",
-        "#bfb3e8",
-        "#b9ace5",
-        "#b1a3e2",
-        "#a99ade",
-        "#9b8bd8",
+    private val mapColor = mapOf(
+        Pair("INFO", "#efebff"),
+        Pair("MEMO", "#ece8f8"),
+        Pair("CURRENT / OLD Rx", "#dfd9f4"),
+        Pair("REFRACTION", "#d2caef"),
+        Pair("OCULAR HEALTH", "#c9beeb"),
+        Pair("SUPPLEMENTARY TESTS", "#bfb3e8"),
+        Pair("CONTACT LENS EXAM", "#b9ace5"),
+        Pair("ORTHOK", "#b1a3e2"),
+        Pair("CASH ORDER", "#a99ade"),
+        Pair("SALES ORDER", "#9b8bd8"),
     )
 
-    private var index = 0
-
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val patientItem = getItem(position)
-        val colorCount = color.size
-        if (position % colorCount == 0) {
-            index = 0
-        }
-        holder.binding.reportCard.setBackgroundColor(Color.parseColor(color[index]))
-        index += 1
-        holder.bind(patientItem)
-        /*       if (position == selectedItem) holder.binding.reportCard.setBackgroundColor(selectedNightColor)
-               else  holder.binding.reportCard.setBackgroundColor(backgroundColor) */
-
-        holder.itemView.setOnClickListener {
-
-            finalItemSelected.value = patientItem
-
-            /*      notifyItemChanged(previousItem)
-                  notifyItemChanged(position)
-
-                  notifyDataSetChanged()*/
+        getItem(position)?.also { patientItem ->
+            holder.binding.reportCard
+                .setBackgroundColor(Color.parseColor(mapColor[patientItem.sectionName]))
+            holder.bind(patientItem)
+            holder.itemView.setOnClickListener {
+                finalItemSelected.value = patientItem
+            }
         }
     }
 

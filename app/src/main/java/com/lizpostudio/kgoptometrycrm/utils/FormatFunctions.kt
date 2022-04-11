@@ -3,7 +3,9 @@ package com.lizpostudio.kgoptometrycrm.utils
 import android.annotation.SuppressLint
 import android.graphics.PointF
 import android.util.Log
+import com.lizpostudio.kgoptometrycrm.constant.Constants
 import com.lizpostudio.kgoptometrycrm.database.FBRecords
+import com.lizpostudio.kgoptometrycrm.database.PatientRepository
 import com.lizpostudio.kgoptometrycrm.database.Patients
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
@@ -40,17 +42,29 @@ fun convertFBRecordToPatients(f: FBRecords, key: Long): Patients {
         solutionMisc = f.solutionMisc,
         solutionMiscRm = f.solutionMiscRm,
         frame = try {
-            aa[15]
+            if (f.sectionName == "FINAL PRESCRIPTION" || f.sectionName == "CASH ORDER") {
+                aa[15]
+            } else {
+                ""
+            }
         } catch (t: Throwable) {
             ""
         },
         lens = try {
-            aa[17]
+            if (f.sectionName == "FINAL PRESCRIPTION" || f.sectionName == "CASH ORDER") {
+                aa[17]
+            } else {
+                ""
+            }
         } catch (t: Throwable) {
             ""
         },
         contactLensSunglasses = try {
-            aa[19]
+            if (f.sectionName == "FINAL PRESCRIPTION" || f.sectionName == "CASH ORDER") {
+                aa[19]
+            } else {
+                ""
+            }
         } catch (t: Throwable) {
             ""
         },
@@ -385,12 +399,18 @@ fun convertYYMMDDToDDMMYY(year: String, month: String, day: String): String {
     return "$day/$month/$year"
 }
 
-fun generateID(): String {
-    val charPool: List<Char> = ('A'..'Z') + ('0'..'9')
-    return (1..10)
+private val charPool: List<Char> = ('A'..'Z') + ('0'..'9')
+
+fun generateID(repository: PatientRepository): String {
+    val id = (1..10)
         .map { i -> Random.nextInt(i, charPool.size) }
         .map(charPool::get)
         .joinToString("")
+    return if (repository.idIsExist(id)) {
+        generateID(repository)
+    } else {
+        id
+    }
 }
 
 // used format dd/mm/yy
