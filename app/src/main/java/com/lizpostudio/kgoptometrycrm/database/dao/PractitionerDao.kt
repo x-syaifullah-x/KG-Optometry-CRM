@@ -1,7 +1,8 @@
-package com.lizpostudio.kgoptometrycrm.database
+package com.lizpostudio.kgoptometrycrm.database.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import com.lizpostudio.kgoptometrycrm.database.PractitionerEntity
 
 @Dao
 interface PractitionerDao {

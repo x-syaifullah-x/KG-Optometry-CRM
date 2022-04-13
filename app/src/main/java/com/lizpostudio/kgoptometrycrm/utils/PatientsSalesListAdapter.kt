@@ -10,6 +10,10 @@ import com.lizpostudio.kgoptometrycrm.databinding.ListItemReportSalesBinding
 class PatientsSalesListAdapter(private val patients: List<Patients>) :
     RecyclerView.Adapter<PatientsSalesListAdapter.ViewHolder>() {
 
+    init {
+        setHasStableIds(true)
+    }
+
     var patientSelected = MutableLiveData<Patients>()
 
     class ViewHolder private constructor(val binding: ListItemReportSalesBinding) :
@@ -29,6 +33,10 @@ class PatientsSalesListAdapter(private val patients: List<Patients>) :
                 return ViewHolder(binding)
             }
         }
+    }
+
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {

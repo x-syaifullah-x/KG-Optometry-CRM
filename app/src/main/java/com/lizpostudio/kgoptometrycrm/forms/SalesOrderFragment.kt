@@ -14,6 +14,7 @@ import android.widget.ArrayAdapter
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.addCallback
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -25,10 +26,15 @@ import com.lizpostudio.kgoptometrycrm.R
 import com.lizpostudio.kgoptometrycrm.constant.Constants
 import com.lizpostudio.kgoptometrycrm.database.Patients
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentFinalPrescriptionBinding
+import com.lizpostudio.kgoptometrycrm.export.ExportModel.Companion.toPrintModel
 import com.lizpostudio.kgoptometrycrm.utils.*
 import id.xxx.module.view.binding.ktx.viewBinding
 
 class SalesOrderFragment : Fragment() {
+
+    companion object {
+        const val KEY_REMARK_PRINT = "remark_print"
+    }
 
     private val patientViewModel: PatientsViewModel by viewModels {
         PatientsViewModelFactory(requireContext())
@@ -226,7 +232,7 @@ class SalesOrderFragment : Fragment() {
 
 //                    chip.tag = patientForm.sectionName + "\n" + "${patientForm.recordID}"
                     chip.tag =
-                        patientForm + "\n" + "${mapSectionName[patientForm]?.firstOrNull()?.recordID}"
+                        patientForm + "\n" + "${mapSectionName[patientForm]?.lastOrNull()?.recordID}"
 
                     chip.setOnClickListener { button ->
                         navigateFormName = button.tag.toString().split("\n").first()
@@ -317,7 +323,8 @@ class SalesOrderFragment : Fragment() {
                     }, 100L)
                 }
 
-                val hPosList = mapSectionName[sectionName]?.map { form -> form.recordID }?: listOf()
+                val hPosList =
+                    mapSectionName[sectionName]?.map { form -> form.recordID } ?: listOf()
                 val hPosBottomNav = hPosList.indexOf(recordID)
                 if (hPosBottomNav > 3) {
                     val scrollWidth = binding.chipsScroll2.width
@@ -514,7 +521,7 @@ class SalesOrderFragment : Fragment() {
         // CHANGE DATA in THE FORM if record in FIREBASE was changed.
 
         binding.saveFormButton.setOnClickListener {
-            saveAndNavigate("none")
+            saveAndNavigate()
         }
         binding.backButton.setOnClickListener {
             saveAndNavigate("back")
@@ -535,20 +542,46 @@ class SalesOrderFragment : Fragment() {
             }
         }
 
+        val pref = requireActivity().getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE)
+        val remarksPrint = pref.getString(KEY_REMARK_PRINT, "")
+        binding.remarkPrintInput.setText(remarksPrint)
+        if (!remarksPrint.isNullOrBlank()) {
+            pref.edit().putString(KEY_REMARK_PRINT, "").apply()
+        }
+
+        binding.icPrint.setOnClickListener { it ->
+            saveAndNavigate()
+
+            val dialog = AlertDialog.Builder(it.context)
+            dialog.setTitle("Export")
+            dialog.setMessage("\nPlease select with name or without name for review")
+            dialog.setPositiveButton("without name") { _, _ ->
+                val data = currentForm.toPrintModel("${binding.remarkPrintInput.text}")
+                findNavController().navigate(
+                    SalesOrderFragmentDirections.actionToPreviewWithOutNameFragment(data)
+                )
+            }
+            dialog.setNegativeButton("with name") { _, _ ->
+                val data = currentForm.toPrintModel("${binding.remarkPrintInput.text}")
+                findNavController().navigate(
+                    SalesOrderFragmentDirections.actionToPreviewWithNameFragment(data)
+                )
+            }
+            dialog.show()
+        }
+
         return binding.root
     }
 
-    private fun saveAndNavigate(navOption: String) {
+    private fun saveAndNavigate(navOption: String = "none") {
         patientViewModel.removeRecordsChangesListener()
         if (viewOnlyMode) {
             launchNavigator(navOption)
         } else {
             if (formWasChanged()) {
                 patientViewModel.submitPatientToFirebase(
-                    currentForm.recordID.toString(),
-                    currentForm
+                    currentForm.recordID.toString(), currentForm
                 )
-                // trigger navigation after update
                 patientViewModel.updateRecord(currentForm, navOption)
             } else {
                 launchNavigator(navOption)

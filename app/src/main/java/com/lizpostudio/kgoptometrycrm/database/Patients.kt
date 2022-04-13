@@ -86,7 +86,7 @@ data class Patients(
     var contactLensSunglasses: String = "",
 
     @ColumnInfo(name = "practitioner_name_optometrist")
-    var practitionerNameOptometrist:String = ""
+    var practitionerNameOptometrist: String = ""
 ) {
 
     fun assertEqual(toForm: Patients): Boolean {
@@ -169,5 +169,5 @@ data class FBRecords(
     var cs: String = "",
     var solutionMisc: String = "",
     var solutionMiscRm: String = "",
-    var practitionerNameOptometrist:String = ""
+    var practitionerNameOptometrist: String = ""
 )

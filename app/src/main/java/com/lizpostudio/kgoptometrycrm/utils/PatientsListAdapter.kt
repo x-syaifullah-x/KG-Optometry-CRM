@@ -4,13 +4,24 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
+import com.lizpostudio.kgoptometrycrm.database.AppDB
 import com.lizpostudio.kgoptometrycrm.database.Patients
 import com.lizpostudio.kgoptometrycrm.databinding.ListItemReportBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class PatientsListAdapter(private val patients: List<Patients>) :
     RecyclerView.Adapter<PatientsListAdapter.ViewHolder>() {
 
+    init {
+        setHasStableIds(true)
+    }
+
     var patientSelected = MutableLiveData<Patients>()
+
+    private var db: AppDB? = null
 
     class ViewHolder private constructor(val binding: ListItemReportBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -29,15 +40,34 @@ class PatientsListAdapter(private val patients: List<Patients>) :
         }
     }
 
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
+    }
+
+    private val scopeIO = CoroutineScope(Dispatchers.IO)
+
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val patientItem = patients[position]
-        holder.bind(patientItem)
-        holder.itemView.setOnClickListener {
-            patientSelected.value = patientItem
+        scopeIO.launch {
+            var patientItem: Patients? = patients[position]
+            patientItem ?: return@launch
+            if (patientItem.sectionName == "CASH ORDER" || patientItem.sectionName == "FINAL PRESCRIPTION") {
+                patientItem = db?.patientsDao?.getInfoPatient(patientItem.patientID)
+            }
+
+            patientItem?.also { item ->
+                withContext(Dispatchers.Main){
+                    holder.bind(item)
+
+                    holder.itemView.setOnClickListener {
+                        patientSelected.value = item
+                    }
+                }
+            }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        db = AppDB.getInstance(parent.context)
         return ViewHolder.from(parent)
     }
 

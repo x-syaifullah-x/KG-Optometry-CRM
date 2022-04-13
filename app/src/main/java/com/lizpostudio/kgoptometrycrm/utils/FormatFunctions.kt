@@ -449,6 +449,12 @@ fun convertLongToDDKey(timeMillis: Long): String {
 }
 
 @SuppressLint("SimpleDateFormat")
+fun convertLongTodd_MM_yy_hh_mm_ss(timeMillis: Long): String {
+    return SimpleDateFormat("dd_MM_yy_hh_mm_ss")
+        .format(timeMillis).toString()
+}
+
+@SuppressLint("SimpleDateFormat")
 fun convertLongToDDMMYYHRSMIN(timeMillis: Long): String {
     return SimpleDateFormat("dd/MM/yy hh:mm a")
         .format(timeMillis).toString()

@@ -515,5 +515,9 @@ class PatientsViewModel(
 
     suspend fun getPatientByProduct(value: String) = repository.getPatientByProduct(value)
 
+    suspend fun getIdProducts(value: String) = repository.getIdProducts(value)
+
+    val idProducts  = repository.cashOrdersAndSalesOrders()
+
     val csAndOr = repository.getCsAndOr()
 }

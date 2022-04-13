@@ -233,7 +233,7 @@ class CashOrderFragment : Fragment() {
 
 //                    chip.tag = patientForm.sectionName + "\n" + "${patientForm.recordID}"
                     chip.tag =
-                        patientForm + "\n" + "${mapSectionName[patientForm]?.firstOrNull()?.recordID}"
+                        patientForm + "\n" + "${mapSectionName[patientForm]?.lastOrNull()?.recordID}"
 
                     chip.setOnClickListener { button ->
                         navigateFormName = button.tag.toString().split("\n").first()

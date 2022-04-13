@@ -8,6 +8,8 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.lizpostudio.kgoptometrycrm.database.dao.PatientsDao
+import com.lizpostudio.kgoptometrycrm.database.dao.PractitionerDao
 
 @Database(
     entities = [

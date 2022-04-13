@@ -1,7 +1,8 @@
-package com.lizpostudio.kgoptometrycrm.database
+package com.lizpostudio.kgoptometrycrm.database.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import com.lizpostudio.kgoptometrycrm.database.Patients
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -68,13 +69,29 @@ interface PatientsDao {
     suspend fun querySalesOrder(or: String): List<Patients>
 
     @Query("SELECT * FROM patients_table WHERE frame || lens || contact_lens_sunglasses || solution_misc LIKE '%' || :query || '%'")
-    suspend fun queryProduct(query: String): List<Patients>
+    suspend fun queryProducts(query: String): List<Patients>
+
+    @Query("SELECT * FROM patients_table WHERE frame || lens || contact_lens_sunglasses || solution_misc LIKE '%' || :query || '%'")
+    fun queryFlowProducts(query: String): Flow<List<Patients>>
+
+    @Query("SELECT * FROM patients_table WHERE frame || lens || contact_lens_sunglasses || solution_misc LIKE '%' || :query || '%'")
+    suspend fun queryIdProduct(query: String): List<Patients>
+
+    @Query("SELECT * FROM patients_table WHERE section_name='CASH ORDER' and section_name='FINAL PRESCRIPTION' and frame is not '' or lens is not '' or contact_lens_sunglasses is not '' or solution_misc is not ''")
+    fun cashOrdersAndSalesOrders(): LiveData<List<Patients>>
+
+//    @Query("SELECT * FROM patients_table WHERE section_name='CASH ORDER' and section_name='FINAL PRESCRIPTION' and frame is not '' or lens is not '' or contact_lens_sunglasses is not '' or solution_misc is not '' LIKE '%' || :query || '%'")
+//    fun cashOrdersAndSalesOrders(id: String): Flow<List<Patients>>
 
     @Query("SELECT * FROM patients_table WHERE section_name='CASH ORDER' or section_name='FINAL PRESCRIPTION'")
     fun getCsAndOr(): LiveData<List<Patients>>
 
     @Query("SELECT EXISTS(SELECT * FROM patients_table WHERE sales_id=:id)")
     fun idIsExist(id: String): Boolean
+
+    @Query("SELECT * FROM patients_table WHERE sales_id=:id")
+    fun getInfoPatient(id: String): Patients
+
 //    @Query("SELECT * FROM patients_table WHERE section_name='SALES ORDER'")
 //    fun updateSectionNameSalesOrder(): List<Patients>
 }

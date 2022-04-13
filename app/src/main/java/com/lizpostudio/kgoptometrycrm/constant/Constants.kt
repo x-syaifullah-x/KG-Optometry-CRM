@@ -1,7 +1,9 @@
 package com.lizpostudio.kgoptometrycrm.constant
 
 import android.content.Context
+import android.os.Environment
 import com.lizpostudio.kgoptometrycrm.BuildConfig
+import java.io.File
 
 object Constants {
 
@@ -14,6 +16,8 @@ object Constants {
     const val PREF_KEY_SEARCH_STATE = "search_state"
     const val PREF_KEY_LAST_SYNC = "lastSynch"
     const val PREF_KEY_IS_CREATED = "is_created"
+
+    val ROOT_DIR_PICTURES = File(Environment.DIRECTORY_PICTURES, "KG CRM")
 
     fun setCreatedFrom(context: Context) {
         val pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)

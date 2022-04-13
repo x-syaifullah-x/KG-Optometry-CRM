@@ -6,6 +6,7 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
+import com.lizpostudio.kgoptometrycrm.database.dao.PatientsDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
@@ -167,11 +168,21 @@ class PatientRepository private constructor(
         patientsDao.querySalesOrder(or)
 
     suspend fun getPatientByProduct(value: String) =
-        patientsDao.queryProduct(value)
+        patientsDao.queryProducts(value)
+
+    fun getFlowPatientByProduct(value: String) =
+        patientsDao.queryFlowProducts(value)
+
+    suspend fun getIdProducts(value: String) =
+        patientsDao.queryIdProduct(value)
+
+    fun cashOrdersAndSalesOrders() = patientsDao.cashOrdersAndSalesOrders()
 
     fun getCsAndOr() = patientsDao.getCsAndOr()
 
     fun idIsExist(id: String) = patientsDao.idIsExist(id)
+
+    fun getInfoPatient(id: String) = patientsDao.getInfoPatient(id)
 
 //    init {
 //        patientsDao.updateSectionNameSalesOrder()

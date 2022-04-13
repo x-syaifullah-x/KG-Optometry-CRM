@@ -28,6 +28,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.lizpostudio.kgoptometrycrm.PatientsViewModel
 import com.lizpostudio.kgoptometrycrm.PatientsViewModelFactory
+import com.lizpostudio.kgoptometrycrm.ProductViewModel
 import com.lizpostudio.kgoptometrycrm.R
 import com.lizpostudio.kgoptometrycrm.constant.Constants
 import com.lizpostudio.kgoptometrycrm.database.Patients
@@ -36,7 +37,9 @@ import com.lizpostudio.kgoptometrycrm.forms.InfoFragment
 import com.lizpostudio.kgoptometrycrm.utils.*
 import id.xxx.module.view.binding.ktx.viewBinding
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
 
@@ -94,6 +97,10 @@ class DatabaseSearchFragment : Fragment() {
     private var syncHistoryStart = 0L
     private var latestDataSynched = 0L
     private var isfetchedFromFirebaseCompleted = false
+
+    private val productViewModel by viewModels<ProductViewModel> {
+        PatientsViewModelFactory(requireContext())
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -169,6 +176,7 @@ class DatabaseSearchFragment : Fragment() {
         }
 
         lifecycleScope.launchWhenCreated {
+            var job: Job? = null
             binding.searchInputText.asFlow().collectLatest {
                 if (searchValues.search != DATE_SELECTED) {
                     searchValues.value = it
@@ -391,7 +399,9 @@ class DatabaseSearchFragment : Fragment() {
                 val (startDate, endDate) = getDateStartAEndMillis(searchValues.value)
                 patientViewModel.getFormsForSelectedDate(startDate, endDate)
             } else {
-                lifecycleScope.launchWhenCreated { filterRecyclerList() }
+                lifecycleScope.launchWhenCreated {
+                    filterRecyclerList()
+                }
             }
             listenToSearchSpinner = true
         }
@@ -552,12 +562,21 @@ class DatabaseSearchFragment : Fragment() {
                         }
 
                         PRODUCT -> {
-                            patientViewModel.getPatientByProduct(inputText)
-                                .flatMap { patients ->
-                                    allInfoForms.filter { patients.patientID == it.patientID }
-                                }
-                                .sortedBy { it.patientName }
-
+                            patientViewModel.getIdProducts(inputText)
+                                .sortedBy { sort -> sort.patientName }
+//                                .flatMap { idProduct ->
+//                                    if (inputText != searchValues.value)
+//                                        cancel()
+//                                    allInfoForms.filter { allInfoForm ->
+//                                        if (inputText != searchValues.value)
+//                                            cancel()
+//                                        idProduct == allInfoForm.patientID
+//                                    }
+//                                }.sortedBy { sort ->
+//                                    if (inputText != searchValues.value)
+//                                        cancel()
+//                                    sort.patientName
+//                                }
                         }
 
                         OTHER_ID -> allInfoForms

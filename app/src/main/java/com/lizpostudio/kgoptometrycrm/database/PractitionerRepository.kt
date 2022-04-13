@@ -1,6 +1,7 @@
 package com.lizpostudio.kgoptometrycrm.database
 
 import android.content.Context
+import com.lizpostudio.kgoptometrycrm.database.dao.PractitionerDao
 
 class PractitionerRepository(private val dao: PractitionerDao) {
 
