@@ -1,11 +1,8 @@
-package com.lizpostudio.kgoptometrycrm.search
+package com.lizpostudio.kgoptometrycrm.copy
 
 import android.annotation.SuppressLint
-import android.app.Application
 import android.app.DatePickerDialog
-import android.content.ActivityNotFoundException
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -18,12 +15,12 @@ import android.widget.Spinner
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.lizpostudio.kgoptometrycrm.PatientsViewModel
@@ -32,18 +29,18 @@ import com.lizpostudio.kgoptometrycrm.ProductViewModel
 import com.lizpostudio.kgoptometrycrm.R
 import com.lizpostudio.kgoptometrycrm.constant.Constants
 import com.lizpostudio.kgoptometrycrm.database.Patients
-import com.lizpostudio.kgoptometrycrm.databinding.FragmentDatabaseSearchBinding
+import com.lizpostudio.kgoptometrycrm.databinding.FragmentTargetCopyBinding
 import com.lizpostudio.kgoptometrycrm.forms.InfoFragment
+import com.lizpostudio.kgoptometrycrm.search.DatabaseSearchFragmentDirections
+import com.lizpostudio.kgoptometrycrm.search.SaveSearch
 import com.lizpostudio.kgoptometrycrm.utils.*
 import id.xxx.module.view.binding.ktx.viewBinding
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
 
-class DatabaseSearchFragment : Fragment() {
+class TargetCopyFragment : Fragment() {
 
     companion object {
         private const val INFO_SECTION = "INFO"
@@ -81,7 +78,7 @@ class DatabaseSearchFragment : Fragment() {
     private var searchValues = SaveSearch()
     private var filterByFamily = false
 
-    private val binding by viewBinding<FragmentDatabaseSearchBinding>()
+    private val binding by viewBinding<FragmentTargetCopyBinding>()
 
     private val allInfoForms = mutableListOf<Patients>()
 
@@ -98,8 +95,30 @@ class DatabaseSearchFragment : Fragment() {
     private var latestDataSynched = 0L
     private var isfetchedFromFirebaseCompleted = false
 
+    private val args by navArgs<TargetCopyFragmentArgs>()
+
     private val productViewModel by viewModels<ProductViewModel> {
         PatientsViewModelFactory(requireContext())
+    }
+
+    private fun navigateBack(patientID: String) {
+
+        val sharedPref = activity?.getSharedPreferences(
+            Constants.PREF_NAME, Context.MODE_PRIVATE
+        )
+
+        if (sharedPref != null) {
+            val editor = sharedPref.edit()
+            editor.putString("searchByTargetCopy", "")
+            editor.putString("searchValueTargetCopy", "")
+//            editor.putLong(Constants.PREF_KEY_LAST_SYNC, latestDataSynched)
+            // editor.putLong("lastDeletedSynch", latestDeletedHistorySynched)
+            editor.apply()
+        }
+
+        findNavController().navigate(
+            TargetCopyFragmentDirections.actionToFormSelection(patientID)
+        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -107,16 +126,10 @@ class DatabaseSearchFragment : Fragment() {
 
         context?.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE)
             ?.edit()
-            ?.putString(Constants.PREF_KEY_SEARCH_STATE, DatabaseSearchFragment::class.java.name)
+            ?.putString(Constants.PREF_KEY_SEARCH_STATE, TargetCopyFragment::class.java.name)
             ?.apply()
-        val navController = this.findNavController()
-        requireActivity().onBackPressedDispatcher.addCallback(this) {
-            try {
-                navController.navigate(DatabaseSearchFragmentDirections.actionToLoginFragment())
-            } catch (e: Exception) {
-                Log.d(TAG, "Back navigation error")
-            }
-        }
+        requireActivity().onBackPressedDispatcher
+            .addCallback(this) { navigateBack(args.patientID) }
     }
 
     private fun persistFBCompletedToStore() {
@@ -132,25 +145,18 @@ class DatabaseSearchFragment : Fragment() {
     }
 
     private fun persistDataToStore() {
-
         val sharedPref = activity?.getSharedPreferences(
             Constants.PREF_NAME, Context.MODE_PRIVATE
         )
 
         if (sharedPref != null) {
             val editor = sharedPref.edit()
-            editor.putString("searchBy", searchValues.search)
-            editor.putString("searchValue", searchValues.value)
+            editor.putString("searchByTargetCopy", searchValues.search)
+            editor.putString("searchValueTargetCopy", searchValues.value)
             editor.putLong(Constants.PREF_KEY_LAST_SYNC, latestDataSynched)
             // editor.putLong("lastDeletedSynch", latestDeletedHistorySynched)
             editor.apply()
         }
-
-    }
-
-    override fun onPause() {
-        super.onPause()
-        persistDataToStore()
     }
 
     @SuppressLint("SetTextI18n")
@@ -160,15 +166,15 @@ class DatabaseSearchFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        val app = requireNotNull(this.activity).application
-
         binding.lifecycleOwner = this
         val navController = this.findNavController()
+
+        binding.backButton.setOnClickListener { navigateBack(args.patientID) }
 
         val spinner: Spinner = binding.searchBySpinner
 
         ArrayAdapter.createFromResource(
-            app,
+            requireContext(),
             R.array.database_search_choices,
             android.R.layout.simple_spinner_item
         ).also { adapter ->
@@ -197,56 +203,56 @@ class DatabaseSearchFragment : Fragment() {
 
         patientViewModel.getAllFormsBySectionName(getString(R.string.info_form_caption))
 
-        binding.toggleFamily.setOnClickListener {
-            filterByFamily = !filterByFamily
-            if (filterByFamily) {
-                binding.toggleFamily.setColorFilter(
-                    ContextCompat.getColor(
-                        requireContext(),
-                        R.color.greenCircle
-                    ), android.graphics.PorterDuff.Mode.SRC_IN
-                )
-            } else {
-                binding.toggleFamily.setColorFilter(
-                    ContextCompat.getColor(
-                        requireContext(),
-                        R.color.iconTopStandard
-                    ), android.graphics.PorterDuff.Mode.SRC_IN
-                )
-            }
-        }
-
-        binding.home.setOnClickListener {
-//            if ("${binding.searchInputText.text}".isNotBlank()) {
-//                binding.searchInputText.setText("")
+//        binding.toggleFamily.setOnClickListener {
+//            filterByFamily = !filterByFamily
+//            if (filterByFamily) {
+//                binding.toggleFamily.setColorFilter(
+//                    ContextCompat.getColor(
+//                        requireContext(),
+//                        R.color.greenCircle
+//                    ), android.graphics.PorterDuff.Mode.SRC_IN
+//                )
 //            } else {
-//                navController.navigate(DatabaseSearchFragmentDirections.actionToLoginFragment())
+//                binding.toggleFamily.setColorFilter(
+//                    ContextCompat.getColor(
+//                        requireContext(),
+//                        R.color.iconTopStandard
+//                    ), android.graphics.PorterDuff.Mode.SRC_IN
+//                )
 //            }
-            navController.navigate(DatabaseSearchFragmentDirections.actionToLoginFragment())
-        }
+//        }
 
-        binding.uploadDb.setOnClickListener {
-            if (allowSync) {
-                actionConfirm(
-                    "This operation will delete your local database and upload data from Firebase. It could take 1 or more minutes to complete.\n" +
-                            "Are you sure you want to update your database?"
-                )
-            }
-        }
+//        binding.home.setOnClickListener {
+////            if ("${binding.searchInputText.text}".isNotBlank()) {
+////                binding.searchInputText.setText("")
+////            } else {
+////                navController.navigate(DatabaseSearchFragmentDirections.actionToLoginFragment())
+////            }
+//            navController.navigate(DatabaseSearchFragmentDirections.actionToLoginFragment())
+//        }
 
-        binding.synchDbButton.setOnClickListener {
-            if (allowSync) {
-                syncHistoryStart = System.currentTimeMillis()
-                patientViewModel.updateLocalDBFromFirebase(latestDataSynched, TWO_WEEKS)
-                allowSync = false
-            } else {
-                Toast.makeText(
-                    context,
-                    "Previous Sync was not completed!\nHold on ...",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
+//        binding.uploadDb.setOnClickListener {
+//            if (allowSync) {
+//                actionConfirm(
+//                    "This operation will delete your local database and upload data from Firebase. It could take 1 or more minutes to complete.\n" +
+//                            "Are you sure you want to update your database?"
+//                )
+//            }
+//        }
+
+//        binding.synchDbButton.setOnClickListener {
+//            if (allowSync) {
+//                syncHistoryStart = System.currentTimeMillis()
+//                patientViewModel.updateLocalDBFromFirebase(latestDataSynched, TWO_WEEKS)
+//                allowSync = false
+//            } else {
+//                Toast.makeText(
+//                    context,
+//                    "Previous Sync was not completed!\nHold on ...",
+//                    Toast.LENGTH_SHORT
+//                ).show()
+//            }
+//        }
 // COPY FIREBASE DATA
         patientViewModel.deletedDatabase.observe(viewLifecycleOwner) { isLocalDeleted ->
             isLocalDeleted?.let {
@@ -377,7 +383,7 @@ class DatabaseSearchFragment : Fragment() {
             }
         }
 
-        val itemDecor = DividerItemDecoration(app.applicationContext, RecyclerView.VERTICAL)
+        val itemDecor = DividerItemDecoration(requireContext(), RecyclerView.VERTICAL)
         val myDecorLine = ResourcesCompat.getDrawable(
             resources, R.drawable.recycler_items_divider, null
         )
@@ -417,27 +423,70 @@ class DatabaseSearchFragment : Fragment() {
         }
 
         binding.searchIcon.setOnClickListener {
-            hideKeyboard(app)
+            hideKeyboard(requireContext())
             if (searchValues.search == DATE_SELECTED) filterByDate()
         }
 
         recyclerAdapter.patientSelected.observe(viewLifecycleOwner) { patient ->
-            if (filterByFamily) {
-                if (patient.familyCode != "") {
-                    val newList = allInfoForms
-                        .filter { it.familyCode == patient.familyCode }
-                        .sortedBy { it.patientName }
-                    updateRecyclerView(newList)
-                } else {
-                    Toast.makeText(context, "Empty Family Code!", Toast.LENGTH_SHORT).show()
+            lifecycleScope.launchWhenCreated {
+                val from = patientViewModel.getPatients(args.patientID)
+                val alertDialog = AlertDialog.Builder(requireContext())
+                alertDialog.setTitle("Confirm")
+                val nameFrom = "${from?.firstOrNull { it.sectionName != "INFO" }?.patientName}"
+                    .split(" -").firstOrNull()?.lowercase()
+                val nameTo = patient.patientName.lowercase()
+                alertDialog.setMessage("\nAre you sure want to copy all sections from patient $nameFrom to patient $nameTo?")
+                alertDialog.setPositiveButton("Yes") { _, _ ->
+                    val newFrom = from
+                        ?.filter { it.sectionName != "INFO" }
+                        ?.mapIndexed { index, it ->
+                            it.copy(
+                                recordID = (System.currentTimeMillis() - 100000000000L) + index,
+                                patientID = patient.patientID,
+                                patientName = patient.patientName
+                            )
+                        } ?: return@setPositiveButton
+                    lifecycleScope.launchWhenCreated {
+                        patientViewModel.submitListOfPatientsToFB(newFrom)
+                        if (patientViewModel.insertRecords(newFrom)) {
+                            withContext(Dispatchers.Main) {
+                                val dialogSuccess = AlertDialog.Builder(requireContext())
+                                dialogSuccess.setTitle("Copy Success")
+                                dialogSuccess.setMessage("\nOpen Patient $nameTo?")
+                                dialogSuccess.setCancelable(false)
+                                dialogSuccess.setPositiveButton("Yes") { _, _ ->
+                                    navigateBack(patient.patientID)
+                                }
+                                dialogSuccess.setNegativeButton("No") { _, _ ->
+                                    navigateBack(args.patientID)
+                                }
+                                dialogSuccess.show()
+                            }
+                        }
+                    }
                 }
-            } else {
-                hideKeyboard(app)
-                navController.navigate(
-                    DatabaseSearchFragmentDirections
-                        .actionDatabaseSearchFragmentToFormSelectionFragment(patient.patientID)
-                )
+                alertDialog.setNegativeButton("No") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                alertDialog.show()
             }
+
+//            if (filterByFamily) {
+//                if (patient.familyCode != "") {
+//                    val newList = allInfoForms
+//                        .filter { it.familyCode == patient.familyCode }
+//                        .sortedBy { it.patientName }
+//                    updateRecyclerView(newList)
+//                } else {
+//                    Toast.makeText(context, "Empty Family Code!", Toast.LENGTH_SHORT).show()
+//                }
+//            } else {
+//                hideKeyboard(app)
+//                navController.navigate(
+//                    DatabaseSearchFragmentDirections
+//                        .actionDatabaseSearchFragmentToFormSelectionFragment(patient.patientID)
+//                )
+//            }
         }
 
         //  add patient functionality
@@ -451,19 +500,19 @@ class DatabaseSearchFragment : Fragment() {
             }
         }
 
-        binding.createNewPatient.setOnClickListener {
-            patientViewModel.createNewRecord(getString(R.string.info_form_caption))
-        }
+//        binding.createNewPatient.setOnClickListener {
+//            patientViewModel.createNewRecord(getString(R.string.info_form_caption))
+//        }
 
         // get all refraction forms, observe them and launch the report
 
-        binding.refractionReport.setOnClickListener {
-            Toast.makeText(context, "Working on it!\nWait a second ...", Toast.LENGTH_SHORT).show()
-            val yearAgoMillis = System.currentTimeMillis() - ONE_DAY * 365L
-            patientViewModel.getOldRecordsBySectionAndDate(
-                getString(R.string.refraction_caption), yearAgoMillis
-            )
-        }
+//        binding.refractionReport.setOnClickListener {
+//            Toast.makeText(context, "Working on it!\nWait a second ...", Toast.LENGTH_SHORT).show()
+//            val yearAgoMillis = System.currentTimeMillis() - ONE_DAY * 365L
+//            patientViewModel.getOldRecordsBySectionAndDate(
+//                getString(R.string.refraction_caption), yearAgoMillis
+//            )
+//        }
 
         patientViewModel.refractionForms.observe(viewLifecycleOwner) { oldRefs ->
             oldRefs?.let {
@@ -481,31 +530,31 @@ class DatabaseSearchFragment : Fragment() {
 
         // share refractions report
 
-        binding.shareReport.setOnClickListener {
-            val emailIntent = Intent(Intent.ACTION_SEND)
-            emailIntent.type = "text/plain"
-            emailIntent.putExtra(
-                Intent.EXTRA_SUBJECT,
-                "Customers with overdue refraction (1 year+)"
-            )
-            emailIntent.putExtra(Intent.EXTRA_TEXT, shareText)
-            try {
-                startActivity(Intent.createChooser(emailIntent, "Send report by email..."))
-                //      finish()
-            } catch (ex: ActivityNotFoundException) {
-                Toast.makeText(
-                    context,
-                    "There is no email client installed.",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
+//        binding.shareReport.setOnClickListener {
+//            val emailIntent = Intent(Intent.ACTION_SEND)
+//            emailIntent.type = "text/plain"
+//            emailIntent.putExtra(
+//                Intent.EXTRA_SUBJECT,
+//                "Customers with overdue refraction (1 year+)"
+//            )
+//            emailIntent.putExtra(Intent.EXTRA_TEXT, shareText)
+//            try {
+//                startActivity(Intent.createChooser(emailIntent, "Send report by email..."))
+//                //      finish()
+//            } catch (ex: ActivityNotFoundException) {
+//                Toast.makeText(
+//                    context,
+//                    "There is no email client installed.",
+//                    Toast.LENGTH_SHORT
+//                ).show()
+//            }
+//        }
 
-        binding.salesButton.setOnClickListener {
-            findNavController().navigate(
-                DatabaseSearchFragmentDirections.actionToDatabaseSalesScreen()
-            )
-        }
+//        binding.salesButton.setOnClickListener {
+//            findNavController().navigate(
+//                DatabaseSearchFragmentDirections.actionToDatabaseSalesScreen()
+//            )
+//        }
 
         return binding.root
     }
@@ -517,27 +566,43 @@ class DatabaseSearchFragment : Fragment() {
                 if (inputText.isNotBlank()) {
                     when (searchValues.search) {
                         PATIENT_NAME -> allInfoForms
-                            .filter { it.patientName.contains(inputText, true) }
+                            .filter {
+                                if (args.patientID == it.patientID) return@filter false
+                                it.patientName.contains(inputText, true)
+                            }
                             .sortedBy { it.patientName }
 
                         ID_SELECTED -> allInfoForms
-                            .filter { it.patientID.contains(inputText, true) }
+                            .filter {
+                                if (args.patientID == it.patientID) return@filter false
+                                it.patientID.contains(inputText, true)
+                            }
                             .sortedBy { it.patientName }
 
                         IC_SELECTED -> allInfoForms
-                            .filter { it.patientIC.contains(inputText) }
+                            .filter {
+                                if (args.patientID == it.patientID) return@filter false
+                                it.patientIC.contains(inputText)
+                            }
                             .sortedBy { it.patientName }
 
                         PHONE -> allInfoForms
-                            .filter { it.phone.contains(inputText, true) }
+                            .filter {
+                                if (args.patientID == it.patientID) return@filter false
+                                it.phone.contains(inputText, true)
+                            }
                             .sortedBy { it.patientName }
 
                         ADDRESS -> allInfoForms
-                            .filter { it.address.contains(inputText, true) }
+                            .filter {
+                                if (args.patientID == it.patientID) return@filter false
+                                it.address.contains(inputText, true)
+                            }
                             .sortedBy { it.patientName }
 
                         OCCUPATION -> allInfoForms
                             .filter { patientForm ->
+                                if (args.patientID == patientForm.patientID) return@filter false
                                 val occupation = patientForm.sectionData.split('|').toMutableList()
                                 val extractData = if (occupation.size > 10) occupation[10] else ""
                                 extractData.contains(inputText, true)
@@ -547,7 +612,10 @@ class DatabaseSearchFragment : Fragment() {
                         CASH_ORDER -> {
                             patientViewModel.getPatientByCashOrder(inputText)
                                 .flatMap { cs ->
-                                    allInfoForms.filter { cs.patientID == it.patientID }
+                                    allInfoForms.filter {
+                                        if (args.patientID == cs.patientID) return@filter false
+                                        cs.patientID == it.patientID
+                                    }
                                 }
                                 .sortedBy { it.patientName }
                         }
@@ -555,13 +623,19 @@ class DatabaseSearchFragment : Fragment() {
                         SALES_ORDER -> {
                             patientViewModel.getPatientBySalesOrder(inputText)
                                 .flatMap { cs ->
-                                    allInfoForms.filter { cs.patientID == it.patientID }
+                                    allInfoForms.filter {
+                                        if (args.patientID == cs.patientID) return@filter false
+                                        cs.patientID == it.patientID
+                                    }
                                         .sortedBy { it.patientName }
                                 }
                         }
 
                         PRODUCT -> {
                             patientViewModel.getIdProducts(inputText)
+                                .filter {
+                                    args.patientID != it.patientID
+                                }
                                 .sortedBy { sort -> sort.patientName }
 //                                .flatMap { idProduct ->
 //                                    if (inputText != searchValues.value)
@@ -580,6 +654,7 @@ class DatabaseSearchFragment : Fragment() {
 
                         OTHER_ID -> allInfoForms
                             .filter {
+                                if (args.patientID == it.patientID) return@filter false
                                 val otherId =
                                     try {
                                         it.sectionData.split("|")[InfoFragment.OTHER_ID_INDEX]
@@ -595,7 +670,9 @@ class DatabaseSearchFragment : Fragment() {
                             .sortedBy { it.patientName }
                     }
                 } else {
-                    allInfoForms.sortedBy { it.patientName }
+                    allInfoForms
+                        .filter { args.patientID != it.patientID }
+                        .sortedBy { it.patientName }
                 }
 
             withContext(Dispatchers.Main) {
@@ -614,9 +691,9 @@ class DatabaseSearchFragment : Fragment() {
         binding.patientsList.smoothScrollToPosition(0)
     }
 
-    private fun hideKeyboard(app: Application) {
+    private fun hideKeyboard(context: Context) {
         val imm =
-            (app.applicationContext).getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(binding.searchInputText.windowToken, 0)
         binding.searchInputText.clearFocus()
     }
@@ -731,8 +808,9 @@ class DatabaseSearchFragment : Fragment() {
             Constants.PREF_NAME, Context.MODE_PRIVATE
         )
 
-        searchValues.search = sharedPref?.getString("searchBy", PATIENT_NAME) ?: PATIENT_NAME
-        searchValues.value = sharedPref?.getString("searchValue", "") ?: ""
+        searchValues.search =
+            sharedPref?.getString("searchByTargetCopy", PATIENT_NAME) ?: PATIENT_NAME
+        searchValues.value = sharedPref?.getString("searchValueTargetCopy", "") ?: ""
 
         for (i in 0 until binding.searchBySpinner.adapter.count) {
             val item = binding.searchBySpinner.adapter.getItem(i).toString()
@@ -752,12 +830,12 @@ class DatabaseSearchFragment : Fragment() {
         isfetchedFromFirebaseCompleted = sharedPref?.getBoolean("fireFetched", false) ?: false
         isAdmin = sharedPref?.getString("admin", "") ?: "" == "admin"
 
-        if (isAdmin) {
-            binding.refractionReport.visibility = View.VISIBLE
-            binding.shareReport.visibility = View.VISIBLE
-        } else {
-            binding.refractionReport.visibility = View.GONE
-            binding.shareReport.visibility = View.GONE
-        }
+//        if (isAdmin) {
+//            binding.refractionReport.visibility = View.VISIBLE
+//            binding.shareReport.visibility = View.VISIBLE
+//        } else {
+//            binding.refractionReport.visibility = View.GONE
+//            binding.shareReport.visibility = View.GONE
+//        }
     }
 }

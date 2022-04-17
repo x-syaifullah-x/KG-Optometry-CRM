@@ -8,7 +8,8 @@ private const val TAG = "LogTrace"
 
 @Entity(tableName = "patients_table")
 data class Patients(
-    @PrimaryKey var recordID: Long = System.currentTimeMillis() - 100000000000L,
+    @PrimaryKey
+    var recordID: Long = System.currentTimeMillis() - 100000000000L,
 
     @ColumnInfo(name = "sales_id")
     var patientID: String = "",

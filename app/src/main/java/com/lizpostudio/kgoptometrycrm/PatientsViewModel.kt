@@ -227,7 +227,7 @@ class PatientsViewModel(
                     Constants.TAG,
                     "Based on deleted synch time ${convertLongToDDMMYYHRSMIN(latestDataSynched)}"
                 )
-                Log.d(Constants.TAG, "We are going to delete these records: ${recordsToDelete}")
+                Log.d(Constants.TAG, "We are going to delete these records: $recordsToDelete")
 
                 if (recordsToDelete.isNotEmpty()) {
                     deleteListOfRecordsByID(recordsToDelete)
@@ -330,7 +330,6 @@ class PatientsViewModel(
                 .setValue(convertFormToFBRecord(it))
             val timeKey = System.currentTimeMillis().toString()
             repository.historyReference!!.child(timeKey).setValue(it.recordID.toString())
-
         }
     }
 
@@ -488,6 +487,10 @@ class PatientsViewModel(
         }
     }
 
+    suspend fun insertRecords(patientForms: List<Patients>): Boolean {
+        return repository.insertListOfForms(patientForms)
+    }
+
     /**
      *  Get single form based on record ID
      */
@@ -508,6 +511,8 @@ class PatientsViewModel(
             _patientInitForms.value = repository.getRecordsByPatientID(patientID)
         }
     }
+
+    suspend fun getPatients(patientID: String) = repository.getRecordsByPatientID(patientID)
 
     suspend fun getPatientByCashOrder(cs: String) = repository.getPatientByCashOrder(cs)
 

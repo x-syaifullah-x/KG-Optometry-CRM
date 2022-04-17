@@ -72,6 +72,18 @@
                 app:srcCompat="@drawable/delete_forever_42"
                 tools:ignore="ContentDescription" />
 
+            <ImageView
+                android:id="@+id/copy_form"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/delete_form"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_copy"
+                tools:ignore="ContentDescription" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
@@ -114,8 +126,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            tools:listitem="@layout/form_item_report"
-            app:layout_constraintTop_toBottomOf="@+id/patient_name" />
+            app:layout_constraintTop_toBottomOf="@+id/patient_name"
+            tools:listitem="@layout/form_item_report" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/add_new_form"
@@ -330,14 +342,12 @@
                 android:textAlignment="center"
                 android:textColor="@color/blackFont"
                 android:textSize="18sp"
-                app:layout_constraintBottom_toBottomOf="parent"
                 android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/cash_order_button" />
         </androidx.constraintlayout.widget.ConstraintLayout>
-
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

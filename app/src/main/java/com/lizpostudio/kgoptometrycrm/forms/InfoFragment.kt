@@ -529,8 +529,7 @@ class InfoFragment : Fragment() {
                     if (ifIDExists.isEmpty()) {
                         Log.d(TAG, "No such ID found")
                         // update patient id in all forms, save them and navigate
-                        val formsWithNewID =
-                            patientAllForms.filter { it.sectionName != getString(R.string.info_form_caption) }
+                        val formsWithNewID = patientAllForms.filter { it.sectionName != getString(R.string.info_form_caption) }
                         formsWithNewID.forEach { it.patientID = patientID }
 
                         patientViewModel.submitListOfPatientsToFB(formsWithNewID)

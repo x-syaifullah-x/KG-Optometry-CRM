@@ -33,33 +33,39 @@ data class ExportModel(
 
             val sphRight = try {
                 extractData[1]
+                    .ifBlank { "-" }
             } catch (t: Throwable) {
-                ""
+                "-"
             }
             val sphLeft = try {
                 extractData[2]
+                    .ifBlank { "-" }
             } catch (t: Throwable) {
-                ""
+                "-"
             }
             val cylRight = try {
                 extractData[3]
+                    .ifBlank { "-" }
             } catch (t: Throwable) {
-                ""
+                "-"
             }
             val cylLeft = try {
                 extractData[4]
+                    .ifBlank { "-" }
             } catch (t: Throwable) {
-                ""
+                "-"
             }
             val axisRight = try {
                 extractData[5]
+                    .ifBlank { "-" }
             } catch (t: Throwable) {
-                ""
+                "-"
             }
             val axisLeft = try {
                 extractData[6]
+                    .ifBlank { "-" }
             } catch (t: Throwable) {
-                ""
+                "-"
             }
 
             val axisR = "$sphRight / $cylRight x $axisRight"

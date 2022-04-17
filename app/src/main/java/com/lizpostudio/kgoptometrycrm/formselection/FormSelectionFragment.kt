@@ -56,6 +56,8 @@ class FormSelectionFragment : Fragment() {
     private val allPatientForms = mutableListOf<Patients>()
     private var viewOnlyMode = false
 
+    private val args by navArgs<FormSelectionFragmentArgs>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -296,7 +298,6 @@ class FormSelectionFragment : Fragment() {
             }
         }
 
-
         patientViewModel.recordDeleted.observe(viewLifecycleOwner) { patientDeleted ->
             if (allowSync) {
                 Log.d(TAG, "Navigation triggered")
@@ -339,43 +340,51 @@ class FormSelectionFragment : Fragment() {
                 resources.getString(R.string.refraction_caption)
             )
         }
+
         binding.currentRxButton.setOnClickListener {
             patientViewModel.createNewRecord(
                 patientInfoForm,
                 resources.getString(R.string.current_rx_caption)
             )
         }
+
         binding.ocularHealthButton.setOnClickListener {
             patientViewModel.createNewRecord(
                 patientInfoForm,
                 resources.getString(R.string.ocular_health_caption)
             )
         }
+
         binding.supplementaryTestsButton.setOnClickListener {
             patientViewModel.createNewRecord(
                 patientInfoForm, resources.getString(R.string.supplementary_test_caption)
             )
         }
+
         binding.contactLensButton.setOnClickListener {
             patientViewModel.createNewRecord(
                 patientInfoForm, resources.getString(R.string.contact_lens_caption)
             )
         }
+
         binding.orthokButton.setOnClickListener {
             patientViewModel.createNewRecord(
                 patientInfoForm, resources.getString(R.string.orthox_caption)
             )
         }
+
         binding.finalPrescriptionButton.setOnClickListener {
             patientViewModel.createNewRecord(
                 patientInfoForm, resources.getString(R.string.final_prescription_caption)
             )
         }
+
         binding.memoButton.setOnClickListener {
             patientViewModel.createNewRecord(
                 patientInfoForm, resources.getString(R.string.memo_form_caption)
             )
         }
+
         binding.cashOrderButton.setOnClickListener {
             patientViewModel.createNewRecord(
                 patientInfoForm, resources.getString(R.string.cash_order)
@@ -409,6 +418,12 @@ class FormSelectionFragment : Fragment() {
             }
         }
 
+        binding.copyForm.setOnClickListener {
+            val currentData = recyclerAdapter.currentList
+            findNavController().navigate(
+                FormSelectionFragmentDirections.actionToTargetCopyFragment(args.patientID)
+            )
+        }
         return binding.root
     }
 
