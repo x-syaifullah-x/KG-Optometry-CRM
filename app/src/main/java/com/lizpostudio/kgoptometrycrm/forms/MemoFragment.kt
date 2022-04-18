@@ -9,6 +9,8 @@ import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.content.res.Resources
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -449,6 +451,30 @@ class MemoFragment : Fragment() {
             }
         }
 
+        var rotation = 0F
+        binding.rotatePhoto.setOnClickListener {
+            if (rotation == 360F) {
+                rotation = 0F
+            }
+            rotation += 90
+            val bitmap =
+                BitmapUtils.rotate(BitmapFactory.decodeFile(photoFile.toString()), rotation)
+
+            binding.refPhoto.setImageBitmap(bitmap)
+//            try {
+//                val os = FileOutputStream(photoFile)
+//                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os)
+//                os.flush()
+//                os.close()
+//                storageRef.putFile(storageFile).addOnCompleteListener { task ->
+//                    if (task.isSuccessful) {
+//                        updatePhotoView(photoFile)
+//                    }
+//                }
+//            } catch (e: Exception) {
+//                e.printStackTrace()
+//            }
+        }
         return binding.root
     }
 
@@ -498,15 +524,19 @@ class MemoFragment : Fragment() {
         }
     }
 
+    private var takePhoto = false
+
     @SuppressLint("SetTextI18n")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         Log.d(TAG, "initial file size = ${photoFile.length() / 1024} kBytes")
         if (requestCode == REQUEST_PHOTO && resultCode == Activity.RESULT_OK) {
+            takePhoto = true
             scaleBitmap(photoFile)
             currentForm.reservedField = storageRef.toString()
             storageRef.putFile(storageFile).addOnCompleteListener { task ->
                 if (task.isSuccessful) {
+                    binding.rotatePhoto.visibility = View.VISIBLE
                     updatePhotoView(photoFile)
                 }
             }
@@ -686,6 +716,29 @@ class MemoFragment : Fragment() {
             currentForm.practitioner = (binding.practitionerName.selectedItem as String).uppercase()
 
             currentForm.mm = "${binding.mmInput.text}".uppercase()
+
+            if (takePhoto) {
+                takePhoto = false
+                binding.rotatePhoto.visibility = View.GONE
+                currentForm.reservedField = storageRef.toString()
+                val bitmapDrawable = binding.refPhoto.drawable as BitmapDrawable
+                val bitmap = bitmapDrawable.bitmap
+                if (bitmap != null) {
+                    try {
+                        val os = FileOutputStream(photoFile)
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os)
+                        os.flush()
+                        os.close()
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+                storageRef.putFile(storageFile).addOnCompleteListener { task ->
+//                    if (task.isSuccessful) {
+//                        updatePhotoView(photoFile)
+//                    }
+                }
+            }
         }
         return !currentForm.assertEqual(priorPatient)
     }

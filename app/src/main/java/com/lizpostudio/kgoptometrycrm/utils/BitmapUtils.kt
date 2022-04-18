@@ -7,6 +7,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Matrix
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
@@ -15,6 +16,11 @@ import java.io.File
 import java.io.FileOutputStream
 
 object BitmapUtils {
+
+    fun rotate(bitmap: Bitmap, degrees: Float): Bitmap {
+        val matrix = Matrix().apply { postRotate(degrees) }
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+    }
 
     fun create(view: View, bgColor: Int = Color.WHITE): Bitmap {
         val height = view.height
