@@ -1383,8 +1383,8 @@ class OrthokFragment : Fragment() {
             takePhoto = false
             binding.rotatePhoto.visibility = View.GONE
             currentForm.reservedField = storageRef.toString()
-            val bitmapDrawable = binding.autorefPhoto.drawable as BitmapDrawable
-            val bitmap = bitmapDrawable.bitmap
+            val bitmapDrawable = binding.autorefPhoto.drawable as? BitmapDrawable
+            val bitmap = bitmapDrawable?.bitmap
             if (bitmap != null) {
                 try {
                     val os = FileOutputStream(photoFile)

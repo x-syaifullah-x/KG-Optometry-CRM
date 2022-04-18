@@ -58,19 +58,25 @@ class FormSelectionFragment : Fragment() {
 
     private val args by navArgs<FormSelectionFragmentArgs>()
 
+    private fun navigateBack() {
+        val navController = this.findNavController()
+        val pref = context?.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE)
+        val dest = pref?.getString(Constants.PREF_KEY_SEARCH_STATE, "")
+        pref
+            ?.edit()
+            ?.putBoolean("viewOnly", false)
+            ?.apply()
+        if (dest == DatabaseSearchSalesFragment::class.java.name) {
+            navController.navigate(FormSelectionFragmentDirections.actionToDatabaseSearchSalesFragment())
+        } else {
+            navController.navigate(FormSelectionFragmentDirections.actionFormSelectionFragmentToDatabaseSearchFragment())
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val navController = this.findNavController()
-        val dest = context?.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE)
-            ?.getString(Constants.PREF_KEY_SEARCH_STATE, "")
-        requireActivity().onBackPressedDispatcher.addCallback(this) {
-            if (dest == DatabaseSearchSalesFragment::class.java.name) {
-                navController.navigate(FormSelectionFragmentDirections.actionToDatabaseSearchSalesFragment())
-            } else {
-                navController.navigate(FormSelectionFragmentDirections.actionFormSelectionFragmentToDatabaseSearchFragment())
-            }
-        }
+        requireActivity().onBackPressedDispatcher
+            .addCallback(this) { navigateBack() }
     }
 
     @SuppressLint("SetTextI18n")
@@ -180,7 +186,7 @@ class FormSelectionFragment : Fragment() {
         }
 
         binding.backButton.setOnClickListener {
-            navController.navigate(FormSelectionFragmentDirections.actionFormSelectionFragmentToDatabaseSearchFragment())
+            navigateBack()
         }
 
         binding.deleteForm.setOnClickListener {
@@ -404,13 +410,16 @@ class FormSelectionFragment : Fragment() {
             }
         }
 
+        val shared = activity
+            ?.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE)
+
         binding.viewOnlyButton.setOnClickListener {
             viewOnlyMode = !viewOnlyMode
-            if (viewOnlyMode) binding.viewOnlyButton.setImageResource(R.drawable.visibility_32)
-            else binding.viewOnlyButton.setImageResource(R.drawable.ic_baseline_edit_24)
-
-            val shared = activity
-                ?.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE)
+            if (viewOnlyMode) {
+                binding.viewOnlyButton.setImageResource(R.drawable.visibility_32)
+            } else {
+                binding.viewOnlyButton.setImageResource(R.drawable.ic_baseline_edit_24)
+            }
             if (shared != null) {
                 val editor = shared.edit()
                 editor.putBoolean("viewOnly", viewOnlyMode)
@@ -419,10 +428,18 @@ class FormSelectionFragment : Fragment() {
         }
 
         binding.copyForm.setOnClickListener {
-            val currentData = recyclerAdapter.currentList
             findNavController().navigate(
                 FormSelectionFragmentDirections.actionToTargetCopyFragment(args.patientID)
             )
+        }
+
+        if (shared != null) {
+            viewOnlyMode = shared.getBoolean("viewOnly", false)
+            if (viewOnlyMode) {
+                binding.viewOnlyButton.setImageResource(R.drawable.visibility_32)
+            } else {
+                binding.viewOnlyButton.setImageResource(R.drawable.ic_baseline_edit_24)
+            }
         }
         return binding.root
     }
