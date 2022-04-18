@@ -33,7 +33,7 @@ fun actionConfirmDeletion(
         context.getString(R.string.yes_answer)
     ) { _, _ ->
         val textInput = passwordBox.text.toString()
-        if (textInput == "kgopto" || isAdmin || !checkPassword) {
+        if (textInput == "Kgopto" || isAdmin || !checkPassword) {
             callback(true)
         } else {
             Toast.makeText(context, "Incorrect password", Toast.LENGTH_SHORT).show()
