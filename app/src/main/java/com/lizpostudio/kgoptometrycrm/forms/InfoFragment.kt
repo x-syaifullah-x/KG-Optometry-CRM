@@ -793,7 +793,9 @@ class InfoFragment : Fragment() {
         val priorPatient = currentForm.copy()
         binding.apply {
 
-            if (sectionEditDate != -1L) currentForm.dateOfSection = sectionEditDate
+            if (sectionEditDate != -1L)
+                currentForm.dateOfSection = sectionEditDate
+
             currentForm.patientName = nameInput.text.toString().uppercase()
             //       currentForm.patientID = idInput.text.toString()
             currentForm.patientIC = icInput.text.toString()

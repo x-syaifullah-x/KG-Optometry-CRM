@@ -17,7 +17,7 @@ interface PatientsDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertListOfForms(forms: List<Patients>): List<Long>
 
-    @Query("SELECT * FROM patients_table WHERE date_of_section > (:dateStart) AND date_of_section < (:dateEnd)")
+    @Query("SELECT * FROM patients_table WHERE date_of_section >= (:dateStart) AND date_of_section < (:dateEnd)")
     suspend fun getRecordsByTimeFrame(dateStart: Long, dateEnd: Long): List<Patients>?
 
     @Query("SELECT * FROM patients_table WHERE recordID = (:idToGet)")

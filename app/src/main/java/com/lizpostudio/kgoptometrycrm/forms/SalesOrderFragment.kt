@@ -411,111 +411,116 @@ class SalesOrderFragment : Fragment() {
         }
 
         binding.copyFromRefraction.setOnClickListener {
-            // take out data from the form selected in spinner
+            try {
 
-            var isEmpty = true
+                // take out data from the form selected in spinner
 
-            if (refractionForms.lastIndex >= binding.spinnerFromRefraction.selectedItemPosition) {
-                val extractData =
-                    refractionForms[binding.spinnerFromRefraction.selectedItemPosition]
-                        .sectionData.split("|")
-                binding.apply {
-                    for (i in 0 until spinnerRightSph.adapter.count) {
-                        if (extractData[33].trim() != "" &&
-                            extractData[33] == spinnerRightSph.adapter.getItem(i).toString()
-                        ) {
-                            spinnerRightSph.setSelection(i)
-                            isEmpty = false
-                        }
-                    }
-                    if (isEmpty) { // set " " as default value
+                var isEmpty = true
+
+                if (refractionForms.lastIndex >= binding.spinnerFromRefraction.selectedItemPosition) {
+                    val extractData =
+                        refractionForms[binding.spinnerFromRefraction.selectedItemPosition]
+                            .sectionData.split("|")
+                    binding.apply {
                         for (i in 0 until spinnerRightSph.adapter.count) {
-                            if (" " == spinnerRightSph.adapter.getItem(i).toString()) {
+                            if (extractData[33].trim() != "" &&
+                                extractData[33] == spinnerRightSph.adapter.getItem(i).toString()
+                            ) {
                                 spinnerRightSph.setSelection(i)
+                                isEmpty = false
                             }
                         }
-                    }
-
-                    isEmpty = true
-                    for (i in 0 until spinnerRightCyl.adapter.count) {
-                        if (extractData[34].trim() != "" &&
-                            extractData[34].trim()
-                                .toDoubleOrNull() == spinnerRightCyl.adapter.getItem(i).toString()
-                                .toDoubleOrNull()
-                        ) {
-                            spinnerRightCyl.setSelection(i)
-                            isEmpty = false
+                        if (isEmpty) { // set " " as default value
+                            for (i in 0 until spinnerRightSph.adapter.count) {
+                                if (" " == spinnerRightSph.adapter.getItem(i).toString()) {
+                                    spinnerRightSph.setSelection(i)
+                                }
+                            }
                         }
-                    }
-                    if (isEmpty) spinnerRightCyl.setSelection(0)
 
-                    // 44 add
-                    isEmpty = true
-                    for (i in 0 until spinnerRightAdd.adapter.count) {
-                        if (extractData[44].trim() != "" &&
-                            extractData[44].trim()
-                                .toDoubleOrNull() == spinnerRightAdd.adapter.getItem(i).toString()
-                                .toDoubleOrNull()
-                        ) {
-                            spinnerRightAdd.setSelection(i)
-                            isEmpty = false
+                        isEmpty = true
+                        for (i in 0 until spinnerRightCyl.adapter.count) {
+                            if (extractData[34].trim() != "" &&
+                                extractData[34].trim()
+                                    .toDoubleOrNull() == spinnerRightCyl.adapter.getItem(i).toString()
+                                    .toDoubleOrNull()
+                            ) {
+                                spinnerRightCyl.setSelection(i)
+                                isEmpty = false
+                            }
                         }
-                    }
-                    if (isEmpty) spinnerRightAdd.setSelection(0)
+                        if (isEmpty) spinnerRightCyl.setSelection(0)
 
-                    // 45 add
-                    isEmpty = true
-                    for (i in 0 until spinnerLeftAdd.adapter.count) {
-                        if (extractData[45].trim() != "" &&
-                            extractData[45].trim()
-                                .toDoubleOrNull() == spinnerLeftAdd.adapter.getItem(i).toString()
-                                .toDoubleOrNull()
-                        ) {
-                            spinnerLeftAdd.setSelection(i)
-                            isEmpty = false
+                        // 44 add
+                        isEmpty = true
+                        for (i in 0 until spinnerRightAdd.adapter.count) {
+                            if (extractData[44].trim() != "" &&
+                                extractData[44].trim()
+                                    .toDoubleOrNull() == spinnerRightAdd.adapter.getItem(i).toString()
+                                    .toDoubleOrNull()
+                            ) {
+                                spinnerRightAdd.setSelection(i)
+                                isEmpty = false
+                            }
                         }
-                    }
-                    if (isEmpty) spinnerLeftAdd.setSelection(0)
+                        if (isEmpty) spinnerRightAdd.setSelection(0)
 
-                    editRightVa.setText(extractData[42])
-                    editLeftVa.setText(extractData[43])
-
-                    isEmpty = true
-                    editRightAxis.setText(extractData[35])
-
-
-                    for (i in 0 until spinnerLeftSph.adapter.count) {
-                        if (extractData[36].trim() != "" &&
-                            extractData[36] == spinnerLeftSph.adapter.getItem(i).toString()
-                        ) {
-                            spinnerLeftSph.setSelection(i)
-                            isEmpty = false
+                        // 45 add
+                        isEmpty = true
+                        for (i in 0 until spinnerLeftAdd.adapter.count) {
+                            if (extractData[45].trim() != "" &&
+                                extractData[45].trim()
+                                    .toDoubleOrNull() == spinnerLeftAdd.adapter.getItem(i).toString()
+                                    .toDoubleOrNull()
+                            ) {
+                                spinnerLeftAdd.setSelection(i)
+                                isEmpty = false
+                            }
                         }
-                    }
-                    if (isEmpty) { // set " " as default value
+                        if (isEmpty) spinnerLeftAdd.setSelection(0)
+
+                        editRightVa.setText(extractData[42])
+                        editLeftVa.setText(extractData[43])
+
+                        isEmpty = true
+                        editRightAxis.setText(extractData[35])
+
+
                         for (i in 0 until spinnerLeftSph.adapter.count) {
-                            if (" " == spinnerLeftSph.adapter.getItem(i).toString()) {
+                            if (extractData[36].trim() != "" &&
+                                extractData[36] == spinnerLeftSph.adapter.getItem(i).toString()
+                            ) {
                                 spinnerLeftSph.setSelection(i)
+                                isEmpty = false
                             }
                         }
-                    }
-                    isEmpty = true
-
-                    for (i in 0 until spinnerLeftCyl.adapter.count) {
-                        if (extractData[37].trim() != "" &&
-                            extractData[37].trim()
-                                .toDoubleOrNull() == spinnerLeftCyl.adapter.getItem(i)
-                                .toString().toDoubleOrNull()
-                        ) {
-                            spinnerLeftCyl.setSelection(i)
-                            isEmpty = false
+                        if (isEmpty) { // set " " as default value
+                            for (i in 0 until spinnerLeftSph.adapter.count) {
+                                if (" " == spinnerLeftSph.adapter.getItem(i).toString()) {
+                                    spinnerLeftSph.setSelection(i)
+                                }
+                            }
                         }
-                    }
-                    if (isEmpty) spinnerLeftCyl.setSelection(0)
-                    isEmpty = true
+                        isEmpty = true
 
-                    editLeftAxis.setText(extractData[38])
+                        for (i in 0 until spinnerLeftCyl.adapter.count) {
+                            if (extractData[37].trim() != "" &&
+                                extractData[37].trim()
+                                    .toDoubleOrNull() == spinnerLeftCyl.adapter.getItem(i)
+                                    .toString().toDoubleOrNull()
+                            ) {
+                                spinnerLeftCyl.setSelection(i)
+                                isEmpty = false
+                            }
+                        }
+                        if (isEmpty) spinnerLeftCyl.setSelection(0)
+                        isEmpty = true
+
+                        editLeftAxis.setText(extractData[38])
+                    }
                 }
+            } catch (t:Throwable){
+                t.printStackTrace()
             }
         }
         // CHANGE DATA in THE FORM if record in FIREBASE was changed.

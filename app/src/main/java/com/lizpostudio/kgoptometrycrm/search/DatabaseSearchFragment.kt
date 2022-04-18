@@ -691,7 +691,6 @@ class DatabaseSearchFragment : Fragment() {
                     val (startDate, endDate) = getDateStartAEndMillis(searchValues.value)
                     Log.d(TAG, "startDate = $startDate, endDate = $endDate")
                     patientViewModel.getFormsForSelectedDate(startDate, endDate)
-
                 }, todayYear, todayMonth, todayDay
             )
             datePickerDialog.show()
