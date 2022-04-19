@@ -59,17 +59,16 @@ class FormSelectionFragment : Fragment() {
     private val args by navArgs<FormSelectionFragmentArgs>()
 
     private fun navigateBack() {
-        val navController = this.findNavController()
         val pref = context?.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE)
         val dest = pref?.getString(Constants.PREF_KEY_SEARCH_STATE, "")
-        pref
-            ?.edit()
-            ?.putBoolean("viewOnly", false)
-            ?.apply()
+//        pref
+//            ?.edit()
+//            ?.putBoolean("viewOnly", false)
+//            ?.apply()
         if (dest == DatabaseSearchSalesFragment::class.java.name) {
-            navController.navigate(FormSelectionFragmentDirections.actionToDatabaseSearchSalesFragment())
+            findNavController().navigate(FormSelectionFragmentDirections.actionToDatabaseSearchSalesFragment())
         } else {
-            navController.navigate(FormSelectionFragmentDirections.actionFormSelectionFragmentToDatabaseSearchFragment())
+            findNavController().navigate(FormSelectionFragmentDirections.actionFormSelectionFragmentToDatabaseSearchFragment())
         }
     }
 

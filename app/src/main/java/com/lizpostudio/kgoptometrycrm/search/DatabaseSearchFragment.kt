@@ -28,7 +28,6 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.lizpostudio.kgoptometrycrm.PatientsViewModel
 import com.lizpostudio.kgoptometrycrm.PatientsViewModelFactory
-import com.lizpostudio.kgoptometrycrm.ProductViewModel
 import com.lizpostudio.kgoptometrycrm.R
 import com.lizpostudio.kgoptometrycrm.constant.Constants
 import com.lizpostudio.kgoptometrycrm.database.Patients
@@ -37,9 +36,7 @@ import com.lizpostudio.kgoptometrycrm.forms.InfoFragment
 import com.lizpostudio.kgoptometrycrm.utils.*
 import id.xxx.module.view.binding.ktx.viewBinding
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
 
@@ -98,10 +95,6 @@ class DatabaseSearchFragment : Fragment() {
     private var latestDataSynched = 0L
     private var isfetchedFromFirebaseCompleted = false
 
-    private val productViewModel by viewModels<ProductViewModel> {
-        PatientsViewModelFactory(requireContext())
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -109,14 +102,10 @@ class DatabaseSearchFragment : Fragment() {
             ?.edit()
             ?.putString(Constants.PREF_KEY_SEARCH_STATE, DatabaseSearchFragment::class.java.name)
             ?.apply()
-        val navController = this.findNavController()
-        requireActivity().onBackPressedDispatcher.addCallback(this) {
-            try {
-                navController.navigate(DatabaseSearchFragmentDirections.actionToLoginFragment())
-            } catch (e: Exception) {
-                Log.d(TAG, "Back navigation error")
+        requireActivity().onBackPressedDispatcher
+            .addCallback(this) {
+                findNavController().navigate(DatabaseSearchFragmentDirections.actionToLoginFragment())
             }
-        }
     }
 
     private fun persistFBCompletedToStore() {
@@ -217,12 +206,17 @@ class DatabaseSearchFragment : Fragment() {
         }
 
         binding.home.setOnClickListener {
-//            if ("${binding.searchInputText.text}".isNotBlank()) {
-//                binding.searchInputText.setText("")
-//            } else {
-//                navController.navigate(DatabaseSearchFragmentDirections.actionToLoginFragment())
-//            }
-            navController.navigate(DatabaseSearchFragmentDirections.actionToLoginFragment())
+            val sharedPref = activity?.getSharedPreferences(
+                Constants.PREF_NAME, Context.MODE_PRIVATE
+            )
+
+            if (sharedPref != null) {
+                val editor = sharedPref.edit()
+                editor.putString(DatabaseSearchSalesFragment.KEY_SEARCH_BY_SALES, "")
+                editor.putString(DatabaseSearchSalesFragment.KEY_SEARCH_VALUE_SALES, "")
+                editor.apply()
+            }
+            binding.searchInputText.setText("")
         }
 
         binding.uploadDb.setOnClickListener {

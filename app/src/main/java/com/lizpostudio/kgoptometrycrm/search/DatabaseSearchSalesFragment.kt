@@ -97,13 +97,10 @@ class DatabaseSearchSalesFragment : Fragment() {
             ?.putString(
                 Constants.PREF_KEY_SEARCH_STATE, DatabaseSearchSalesFragment::class.java.name
             )?.apply()
-        requireActivity().onBackPressedDispatcher.addCallback(this) {
-            try {
+        requireActivity().onBackPressedDispatcher
+            .addCallback(this) {
                 findNavController().navigate(DatabaseSearchSalesFragmentDirections.actionToDatabaseSearch())
-            } catch (e: Exception) {
-                e.printStackTrace()
             }
-        }
     }
 
     private fun persistFBCompletedToStore() {
@@ -132,7 +129,6 @@ class DatabaseSearchSalesFragment : Fragment() {
             // editor.putLong("lastDeletedSynch", latestDeletedHistorySynched)
             editor.apply()
         }
-
     }
 
     override fun onPause() {
@@ -195,12 +191,17 @@ class DatabaseSearchSalesFragment : Fragment() {
         }
 
         binding.home.setOnClickListener {
-//            if ("${binding.searchInputText.text}".isNotBlank()) {
-//                binding.searchInputText.setText("")
-//            } else {
-//                navController.navigate(DatabaseSearchSalesFragmentDirections.actionToLogin())
-//            }
-            navController.navigate(DatabaseSearchSalesFragmentDirections.actionToLogin())
+            val sharedPref = activity?.getSharedPreferences(
+                Constants.PREF_NAME, Context.MODE_PRIVATE
+            )
+
+            if (sharedPref != null) {
+                val editor = sharedPref.edit()
+                editor.putString("searchBy", "")
+                editor.putString("searchValue", "")
+                editor.apply()
+            }
+            binding.searchInputText.setText("")
         }
 
         binding.uploadDb.setOnClickListener {
