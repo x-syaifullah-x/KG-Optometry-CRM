@@ -22,9 +22,9 @@
         </activity>
 
         <activity
+            android:name=".error.ErrorActivity"
             android:launchMode="singleInstance"
-            android:process=":app_error"
-            android:name=".error.ErrorActivity" />
+            android:process=":app_error" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

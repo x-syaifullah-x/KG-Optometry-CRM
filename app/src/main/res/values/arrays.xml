@@ -136,4 +136,10 @@
         <item>WP PUTRAJAYA</item>
         <item>WP LABUAN</item>
     </string-array>
+
+    <array name="aa">
+        <item>Day</item>
+        <item>Week</item>
+        <item>Month</item>
+    </array>
 </resources>

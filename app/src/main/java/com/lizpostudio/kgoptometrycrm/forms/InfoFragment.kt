@@ -23,7 +23,7 @@ import com.lizpostudio.kgoptometrycrm.PatientsViewModel
 import com.lizpostudio.kgoptometrycrm.PatientsViewModelFactory
 import com.lizpostudio.kgoptometrycrm.R
 import com.lizpostudio.kgoptometrycrm.constant.Constants
-import com.lizpostudio.kgoptometrycrm.database.Patients
+import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentInfoFormBinding
 import com.lizpostudio.kgoptometrycrm.utils.*
 import id.xxx.module.view.binding.ktx.viewBinding
@@ -51,11 +51,11 @@ class InfoFragment : Fragment() {
     private var recordID = 0L
     private var patientID = ""
     private var sectionEditDate = -1L
-    private var allSectionsList: List<Patients> = emptyList()
-    private var patientAllForms: List<Patients> = emptyList()
+    private var allSectionsList: List<PatientsEntity> = emptyList()
+    private var patientAllForms: List<PatientsEntity> = emptyList()
     private var patientRecordIDDublicate = -1L
 
-    private var currentForm = Patients()
+    private var currentForm = PatientsEntity()
     private var navigateFormName = ""
     private var navigateFormRecordID = -1L
 
@@ -307,7 +307,7 @@ class InfoFragment : Fragment() {
                 val screenDst = Resources.getSystem().displayMetrics.density
 
                 val sortedList = it.sortedBy { patientsForms -> patientsForms.dateOfSection }
-                val newList = mutableListOf<Patients>()
+                val newList = mutableListOf<PatientsEntity>()
 
                 for (section in orderOfSections) {
                     for (forms in sortedList) {
@@ -602,7 +602,7 @@ class InfoFragment : Fragment() {
     }
 
     @SuppressLint("SetTextI18n", "DefaultLocale")
-    private fun fillTheForm(patientForm: Patients) {
+    private fun fillTheForm(patientForm: PatientsEntity) {
 
         val extractData = patientForm.sectionData.split('|').toMutableList()
         //    Log.d(TAG, "extract data size before = ${extractData.size}")

@@ -30,7 +30,7 @@ import com.lizpostudio.kgoptometrycrm.PatientsViewModel
 import com.lizpostudio.kgoptometrycrm.PatientsViewModelFactory
 import com.lizpostudio.kgoptometrycrm.R
 import com.lizpostudio.kgoptometrycrm.constant.Constants
-import com.lizpostudio.kgoptometrycrm.database.Patients
+import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentDatabaseSearchBinding
 import com.lizpostudio.kgoptometrycrm.forms.InfoFragment
 import com.lizpostudio.kgoptometrycrm.utils.*
@@ -71,7 +71,7 @@ class DatabaseSearchFragment : Fragment() {
     }
 
     private val historyUpdateList = mutableListOf<Long>()
-    private val recordsToBeInserted = mutableListOf<Patients>()
+    private val recordsToBeInserted = mutableListOf<PatientsEntity>()
 
     private var isAdmin = false
 
@@ -80,10 +80,10 @@ class DatabaseSearchFragment : Fragment() {
 
     private val binding by viewBinding<FragmentDatabaseSearchBinding>()
 
-    private val allInfoForms = mutableListOf<Patients>()
+    private val allInfoForms = mutableListOf<PatientsEntity>()
 
     // recycler adapter reference list
-    private val recyclerList = mutableListOf<Patients>()
+    private val recyclerList = mutableListOf<PatientsEntity>()
     private val recyclerAdapter = PatientsListAdapter(recyclerList)
 
     private var shareText = ""
@@ -599,7 +599,7 @@ class DatabaseSearchFragment : Fragment() {
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    private fun updateRecyclerView(newList: List<Patients>) {
+    private fun updateRecyclerView(newList: List<PatientsEntity>) {
         binding.foundItemsText.text = resources
             .getString(R.string.entries_found_in_database, newList.size.toString())
         recyclerList.clear()

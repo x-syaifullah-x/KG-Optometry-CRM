@@ -1,10 +1,12 @@
 package com.lizpostudio.kgoptometrycrm.export
 
 import android.os.Parcelable
-import com.lizpostudio.kgoptometrycrm.database.Patients
+import androidx.annotation.Keep
+import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
+@Keep
 data class ExportModel(
     val recordID: Long,
     val patientName: String,
@@ -28,7 +30,7 @@ data class ExportModel(
 
     companion object {
 
-        fun Patients.toPrintModel(remarksPrint: String): ExportModel {
+        fun PatientsEntity.toPrintModel(remarksPrint: String): ExportModel {
             val extractData = sectionData.split("|")
 
             val sphRight = try {

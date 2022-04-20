@@ -3,8 +3,8 @@ package com.lizpostudio.kgoptometrycrm
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.lizpostudio.kgoptometrycrm.database.PatientRepository
-import com.lizpostudio.kgoptometrycrm.database.PractitionerRepository
+import com.lizpostudio.kgoptometrycrm.data.repository.PatientRepository
+import com.lizpostudio.kgoptometrycrm.data.repository.PractitionerRepository
 
 class PatientsViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
 
@@ -14,11 +14,6 @@ class PatientsViewModelFactory(private val context: Context) : ViewModelProvider
             return PatientsViewModel(
                 PatientRepository.getInstance(context),
                 PractitionerRepository.getInstance(context)
-            ) as T
-        } else if (modelClass.isAssignableFrom(ProductViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return ProductViewModel(
-                PatientRepository.getInstance(context),
             ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")

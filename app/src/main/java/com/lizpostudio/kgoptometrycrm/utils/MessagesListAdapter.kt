@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.lizpostudio.kgoptometrycrm.databinding.ItemMessageBinding
-import com.lizpostudio.kgoptometrycrm.firebase.KGMessage
+import com.lizpostudio.kgoptometrycrm.data.source.remote.firebase.KGMessage
 
 
 class MessagesListAdapter : ListAdapter<KGMessage, MessagesListAdapter.ViewHolder>(MessageItemDiffCallback()){

@@ -8,21 +8,11 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import com.lizpostudio.kgoptometrycrm.constant.Constants
 
-
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-//        val storage = Firebase.storage
-//        storage.reference.listAll().addOnCompleteListener {
-//            it.result.items.forEach {
-//                Log.i("path",it.path)
-//                Log.i("bucket",it.bucket)
-//                Log.i("dda",it.name)
-//            }
-//        }
     }
 
     override fun onDestroy() {

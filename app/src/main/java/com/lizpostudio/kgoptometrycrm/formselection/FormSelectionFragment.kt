@@ -20,7 +20,7 @@ import com.lizpostudio.kgoptometrycrm.PatientsViewModel
 import com.lizpostudio.kgoptometrycrm.PatientsViewModelFactory
 import com.lizpostudio.kgoptometrycrm.R
 import com.lizpostudio.kgoptometrycrm.constant.Constants
-import com.lizpostudio.kgoptometrycrm.database.Patients
+import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentFormSelectionBinding
 import com.lizpostudio.kgoptometrycrm.search.DatabaseSearchSalesFragment
 import com.lizpostudio.kgoptometrycrm.utils.FormsListAdapter
@@ -37,14 +37,14 @@ class FormSelectionFragment : Fragment() {
     }
 
     private var isAdmin = false
-    private val patientInfoForm = Patients()
+    private val patientInfoForm = PatientsEntity()
 
     private var allowSync = true
     private var syncHistoryStart = 0L
     private var latestDataSynched = 0L
 
     private val historyUpdateList = mutableListOf<Long>()
-    private val recordsToBeInserted = mutableListOf<Patients>()
+    private val recordsToBeInserted = mutableListOf<PatientsEntity>()
 
     private val recyclerAdapter = FormsListAdapter()
     private val binding by viewBinding<FragmentFormSelectionBinding>()
@@ -53,7 +53,7 @@ class FormSelectionFragment : Fragment() {
         PatientsViewModelFactory(requireContext())
     }
 
-    private val allPatientForms = mutableListOf<Patients>()
+    private val allPatientForms = mutableListOf<PatientsEntity>()
     private var viewOnlyMode = false
 
     private val args by navArgs<FormSelectionFragmentArgs>()
@@ -162,7 +162,7 @@ class FormSelectionFragment : Fragment() {
                     val sortedForms = patientForms.sortedBy { forms -> forms.dateOfSection }
 
                     val orderOfSections = listOf(*resources.getStringArray(R.array.forms_order))
-                    val newList = mutableListOf<Patients>()
+                    val newList = mutableListOf<PatientsEntity>()
 
                     for (section in orderOfSections) {
                         for (forms in sortedForms) {
@@ -443,7 +443,7 @@ class FormSelectionFragment : Fragment() {
         return binding.root
     }
 
-    private fun navigateToSelectedForm(p: Patients) {
+    private fun navigateToSelectedForm(p: PatientsEntity) {
         when (p.sectionName) {
             resources.getString(R.string.info_form_caption) ->
                 findNavController().navigate(

@@ -25,10 +25,9 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.lizpostudio.kgoptometrycrm.PatientsViewModel
 import com.lizpostudio.kgoptometrycrm.PatientsViewModelFactory
-import com.lizpostudio.kgoptometrycrm.ProductViewModel
 import com.lizpostudio.kgoptometrycrm.R
 import com.lizpostudio.kgoptometrycrm.constant.Constants
-import com.lizpostudio.kgoptometrycrm.database.Patients
+import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentTargetCopyBinding
 import com.lizpostudio.kgoptometrycrm.forms.InfoFragment
 import com.lizpostudio.kgoptometrycrm.search.DatabaseSearchFragmentDirections
@@ -71,7 +70,7 @@ class TargetCopyFragment : Fragment() {
     }
 
     private val historyUpdateList = mutableListOf<Long>()
-    private val recordsToBeInserted = mutableListOf<Patients>()
+    private val recordsToBeInserted = mutableListOf<PatientsEntity>()
 
     private var isAdmin = false
 
@@ -80,10 +79,10 @@ class TargetCopyFragment : Fragment() {
 
     private val binding by viewBinding<FragmentTargetCopyBinding>()
 
-    private val allInfoForms = mutableListOf<Patients>()
+    private val allInfoForms = mutableListOf<PatientsEntity>()
 
     // recycler adapter reference list
-    private val recyclerList = mutableListOf<Patients>()
+    private val recyclerList = mutableListOf<PatientsEntity>()
     private val recyclerAdapter = PatientsListAdapter(recyclerList)
 
     private var shareText = ""
@@ -96,10 +95,6 @@ class TargetCopyFragment : Fragment() {
     private var isfetchedFromFirebaseCompleted = false
 
     private val args by navArgs<TargetCopyFragmentArgs>()
-
-    private val productViewModel by viewModels<ProductViewModel> {
-        PatientsViewModelFactory(requireContext())
-    }
 
     private fun navigateBack(patientID: String) {
 
@@ -682,7 +677,7 @@ class TargetCopyFragment : Fragment() {
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    private fun updateRecyclerView(newList: List<Patients>) {
+    private fun updateRecyclerView(newList: List<PatientsEntity>) {
         binding.foundItemsText.text = resources
             .getString(R.string.entries_found_in_database, newList.size.toString())
         recyclerList.clear()

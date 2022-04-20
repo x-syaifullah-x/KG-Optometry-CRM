@@ -2,47 +2,47 @@ package com.lizpostudio.kgoptometrycrm.utils
 
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
-import com.lizpostudio.kgoptometrycrm.database.Patients
-import com.lizpostudio.kgoptometrycrm.firebase.KGMessage
+import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
+import com.lizpostudio.kgoptometrycrm.data.source.remote.firebase.KGMessage
 
 
 @BindingAdapter("patientName")
-fun TextView.setPatientName(item: Patients?) {
+fun TextView.setPatientName(item: PatientsEntity?) {
     item?.let {
         text = item.patientName
     }
 }
 
 @BindingAdapter("patientID")
-fun TextView.setPatientID(item: Patients?) {
+fun TextView.setPatientID(item: PatientsEntity?) {
     item?.let {
         text = item.patientID
     }
 }
 
 @BindingAdapter("address")
-fun TextView.setAddress(item: Patients?) {
+fun TextView.setAddress(item: PatientsEntity?) {
     item?.let {
         text = item.address
     }
 }
 
 @BindingAdapter("phone")
-fun TextView.setPhone(item: Patients?) {
+fun TextView.setPhone(item: PatientsEntity?) {
     item?.let {
         text = item.phone
     }
 }
 
 @BindingAdapter("familyCode")
-fun TextView.setFamilyCode(item: Patients?) {
+fun TextView.setFamilyCode(item: PatientsEntity?) {
     item?.let {
         text = item.familyCode
     }
 }
 
 @BindingAdapter("sectionName")
-fun TextView.setSectionName(item: Patients?) {
+fun TextView.setSectionName(item: PatientsEntity?) {
     item?.let {
         text = item.sectionName
     }
@@ -56,7 +56,7 @@ fun TextView.setSectionRemark(item: Patients?) {
 }*/
 
 @BindingAdapter("sectionDate")
-fun TextView.setSectionDate(item: Patients?) {
+fun TextView.setSectionDate(item: PatientsEntity?) {
     item?.let {
         if (item.dateOfSection > 0L)
         text = convertLongToDDMMYY(item.dateOfSection)
@@ -64,7 +64,7 @@ fun TextView.setSectionDate(item: Patients?) {
 }
 
 @BindingAdapter("patientIC")
-fun TextView.setPatientIC(item: Patients?) {
+fun TextView.setPatientIC(item: PatientsEntity?) {
     item?.let {
         text = item.patientIC
     }

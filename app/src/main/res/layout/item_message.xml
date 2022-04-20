@@ -6,7 +6,7 @@
     <data>
         <variable
             name="kgmessages"
-            type="com.lizpostudio.kgoptometrycrm.firebase.KGMessage" />
+            type="com.lizpostudio.kgoptometrycrm.data.source.remote.firebase.KGMessage" />
 
     </data>
 

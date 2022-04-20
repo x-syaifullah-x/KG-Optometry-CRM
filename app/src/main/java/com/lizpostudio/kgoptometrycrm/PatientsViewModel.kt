@@ -9,7 +9,11 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.StorageReference
 import com.lizpostudio.kgoptometrycrm.constant.Constants
-import com.lizpostudio.kgoptometrycrm.database.*
+import com.lizpostudio.kgoptometrycrm.data.repository.PatientRepository
+import com.lizpostudio.kgoptometrycrm.data.repository.PractitionerRepository
+import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
+import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PractitionerEntity
+import com.lizpostudio.kgoptometrycrm.data.source.remote.FBRecords
 import com.lizpostudio.kgoptometrycrm.utils.convertFBRecordToPatients
 import com.lizpostudio.kgoptometrycrm.utils.convertFormToFBRecord
 import com.lizpostudio.kgoptometrycrm.utils.convertLongToDDMMYYHRSMIN
@@ -67,28 +71,28 @@ class PatientsViewModel(
         get() = _deletedDatabase
 
     //   use to check if this id is already used
-    private val _allFormsBySectionName = MutableLiveData<List<Patients>>()
-    val allFormsBySectionName: LiveData<List<Patients>>
+    private val _allFormsBySectionName = MutableLiveData<List<PatientsEntity>>()
+    val allFormsBySectionName: LiveData<List<PatientsEntity>>
         get() = _allFormsBySectionName
 
-    private val _refractionForms = MutableLiveData<List<Patients>>()
-    val refractionForms: LiveData<List<Patients>>
+    private val _refractionForms = MutableLiveData<List<PatientsEntity>>()
+    val refractionForms: LiveData<List<PatientsEntity>>
         get() = _refractionForms
 
-    private val _cashOrder = MutableLiveData<List<Patients>>()
-    val cashOrder: LiveData<List<Patients>>
+    private val _cashOrder = MutableLiveData<List<PatientsEntity>>()
+    val cashOrder: LiveData<List<PatientsEntity>>
         get() = _cashOrder
 
-    private val _searchDateForms = MutableLiveData<List<Patients>>()
-    val searchDateForms: LiveData<List<Patients>>
+    private val _searchDateForms = MutableLiveData<List<PatientsEntity>>()
+    val searchDateForms: LiveData<List<PatientsEntity>>
         get() = _searchDateForms
 
-    private val _patientForm = MutableLiveData<Patients>()
-    val patientForm: LiveData<Patients>
+    private val _patientForm = MutableLiveData<PatientsEntity>()
+    val patientForm: LiveData<PatientsEntity>
         get() = _patientForm
 
-    private val _patientInitForms = MutableLiveData<List<Patients>>()
-    val patientInitForms: LiveData<List<Patients>>
+    private val _patientInitForms = MutableLiveData<List<PatientsEntity>>()
+    val patientInitForms: LiveData<List<PatientsEntity>>
         get() = _patientInitForms
 
     private val _navTrigger = MutableLiveData<String>()
@@ -99,8 +103,8 @@ class PatientsViewModel(
     val recordsInserted: LiveData<Boolean>
         get() = _recordsInserted
 
-    private val _formAdded = MutableLiveData<Patients>()
-    val formAdded: LiveData<Patients>
+    private val _formAdded = MutableLiveData<PatientsEntity>()
+    val formAdded: LiveData<PatientsEntity>
         get() = _formAdded
 
     private val _patientAdded = MutableLiveData<Long>()
@@ -117,8 +121,8 @@ class PatientsViewModel(
 
     // === FIREBASE OBSERVERS ===
 
-    private val _allFirebaseDB = MutableLiveData<List<Patients>>()
-    val allFirebaseDB: LiveData<List<Patients>>
+    private val _allFirebaseDB = MutableLiveData<List<PatientsEntity>>()
+    val allFirebaseDB: LiveData<List<PatientsEntity>>
         get() = _allFirebaseDB
 
 
@@ -132,8 +136,8 @@ class PatientsViewModel(
         get() = _deletedFBRecords
 
     // Live data for forms
-    private val _patientFireForm = MutableLiveData<Patients>()
-    val patientFireForm: LiveData<Patients>
+    private val _patientFireForm = MutableLiveData<PatientsEntity>()
+    val patientFireForm: LiveData<PatientsEntity>
         get() = _patientFireForm
 
     private val _noPatientFound = MutableLiveData<Long>()
@@ -152,7 +156,7 @@ class PatientsViewModel(
         // todo - rework for smaller portions queries
         Log.d(Constants.TAG, "Launching get request")
         if (repository.recordsReference != null) {
-            val recordsList = mutableListOf<Patients>()
+            val recordsList = mutableListOf<PatientsEntity>()
             repository.recordsReference.limitToFirst(30000).get().addOnCompleteListener { task ->
                 Log.d(Constants.TAG, "Request for first completed")
                 if (task.isSuccessful) {
@@ -316,14 +320,14 @@ class PatientsViewModel(
         listenToChange = false
     }
 
-    fun submitPatientToFirebase(recordID: String, patient: Patients) {
+    fun submitPatientToFirebase(recordID: String, patient: PatientsEntity) {
 //        removeFBListener()
         repository.recordsReference?.child(recordID)?.setValue(convertFormToFBRecord(patient))
         val timeKey = System.currentTimeMillis().toString()
         repository.historyReference?.child(timeKey)?.setValue(recordID)
     }
 
-    fun submitListOfPatientsToFB(patients: List<Patients>) {
+    fun submitListOfPatientsToFB(patients: List<PatientsEntity>) {
         //     removeFBListener()
         patients.forEach {
             repository.recordsReference!!.child(it.recordID.toString())
@@ -367,7 +371,7 @@ class PatientsViewModel(
 
     fun createNewRecord(sectionName: String) {
         viewModelScope.launch {
-            val newRecord = Patients()
+            val newRecord = PatientsEntity()
             newRecord.patientID = generateID(repository)
             newRecord.sectionName = sectionName
             newRecord.dateOfSection = System.currentTimeMillis()
@@ -375,9 +379,9 @@ class PatientsViewModel(
         }
     }
 
-    fun createNewRecord(patient: Patients, sectionName: String) {
+    fun createNewRecord(patient: PatientsEntity, sectionName: String) {
         viewModelScope.launch {
-            val newRecord = Patients()
+            val newRecord = PatientsEntity()
             newRecord.patientID = patient.patientID
             newRecord.patientName = patient.patientName
             newRecord.sectionName = sectionName
@@ -392,13 +396,13 @@ class PatientsViewModel(
         }
     }
 
-    fun deleteRecord(patientForm: Patients) {
+    fun deleteRecord(patientForm: PatientsEntity) {
         viewModelScope.launch {
             _recordDeleted.value = repository.deleteRecord(patientForm)
         }
     }
 
-    fun deleteListOfRecords(patientForms: List<Patients>) {
+    fun deleteListOfRecords(patientForms: List<PatientsEntity>) {
         viewModelScope.launch {
             _recordDeleted.value = repository.deleteListOfRecords(patientForms)
         }
@@ -446,34 +450,34 @@ class PatientsViewModel(
         }
     }
 
-    private fun addPatient(patientForm: Patients) {
+    private fun addPatient(patientForm: PatientsEntity) {
         viewModelScope.launch {
             _patientAdded.value =
                 repository.addPatient(patientForm)
         }
     }
 
-    private fun addForm(patientForm: Patients) {
+    private fun addForm(patientForm: PatientsEntity) {
         viewModelScope.launch {
             _formAdded.value = repository.addForm(patientForm)
         }
     }
 
-    fun insertRecord(patientForm: Patients) {
+    fun insertRecord(patientForm: PatientsEntity) {
         viewModelScope.launch {
             _recordsInserted.value =
                 repository.insertForm(patientForm)
         }
     }
 
-    fun insertListOfRecords(patientForms: List<Patients>) {
+    fun insertListOfRecords(patientForms: List<PatientsEntity>) {
         viewModelScope.launch {
             _recordsInserted.value =
                 repository.insertListOfForms(patientForms)
         }
     }
 
-    fun updateRecord(patientForm: Patients, navOption: String) {
+    fun updateRecord(patientForm: PatientsEntity, navOption: String) {
         viewModelScope.launch {
             if (repository.updateRecord(patientForm)) {
                 _navTrigger.value = navOption
@@ -481,13 +485,13 @@ class PatientsViewModel(
         }
     }
 
-    fun updateListOfRecords(patientForms: List<Patients>) {
+    fun updateListOfRecords(patientForms: List<PatientsEntity>) {
         viewModelScope.launch {
             _recordsUpdated.value = repository.updateListOfRecords(patientForms)
         }
     }
 
-    suspend fun insertRecords(patientForms: List<Patients>): Boolean {
+    suspend fun insertRecords(patientForms: List<PatientsEntity>): Boolean {
         return repository.insertListOfForms(patientForms)
     }
 

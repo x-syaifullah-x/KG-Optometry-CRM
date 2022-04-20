@@ -1,2 +1,2 @@
-include ':app'
 rootProject.name = "KG Optometry CRM"
+include ":app"

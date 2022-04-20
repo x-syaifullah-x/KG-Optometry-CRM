@@ -3,10 +3,9 @@ package com.lizpostudio.kgoptometrycrm.utils
 import android.annotation.SuppressLint
 import android.graphics.PointF
 import android.util.Log
-import com.lizpostudio.kgoptometrycrm.constant.Constants
-import com.lizpostudio.kgoptometrycrm.database.FBRecords
-import com.lizpostudio.kgoptometrycrm.database.PatientRepository
-import com.lizpostudio.kgoptometrycrm.database.Patients
+import com.lizpostudio.kgoptometrycrm.data.source.remote.FBRecords
+import com.lizpostudio.kgoptometrycrm.data.repository.PatientRepository
+import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -14,10 +13,10 @@ import kotlin.random.Random
 
 private const val TAG = "LogTrace"
 private const val ONE_DAY = 24 * 3600 * 1000L
-fun convertFBRecordToPatients(f: FBRecords, key: Long): Patients {
+fun convertFBRecordToPatients(f: FBRecords, key: Long): PatientsEntity {
     val aa = f.sectionData.split("|")
 
-    return Patients(
+    return PatientsEntity(
         key,
         patientID = f.patientID,
         patientIC = f.patientIC,
@@ -72,7 +71,7 @@ fun convertFBRecordToPatients(f: FBRecords, key: Long): Patients {
     )
 }
 
-fun convertFormToFBRecord(p: Patients): FBRecords {
+fun convertFormToFBRecord(p: PatientsEntity): FBRecords {
     return FBRecords(
         address = p.address,
         dateOfSection = p.dateOfSection.toString(),

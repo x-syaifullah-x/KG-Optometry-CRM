@@ -4,22 +4,22 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
-import com.lizpostudio.kgoptometrycrm.database.Patients
+import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
 import com.lizpostudio.kgoptometrycrm.databinding.ListItemReportSalesBinding
 
-class PatientsSalesListAdapter(private val patients: List<Patients>) :
+class PatientsSalesListAdapter(private val patients: List<PatientsEntity>) :
     RecyclerView.Adapter<PatientsSalesListAdapter.ViewHolder>() {
 
     init {
         setHasStableIds(true)
     }
 
-    var patientSelected = MutableLiveData<Patients>()
+    var patientSelected = MutableLiveData<PatientsEntity>()
 
     class ViewHolder private constructor(val binding: ListItemReportSalesBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: Patients) {
+        fun bind(item: PatientsEntity) {
             binding.patient = item
             val name = item.patientName.split(" - ")[0]
             binding.sectionName.text = name

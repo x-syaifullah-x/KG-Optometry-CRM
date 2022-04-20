@@ -20,12 +20,24 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
-  # Add this global rule
-    -keepattributes Signature
+# Add this global rule
+#-keepattributes Signature
 
-    # This rule will properly ProGuard all the model classes in
-    # the package com.yourcompany.models. Modify to fit the structure
-    # of your app.
- #   -keepclassmembers class com.lizpostudio.kgoptometrycrm** {
- #    *;
- # }
+# This rule will properly ProGuard all the model classes in
+# the package com.yourcompany.models. Modify to fit the structure
+# of your app.
+#   -keepclassmembers class com.lizpostudio.kgoptometrycrm** {
+#    *;
+# }
+
+# Kotlin
+-assumenosideeffects class kotlin.jvm.internal.Intrinsics {
+	public static void check*(...);
+	public static void throw*(...);
+}
+
+# Excessive obfuscation
+-repackageclasses "com"
+-allowaccessmodification
+
+-keepclassmembers class com.lizpostudio.kgoptometrycrm.databinding.** {*;}

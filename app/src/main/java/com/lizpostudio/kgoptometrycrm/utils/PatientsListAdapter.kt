@@ -4,29 +4,29 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
-import com.lizpostudio.kgoptometrycrm.database.AppDB
-import com.lizpostudio.kgoptometrycrm.database.Patients
+import com.lizpostudio.kgoptometrycrm.data.source.local.AppDB
+import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
 import com.lizpostudio.kgoptometrycrm.databinding.ListItemReportBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class PatientsListAdapter(private val patients: List<Patients>) :
+class PatientsListAdapter(private val patients: List<PatientsEntity>) :
     RecyclerView.Adapter<PatientsListAdapter.ViewHolder>() {
 
     init {
         setHasStableIds(true)
     }
 
-    var patientSelected = MutableLiveData<Patients>()
+    var patientSelected = MutableLiveData<PatientsEntity>()
 
     private var db: AppDB? = null
 
     class ViewHolder private constructor(val binding: ListItemReportBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: Patients) {
+        fun bind(item: PatientsEntity) {
             binding.patients = item
             binding.executePendingBindings()
         }
@@ -48,7 +48,7 @@ class PatientsListAdapter(private val patients: List<Patients>) :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         scopeIO.launch {
-            var patientItem: Patients? = patients[position]
+            var patientItem: PatientsEntity? = patients[position]
             patientItem ?: return@launch
             if (patientItem.sectionName == "CASH ORDER" || patientItem.sectionName == "FINAL PRESCRIPTION") {
                 patientItem = db?.patientsDao?.getInfoPatient(patientItem.patientID)

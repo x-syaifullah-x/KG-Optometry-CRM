@@ -1,0 +1,82 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "id.xxx.module",
+    "module": "handle-crash",
+    "version": "0.0.100",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.2"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk8",
+          "version": {
+            "requires": "1.6.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "handle-crash-0.0.100.jar",
+          "url": "handle-crash-0.0.100.jar",
+          "size": 7895,
+          "sha512": "482915f843ad5783f8b0c74a80ce15204c04a66f41b935709949ef5b48c579d4be3523b5df62ee5faa8a0c2d7207f78eeda7b86c90026a9cc9229b1e96e25ebb",
+          "sha256": "14028d657f5928837787aa7c8fed32c890ef91a288e3e096839d834ba6551df0",
+          "sha1": "969a163af3c3eab217d9783d3f37644687ffbfbe",
+          "md5": "df0de1fca03459a343e3a9d092792137"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk8",
+          "version": {
+            "requires": "1.6.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "handle-crash-0.0.100.jar",
+          "url": "handle-crash-0.0.100.jar",
+          "size": 7895,
+          "sha512": "482915f843ad5783f8b0c74a80ce15204c04a66f41b935709949ef5b48c579d4be3523b5df62ee5faa8a0c2d7207f78eeda7b86c90026a9cc9229b1e96e25ebb",
+          "sha256": "14028d657f5928837787aa7c8fed32c890ef91a288e3e096839d834ba6551df0",
+          "sha1": "969a163af3c3eab217d9783d3f37644687ffbfbe",
+          "md5": "df0de1fca03459a343e3a9d092792137"
+        }
+      ]
+    }
+  ]
+}

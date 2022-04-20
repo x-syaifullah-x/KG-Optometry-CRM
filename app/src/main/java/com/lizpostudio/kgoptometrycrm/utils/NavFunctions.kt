@@ -1,6 +1,6 @@
 package com.lizpostudio.kgoptometrycrm.utils
 
-import com.lizpostudio.kgoptometrycrm.database.Patients
+import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
 
 fun makeShortSectionName(sectionName: String): String {
 
@@ -20,7 +20,7 @@ fun makeShortSectionName(sectionName: String): String {
     }
 }
 
-fun getNavigationRecordIDs(forms: List<Patients>, recordID: Long, orderOfSections: List<String>):
+fun getNavigationRecordIDs(forms: List<PatientsEntity>, recordID: Long, orderOfSections: List<String>):
         Pair<Pair<String, Long>, Pair<String, Long>> {
     val sortedList = forms.sortedBy { it.dateOfSection }
     var nextRec = 0L

@@ -15,7 +15,6 @@ import android.widget.PopupWindow
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.navigation.fragment.findNavController
@@ -31,9 +30,9 @@ import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.lizpostudio.kgoptometrycrm.constant.Constants
-import com.lizpostudio.kgoptometrycrm.database.PatientRepository
+import com.lizpostudio.kgoptometrycrm.data.repository.PatientRepository
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentLoginBinding
-import com.lizpostudio.kgoptometrycrm.firebase.KGMessage
+import com.lizpostudio.kgoptometrycrm.data.source.remote.firebase.KGMessage
 import com.lizpostudio.kgoptometrycrm.search.DatabaseSearchSalesFragment
 import com.lizpostudio.kgoptometrycrm.utils.MessagesListAdapter
 import com.lizpostudio.kgoptometrycrm.utils.convertLongToDDKey
@@ -293,7 +292,7 @@ private fun updateUIOnSuccess() {
             Toast.makeText(context, " Navigate to Admin Settings Screen", Toast.LENGTH_SHORT).show()
         }
 
-        listOfTrustedDevices.observe(viewLifecycleOwner, {trusted->
+        listOfTrustedDevices.observe(viewLifecycleOwner) { trusted ->
             trusted?.let { trustedList ->
                 var foundInTrusted = false
                 if (trustedList.isNotEmpty()) {
@@ -314,11 +313,11 @@ private fun updateUIOnSuccess() {
                 if (sharedPref != null) {
                     val editor = sharedPref.edit()
                     editor.putBoolean("trusted_device", trustedDevice)
-           //         Log.d(TAG, "Saaving new value of trusted device = $trustedDevice")
+                    //         Log.d(TAG, "Saaving new value of trusted device = $trustedDevice")
                     editor.apply()
                 }
             }
-        })
+        }
 
         return binding.root
     }

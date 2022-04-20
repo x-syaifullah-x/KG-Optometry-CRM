@@ -7,7 +7,7 @@
 
         <variable
             name="patients"
-            type="com.lizpostudio.kgoptometrycrm.database.Patients" />
+            type="com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity" />
 
     </data>
 
@@ -67,6 +67,5 @@
             app:layout_constraintTop_toTopOf="parent"
             app:sectionDate="@{patients}"
             tools:text="05/10/2020" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

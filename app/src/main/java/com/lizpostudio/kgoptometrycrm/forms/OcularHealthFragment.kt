@@ -27,7 +27,7 @@ import com.lizpostudio.kgoptometrycrm.PatientsViewModel
 import com.lizpostudio.kgoptometrycrm.PatientsViewModelFactory
 import com.lizpostudio.kgoptometrycrm.R
 import com.lizpostudio.kgoptometrycrm.constant.Constants
-import com.lizpostudio.kgoptometrycrm.database.Patients
+import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentOcularHealthBinding
 import com.lizpostudio.kgoptometrycrm.utils.*
 
@@ -61,7 +61,7 @@ class OcularHealthFragment : Fragment() {
 
     private var sectionEditDate = -1L
 
-    private var currentForm = Patients()
+    private var currentForm = PatientsEntity()
     private var navigateFormName = ""
     private var navigateFormRecordID = -1L
 
@@ -473,7 +473,7 @@ class OcularHealthFragment : Fragment() {
                 val screenDst = Resources.getSystem().displayMetrics.density
 
                 val sortedList = it.sortedBy { patientsForms -> patientsForms.dateOfSection }
-                val newList = mutableListOf<Patients>()
+                val newList = mutableListOf<PatientsEntity>()
 
                 for (section in orderOfSections) {
                     for (forms in sortedList) {
@@ -492,7 +492,7 @@ class OcularHealthFragment : Fragment() {
                     .toSet()
 
                 /* FOR BOTTOM NAVIGATION */
-                val mapSectionName = mutableMapOf<String, MutableList<Patients>>()
+                val mapSectionName = mutableMapOf<String, MutableList<PatientsEntity>>()
                 newList.forEach { patient ->
                     val key = mapSectionName[patient.sectionName]
                     if (key == null) {
@@ -950,7 +950,7 @@ class OcularHealthFragment : Fragment() {
     }
 
     @SuppressLint("SetTextI18n")
-    private fun fillTheForm(patientForm: Patients) {
+    private fun fillTheForm(patientForm: PatientsEntity) {
 
         val extractData = patientForm.sectionData.split('|').toMutableList()
 //      Log.d(TAG, "extract data size before = ${extractData.size}")

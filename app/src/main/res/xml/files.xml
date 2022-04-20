@@ -3,38 +3,4 @@
     <files-path
         name="autoref_photos"
         path="." />
-
-    <!-- INTERNAL START -->
-    <!-- /data/data/package_name/files == Context.getFilesDir()-->
-    <!--    <files-path-->
-    <!--        name="files"-->
-    <!--        path="." />-->
-
-    <!--     /data/data/package_name/cache  == Context.getCacheDir() -->
-    <cache-path
-        name="cache"
-        path="." />
-    <!-- INTERNAL END -->
-
-    <!-- EXTERNAL START -->
-    <!-- /storage/emulated/0 == Environment.getExternalStorageDirectory() -->
-    <!--    <external-path-->
-    <!--        name="external"-->
-    <!--        path="." />-->
-
-    <!--  /storage/emulated/0/Android/data/package_name/files == Context.getExternalFilesDir(null) -->
-    <!--    <external-files-path-->
-    <!--        name="external_files"-->
-    <!--        path="." />-->
-
-    <!-- /storage/emulated/0/Android/data/package_name/cache == Context.getExternalCacheDir() -->
-    <!--    <external-cache-path-->
-    <!--        name="external_cache"-->
-    <!--        path="." />-->
-
-    <!--  /storage/emulated/0/Android/media/package_name == Context.getExternalMediaDirs() -->
-    <!--    <external-media-path-->
-    <!--        name="external_media"-->
-    <!--        path="." />-->
-    <!-- EXTERNAL END -->
 </paths>
