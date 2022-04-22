@@ -30,8 +30,7 @@ import com.lizpostudio.kgoptometrycrm.constant.Constants
 import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentTargetCopyBinding
 import com.lizpostudio.kgoptometrycrm.forms.InfoFragment
-import com.lizpostudio.kgoptometrycrm.search.DatabaseSearchFragmentDirections
-import com.lizpostudio.kgoptometrycrm.search.SaveSearch
+import com.lizpostudio.kgoptometrycrm.search.SearchSave
 import com.lizpostudio.kgoptometrycrm.utils.*
 import id.xxx.module.view.binding.ktx.viewBinding
 import kotlinx.coroutines.Dispatchers
@@ -74,7 +73,7 @@ class TargetCopyFragment : Fragment() {
 
     private var isAdmin = false
 
-    private var searchValues = SaveSearch()
+    private var searchValues = SearchSave()
     private var filterByFamily = false
 
     private val binding by viewBinding<FragmentTargetCopyBinding>()
@@ -170,7 +169,7 @@ class TargetCopyFragment : Fragment() {
 
         ArrayAdapter.createFromResource(
             requireContext(),
-            R.array.database_search_choices,
+            R.array.search_customer_choices,
             android.R.layout.simple_spinner_item
         ).also { adapter ->
             spinner.adapter = adapter
@@ -485,15 +484,15 @@ class TargetCopyFragment : Fragment() {
         }
 
         //  add patient functionality
-        patientViewModel.patientAdded.observe(viewLifecycleOwner) { newRecordID ->
-            newRecordID?.let {
-                Constants.setCreatedFrom(requireContext())
-                navController.navigate(
-                    DatabaseSearchFragmentDirections
-                        .actionDatabaseSearchFragmentToInfoFragment(newRecordID)
-                )
-            }
-        }
+//        patientViewModel.patientAdded.observe(viewLifecycleOwner) { newRecordID ->
+//            newRecordID?.let {
+//                Constants.setCreatedFrom(requireContext())
+//                navController.navigate(
+//                    DatabaseSearchFragmentDirections
+//                        .actionDatabaseSearchFragmentToInfoFragment(newRecordID)
+//                )
+//            }
+//        }
 
 //        binding.createNewPatient.setOnClickListener {
 //            patientViewModel.createNewRecord(getString(R.string.info_form_caption))

@@ -31,16 +31,17 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.lizpostudio.kgoptometrycrm.constant.Constants
 import com.lizpostudio.kgoptometrycrm.data.repository.PatientRepository
-import com.lizpostudio.kgoptometrycrm.databinding.FragmentLoginBinding
 import com.lizpostudio.kgoptometrycrm.data.source.remote.firebase.KGMessage
-import com.lizpostudio.kgoptometrycrm.search.DatabaseSearchSalesFragment
+import com.lizpostudio.kgoptometrycrm.databinding.FragmentLoginBinding
+import com.lizpostudio.kgoptometrycrm.search.SearchCostumerFragment
+import com.lizpostudio.kgoptometrycrm.search.SearchSalesFragment
 import com.lizpostudio.kgoptometrycrm.utils.MessagesListAdapter
 import com.lizpostudio.kgoptometrycrm.utils.convertLongToDDKey
 import com.lizpostudio.kgoptometrycrm.utils.convertLongToDDMMYYHRSMIN
 import com.lizpostudio.kgoptometrycrm.utils.generateID
 import id.xxx.module.view.binding.ktx.viewBinding
 
-class LoginFragment :Fragment() {
+class LoginFragment : Fragment() {
 
     companion object {
         private const val RECORDS_CHILD = "records"
@@ -58,25 +59,28 @@ class LoginFragment :Fragment() {
     private lateinit var app: Application
     private var deviceCode = "NO"
     private var trustedDevice = false
-    private var listOfTrustedDevices  = MutableLiveData<List<String>>()
+    private var listOfTrustedDevices = MutableLiveData<List<String>>()
 
     private var userNameAuth = "Guest"
-    private var fireApp :FirebaseApp? = null
-//        Log.d(TAG, "fireApp: ${fireApp}")
-   private var  firebaseDatabase: FirebaseDatabase? = null
+    private var fireApp: FirebaseApp? = null
+
+    //        Log.d(TAG, "fireApp: ${fireApp}")
+    private var firebaseDatabase: FirebaseDatabase? = null
+
     //    Log.d(TAG, "database: ${database}")
-    private var messagesReference: DatabaseReference? =null
+    private var messagesReference: DatabaseReference? = null
 
     private var mMessageListener: ChildEventListener? = null
-    private  var msgListener:ValueEventListener? = null
+    private var msgListener: ValueEventListener? = null
 
- //   private var mAdapter: FirebaseRecyclerAdapter<Message, MessageViewHolder>? = null
+    //   private var mAdapter: FirebaseRecyclerAdapter<Message, MessageViewHolder>? = null
     private var mFirebaseUser: FirebaseUser? = null
     private var messagesLiveList = MutableLiveData<List<KGMessage>>()
-    private  var messagesList = mutableListOf<KGMessage>()
-//    private var messagesList = mutableListOf<KGMessage>()
+    private var messagesList = mutableListOf<KGMessage>()
+
+    //    private var messagesList = mutableListOf<KGMessage>()
     private val recyclerAdapter = MessagesListAdapter()
-    private var isAdmin  = MutableLiveData<Boolean>()
+    private var isAdmin = MutableLiveData<Boolean>()
 
     // Recycler View for Messages
 
@@ -86,26 +90,26 @@ class LoginFragment :Fragment() {
         AuthUI.IdpConfig.EmailBuilder().build()
     )
 
-private fun updateUIOnSuccess() {
+    private fun updateUIOnSuccess() {
 
-   userNameAuth = getUsernameFromEmail(mFirebaseUser!!.email)
+        userNameAuth = getUsernameFromEmail(mFirebaseUser!!.email)
 // if user logged in - launch listener
-   // Log.d(TAG, "Initialize Listener at SUCCESS LOGIN ACTIVITY")
-    initReadingMessages()
-    //  check if user is admin and save that to shared prefs.
-    //  clean-up admin rights in log-out
+        // Log.d(TAG, "Initialize Listener at SUCCESS LOGIN ACTIVITY")
+        initReadingMessages()
+        //  check if user is admin and save that to shared prefs.
+        //  clean-up admin rights in log-out
 
-    readSettingsFromFBAndSaveUserNameAndTypeToStore()
-    binding.loginLogoutButton.setImageResource(R.drawable.log_out_36)
-    binding.loginLogoutText.text = getString(R.string.logout)
-    binding.helloUserText.text = getString(R.string.hello_user, userNameAuth)
+        readSettingsFromFBAndSaveUserNameAndTypeToStore()
+        binding.loginLogoutButton.setImageResource(R.drawable.log_out_36)
+        binding.loginLogoutText.text = getString(R.string.logout)
+        binding.helloUserText.text = getString(R.string.hello_user, userNameAuth)
 
-    binding.editLoginName.visibility = View.GONE
-    binding.editPassword.visibility = View.GONE
-    binding.startButton.visibility = View.VISIBLE
-    binding.customersText.visibility = View.VISIBLE
-  //  Log.d(TAG, "user = ${mFirebaseUser?.email} === $mFirebaseUser")
-}
+        binding.editLoginName.visibility = View.GONE
+        binding.editPassword.visibility = View.GONE
+        binding.startButton.visibility = View.VISIBLE
+        binding.customersText.visibility = View.VISIBLE
+        //  Log.d(TAG, "user = ${mFirebaseUser?.email} === $mFirebaseUser")
+    }
 
 
     // [START auth_fui_result]
@@ -117,16 +121,16 @@ private fun updateUIOnSuccess() {
 
             if (resultCode == Activity.RESULT_OK) {
                 // Successfully signed in
-                 mFirebaseUser = FirebaseAuth.getInstance().currentUser
-               userNameAuth = mFirebaseUser?.displayName?:mFirebaseUser?.email?:"Guest"
+                mFirebaseUser = FirebaseAuth.getInstance().currentUser
+                userNameAuth = mFirebaseUser?.displayName ?: mFirebaseUser?.email ?: "Guest"
 // if user logged in - launch listener
-      //          Log.d(TAG, "Initialize Listener at SUCCESS LOGIN ACTIVITY")
+                //          Log.d(TAG, "Initialize Listener at SUCCESS LOGIN ACTIVITY")
                 initReadingMessages()
 
                 binding.loginLogoutButton.setImageResource(R.drawable.log_out_36)
                 binding.loginLogoutText.text = getString(R.string.logout)
                 binding.helloUserText.text = getString(R.string.hello_user, userNameAuth)
-   //             Log.d(TAG, "user = ${mFirebaseUser?.email} === $mFirebaseUser")
+                //             Log.d(TAG, "user = ${mFirebaseUser?.email} === $mFirebaseUser")
                 // ...
             } else {
 
@@ -141,7 +145,7 @@ private fun updateUIOnSuccess() {
 
 
     private fun signIn(email: String, password: String) {
-  //      Log.d(TAG, "signIn:$email")
+        //      Log.d(TAG, "signIn:$email")
 
         // Initialize Firebase Auth
         val auth = Firebase.auth
@@ -150,7 +154,7 @@ private fun updateUIOnSuccess() {
             .addOnCompleteListener(requireActivity()) { task ->
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
-             //       Log.d(TAG, "signInWithEmail:success")
+                    //       Log.d(TAG, "signInWithEmail:success")
                     mFirebaseUser = auth.currentUser
 
                     updateUIOnSuccess()
@@ -158,35 +162,36 @@ private fun updateUIOnSuccess() {
                 } else {
                     // If sign in fails, display a message to the user.
                     binding.helloUserText.text = getString(R.string.sign_in_failure)
-          //          Log.d(TAG, "signInWithEmail:failure", task.exception)
-                    Toast.makeText(requireContext(), "Authentication failed.", Toast.LENGTH_SHORT).show()
+                    //          Log.d(TAG, "signInWithEmail:failure", task.exception)
+                    Toast.makeText(requireContext(), "Authentication failed.", Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
         // [END sign_in_with_email]
     }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding.lifecycleOwner = this
 
         val navController = this.findNavController()
 
         app = requireNotNull(this.activity).application
 
-   /*     val dataSource = PatientsDatabase.getInstance(app).patientsDao
+        /*     val dataSource = PatientsDatabase.getInstance(app).patientsDao
 
 
-        val viewModelFactory = LoginViewModelFactory(dataSource, app)
-        val loginViewModel = ViewModelProvider(this, viewModelFactory).get(LoginViewModel::class.java)*/
+             val viewModelFactory = LoginViewModelFactory(dataSource, app)
+             val loginViewModel = ViewModelProvider(this, viewModelFactory).get(LoginViewModel::class.java)*/
         // binding.loginViewModel = loginViewModel
 
         cleanSearch()
 
         // =============== Check the User and sign in if null =================
 
-        fireApp =  FirebaseApp.initializeApp(requireContext())
+        fireApp = FirebaseApp.initializeApp(requireContext())
 //        Log.d(TAG, "fireApp: ${fireApp}")
         firebaseDatabase = fireApp?.let { Firebase.database(it) }
         //    Log.d(TAG, "database: ${database}")
@@ -195,10 +200,10 @@ private fun updateUIOnSuccess() {
 
         // ================  Check if Device is TRUSTED ===================
         checkTrustedDevice()
-         mFirebaseUser =FirebaseAuth.getInstance().currentUser
+        mFirebaseUser = FirebaseAuth.getInstance().currentUser
 
         if (mFirebaseUser != null) {
-                updateUIOnSuccess()
+            updateUIOnSuccess()
 
         } else {
             // No user is signed in
@@ -210,7 +215,7 @@ private fun updateUIOnSuccess() {
         }
 
         binding.loginLogoutButton.setOnClickListener {
-   //         Log.d(TAG, "login - logout clicked user = $mFirebaseUser")
+            //         Log.d(TAG, "login - logout clicked user = $mFirebaseUser")
             if (mFirebaseUser == null) { // log on user
                 val userEmail = binding.editLoginName.text.toString() + "@gmail.com"
                 val userPass = binding.editPassword.text.toString()
@@ -221,29 +226,29 @@ private fun updateUIOnSuccess() {
             } else { // log out user
                 // remove listeners and clean-up messages
 
-                if (msgListener !=null) {
+                if (msgListener != null) {
                     messagesReference!!.removeEventListener(msgListener!!)
-         //           Log.d(TAG, "REMOVE Listener at Log-out ")
+                    //           Log.d(TAG, "REMOVE Listener at Log-out ")
                 }
                 recyclerAdapter.submitList(emptyList())
                 recyclerAdapter.notifyDataSetChanged()
 
-          //      Log.d(TAG, "login -logout clicked start to KICK OUT user = $mFirebaseUser")
+                //      Log.d(TAG, "login -logout clicked start to KICK OUT user = $mFirebaseUser")
                 signOut()
                 mFirebaseUser = null
             }
         }
 
-  isAdmin.observe(viewLifecycleOwner,{ isAdmin ->
-      isAdmin?.let {
-          if (it) {
-              binding.settingsButton.visibility = View.VISIBLE
-          } else {
-              binding.settingsButton.visibility = View.GONE
-          }
-      }
+        isAdmin.observe(viewLifecycleOwner) { isAdmin ->
+            isAdmin?.let {
+                if (it) {
+                    binding.settingsButton.visibility = View.VISIBLE
+                } else {
+                    binding.settingsButton.visibility = View.GONE
+                }
+            }
 
-  })
+        }
 
 /*        binding.kgOptometryMainText.setOnClickListener {
             throw RuntimeException("Test Crash")
@@ -252,23 +257,25 @@ private fun updateUIOnSuccess() {
         binding.startButton.setOnClickListener {
 
             if (trustedDevice) {
-                    if  (mFirebaseUser !=null) {
-                        navController.navigate(LoginFragmentDirections.actionLoginFragmentToDatabaseSearchFragment())
-                    } else {
-                        showPopup(getString(R.string.please_login))
-                    }
-            }else {
-     //           Log.d(TAG, "Your device = $trustedDevice")
+                if (mFirebaseUser != null) {
+                    navController.navigate(LoginFragmentDirections.actionLoginFragmentToDatabaseSearchFragment())
+                } else {
+                    showPopup(getString(R.string.please_login))
+                }
+            } else {
+                //           Log.d(TAG, "Your device = $trustedDevice")
                 showPopup("Your device is not recognized!\nPlease, contact your administrator to proceed!")
             }
 
         }
 
-            val itemDecor = DividerItemDecoration(requireContext(), RecyclerView.VERTICAL)
-        val myDecorLine = ResourcesCompat.getDrawable(resources, R.drawable.recycler_messages_divider, null)
+        val itemDecor = DividerItemDecoration(requireContext(), RecyclerView.VERTICAL)
+        val myDecorLine =
+            ResourcesCompat.getDrawable(resources, R.drawable.recycler_messages_divider, null)
 
         myDecorLine?.also {
-            itemDecor.setDrawable(it) }
+            itemDecor.setDrawable(it)
+        }
         binding.messageRecyclerView.addItemDecoration(itemDecor)
         binding.messageRecyclerView.adapter = recyclerAdapter
 
@@ -304,18 +311,9 @@ private fun updateUIOnSuccess() {
                     }
                 }
                 trustedDevice = foundInTrusted
-// ==============  SAVE TRUSTED DEVICE VALUE ===========
-                val sharedPref = activity?.getSharedPreferences(
-                    "kgoptometry",
-                    Context.MODE_PRIVATE
-                )
-                //   Log.d(TAG, " Saving USER TO STORE : userName = $userName, userType = $userType")
-                if (sharedPref != null) {
-                    val editor = sharedPref.edit()
-                    editor.putBoolean("trusted_device", trustedDevice)
-                    //         Log.d(TAG, "Saaving new value of trusted device = $trustedDevice")
-                    editor.apply()
-                }
+                val editor = Constants.getSharedPreferences(requireContext()).edit()
+                editor.putBoolean("trusted_device", trustedDevice)
+                editor.apply()
             }
         }
 
@@ -325,7 +323,7 @@ private fun updateUIOnSuccess() {
     private fun initReadingMessages() {
 
         if (messagesReference != null) {
-      //      Log.d(TAG, "Listener STARTED")
+            //      Log.d(TAG, "Listener STARTED")
             //     var records= mutableListOf<FBRecords>()
             //    val recordsRef = messagesReference!!.child(RECORDS_CHILD)
 
@@ -336,15 +334,21 @@ private fun updateUIOnSuccess() {
                         messagesList.clear()
                         var simpleList = ""
                         snapshot.children.forEach {
-                            var newMessage:KGMessage? = null
-                            try{
-                                 newMessage =
+                            var newMessage: KGMessage? = null
+                            try {
+                                newMessage =
                                     it.getValue(KGMessage::class.java)
-                            } catch (e:Exception) {
-         //                       Log.d(TAG, "ERROR converting messages: $e")
+                            } catch (e: Exception) {
+                                //                       Log.d(TAG, "ERROR converting messages: $e")
                             }
-                                if (newMessage != null) {
-                                    messagesList.add(KGMessage(newMessage.author, newMessage.body, newMessage.time))
+                            if (newMessage != null) {
+                                messagesList.add(
+                                    KGMessage(
+                                        newMessage.author,
+                                        newMessage.body,
+                                        newMessage.time
+                                    )
+                                )
                             }
                         }
                         messagesLiveList.value = messagesList
@@ -361,7 +365,7 @@ private fun updateUIOnSuccess() {
                 }
 
             }
-        msgListener =   messagesReference!!.addValueEventListener(messagesListener)
+            msgListener = messagesReference!!.addValueEventListener(messagesListener)
 
         }
     }
@@ -407,42 +411,44 @@ private fun updateUIOnSuccess() {
 
 
     private fun readSettingsFromFBAndSaveUserNameAndTypeToStore() {
-     //   Log.d(TAG, " reading settings from FB")
-  //      saveUserToLocal(userNameAuth, USERS_KEY)
-        val usersFBReference = firebaseDatabase?.reference?.child(SETTINGS_CHILD)?.child(USERS_CHILD)
+        //   Log.d(TAG, " reading settings from FB")
+        //      saveUserToLocal(userNameAuth, USERS_KEY)
+        val usersFBReference =
+            firebaseDatabase?.reference?.child(SETTINGS_CHILD)?.child(USERS_CHILD)
         if (usersFBReference != null) {
-                val usersListener = object : ValueEventListener {
+            val usersListener = object : ValueEventListener {
                 @SuppressLint("DefaultLocale")
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()) {
                         snapshot.children.forEach {
-       //                     Log.d(TAG, " Snapshot child  = ${it.value}, - ${it.key}")
+                            //                     Log.d(TAG, " Snapshot child  = ${it.value}, - ${it.key}")
                             if (it.value.toString().equals(userNameAuth, ignoreCase = true)) {
 
-                              if (it.key.toString() == ADMIN_KEY) {
-                                  isAdmin.value = true
-                                  saveUserToLocal(userNameAuth, ADMIN_KEY)
-                              } else {
-                                  isAdmin.value = false
-                                  saveUserToLocal(userNameAuth, USERS_KEY)
-                              }
+                                if (it.key.toString() == ADMIN_KEY) {
+                                    isAdmin.value = true
+                                    saveUserToLocal(userNameAuth, ADMIN_KEY)
+                                } else {
+                                    isAdmin.value = false
+                                    saveUserToLocal(userNameAuth, USERS_KEY)
+                                }
                             }
                         }
                     }
                 }
-                override fun onCancelled(error: DatabaseError) {  }
+
+                override fun onCancelled(error: DatabaseError) {}
             }
             usersFBReference.addListenerForSingleValueEvent(usersListener)
         }
     }
 
     private fun checkTrustedDevice() {
-        val sharedPref =  activity?.getSharedPreferences("kgoptometry",
-            Context.MODE_PRIVATE)
-        deviceCode = sharedPref?.getString("device_code", "NO")?:"NO"
-        trustedDevice = sharedPref?.getBoolean("trusted_device", false)?:false
+        val sharedPref = activity
+            ?.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE)
+        deviceCode = sharedPref?.getString("device_code", "NO") ?: "NO"
+        trustedDevice = sharedPref?.getBoolean("trusted_device", false) ?: false
 
-           if (deviceCode == "NO" && mFirebaseUser !=null) {
+        if (deviceCode == "NO" && mFirebaseUser != null) {
             // record device code to Firebase
             val timeStamp = System.currentTimeMillis()
             deviceCode = generateID(PatientRepository.getInstance(requireContext()))
@@ -458,7 +464,7 @@ private fun updateUIOnSuccess() {
                 val editor = sharedPref.edit()
                 editor.putString("device_code", deviceCode)
                 editor.apply()
-   //             Log.d(TAG, "NEW GENERATED CODE  = $deviceCode, trusted = $trustedDevice")
+                //             Log.d(TAG, "NEW GENERATED CODE  = $deviceCode, trusted = $trustedDevice")
             }
         }
 
@@ -467,31 +473,32 @@ private fun updateUIOnSuccess() {
     }
 
     private fun checkFireBaseForTrusted() {
-        val trustedReference = firebaseDatabase?.reference?.child(SETTINGS_CHILD)?.child(DEVICES_CHILD)?.child(TRUSTED_CHILD)
+        val trustedReference =
+            firebaseDatabase?.reference?.child(SETTINGS_CHILD)?.child(DEVICES_CHILD)
+                ?.child(TRUSTED_CHILD)
         if (trustedReference != null) {
             val trustedListener = object : ValueEventListener {
                 @SuppressLint("DefaultLocale")
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()) {
-     //                   Log.d(TAG, "Snapshot of trusted devices from firebase = ${snapshot.children.map { it.value.toString()}}")
-                        listOfTrustedDevices.value  = snapshot.children.map { it.value.toString() }
+                        //                   Log.d(TAG, "Snapshot of trusted devices from firebase = ${snapshot.children.map { it.value.toString()}}")
+                        listOfTrustedDevices.value = snapshot.children.map { it.value.toString() }
                     }
                 }
-                override fun onCancelled(error: DatabaseError) {  }
+
+                override fun onCancelled(error: DatabaseError) {}
             }
             trustedReference.addListenerForSingleValueEvent(trustedListener)
         }
     }
 
 
-    private fun saveUserToLocal(userName:String, userType:String) {
+    private fun saveUserToLocal(userName: String, userType: String) {
 
-  //      val app = requireActivity().application
-        val sharedPref = activity?.getSharedPreferences(
-            "kgoptometry",
-            Context.MODE_PRIVATE
-        )
-     //   Log.d(TAG, " Saving USER TO STORE : userName = $userName, userType = $userType")
+        //      val app = requireActivity().application
+        val sharedPref = activity
+            ?.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE)
+        //   Log.d(TAG, " Saving USER TO STORE : userName = $userName, userType = $userType")
         if (sharedPref != null) {
             val editor = sharedPref.edit()
             editor.putString("user_name", userName)
@@ -502,52 +509,38 @@ private fun updateUIOnSuccess() {
     }
 
     private fun cleanAdminRight() {
-
-//        val app = requireNotNull(this.activity).application
-        val sharedPref = activity?.getSharedPreferences(
-            "kgoptometry",
-            Context.MODE_PRIVATE
-        )
-   //     Log.d(TAG, "Cleaning admin key ---------")
-        if (sharedPref != null) {
-            val editor = sharedPref.edit()
-            editor.putString("admin", USERS_KEY)
-            editor.apply()
-        }
-
-    }
-
-private fun cleanSearch() {
-
-    val sharedPref = activity?.getSharedPreferences(
-        Constants.PREF_NAME, Context.MODE_PRIVATE
-    )
-
-    if (sharedPref != null) {
-        val editor = sharedPref.edit()
-        editor.putString("searchBy", "NAME")
-        editor.putString("searchValue", "")
-        editor.putString(DatabaseSearchSalesFragment.KEY_SEARCH_BY_SALES, "NAME")
-        editor.putString(DatabaseSearchSalesFragment.KEY_SEARCH_VALUE_SALES, "")
+        val editor = Constants.getSharedPreferences(requireContext()).edit()
+        editor.putString("admin", USERS_KEY)
         editor.apply()
     }
 
-}
+    private fun cleanSearch() {
+        val editor = Constants.getSharedPreferences(requireContext()).edit()
+        val searchCostumerBy = resources.getStringArray(R.array.search_customer_choices)[0]
+        val searchSalesBy = resources.getStringArray(R.array.search_sales_choices)[0]
+        editor.putString(SearchCostumerFragment.KEY_SEARCH_BY, searchCostumerBy)
+        editor.putString(SearchCostumerFragment.KEY_SEARCH_VALUE, "")
+        editor.putString(SearchSalesFragment.KEY_SEARCH_BY, searchSalesBy)
+        editor.putString(SearchSalesFragment.KEY_SEARCH_VALUE, "")
+        editor.apply()
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        if (msgListener !=null) {
+        if (msgListener != null) {
             messagesReference!!.removeEventListener(msgListener!!)
-      //      Log.d(TAG, "REMOVE Listener")
+            //      Log.d(TAG, "REMOVE Listener")
         }
     }
+
     @SuppressLint("ClickableViewAccessibility")
     private fun showPopup(message: String) {
 
- //       val app = requireNotNull(this.activity).application
+        //       val app = requireNotNull(this.activity).application
         // inflate the layout of the popup window
         val layoutInflater: LayoutInflater = LayoutInflater.from(app.applicationContext)
-        val popupView: View = layoutInflater.inflate(R.layout.popup_action_info, binding.mainLayout, false)
+        val popupView: View =
+            layoutInflater.inflate(R.layout.popup_action_info, binding.mainLayout, false)
 
         val textItem = popupView.findViewById<TextView>(R.id.popup_text)
         textItem.text = message
@@ -567,5 +560,4 @@ private fun cleanSearch() {
             true
         }
     }
-
 }

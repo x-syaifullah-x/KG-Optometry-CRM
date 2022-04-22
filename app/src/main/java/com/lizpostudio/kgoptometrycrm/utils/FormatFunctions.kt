@@ -3,9 +3,9 @@ package com.lizpostudio.kgoptometrycrm.utils
 import android.annotation.SuppressLint
 import android.graphics.PointF
 import android.util.Log
-import com.lizpostudio.kgoptometrycrm.data.source.remote.FBRecords
 import com.lizpostudio.kgoptometrycrm.data.repository.PatientRepository
 import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
+import com.lizpostudio.kgoptometrycrm.data.source.remote.FBRecords
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.*

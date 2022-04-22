@@ -16,9 +16,9 @@
     </fragment>
     <fragment
         android:id="@+id/databaseSearchFragment"
-        android:name="com.lizpostudio.kgoptometrycrm.search.DatabaseSearchFragment"
+        android:name="com.lizpostudio.kgoptometrycrm.search.SearchCostumerFragment"
         android:label="DatabaseSearchFragment"
-        tools:layout="@layout/fragment_database_search">
+        tools:layout="@layout/fragment_search_costumer">
         <action
             android:id="@+id/action_databaseSearchFragment_to_formSelectionFragment"
             app:destination="@id/formSelectionFragment" />
@@ -35,9 +35,9 @@
     </fragment>
     <fragment
         android:id="@+id/databaseSearchSalesFragment"
-        android:name="com.lizpostudio.kgoptometrycrm.search.DatabaseSearchSalesFragment"
+        android:name="com.lizpostudio.kgoptometrycrm.search.SearchSalesFragment"
         android:label="DatabaseSearchSalesScreenFragment"
-        tools:layout="@layout/fragment_database_search_sales_screen">
+        tools:layout="@layout/fragment_search_sales">
         <action
             android:id="@+id/action_to_database_search"
             app:destination="@id/databaseSearchFragment" />
@@ -64,10 +64,10 @@
             android:name="patientID"
             app:argType="string" />
         <action
-            android:id="@+id/action_formSelectionFragment_to_databaseSearchFragment"
+            android:id="@+id/action_to_searchCostumerFragment"
             app:destination="@id/databaseSearchFragment" />
         <action
-            android:id="@+id/action_to_databaseSearchSalesFragment"
+            android:id="@+id/action_to_searchSalesFragment"
             app:destination="@id/databaseSearchSalesFragment" />
         <action
             android:id="@+id/action_formSelectionFragment_to_infoFragment"

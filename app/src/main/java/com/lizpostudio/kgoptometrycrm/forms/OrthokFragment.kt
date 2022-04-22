@@ -43,13 +43,13 @@ import com.lizpostudio.kgoptometrycrm.constant.Constants
 import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentOrthokBinding
 import com.lizpostudio.kgoptometrycrm.utils.*
+import id.xxx.module.view.binding.ktx.viewBinding
 import java.io.File
 import java.io.FileOutputStream
 
 class OrthokFragment : Fragment() {
 
     companion object {
-        private const val TAG = "LogTrace"
         private const val vaDefault = "6/"
     }
 
@@ -65,8 +65,8 @@ class OrthokFragment : Fragment() {
 
     private var viewOnlyMode = false
 
-    private var _binding: FragmentOrthokBinding? = null
-    private val binding get() = _binding!!
+    private val binding by viewBinding<FragmentOrthokBinding>()
+
     private var recordID = 0L
     private var patientID = ""
 
@@ -111,12 +111,6 @@ class OrthokFragment : Fragment() {
         val textBoxActiveTop = mutableListOf(false, false, false, false)
         val textBoxActiveBottom = mutableListOf(false, false, false, false)
 
-        _binding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.fragment_orthok,
-            container,
-            false
-        )
         val app = requireNotNull(this.activity).application
         filesDir = app.applicationContext.filesDir
 
@@ -131,12 +125,11 @@ class OrthokFragment : Fragment() {
 
         createRefAssignPhFile()
 
-        binding.lifecycleOwner = this
         val navController = this.findNavController()
 
         // get if user is Admin
         val sharedPref = app.getSharedPreferences(
-            "kgoptometry",
+            Constants.PREF_NAME,
             Context.MODE_PRIVATE
         )
         isAdmin = sharedPref?.getString("admin", "") ?: "" == "admin"
@@ -402,7 +395,7 @@ class OrthokFragment : Fragment() {
             binding.bottomOculus.fillMask = fillMaskBottom
             binding.bottomOculus.invalidate()
 
-            //    Log.d(TAG, "size = ${fillMask.size}")
+            //    Log.d(Constants.TAG, "size = ${fillMask.size}")
         }
 
         binding.undoBottom.setOnClickListener {
@@ -487,7 +480,7 @@ class OrthokFragment : Fragment() {
 
         patientViewModel.photoFromFBReady.observe(viewLifecycleOwner) { ready ->
             ready?.let {
-                Log.d(TAG, "Photo file is $it")
+                Log.d(Constants.TAG, "Photo file is $it")
                 if (it) uploadPhotoFileToImage()
             }
         }
@@ -701,11 +694,11 @@ class OrthokFragment : Fragment() {
                 // zero element = color
                 newMList.add(PointF(selectedColor.toFloat(), selectedColor.toFloat()))
 
-                //          Log.d(TAG, "selected color = ${selectedColor}")
+                //          Log.d(Constants.TAG, "selected color = ${selectedColor}")
                 fillMask.add(newMList)
                 fillMask[fillIndex].add(PointF(m.x + startPTRightTop.x, m.y + startPTRightTop.y))
 
-                //    Log.d(TAG, "fillMask = ${fillMask}")
+                //    Log.d(Constants.TAG, "fillMask = ${fillMask}")
 
                 binding.topOculus.fillMask = fillMask
                 binding.topOculus.invalidate()
@@ -801,9 +794,9 @@ class OrthokFragment : Fragment() {
         // CHANGE DATA in THE FORM if record in FIREBASE was changed.
         patientViewModel.patientFireForm.observe(viewLifecycleOwner) { patientNewRecord ->
             patientNewRecord?.let {
-                Log.d(TAG, "Reload Orthok Form? == ${!currentForm.assertEqual(it)}")
+                Log.d(Constants.TAG, "Reload Orthok Form? == ${!currentForm.assertEqual(it)}")
                 if (currentForm.recordID == it.recordID && !currentForm.assertEqual(it)) {
-                    Log.d(TAG, "Orthok Record from FB loaded")
+                    Log.d(Constants.TAG, "Orthok Record from FB loaded")
                     currentForm.copyFrom(it)
                     fillTheForm(it)
                 }
@@ -824,9 +817,8 @@ class OrthokFragment : Fragment() {
 
         // Capture photo
         binding.photoButton.setOnClickListener {
-            photoUri = FileProvider.getUriForFile(
-                requireActivity(), "com.lizpostudio.kgoptometrycrm.fileprovider", photoFile
-            )
+            photoUri = FileProvider
+                .getUriForFile(requireActivity(), Constants.FILE_PROVIDER_AUTHORITY, photoFile)
             val packageManager: PackageManager = requireActivity().packageManager
 
             val captureImage = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
@@ -937,7 +929,7 @@ class OrthokFragment : Fragment() {
                 os.flush()
                 os.close()
             } catch (e: Exception) {
-                Log.d(TAG, "Error writing bitmap", e)
+                Log.d(Constants.TAG, "Error writing bitmap", e)
             }
         }
     }
@@ -947,7 +939,7 @@ class OrthokFragment : Fragment() {
     @SuppressLint("SetTextI18n")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-//   Log.d(TAG, "initial file size = ${photoFile.length() / 1024} kBytes")
+//   Log.d(Constants.TAG, "initial file size = ${photoFile.length() / 1024} kBytes")
         if (requestCode == REQUEST_PHOTO && resultCode == Activity.RESULT_OK) {
             takePhoto = true
             scaleBitmap(photoFile)
@@ -975,12 +967,12 @@ class OrthokFragment : Fragment() {
         //   taskToGetFile
         if (currentForm.reservedField.isNotBlank() && currentForm.reservedField != "deleted") {
             downloadPhotoTask = storageRef.getFile(photoFile).addOnSuccessListener {
-                Log.d(TAG, "FB photo downloaded to local file")
+                Log.d(Constants.TAG, "FB photo downloaded to local file")
                 patientViewModel.readyToShowPhoto()
                 currentForm.reservedField = photoFile.toString()
             }.addOnFailureListener {
                 // delete local file
-                Log.d(TAG, "No such file exist or error downloading. Delete local file")
+                Log.d(Constants.TAG, "No such file exist or error downloading. Delete local file")
                 if (photoFile.exists()) photoFile.delete()
                 patientViewModel.readyToShowPhoto()
                 currentForm.reservedField = ""
@@ -996,14 +988,14 @@ class OrthokFragment : Fragment() {
             launchNavigator(navOption)
         } else {
             if (formWasChanged()) {
-                Log.d(TAG, "Orthok was CHANGED")
+                Log.d(Constants.TAG, "Orthok was CHANGED")
                 patientViewModel.submitPatientToFirebase(
                     currentForm.recordID.toString(), currentForm
                 )
                 // trigger navigation after update
                 patientViewModel.updateRecord(currentForm, navOption)
             } else {
-                Log.d(TAG, "Orthok is the SAME")
+                Log.d(Constants.TAG, "Orthok is the SAME")
                 launchNavigator(navOption)
             }
         }
@@ -1146,8 +1138,8 @@ class OrthokFragment : Fragment() {
         val heightRatio =
             if (wH.second != 0f && topOculusHeight != 0f) topOculusHeight / wH.second else 1f
 
-/*              Log.d(TAG, "saved w = ${wH.first} oculus width = ${topOculusWidth} widthRatio = $widthRatio")
-        Log.d(TAG, "saved h = ${wH.second} oculus height = ${topOculusHeight} heightRatio = $heightRatio")*/
+/*              Log.d(Constants.TAG, "saved w = ${wH.first} oculus width = ${topOculusWidth} widthRatio = $widthRatio")
+        Log.d(Constants.TAG, "saved h = ${wH.second} oculus height = ${topOculusHeight} heightRatio = $heightRatio")*/
 
         fillMask = convertStringToFillMask(graphicsTop, widthRatio, heightRatio)
         fillIndex = if (fillMask.size > 0) fillMask.lastIndex else -1
@@ -1330,7 +1322,7 @@ class OrthokFragment : Fragment() {
             currentForm.graphicsLeft = graphicsBottom
             if (sectionEditDate != -1L) currentForm.dateOfSection = sectionEditDate
 
-            //      Log.d(TAG, "on save: ${convertLongToDDMMYY(patientForm.dateOfSection)}")
+            //      Log.d(Constants.TAG, "on save: ${convertLongToDDMMYY(patientForm.dateOfSection)}")
 
             val extractData = "reserved |" +
                     editRightVaTop.text.toString() + "|" +
@@ -1420,11 +1412,6 @@ class OrthokFragment : Fragment() {
             )
             datePickerDialog.show()
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

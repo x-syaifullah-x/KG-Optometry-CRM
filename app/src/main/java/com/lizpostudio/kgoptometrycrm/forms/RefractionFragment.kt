@@ -41,13 +41,13 @@ import com.lizpostudio.kgoptometrycrm.constant.Constants
 import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentRefractionBinding
 import com.lizpostudio.kgoptometrycrm.utils.*
+import id.xxx.module.view.binding.ktx.viewBinding
 import java.io.File
 import java.io.FileOutputStream
 
 class RefractionFragment : Fragment() {
 
     companion object {
-        private const val TAG = "LogTrace"
         private const val vaDefault = "6/"
         private const val REQUEST_PHOTO = 2
         private const val PHOTO_W = 330
@@ -64,8 +64,7 @@ class RefractionFragment : Fragment() {
 
     private var photoUri: Uri? = null
 
-    private var _binding: FragmentRefractionBinding? = null
-    private val binding get() = _binding!!
+    private val binding by viewBinding<FragmentRefractionBinding>()
 
     private var isAdmin = false
 
@@ -97,12 +96,6 @@ class RefractionFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        _binding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.fragment_refraction,
-            container,
-            false
-        )
         val app = requireNotNull(this.activity).application
 
         filesDir = app.applicationContext.filesDir
@@ -112,7 +105,7 @@ class RefractionFragment : Fragment() {
         recordID = safeArgs.recordID
 
         // get Patient data
-        Log.d(TAG, "Get RF patient $recordID")
+        Log.d(Constants.TAG, "Get RF patient $recordID")
         patientViewModel.getPatientForm(recordID)
         createRefAssignPhFile()
 
@@ -120,8 +113,7 @@ class RefractionFragment : Fragment() {
 
         // get if user is Admin
         val sharedPref = app.getSharedPreferences(
-            "kgoptometry",
-            Context.MODE_PRIVATE
+            Constants.PREF_NAME, Context.MODE_PRIVATE
         )
         isAdmin = sharedPref?.getString("admin", "") ?: "" == "admin"
         viewOnlyMode = sharedPref?.getBoolean("viewOnly", false) ?: false
@@ -145,7 +137,7 @@ class RefractionFragment : Fragment() {
             patientForm?.let {
                 currentForm = it
                 patientID = it.patientID
-                Log.d(TAG, "RF Patient recordID ${currentForm.recordID} received")
+                Log.d(Constants.TAG, "RF Patient recordID ${currentForm.recordID} received")
                 patientViewModel.createRecordListener(currentForm.recordID)
                 fillTheForm(it)
                 patientViewModel.getAllFormsForPatient(patientID)
@@ -365,11 +357,8 @@ class RefractionFragment : Fragment() {
 // Capture photo
 
         binding.photoButton.setOnClickListener {
-            photoUri = FileProvider.getUriForFile(
-                requireActivity(),
-                "com.lizpostudio.kgoptometrycrm.fileprovider",
-                photoFile
-            )
+            photoUri = FileProvider
+                .getUriForFile(requireActivity(), Constants.FILE_PROVIDER_AUTHORITY, photoFile)
             val packageManager: PackageManager = requireActivity().packageManager
 
             val captureImage = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
@@ -466,14 +455,14 @@ class RefractionFragment : Fragment() {
 
         patientViewModel.navTrigger.observe(viewLifecycleOwner) { navOption ->
             navOption?.let {
-                Log.d(TAG, "RF: Launching Navigator: Nav Option == ${navOption}")
+                Log.d(Constants.TAG, "RF: Launching Navigator: Nav Option == ${navOption}")
                 launchNavigator(navOption)
             }
         }
 
         patientViewModel.photoFromFBReady.observe(viewLifecycleOwner) { ready ->
             ready?.let {
-                Log.d(TAG, "Photo file is $it")
+                Log.d(Constants.TAG, "Photo file is $it")
                 if (it) uploadPhotoFileToImage()
             }
         }
@@ -561,9 +550,9 @@ class RefractionFragment : Fragment() {
 
         patientViewModel.patientFireForm.observe(viewLifecycleOwner) { patientNewRecord ->
             patientNewRecord?.let {
-                Log.d(TAG, "Reload RF Form? == ${!currentForm.assertEqual(it)}")
+                Log.d(Constants.TAG, "Reload RF Form? == ${!currentForm.assertEqual(it)}")
                 if (currentForm.recordID == it.recordID && !currentForm.assertEqual(it)) {
-                    Log.d(TAG, "Refraction Record from FB loaded")
+                    Log.d(Constants.TAG, "Refraction Record from FB loaded")
                     currentForm.copyFrom(it)
                     fillTheForm(it)
                 }
@@ -602,8 +591,8 @@ class RefractionFragment : Fragment() {
             launchNavigator(navOption)
         } else {
             if (formWasChanged()) {
-                Log.d(TAG, "Ref form CHANGED")
-                Log.d(TAG, "Submiting to FDB record ID ${currentForm.recordID}")
+                Log.d(Constants.TAG, "Ref form CHANGED")
+                Log.d(Constants.TAG, "Submiting to FDB record ID ${currentForm.recordID}")
                 patientViewModel.submitPatientToFirebase(
                     currentForm.recordID.toString(),
                     currentForm
@@ -611,7 +600,7 @@ class RefractionFragment : Fragment() {
                 // trigger navigation after update
                 patientViewModel.updateRecord(currentForm, navOption)
             } else {
-                Log.d(TAG, "Ref form the SAME!!!")
+                Log.d(Constants.TAG, "Ref form the SAME!!!")
                 launchNavigator(navOption)
             }
         }
@@ -645,7 +634,7 @@ class RefractionFragment : Fragment() {
     @SuppressLint("SetTextI18n")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-//   Log.d(TAG, "initial file size = ${photoFile.length() / 1024} kBytes")
+//   Log.d(_root_ide_package_.com.lizpostudio.kgoptometrycrm.constant.Constants.TAG, "initial file size = ${photoFile.length() / 1024} kBytes")
         if (requestCode == REQUEST_PHOTO && resultCode == Activity.RESULT_OK) {
             takePhoto = true
 
@@ -679,7 +668,7 @@ class RefractionFragment : Fragment() {
                 os.flush()
                 os.close()
             } catch (e: Exception) {
-                Log.d(TAG, "Error writing bitmap", e)
+                Log.d(Constants.TAG, "Error writing bitmap", e)
             }
         }
     }
@@ -692,12 +681,12 @@ class RefractionFragment : Fragment() {
 
         if (currentForm.reservedField.isNotBlank() && currentForm.reservedField != "deleted") {
             downloadPhotoTask = storageRef.getFile(photoFile).addOnSuccessListener {
-                Log.d(TAG, "FB photo downloaded to local file")
+                Log.d(Constants.TAG, "FB photo downloaded to local file")
                 patientViewModel.readyToShowPhoto()
 //                currentForm.reservedField = photoFile.toString()
             }.addOnFailureListener {
                 // delete local file
-                Log.d(TAG, "No such file exist or error downloading. Delete local file")
+                Log.d(Constants.TAG, "No such file exist or error downloading. Delete local file")
                 if (photoFile.exists()) photoFile.delete()
                 patientViewModel.readyToShowPhoto()
                 currentForm.reservedField = ""
@@ -723,7 +712,7 @@ class RefractionFragment : Fragment() {
     private fun fillTheForm(patientForm: PatientsEntity) {
 
         val extractData = patientForm.sectionData.split('|').toMutableList()
-        //      Log.d(TAG, "extract data size before = ${extractData.size}")
+        //      Log.d(_root_ide_package_.com.lizpostudio.kgoptometrycrm.constant.Constants.TAG, "extract data size before = ${extractData.size}")
         if (extractData.size < 47) {
             for (index in extractData.size..47) {
                 extractData.add("")
@@ -809,7 +798,7 @@ class RefractionFragment : Fragment() {
             }
             if (isEmpty) spinnerChart.setSelection(1)
 
-//      Log.d(TAG, "Chart value = ${extractData[6]} ")
+//      Log.d(_root_ide_package_.com.lizpostudio.kgoptometrycrm.constant.Constants.TAG, "Chart value = ${extractData[6]} ")
 
             isEmpty = true
 
@@ -1146,9 +1135,9 @@ class RefractionFragment : Fragment() {
             )
 
             orderOfSections[3] -> {
-                Log.d(TAG, "Navigating to another RF form:")
-                Log.d(TAG, "Old Record ID = $recordID")
-                Log.d(TAG, "New Record ID = $navigateFormRecordID")
+                Log.d(Constants.TAG, "Navigating to another RF form:")
+                Log.d(Constants.TAG, "Old Record ID = $recordID")
+                Log.d(Constants.TAG, "New Record ID = $navigateFormRecordID")
                 if (recordID != navigateFormRecordID) {
                     recordID = navigateFormRecordID
                     createRefAssignPhFile()
@@ -1306,7 +1295,6 @@ class RefractionFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         downloadPhotoTask?.cancel()
-        _binding = null
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

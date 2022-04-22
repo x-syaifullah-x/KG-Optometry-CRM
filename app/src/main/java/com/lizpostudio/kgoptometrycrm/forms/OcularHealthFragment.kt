@@ -30,13 +30,9 @@ import com.lizpostudio.kgoptometrycrm.constant.Constants
 import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentOcularHealthBinding
 import com.lizpostudio.kgoptometrycrm.utils.*
+import id.xxx.module.view.binding.ktx.viewBinding
 
 class OcularHealthFragment : Fragment() {
-
-    companion object {
-        private const val TAG = "KGOptoTag"
-        private const val vaDefault = "6/"
-    }
 
     private val patientViewModel: PatientsViewModel by viewModels {
         PatientsViewModelFactory(requireContext())
@@ -51,8 +47,7 @@ class OcularHealthFragment : Fragment() {
 
     private var viewOnlyMode = false
 
-    private var _binding: FragmentOcularHealthBinding? = null
-    private val binding get() = _binding!!
+    private val binding by viewBinding<FragmentOcularHealthBinding>()
     private var recordID = 0L
     private var patientID = ""
 
@@ -86,12 +81,6 @@ class OcularHealthFragment : Fragment() {
         val textBoxActiveTop = mutableListOf(false, false, false, false)
         val textBoxActiveBottom = mutableListOf(false, false, false, false)
 
-        _binding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.fragment_ocular_health,
-            container,
-            false
-        )
         val app = requireNotNull(this.activity).application
 
         var selectedColor = ContextCompat.getColor(requireContext(), R.color.greenCircle)
@@ -102,11 +91,10 @@ class OcularHealthFragment : Fragment() {
         // get Patient data
         patientViewModel.getPatientForm(recordID)
 
-        binding.lifecycleOwner = this
         val navController = this.findNavController()
 
         val sharedPref = app.getSharedPreferences(
-            "kgoptometry",
+            Constants.PREF_NAME,
             Context.MODE_PRIVATE
         )
         isAdmin = sharedPref?.getString("admin", "") ?: "" == "admin"
@@ -326,7 +314,7 @@ class OcularHealthFragment : Fragment() {
             binding.topOculus.fillMask = fillMask
             binding.topOculus.invalidate()
 
-            //    Log.d(TAG, "size = ${fillMask.size}")
+            //    Log.d(Constants.TAG, "size = ${fillMask.size}")
         }
 
         binding.dateCaption.setOnClickListener {
@@ -350,7 +338,7 @@ class OcularHealthFragment : Fragment() {
             binding.bottomOculus.fillMask = fillMaskBottom
             binding.bottomOculus.invalidate()
 
-            //    Log.d(TAG, "size = ${fillMask.size}")
+            //    Log.d(Constants.TAG, "size = ${fillMask.size}")
         }
 
         binding.undoBottom.setOnClickListener {
@@ -653,7 +641,7 @@ class OcularHealthFragment : Fragment() {
 
             binding.frameTopOculus.visibility = View.VISIBLE
             binding.frameBottomOculus.visibility = View.VISIBLE
-            //     Log.d(TAG, "${screenWidthPx() / 2}")
+            //     Log.d(Constants.TAG, "${screenWidthPx() / 2}")
         }
 
 
@@ -702,11 +690,11 @@ class OcularHealthFragment : Fragment() {
                 // zero element = color
                 newMList.add(PointF(selectedColor.toFloat(), selectedColor.toFloat()))
 
-                //          Log.d(TAG, "selected color = ${selectedColor}")
+                //          Log.d(Constants.TAG, "selected color = ${selectedColor}")
                 fillMask.add(newMList)
                 fillMask[fillIndex].add(PointF(m.x + startPTRightTop.x, m.y + startPTRightTop.y))
 
-                //    Log.d(TAG, "fillMask = ${fillMask}")
+                //    Log.d(Constants.TAG, "fillMask = ${fillMask}")
 
                 binding.topOculus.fillMask = fillMask
                 binding.topOculus.invalidate()
@@ -803,9 +791,9 @@ class OcularHealthFragment : Fragment() {
 
         patientViewModel.patientFireForm.observe(viewLifecycleOwner) { patientNewRecord ->
             patientNewRecord?.let {
-                Log.d(TAG, "Reload OH Form? == ${!currentForm.assertEqual(it)}")
+                Log.d(Constants.TAG, "Reload OH Form? == ${!currentForm.assertEqual(it)}")
                 if (currentForm.recordID == it.recordID && !currentForm.assertEqual(it)) {
-                    Log.d(TAG, "OH Record from FB loaded")
+                    Log.d(Constants.TAG, "OH Record from FB loaded")
                     currentForm.copyFrom(it)
                     fillTheForm(it)
                 }
@@ -832,7 +820,7 @@ class OcularHealthFragment : Fragment() {
             launchNavigator(navOption)
         } else {
             if (formWasChanged()) {
-                Log.d(TAG, "OH was changed")
+                Log.d(Constants.TAG, "OH was changed")
                 patientViewModel.submitPatientToFirebase(
                     currentForm.recordID.toString(),
                     currentForm
@@ -840,7 +828,7 @@ class OcularHealthFragment : Fragment() {
                 // trigger navigation after update
                 patientViewModel.updateRecord(currentForm, navOption)
             } else {
-                Log.d(TAG, "OH was not changed")
+                Log.d(Constants.TAG, "OH was not changed")
                 launchNavigator(navOption)
             }
         }
@@ -953,7 +941,7 @@ class OcularHealthFragment : Fragment() {
     private fun fillTheForm(patientForm: PatientsEntity) {
 
         val extractData = patientForm.sectionData.split('|').toMutableList()
-//      Log.d(TAG, "extract data size before = ${extractData.size}")
+//      Log.d(Constants.TAG, "extract data size before = ${extractData.size}")
         if (extractData.size < 20) {
             for (index in extractData.size..20) {
                 extractData.add("")
@@ -998,7 +986,7 @@ class OcularHealthFragment : Fragment() {
             //        patientName.text = patientForm.patientName
             dateCaption.text = convertLongToDDMMYY(patientForm.dateOfSection)
             sectionEditDate = patientForm.dateOfSection
-            //   Log.d(TAG, " Extracted data: ${convertLongToDDMMYY(patientForm.dateOfSection)}" )
+            //   Log.d(Constants.TAG, " Extracted data: ${convertLongToDDMMYY(patientForm.dateOfSection)}" )
 
             editLensRight.setText(extractData[0])
             editLensLeft.setText(extractData[1])
@@ -1116,12 +1104,12 @@ class OcularHealthFragment : Fragment() {
         val width = screenWidthPx()
         val height = width / 2
 
-        //    Log.d(TAG, "Fill mask = $fillMaskBottom")
+        //    Log.d(Constants.TAG, "Fill mask = $fillMaskBottom")
 
         val graphicsTop = convertFillMask(fillMask, width, height)
         val graphicsBottom = convertFillMask(fillMaskBottom, width, height)
 
-        //     Log.d(TAG, "at assign GL = $graphicsBottom")
+        //     Log.d(Constants.TAG, "at assign GL = $graphicsBottom")
 
         binding.apply {
 
@@ -1130,7 +1118,7 @@ class OcularHealthFragment : Fragment() {
             currentForm.graphicsLeft = graphicsBottom
             if (sectionEditDate != -1L) currentForm.dateOfSection = sectionEditDate
 
-            //      Log.d(TAG, "on save: ${convertLongToDDMMYY(patientForm.dateOfSection)}")
+            //      Log.d(Constants.TAG, "on save: ${convertLongToDDMMYY(patientForm.dateOfSection)}")
 
             val extractData = editLensRight.text.toString() + "|" +
                     editLensLeft.text.toString() + "|" +
@@ -1172,11 +1160,5 @@ class OcularHealthFragment : Fragment() {
             )
             datePickerDialog.show()
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        //    Log.d(TAG, "Destroy at OCULAR")
-        _binding = null
     }
 }

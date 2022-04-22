@@ -53,8 +53,6 @@ class MemoFragment : Fragment() {
         private const val REQUEST_PHOTO = 2
         private const val PHOTO_W = 600
         private const val PHOTO_H = 800
-
-        private const val TAG = "LogTrace"
     }
 
     private var downloadPhotoTask: StorageTask<FileDownloadTask.TaskSnapshot>? = null
@@ -106,7 +104,6 @@ class MemoFragment : Fragment() {
 
         createRefAssignPhFile()
 
-        binding.lifecycleOwner = this
         val navController = this.findNavController()
 
         // get if user is Admin
@@ -136,11 +133,11 @@ class MemoFragment : Fragment() {
 
                 //  === setup listener to this specific child and update the form if fields are changed ===
 
-                Log.d(TAG, "SETUP fire record listener")
+                Log.d(Constants.TAG, "SETUP fire record listener")
                 patientViewModel.createRecordListener(currentForm.recordID)
                 fillTheForm(patient)
                 patientViewModel.getAllFormsForPatient(patientID)
-                //      Log.d(TAG, "Loading photo")
+                //      Log.d(Constants.TAG, "Loading photo")
                 updatePhotoView(photoFile)
             }
         }
@@ -375,9 +372,9 @@ class MemoFragment : Fragment() {
 
         patientViewModel.patientFireForm.observe(viewLifecycleOwner) { patientNewRecord ->
             patientNewRecord?.let {
-                Log.d(TAG, "Reload Memo Form? == ${!currentForm.assertEqual(it)}")
+                Log.d(Constants.TAG, "Reload Memo Form? == ${!currentForm.assertEqual(it)}")
                 if (currentForm.recordID == it.recordID && !currentForm.assertEqual(it)) {
-                    Log.d(TAG, "Memo Record from FB loaded")
+                    Log.d(Constants.TAG, "Memo Record from FB loaded")
                     currentForm.copyFrom(it)
                     fillTheForm(it)
                 }
@@ -492,7 +489,7 @@ class MemoFragment : Fragment() {
                 os.flush()
                 os.close()
             } catch (e: Exception) {
-                //  Log.d(TAG, "Error writing bitmap", e)
+                //  Log.d(Constants.TAG, "Error writing bitmap", e)
             }
         }
     }
@@ -500,12 +497,12 @@ class MemoFragment : Fragment() {
     private fun updatePhotoView(photoFile: File) {
         if (currentForm.reservedField.isNotBlank() && currentForm.reservedField != "deleted") {
             downloadPhotoTask = storageRef.getFile(photoFile).addOnSuccessListener {
-                Log.d(TAG, "FB photo downloaded to Memo")
+                Log.d(Constants.TAG, "FB photo downloaded to Memo")
                 patientViewModel.readyToShowPhoto()
                 currentForm.reservedField = photoFile.toString()
             }.addOnFailureListener {
                 // delete local file
-                Log.d(TAG, "No such file at Memo. Delete local file")
+                Log.d(Constants.TAG, "No such file at Memo. Delete local file")
                 if (photoFile.exists()) photoFile.delete()
                 patientViewModel.readyToShowPhoto()
                 currentForm.reservedField = ""
@@ -529,7 +526,7 @@ class MemoFragment : Fragment() {
     @SuppressLint("SetTextI18n")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        Log.d(TAG, "initial file size = ${photoFile.length() / 1024} kBytes")
+        Log.d(Constants.TAG, "initial file size = ${photoFile.length() / 1024} kBytes")
         if (requestCode == REQUEST_PHOTO && resultCode == Activity.RESULT_OK) {
             takePhoto = true
             scaleBitmap(photoFile)
@@ -555,8 +552,8 @@ class MemoFragment : Fragment() {
             launchNavigator(navOption)
         } else {
             if (formWasChanged()) {
-                Log.d(TAG, "Memo form CHANGED")
-                Log.d(TAG, "Submiting to FB a DB record ID ${currentForm.recordID}")
+                Log.d(Constants.TAG, "Memo form CHANGED")
+                Log.d(Constants.TAG, "Submiting to FB a DB record ID ${currentForm.recordID}")
                 patientViewModel.submitPatientToFirebase(
                     currentForm.recordID.toString(),
                     currentForm
@@ -564,7 +561,7 @@ class MemoFragment : Fragment() {
                 // trigger navigation after update
                 patientViewModel.updateRecord(currentForm, navOption)
             } else {
-                Log.d(TAG, "Memo form the SAME!!!")
+                Log.d(Constants.TAG, "Memo form the SAME!!!")
                 launchNavigator(navOption)
             }
         }
@@ -658,7 +655,7 @@ class MemoFragment : Fragment() {
     private fun fillTheForm(patientForm: PatientsEntity) {
 
         val extractData = patientForm.sectionData.split('|').toMutableList()
-//      Log.d(TAG, "extract data size before = ${extractData.size}")
+//      Log.d(Constants.TAG, "extract data size before = ${extractData.size}")
         if (extractData.size < 2) {
             for (index in extractData.size..2) {
                 extractData.add("")

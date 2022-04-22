@@ -48,11 +48,9 @@
     <string name="hint_occupation">Occupation:</string>
 
     <string name="hint_contact_lens">Contact Lens:</string>
-    <string name="hint_driving">Driving:</string>
     <string name="yes_answer">Yes</string>
     <string name="no_answer">No</string>
     <string name="ok_hint">OK</string>
-    <string name="occasionally_answer">Occasionally</string>
     <string name="hint_hypertension">Hypertension:</string>
     <string name="hint_diabetes">Diabetes:</string>
     <string name="hint_allergy">Allergy:</string>

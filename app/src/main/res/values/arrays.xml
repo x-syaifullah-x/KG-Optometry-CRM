@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="database_search_choices">
+    <string-array name="search_customer_choices">
         <item>NAME</item>
         <item>DATE</item>
         <item>ID</item>
@@ -15,7 +15,7 @@
         <item>OTHER ID</item>
     </string-array>
 
-    <string-array name="database_search_sales_choices">
+    <string-array name="search_sales_choices">
         <item>NAME</item>
         <item>CS</item>
         <item>OR</item>
@@ -137,9 +137,4 @@
         <item>WP LABUAN</item>
     </string-array>
 
-    <array name="aa">
-        <item>Day</item>
-        <item>Week</item>
-        <item>Month</item>
-    </array>
 </resources>

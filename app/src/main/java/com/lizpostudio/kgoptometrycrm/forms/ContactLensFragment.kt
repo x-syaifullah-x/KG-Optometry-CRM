@@ -18,7 +18,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.core.content.ContextCompat
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -30,6 +29,7 @@ import com.lizpostudio.kgoptometrycrm.constant.Constants
 import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentContactLensBinding
 import com.lizpostudio.kgoptometrycrm.utils.*
+import id.xxx.module.view.binding.ktx.viewBinding
 
 class ContactLensFragment : Fragment() {
 
@@ -39,20 +39,19 @@ class ContactLensFragment : Fragment() {
 
     private var isAdmin = false
 
-    private var _binding: FragmentContactLensBinding? = null
-    private val binding get() = _binding!!
+    private val binding by viewBinding<FragmentContactLensBinding>()
+
     private var recordID = 0L
     private var patientID = ""
     private var sectionEditDate = -1L
 
     private var fillMaskTop = mutableListOf<MutableList<PointF>>()
-    private var fillMaskRight = mutableListOf(
-        mutableListOf<MutableList<PointF>>(), mutableListOf<MutableList<PointF>>(),
-        mutableListOf<MutableList<PointF>>(), mutableListOf<MutableList<PointF>>()
+
+    private var fillMaskRight = mutableListOf<MutableList<MutableList<PointF>>>(
+        mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf()
     )
-    private var fillMaskLeft = mutableListOf(
-        mutableListOf<MutableList<PointF>>(), mutableListOf<MutableList<PointF>>(),
-        mutableListOf<MutableList<PointF>>(), mutableListOf<MutableList<PointF>>()
+    private var fillMaskLeft = mutableListOf<MutableList<MutableList<PointF>>>(
+        mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf()
     )
 
     private var fitIndex = 0
@@ -93,12 +92,6 @@ class ContactLensFragment : Fragment() {
         val textBoxActiveRight = mutableListOf(false, false)
         val textBoxActiveLeft = mutableListOf(false, false)
 
-        _binding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.fragment_contact_lens,
-            container,
-            false
-        )
         val app = requireNotNull(this.activity).application
 
         val safeArgs: ContactLensFragmentArgs by navArgs()
@@ -106,8 +99,6 @@ class ContactLensFragment : Fragment() {
 
         // get Patient data
         patientViewModel.getPatientForm(recordID)
-
-        binding.lifecycleOwner = this
 
         // get if user is Admin
         val sharedPref = app.getSharedPreferences(
@@ -933,7 +924,8 @@ class ContactLensFragment : Fragment() {
                     }, 100L)
                 }
 
-                val hPosList = mapSectionName[sectionName]?.map { form -> form.recordID }?: listOf()
+                val hPosList =
+                    mapSectionName[sectionName]?.map { form -> form.recordID } ?: listOf()
                 val hPosBottomNav = hPosList.indexOf(recordID)
                 if (hPosBottomNav > 3) {
                     val scrollWidth = binding.chipsScroll2.width
@@ -1877,11 +1869,5 @@ class ContactLensFragment : Fragment() {
             )
             datePickerDialog.show()
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-
     }
 }

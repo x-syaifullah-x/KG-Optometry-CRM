@@ -22,7 +22,7 @@ import com.lizpostudio.kgoptometrycrm.R
 import com.lizpostudio.kgoptometrycrm.constant.Constants
 import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentFormSelectionBinding
-import com.lizpostudio.kgoptometrycrm.search.DatabaseSearchSalesFragment
+import com.lizpostudio.kgoptometrycrm.search.SearchSalesFragment
 import com.lizpostudio.kgoptometrycrm.utils.FormsListAdapter
 import com.lizpostudio.kgoptometrycrm.utils.actionConfirmDeletion
 import com.lizpostudio.kgoptometrycrm.utils.computeAgeAndDOB
@@ -31,7 +31,6 @@ import id.xxx.module.view.binding.ktx.viewBinding
 class FormSelectionFragment : Fragment() {
 
     companion object {
-        private const val TAG = "LogTrace"
         private const val ONE_DAY = 24 * 3600 * 1000L
         private const val TWO_WEEKS = 14 * ONE_DAY
     }
@@ -65,10 +64,10 @@ class FormSelectionFragment : Fragment() {
 //            ?.edit()
 //            ?.putBoolean("viewOnly", false)
 //            ?.apply()
-        if (dest == DatabaseSearchSalesFragment::class.java.name) {
-            findNavController().navigate(FormSelectionFragmentDirections.actionToDatabaseSearchSalesFragment())
+        if (dest == SearchSalesFragment::class.java.name) {
+            findNavController().navigate(FormSelectionFragmentDirections.actionToSearchSalesFragment())
         } else {
-            findNavController().navigate(FormSelectionFragmentDirections.actionFormSelectionFragmentToDatabaseSearchFragment())
+            findNavController().navigate(FormSelectionFragmentDirections.actionToSearchCostumerFragment())
         }
     }
 
@@ -99,7 +98,7 @@ class FormSelectionFragment : Fragment() {
         val safeArgs: FormSelectionFragmentArgs by navArgs()
         val patientID = safeArgs.patientID
 
-        Log.d(TAG, "Getting all forms for $patientID")
+        Log.d(Constants.TAG, "Getting all forms for $patientID")
         patientViewModel.getAllFormsForPatient(patientID)
 
         if (viewOnlyMode) binding.viewOnlyButton.setImageResource(R.drawable.visibility_32)
@@ -179,7 +178,7 @@ class FormSelectionFragment : Fragment() {
                 } else {
                     Toast.makeText(context, "No Forms for $patientID found", Toast.LENGTH_LONG)
                         .show()
-                    navController.navigate(FormSelectionFragmentDirections.actionFormSelectionFragmentToDatabaseSearchFragment())
+                    navController.navigate(FormSelectionFragmentDirections.actionToSearchCostumerFragment())
                 }
             }
         }
@@ -202,7 +201,7 @@ class FormSelectionFragment : Fragment() {
                 if (allowed) {
                     patientViewModel.deleteListOfRecords(allPatientForms)
                     Log.d(
-                        TAG,
+                        Constants.TAG,
                         "These list of records will be eliminated from Firebase: ${allPatientForms.map { forms -> forms.recordID.toString() }}"
                     )
 
@@ -217,11 +216,11 @@ class FormSelectionFragment : Fragment() {
             val backTime = System.currentTimeMillis() - TWO_WEEKS
             recordsToBeInserted.clear()
             historyOfRecords?.let { historyOriginalList ->
-                Log.d(TAG, "History list size = ${historyOriginalList.size}")
+                Log.d(Constants.TAG, "History list size = ${historyOriginalList.size}")
                 val historyList = historyOriginalList.filter { it.first > backTime }
 
                 if (historyList.size != historyOriginalList.size) {
-                    Log.d(TAG, "We are going to reduce  history list to ${historyList.size}")
+                    Log.d(Constants.TAG, "We are going to reduce  history list to ${historyList.size}")
                     val newHistory =
                         historyList.map { item -> item.first.toString() to item.second.toString() }
                             .toMap()
@@ -236,7 +235,7 @@ class FormSelectionFragment : Fragment() {
 
                     if (historyUpdateList.isNotEmpty()) {
                         // get all these records from FB and load to list of Patients
-                        Log.d(TAG, "Let's start to update records")
+                        Log.d(Constants.TAG, "Let's start to update records")
                         Toast.makeText(
                             context,
                             "Updating/Inserting ${historyUpdateList.size} records from Firebase",
@@ -305,7 +304,7 @@ class FormSelectionFragment : Fragment() {
 
         patientViewModel.recordDeleted.observe(viewLifecycleOwner) { patientDeleted ->
             if (allowSync) {
-                Log.d(TAG, "Navigation triggered")
+                Log.d(Constants.TAG, "Navigation triggered")
                 patientDeleted?.let {
                     if (patientDeleted) {
                         Toast.makeText(
@@ -317,15 +316,15 @@ class FormSelectionFragment : Fragment() {
                         val dest =
                             context?.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE)
                                 ?.getString(Constants.PREF_KEY_SEARCH_STATE, "")
-                        if (dest == DatabaseSearchSalesFragment::class.java.name) {
-                            navController.navigate(FormSelectionFragmentDirections.actionToDatabaseSearchSalesFragment())
+                        if (dest == SearchSalesFragment::class.java.name) {
+                            navController.navigate(FormSelectionFragmentDirections.actionToSearchSalesFragment())
                         } else {
-                            navController.navigate(FormSelectionFragmentDirections.actionFormSelectionFragmentToDatabaseSearchFragment())
+                            navController.navigate(FormSelectionFragmentDirections.actionToSearchCostumerFragment())
                         }
                     }
                 }
             } else {
-                Log.d(TAG, "Sync in progress. DB cleaned-up. Update UI")
+                Log.d(Constants.TAG, "Sync in progress. DB cleaned-up. Update UI")
                 patientViewModel.getAllFormsForPatient(patientID)
             }
         }

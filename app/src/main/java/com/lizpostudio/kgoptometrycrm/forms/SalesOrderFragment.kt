@@ -81,7 +81,6 @@ class SalesOrderFragment : Fragment() {
         // get Patient data
         patientViewModel.getPatientForm(recordID)
 
-        binding.lifecycleOwner = this
         val navController = this.findNavController()
 
         // get if user is Admin

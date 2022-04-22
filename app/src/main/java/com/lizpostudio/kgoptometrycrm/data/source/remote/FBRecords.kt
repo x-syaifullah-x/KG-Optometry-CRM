@@ -1,9 +1,6 @@
 package com.lizpostudio.kgoptometrycrm.data.source.remote
 
 import androidx.annotation.Keep
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
 
 @Keep
 data class FBRecords(

@@ -41,13 +41,13 @@ import com.lizpostudio.kgoptometrycrm.constant.Constants
 import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentCurrentRxFormBinding
 import com.lizpostudio.kgoptometrycrm.utils.*
+import id.xxx.module.view.binding.ktx.viewBinding
 import java.io.File
 import java.io.FileOutputStream
 
 class CurrentRxFragment : Fragment() {
 
     companion object {
-        private const val TAG = "LogTrace"
         private const val vaDefault = "6/"
         private const val REQUEST_PHOTO = 2
         private const val PHOTO_W = 330
@@ -62,8 +62,7 @@ class CurrentRxFragment : Fragment() {
         PatientsViewModelFactory(requireContext())
     }
 
-    private var _binding: FragmentCurrentRxFormBinding? = null
-    private val binding get() = _binding!!
+    private val binding by viewBinding<FragmentCurrentRxFormBinding>()
 
     private var photoUri: Uri? = null
 
@@ -95,12 +94,6 @@ class CurrentRxFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        _binding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.fragment_current_rx_form,
-            container,
-            false
-        )
         val app = requireNotNull(this.activity).application
 
         filesDir = app.applicationContext.filesDir
@@ -109,17 +102,15 @@ class CurrentRxFragment : Fragment() {
         recordID = safeArgs.recordID
 
         // get Patient data
-        Log.d(TAG, "Get Rx patient $recordID")
+        Log.d(Constants.TAG, "Get Rx patient $recordID")
         patientViewModel.getPatientForm(recordID)
         createRefAssignPhFile()
 
-        binding.lifecycleOwner = this
         val navController = this.findNavController()
 
         // get if user is Admin
         val sharedPref = app.getSharedPreferences(
-            "kgoptometry",
-            Context.MODE_PRIVATE
+            Constants.PREF_NAME, Context.MODE_PRIVATE
         )
         isAdmin = sharedPref?.getString("admin", "") ?: "" == "admin"
         viewOnlyMode = sharedPref?.getBoolean("viewOnly", false) ?: false
@@ -144,7 +135,7 @@ class CurrentRxFragment : Fragment() {
             patientForm?.let {
                 currentForm = it
                 patientID = it.patientID
-                Log.d(TAG, "Rx Patient recordID ${currentForm.recordID} received")
+                Log.d(Constants.TAG, "Rx Patient recordID ${currentForm.recordID} received")
                 patientViewModel.createRecordListener(currentForm.recordID)
                 fillTheForm(it)
                 patientViewModel.getAllFormsForPatient(patientID)
@@ -353,11 +344,8 @@ class CurrentRxFragment : Fragment() {
 
 // Capture photo
         binding.photoButton.setOnClickListener {
-            photoUri = FileProvider.getUriForFile(
-                requireActivity(),
-                "com.lizpostudio.kgoptometrycrm.fileprovider",
-                photoFile
-            )
+            photoUri = FileProvider
+                .getUriForFile(requireActivity(), Constants.FILE_PROVIDER_AUTHORITY, photoFile)
             val packageManager: PackageManager = requireActivity().packageManager
 
             val captureImage = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
@@ -451,7 +439,7 @@ class CurrentRxFragment : Fragment() {
 
         patientViewModel.photoFromFBReady.observe(viewLifecycleOwner) { ready ->
             ready?.let {
-                Log.d(TAG, "Photo file is $it")
+                Log.d(Constants.TAG, "Photo file is $it")
                 if (it) uploadPhotoFileToImage()
             }
         }
@@ -510,9 +498,9 @@ class CurrentRxFragment : Fragment() {
 
         patientViewModel.patientFireForm.observe(viewLifecycleOwner) { patientNewRecord ->
             patientNewRecord?.let {
-                Log.d(TAG, "Reload Rx Form? == ${!currentForm.assertEqual(it)}")
+                Log.d(Constants.TAG, "Reload Rx Form? == ${!currentForm.assertEqual(it)}")
                 if (currentForm.recordID == it.recordID && !currentForm.assertEqual(it)) {
-                    Log.d(TAG, "Rx Record from FB loaded")
+                    Log.d(Constants.TAG, "Rx Record from FB loaded")
                     currentForm.copyFrom(it)
                     fillTheForm(it)
                 }
@@ -551,8 +539,8 @@ class CurrentRxFragment : Fragment() {
             launchNavigator(navOption)
         } else {
             if (formWasChanged()) {
-                Log.d(TAG, "Rx form CHANGED")
-                Log.d(TAG, "Submiting to firebase and local db record ID ${currentForm.recordID}")
+                Log.d(Constants.TAG, "Rx form CHANGED")
+                Log.d(Constants.TAG, "Submiting to firebase and local db record ID ${currentForm.recordID}")
                 patientViewModel.submitPatientToFirebase(
                     currentForm.recordID.toString(),
                     currentForm
@@ -560,7 +548,7 @@ class CurrentRxFragment : Fragment() {
                 // trigger navigation after update
                 patientViewModel.updateRecord(currentForm, navOption)
             } else {
-                Log.d(TAG, "Rx form the SAME!!!")
+                Log.d(Constants.TAG, "Rx form the SAME!!!")
                 launchNavigator(navOption)
             }
         }
@@ -656,7 +644,7 @@ class CurrentRxFragment : Fragment() {
     @SuppressLint("SetTextI18n")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-//   Log.d(TAG, "initial file size = ${photoFile.length() / 1024} kBytes")
+//   Log.d(Constants.TAG, "initial file size = ${photoFile.length() / 1024} kBytes")
         if (requestCode == REQUEST_PHOTO && resultCode == Activity.RESULT_OK) {
             takePhoto = true
             scaleBitmap(photoFile)
@@ -687,7 +675,7 @@ class CurrentRxFragment : Fragment() {
                 os.flush()
                 os.close()
             } catch (e: Exception) {
-                Log.d(TAG, "Error writing bitmap", e)
+                Log.d(Constants.TAG, "Error writing bitmap", e)
             }
         }
     }
@@ -700,12 +688,12 @@ class CurrentRxFragment : Fragment() {
         }
         if (currentForm.reservedField.isNotBlank() && currentForm.reservedField != "deleted") {
             downloadPhotoTask = storageRef.getFile(photoFile).addOnSuccessListener {
-                Log.d(TAG, "FB photo downloaded to local file")
+                Log.d(Constants.TAG, "FB photo downloaded to local file")
                 patientViewModel.readyToShowPhoto()
                 currentForm.reservedField = photoFile.toString()
             }.addOnFailureListener {
                 // delete local file
-                Log.d(TAG, "No such file exist or error downloading. Delete local file")
+                Log.d(Constants.TAG, "No such file exist or error downloading. Delete local file")
                 if (photoFile.exists()) photoFile.delete()
                 patientViewModel.readyToShowPhoto()
                 currentForm.reservedField = ""
@@ -730,7 +718,7 @@ class CurrentRxFragment : Fragment() {
     private fun fillTheForm(patientForm: PatientsEntity) {
 
         val extractData = patientForm.sectionData.split('|').toMutableList()
-//      Log.d(TAG, "extract data size before = ${extractData.size}")
+//      Log.d(Constants.TAG, "extract data size before = ${extractData.size}")
         if (extractData.size < 13) {
             for (index in extractData.size..13) {
                 extractData.add("")
@@ -742,7 +730,7 @@ class CurrentRxFragment : Fragment() {
             sectionEditDate = patientForm.dateOfSection
             //     patientName.text = patientForm.patientName
             dateCaption.text = convertLongToDDMMYY(patientForm.dateOfSection)
-            //  Log.d(TAG, " Extracted data: $extractData" )
+            //  Log.d(Constants.TAG, " Extracted data: $extractData" )
 
             var isEmpty = true
             if (extractData[0].trim() == "") {
@@ -958,7 +946,6 @@ class CurrentRxFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         downloadPhotoTask?.cancel()
-        _binding = null
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

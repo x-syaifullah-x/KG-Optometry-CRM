@@ -12,8 +12,6 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.view.View
-import androidx.core.content.FileProvider
-import com.lizpostudio.kgoptometrycrm.constant.Constants
 import java.io.File
 import java.io.FileOutputStream
 

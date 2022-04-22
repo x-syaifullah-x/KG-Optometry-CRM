@@ -28,6 +28,7 @@ import com.lizpostudio.kgoptometrycrm.constant.Constants
 import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentSupplementaryTestBinding
 import com.lizpostudio.kgoptometrycrm.utils.*
+import id.xxx.module.view.binding.ktx.viewBinding
 
 class SupplementaryFragment : Fragment() {
 
@@ -38,8 +39,8 @@ class SupplementaryFragment : Fragment() {
     private var isAdmin = false
     private var viewOnlyMode = false
 
-    private var _binding: FragmentSupplementaryTestBinding? = null
-    private val binding get() = _binding!!
+    private val binding by viewBinding<FragmentSupplementaryTestBinding>()
+
     private var recordID = 0L
     private var patientID = ""
 
@@ -63,12 +64,6 @@ class SupplementaryFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        _binding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.fragment_supplementary_test,
-            container,
-            false
-        )
         val app = requireNotNull(this.activity).application
 
         // change BINDING to Respective forms args!
@@ -78,12 +73,11 @@ class SupplementaryFragment : Fragment() {
         // get Patient data
         patientViewModel.getPatientForm(recordID)
 
-        binding.lifecycleOwner = this
         val navController = this.findNavController()
 
         // get if user is Admin
         val sharedPref = app.getSharedPreferences(
-            "kgoptometry",
+            Constants.PREF_NAME,
             Context.MODE_PRIVATE
         )
         isAdmin = sharedPref?.getString("admin", "") ?: "" == "admin"
@@ -714,10 +708,5 @@ class SupplementaryFragment : Fragment() {
             )
             datePickerDialog.show()
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }

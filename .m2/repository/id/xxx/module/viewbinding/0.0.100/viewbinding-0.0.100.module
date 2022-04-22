@@ -47,7 +47,7 @@
           "group": "org.jetbrains.kotlin",
           "module": "kotlin-stdlib-jdk8",
           "version": {
-            "requires": "1.6.20"
+            "requires": "1.6.21"
           }
         }
       ],
@@ -55,11 +55,11 @@
         {
           "name": "viewbinding-0.0.100.aar",
           "url": "viewbinding-0.0.100.aar",
-          "size": 22576,
-          "sha512": "27e625ca6bef153497dad994e616f85c4362be5e94731c087476cc9f20ba22cd1d5f3663b3df5fba9384a96b32b3685dec85b4801cfa81df2b8a10bc8ea68213",
-          "sha256": "6e8b27451a9e6c4ba6cfc8dd996330ee11cebe1a5d1587c3f9407a5b19bc3acf",
-          "sha1": "87f6daabac53613fafe25d08f9df3db583364e4d",
-          "md5": "c0f4bfd3a89b845188425886f51fefbd"
+          "size": 22551,
+          "sha512": "ce35d1e2a7b18ed60a0d26ee43e2f1f1394a93df323862fc32b153d4e03f947c8232e30ea4dc46e9039fbeac41aa2a51ee5eb1e1aae933a16555e8a34a6d26de",
+          "sha256": "ec35efc05119e4accd4b6441ad18c835aaf686e20506cbfdf739eaad3222b773",
+          "sha1": "0d90f2c10cce869b297a9e2dd74522c72b508fe9",
+          "md5": "94f6911da06f61622271b2c5e2a6682b"
         }
       ]
     },
@@ -96,14 +96,7 @@
           "group": "org.jetbrains.kotlin",
           "module": "kotlin-stdlib-jdk8",
           "version": {
-            "requires": "1.6.20"
-          }
-        },
-        {
-          "group": "id.xxx.module",
-          "module": "common-test",
-          "version": {
-            "requires": "0.0.100"
+            "requires": "1.6.21"
           }
         }
       ],
@@ -111,11 +104,11 @@
         {
           "name": "viewbinding-0.0.100.aar",
           "url": "viewbinding-0.0.100.aar",
-          "size": 22576,
-          "sha512": "27e625ca6bef153497dad994e616f85c4362be5e94731c087476cc9f20ba22cd1d5f3663b3df5fba9384a96b32b3685dec85b4801cfa81df2b8a10bc8ea68213",
-          "sha256": "6e8b27451a9e6c4ba6cfc8dd996330ee11cebe1a5d1587c3f9407a5b19bc3acf",
-          "sha1": "87f6daabac53613fafe25d08f9df3db583364e4d",
-          "md5": "c0f4bfd3a89b845188425886f51fefbd"
+          "size": 22551,
+          "sha512": "ce35d1e2a7b18ed60a0d26ee43e2f1f1394a93df323862fc32b153d4e03f947c8232e30ea4dc46e9039fbeac41aa2a51ee5eb1e1aae933a16555e8a34a6d26de",
+          "sha256": "ec35efc05119e4accd4b6441ad18c835aaf686e20506cbfdf739eaad3222b773",
+          "sha1": "0d90f2c10cce869b297a9e2dd74522c72b508fe9",
+          "md5": "94f6911da06f61622271b2c5e2a6682b"
         }
       ]
     }

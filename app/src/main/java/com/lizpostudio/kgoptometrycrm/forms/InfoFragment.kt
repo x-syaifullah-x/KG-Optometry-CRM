@@ -37,7 +37,6 @@ class InfoFragment : Fragment() {
         private const val defaultCity = "SP"
         private const val defaultCountry = "MALAYSIA"
         private const val OCCASSIONALLY = "O"
-        private const val TAG = "LogTrace"
 
         const val OTHER_ID_INDEX = 1
     }
@@ -48,6 +47,7 @@ class InfoFragment : Fragment() {
     private var viewOnlyMode = false
 
     private val binding by viewBinding<FragmentInfoFormBinding>()
+
     private var recordID = 0L
     private var patientID = ""
     private var sectionEditDate = -1L
@@ -81,8 +81,6 @@ class InfoFragment : Fragment() {
 
         // get Patient data
         patientViewModel.getPatientForm(recordID)
-
-        binding.lifecycleOwner = this
 
         val sharedPref = app.getSharedPreferences(
             Constants.PREF_NAME, Context.MODE_PRIVATE
@@ -445,9 +443,9 @@ class InfoFragment : Fragment() {
 
         patientViewModel.patientFireForm.observe(viewLifecycleOwner) { patientNewRecord ->
             patientNewRecord?.let {
-                Log.d(TAG, "Reload Info Form? == ${!currentForm.assertEqual(it)}")
+                Log.d(Constants.TAG, "Reload Info Form? == ${!currentForm.assertEqual(it)}")
                 if (currentForm.recordID == it.recordID && !currentForm.assertEqual(it)) {
-                    Log.d(TAG, "Info Record from FB loaded")
+                    Log.d(Constants.TAG, "Info Record from FB loaded")
                     currentForm.copyFrom(it)
                     fillTheForm(it)
                 }
@@ -516,10 +514,10 @@ class InfoFragment : Fragment() {
             launchNavigator(navOption)
         } else {
             if (formWasChanged()) {
-                Log.d(TAG, "Info Form was changed")
+                Log.d(Constants.TAG, "Info Form was changed")
                 if (patientID != binding.idInput.text.toString()) {
 
-                    Log.d(TAG, "old ID = $patientID, new ID = ${binding.idInput.text}")
+                    Log.d(Constants.TAG, "old ID = $patientID, new ID = ${binding.idInput.text}")
                     val ifIDExists =
                         allSectionsList.filter { allForms -> allForms.patientID == binding.idInput.text.toString() }
 
@@ -527,7 +525,7 @@ class InfoFragment : Fragment() {
                     currentForm.patientID = patientID
 
                     if (ifIDExists.isEmpty()) {
-                        Log.d(TAG, "No such ID found")
+                        Log.d(Constants.TAG, "No such ID found")
                         // update patient id in all forms, save them and navigate
                         val formsWithNewID = patientAllForms.filter { it.sectionName != getString(R.string.info_form_caption) }
                         formsWithNewID.forEach { it.patientID = patientID }
@@ -547,7 +545,7 @@ class InfoFragment : Fragment() {
                 // trigger navigation after update
                 patientViewModel.updateRecord(currentForm, navOption)
             } else {
-                Log.d(TAG, "Info form the SAME")
+                Log.d(Constants.TAG, "Info form the SAME")
                 launchNavigator(navOption)
             }
         }
@@ -605,7 +603,7 @@ class InfoFragment : Fragment() {
     private fun fillTheForm(patientForm: PatientsEntity) {
 
         val extractData = patientForm.sectionData.split('|').toMutableList()
-        //    Log.d(TAG, "extract data size before = ${extractData.size}")
+        //    Log.d(Constants.TAG, "extract data size before = ${extractData.size}")
         if (extractData.size < 30) {
             for (index in 0..30) {
                 extractData.add("")
@@ -615,7 +613,7 @@ class InfoFragment : Fragment() {
         val ic = patientForm.patientIC
 
         val (dob, age) = computeAgeAndDOB(ic)
-        //      Log.d(TAG, "loading data [7] =  ${extractData[7]}, [9] =  ${extractData[9]}")
+        //      Log.d(Constants.TAG, "loading data [7] =  ${extractData[7]}, [9] =  ${extractData[9]}")
 
         binding.apply {
 
@@ -881,7 +879,7 @@ class InfoFragment : Fragment() {
                     cataractYN + "|" + cataractInfoInput.text.toString() + "|" + glaucomaYN + "|" +
                     glaucomaInfoInput.text.toString() + "|" + eyeSurgeryYN + "|" + eyeSurgeryInfoInput.text.toString()
 
-            //       Log.d(TAG, "saving data [7] = ${extractData.split('|')[7]} and [9] = ${extractData.split('|')[9]}")
+            //       Log.d(Constants.TAG, "saving data [7] = ${extractData.split('|')[7]} and [9] = ${extractData.split('|')[9]}")
             currentForm.sectionData = extractData.uppercase()
 
 //            val dataSelected = binding.practitionerName.selectedItem as String

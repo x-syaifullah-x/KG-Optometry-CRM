@@ -16,10 +16,12 @@ android {
         applicationId "com.lizpostudio.kgoptometrycrm"
         minSdkVersion build_versions.min_sdk
         targetSdkVersion build_versions.target_sdk
-        versionCode build_versions.version_code
-        versionName build_versions.version_name
+        versionCode build_versions.code
+        versionName build_versions.name
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        resConfigs "en"
     }
 
     signingConfigs {
@@ -43,6 +45,8 @@ android {
     buildTypes {
         release {
             minifyEnabled true
+            debuggable false
+            jniDebuggable false
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             signingConfig signingConfigs.release
         }
@@ -82,34 +86,28 @@ dependencies {
     implementation "id.xxx.module:handle-crash:0.0.100"
 
     implementation platform("com.google.firebase:firebase-bom:$vFirebaseBom")
-    implementation "com.google.firebase:firebase-crashlytics-ktx"
     implementation "com.google.firebase:firebase-analytics-ktx"
-    implementation "com.google.firebase:firebase-database"
+    implementation "com.google.firebase:firebase-auth-ktx"
+    implementation "com.google.firebase:firebase-crashlytics-ktx"
     implementation "com.google.firebase:firebase-database-ktx"
     implementation "com.google.firebase:firebase-storage-ktx"
-    implementation "com.google.firebase:firebase-auth-ktx"
+
     implementation "com.firebaseui:firebase-ui-database:$vFirebaseUi"
     implementation "com.firebaseui:firebase-ui-auth:$vFirebaseUi"
 
     implementation "com.google.android.gms:play-services-auth:$vPlayServicesAuth"
     implementation "com.google.android.material:material:$vMaterial"
 
-    implementation "com.google.code.gson:gson:$vGson"
-
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$vLifecycle"
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$vLifecycle"
-    implementation "androidx.lifecycle:lifecycle-common-java8:$vLifecycle"
     implementation "androidx.appcompat:appcompat:$vAppCompat"
-    implementation "androidx.room:room-ktx:$vRoom"
-    implementation "androidx.preference:preference-ktx:1.2.0"
     implementation "androidx.constraintlayout:constraintlayout:$vConstraintLayout"
     implementation "androidx.fragment:fragment-ktx:$vFragmentKtx"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$vLifecycle"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$vLifecycle"
     implementation "androidx.navigation:navigation-fragment-ktx:$vNavigation"
     implementation "androidx.navigation:navigation-ui-ktx:$vNavigation"
+    implementation "androidx.room:room-ktx:$vRoom"
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$vCoroutines"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$vCoroutines"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.0"
 
     testImplementation "junit:junit:$vJunit"
 
