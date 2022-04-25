@@ -32,10 +32,6 @@ import id.xxx.module.view.binding.ktx.viewBinding
 
 class SalesOrderFragment : Fragment() {
 
-    companion object {
-        const val KEY_REMARK_PRINT = "remark_print"
-    }
-
     private val patientViewModel: PatientsViewModel by viewModels {
         PatientsViewModelFactory(requireContext())
     }
@@ -441,7 +437,8 @@ class SalesOrderFragment : Fragment() {
                         for (i in 0 until spinnerRightCyl.adapter.count) {
                             if (extractData[34].trim() != "" &&
                                 extractData[34].trim()
-                                    .toDoubleOrNull() == spinnerRightCyl.adapter.getItem(i).toString()
+                                    .toDoubleOrNull() == spinnerRightCyl.adapter.getItem(i)
+                                    .toString()
                                     .toDoubleOrNull()
                             ) {
                                 spinnerRightCyl.setSelection(i)
@@ -455,7 +452,8 @@ class SalesOrderFragment : Fragment() {
                         for (i in 0 until spinnerRightAdd.adapter.count) {
                             if (extractData[44].trim() != "" &&
                                 extractData[44].trim()
-                                    .toDoubleOrNull() == spinnerRightAdd.adapter.getItem(i).toString()
+                                    .toDoubleOrNull() == spinnerRightAdd.adapter.getItem(i)
+                                    .toString()
                                     .toDoubleOrNull()
                             ) {
                                 spinnerRightAdd.setSelection(i)
@@ -469,7 +467,8 @@ class SalesOrderFragment : Fragment() {
                         for (i in 0 until spinnerLeftAdd.adapter.count) {
                             if (extractData[45].trim() != "" &&
                                 extractData[45].trim()
-                                    .toDoubleOrNull() == spinnerLeftAdd.adapter.getItem(i).toString()
+                                    .toDoubleOrNull() == spinnerLeftAdd.adapter.getItem(i)
+                                    .toString()
                                     .toDoubleOrNull()
                             ) {
                                 spinnerLeftAdd.setSelection(i)
@@ -518,7 +517,7 @@ class SalesOrderFragment : Fragment() {
                         editLeftAxis.setText(extractData[38])
                     }
                 }
-            } catch (t:Throwable){
+            } catch (t: Throwable) {
                 t.printStackTrace()
             }
         }
@@ -546,27 +545,20 @@ class SalesOrderFragment : Fragment() {
             }
         }
 
-        val pref = requireActivity().getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE)
-        val remarksPrint = pref.getString(KEY_REMARK_PRINT, "")
-        binding.remarkPrintInput.setText(remarksPrint)
-        if (!remarksPrint.isNullOrBlank()) {
-            pref.edit().putString(KEY_REMARK_PRINT, "").apply()
-        }
-
-        binding.icPrint.setOnClickListener { it ->
+        binding.icPrint.setOnClickListener {
             saveAndNavigate()
 
             val dialog = AlertDialog.Builder(it.context)
             dialog.setTitle("Export")
             dialog.setMessage("\nPlease select with name or without name for review")
             dialog.setPositiveButton("without name") { _, _ ->
-                val data = currentForm.toPrintModel("${binding.remarkPrintInput.text}")
+                val data = currentForm.toPrintModel()
                 findNavController().navigate(
                     SalesOrderFragmentDirections.actionToPreviewWithOutNameFragment(data)
                 )
             }
             dialog.setNegativeButton("with name") { _, _ ->
-                val data = currentForm.toPrintModel("${binding.remarkPrintInput.text}")
+                val data = currentForm.toPrintModel()
                 findNavController().navigate(
                     SalesOrderFragmentDirections.actionToPreviewWithNameFragment(data)
                 )
@@ -839,6 +831,7 @@ class SalesOrderFragment : Fragment() {
             editOr.setText(patientForm.or)
             editFrameSize.setText(patientForm.frameSize)
             editFrameType.setText(patientForm.frameType)
+            remarkPrintInput.setText(patientForm.remarkPrint)
         }
     }
 
@@ -901,6 +894,7 @@ class SalesOrderFragment : Fragment() {
             currentForm.contactLensSunglasses = "${editClSg.text}".uppercase()
             currentForm.practitionerNameOptometrist =
                 "${practitionerNameOptometrist.selectedItem}".uppercase()
+            currentForm.remarkPrint = "${binding.remarkPrintInput.text}"
         }
         return !currentForm.assertEqual(priorPatient)
     }
@@ -917,7 +911,10 @@ class SalesOrderFragment : Fragment() {
                     if (sectionEditDate != -1L) binding.dateCaption.text = convertLongToDDMMYY(
                         sectionEditDate
                     )
-                }, todayYear, todayMonth, todayDay
+                },
+                todayYear,
+                todayMonth,
+                todayDay
             )
             datePickerDialog.show()
         }

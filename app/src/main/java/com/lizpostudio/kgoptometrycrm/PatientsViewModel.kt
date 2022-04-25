@@ -34,16 +34,18 @@ class PatientsViewModel(
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()) {
                         practitionerRepository.insert(PractitionerEntity(data = "${snapshot.value}"))
+                    } else {
+                        practitionerRepository.deletes()
                     }
                 }
 
                 override fun onCancelled(error: DatabaseError) {}
             }
-            repository.practitionerReference?.addListenerForSingleValueEvent(historyListener)
+            repository.practitionersReference.addListenerForSingleValueEvent(historyListener)
         }
     }
 
-    private val userEmail = FirebaseAuth.getInstance()
+    private val userEmail = FirebaseAuth.getInstance(repository.firebaseApp)
         .currentUser?.email
 
     private val userName =
@@ -56,9 +58,9 @@ class PatientsViewModel(
         }
     val practitioner = practitionerRepository.get().map {
         val default = linkedSetOf("", userName.uppercase())
-        default.addAll(
-            it.data.split(",")
-        )
+        it?.apply {
+            default.addAll(data.split(","))
+        }
         default.toList()
     }
 
@@ -112,14 +114,10 @@ class PatientsViewModel(
         get() = _patientAdded
 
     private val _recordsUpdated = MutableLiveData<Boolean>()
-    val recordsUpdated: LiveData<Boolean>
-        get() = _recordsUpdated
 
     private val _recordDeleted = MutableLiveData<Boolean>()
     val recordDeleted: LiveData<Boolean>
         get() = _recordDeleted
-
-    // === FIREBASE OBSERVERS ===
 
     private val _allFirebaseDB = MutableLiveData<List<PatientsEntity>>()
     val allFirebaseDB: LiveData<List<PatientsEntity>>
@@ -130,10 +128,6 @@ class PatientsViewModel(
     private val _historyFBRecords = MutableLiveData<List<Pair<Long, Long>>>()
     val historyFBRecords: LiveData<List<Pair<Long, Long>>>
         get() = _historyFBRecords
-
-    private val _deletedFBRecords = MutableLiveData<List<Pair<Long, Long>>>()
-    val deletedFBRecords: LiveData<List<Pair<Long, Long>>>
-        get() = _deletedFBRecords
 
     // Live data for forms
     private val _patientFireForm = MutableLiveData<PatientsEntity>()
@@ -155,53 +149,51 @@ class PatientsViewModel(
     fun getAllRecordsFromFirebase() {
         // todo - rework for smaller portions queries
         Log.d(Constants.TAG, "Launching get request")
-        if (repository.recordsReference != null) {
-            val recordsList = mutableListOf<PatientsEntity>()
-            repository.recordsReference.limitToFirst(30000).get().addOnCompleteListener { task ->
-                Log.d(Constants.TAG, "Request for first completed")
-                if (task.isSuccessful) {
-                    val result = task.result
-                    Log.d(Constants.TAG, "Task is successful")
-                    result?.let {
-                        Log.d(Constants.TAG, "${result.childrenCount} received")
-                        result.children.forEach {
-                            val newSection = it.getValue(FBRecords::class.java)
-                            val recordID = it.key?.toLongOrNull()
-                            if (newSection != null && recordID != null) {
-                                recordsList.add(convertFBRecordToPatients(newSection, recordID))
-                            }
+        val recordsList = mutableListOf<PatientsEntity>()
+        repository.recordsReference.limitToFirst(30000).get().addOnCompleteListener { task ->
+            Log.d(Constants.TAG, "Request for first completed")
+            if (task.isSuccessful) {
+                val result = task.result
+                Log.d(Constants.TAG, "Task is successful")
+                result?.let {
+                    Log.d(Constants.TAG, "${result.childrenCount} received")
+                    result.children.forEach {
+                        val newSection = it.getValue(FBRecords::class.java)
+                        val recordID = it.key?.toLongOrNull()
+                        if (newSection != null && recordID != null) {
+                            recordsList.add(convertFBRecordToPatients(newSection, recordID))
                         }
-                        Log.d(Constants.TAG, "Got first ${recordsList.size} records from Firebase!")
+                    }
+                    Log.d(Constants.TAG, "Got first ${recordsList.size} records from Firebase!")
 
-                        repository.recordsReference.limitToLast(30000).get()
-                            .addOnCompleteListener { lastTask ->
-                                Log.d(Constants.TAG, "Request for last completed")
-                                if (lastTask.isSuccessful) {
-                                    val lastResult = lastTask.result
-                                    Log.d(Constants.TAG, "Last Task is successful")
-                                    lastResult?.let {
-                                        Log.d(Constants.TAG, "${lastResult.childrenCount} received")
-                                        lastResult.children.forEach {
-                                            val newSection = it.getValue(FBRecords::class.java)
-                                            val recordID = it.key?.toLongOrNull()
-                                            if (newSection != null && recordID != null) {
-                                                recordsList.add(
-                                                    convertFBRecordToPatients(newSection, recordID)
-                                                )
-                                            }
+                    repository.recordsReference.limitToLast(30000).get()
+                        .addOnCompleteListener { lastTask ->
+                            Log.d(Constants.TAG, "Request for last completed")
+                            if (lastTask.isSuccessful) {
+                                val lastResult = lastTask.result
+                                Log.d(Constants.TAG, "Last Task is successful")
+                                lastResult?.let {
+                                    Log.d(Constants.TAG, "${lastResult.childrenCount} received")
+                                    lastResult.children.forEach {
+                                        val newSection = it.getValue(FBRecords::class.java)
+                                        val recordID = it.key?.toLongOrNull()
+                                        if (newSection != null && recordID != null) {
+                                            recordsList.add(
+                                                convertFBRecordToPatients(newSection, recordID)
+                                            )
                                         }
-                                        Log.d(Constants.TAG, "Final size is = ${recordsList.size} ")
-
-                                        val finalList = recordsList.toSet().toList()
-                                        Log.d(
-                                            Constants.TAG,
-                                            "Without dublicates = ${finalList.size} "
-                                        )
-                                        _allFirebaseDB.value = finalList
                                     }
+                                    Log.d(Constants.TAG, "Final size is = ${recordsList.size} ")
+
+                                    val finalList = recordsList.toSet().toList()
+                                    Log.d(
+                                        Constants.TAG,
+                                        "Without dublicates = ${finalList.size} "
+                                    )
+                                    _allFirebaseDB.value = finalList
                                 }
                             }
-                    }
+                        }
                 }
             }
         }
@@ -276,7 +268,7 @@ class PatientsViewModel(
 
     fun createRecordListener(recordID: Long, oneTimeEvent: Boolean = false) {
         recordsChangesListener?.let {
-            repository.recordsReference?.removeEventListener(recordsChangesListener!!)
+            repository.recordsReference.removeEventListener(recordsChangesListener!!)
         }
 
         val recordsListener = object : ValueEventListener {
@@ -300,11 +292,11 @@ class PatientsViewModel(
         }
         listenToChange = true
         if (oneTimeEvent) {
-            repository.recordsReference?.child(recordID.toString())
-                ?.addListenerForSingleValueEvent(recordsListener)
+            repository.recordsReference.child(recordID.toString())
+                .addListenerForSingleValueEvent(recordsListener)
         } else {
-            recordsChangesListener = repository.recordsReference?.child(recordID.toString())
-                ?.addValueEventListener(recordsListener)
+            recordsChangesListener = repository.recordsReference.child(recordID.toString())
+                .addValueEventListener(recordsListener)
         }
 
     }
@@ -315,33 +307,33 @@ class PatientsViewModel(
     fun removeRecordsChangesListener() {
         Log.d(Constants.TAG, "Removing record listener")
         recordsChangesListener?.let {
-            repository.recordsReference?.removeEventListener(recordsChangesListener!!)
+            repository.recordsReference.removeEventListener(recordsChangesListener!!)
         }
         listenToChange = false
     }
 
     fun submitPatientToFirebase(recordID: String, patient: PatientsEntity) {
 //        removeFBListener()
-        repository.recordsReference?.child(recordID)?.setValue(convertFormToFBRecord(patient))
+        repository.recordsReference.child(recordID).setValue(convertFormToFBRecord(patient))
         val timeKey = System.currentTimeMillis().toString()
-        repository.historyReference?.child(timeKey)?.setValue(recordID)
+        repository.historyReference.child(timeKey).setValue(recordID)
     }
 
     fun submitListOfPatientsToFB(patients: List<PatientsEntity>) {
         //     removeFBListener()
         patients.forEach {
-            repository.recordsReference!!.child(it.recordID.toString())
+            repository.recordsReference.child(it.recordID.toString())
                 .setValue(convertFormToFBRecord(it))
             val timeKey = System.currentTimeMillis().toString()
-            repository.historyReference!!.child(timeKey).setValue(it.recordID.toString())
+            repository.historyReference.child(timeKey).setValue(it.recordID.toString())
         }
     }
 
     fun deletePatientFromFirebase(recordID: String) {
         removeRecordsChangesListener()
-        repository.recordsReference?.child(recordID)?.removeValue()
+        repository.recordsReference.child(recordID).removeValue()
         val timeKey = System.currentTimeMillis().toString()
-        repository.deleteHistoryReference?.child(timeKey)?.setValue(recordID)
+        repository.deleteHistoryReference.child(timeKey).setValue(recordID)
     }
 
     fun deleteListOfRecordsFromFirebase(recordsList: List<String>) {
@@ -349,25 +341,21 @@ class PatientsViewModel(
         if (recordsList.isNotEmpty()) {
             val timeKeyStart = System.currentTimeMillis()
             for (index in 0..recordsList.lastIndex) {
-                repository.recordsReference?.child(recordsList[index])?.removeValue()
+                repository.recordsReference.child(recordsList[index]).removeValue()
                 // make a track in history - very fast deletion happen
                 val timeKey = (timeKeyStart + index).toString()
-                repository.deleteHistoryReference?.child(timeKey)?.setValue(recordsList[index])
+                repository.deleteHistoryReference.child(timeKey).setValue(recordsList[index])
             }
         }
     }
 
     private fun updateDeleteHistoryFBReference(newDelHistory: Map<String, String>) {
-        repository.deleteHistoryReference?.setValue(newDelHistory)
+        repository.deleteHistoryReference.setValue(newDelHistory)
     }
 
     fun updateHistoryFBReference(newHistory: Map<String, String>) {
-        repository.historyReference?.setValue(newHistory)
+        repository.historyReference.setValue(newHistory)
     }
-
-    // === LOCAL DATABASE METHODS ===
-
-    // === DATABASE Search methods ===
 
     fun createNewRecord(sectionName: String) {
         viewModelScope.launch {
@@ -408,7 +396,7 @@ class PatientsViewModel(
         }
     }
 
-    fun deleteListOfRecordsByID(recordsID: List<Long>) {
+    private fun deleteListOfRecordsByID(recordsID: List<Long>) {
         viewModelScope.launch {
             _recordDeleted.value = repository.deleteListOfRecordsByID(recordsID)
         }
@@ -460,13 +448,6 @@ class PatientsViewModel(
     private fun addForm(patientForm: PatientsEntity) {
         viewModelScope.launch {
             _formAdded.value = repository.addForm(patientForm)
-        }
-    }
-
-    fun insertRecord(patientForm: PatientsEntity) {
-        viewModelScope.launch {
-            _recordsInserted.value =
-                repository.insertForm(patientForm)
         }
     }
 
@@ -522,11 +503,7 @@ class PatientsViewModel(
 
     suspend fun getPatientBySalesOrder(or: String) = repository.getPatientBySalesOrder(or)
 
-    suspend fun getPatientByProduct(value: String) = repository.getPatientByProduct(value)
-
     suspend fun getIdProducts(value: String) = repository.getIdProducts(value)
-
-    val idProducts  = repository.cashOrdersAndSalesOrders()
 
     val csAndOr = repository.getCsAndOr()
 }

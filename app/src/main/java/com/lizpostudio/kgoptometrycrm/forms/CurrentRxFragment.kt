@@ -26,7 +26,6 @@ import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -325,7 +324,8 @@ class CurrentRxFragment : Fragment() {
                     }, 100L)
                 }
 
-                val hPosList = mapSectionName[sectionName]?.map { form -> form.recordID }?: listOf()
+                val hPosList =
+                    mapSectionName[sectionName]?.map { form -> form.recordID } ?: listOf()
                 val hPosBottomNav = hPosList.indexOf(recordID)
                 if (hPosBottomNav > 3) {
                     val scrollWidth = binding.chipsScroll2.width
@@ -351,20 +351,15 @@ class CurrentRxFragment : Fragment() {
             val captureImage = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
             val resolvedActivity: ResolveInfo? =
                 packageManager.resolveActivity(
-                    captureImage,
-                    PackageManager.MATCH_DEFAULT_ONLY
+                    captureImage, PackageManager.MATCH_DEFAULT_ONLY
                 )
             if (resolvedActivity != null && photoUri != null) {
-                captureImage.putExtra(
-                    MediaStore.EXTRA_OUTPUT, photoUri
-                )
+                captureImage.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
                 val cameraActivities: List<ResolveInfo> =
                     packageManager.queryIntentActivities(
-                        captureImage,
-                        PackageManager.MATCH_DEFAULT_ONLY
+                        captureImage, PackageManager.MATCH_DEFAULT_ONLY
                     )
                 for (cameraActivity in cameraActivities) {
-
                     requireActivity().grantUriPermission(
                         cameraActivity.activityInfo.packageName,
                         photoUri,
@@ -449,9 +444,8 @@ class CurrentRxFragment : Fragment() {
         patientViewModel.recordDeleted.observe(viewLifecycleOwner) { ifDeleted ->
             ifDeleted?.let {
                 if (ifDeleted) navController.navigate(
-                    CurrentRxFragmentDirections.actionCurrentRxFragmentToFormSelectionFragment(
-                        patientID
-                    )
+                    CurrentRxFragmentDirections
+                        .actionCurrentRxFragmentToFormSelectionFragment(patientID)
                 )
             }
         }
@@ -540,7 +534,10 @@ class CurrentRxFragment : Fragment() {
         } else {
             if (formWasChanged()) {
                 Log.d(Constants.TAG, "Rx form CHANGED")
-                Log.d(Constants.TAG, "Submiting to firebase and local db record ID ${currentForm.recordID}")
+                Log.d(
+                    Constants.TAG,
+                    "Submiting to firebase and local db record ID ${currentForm.recordID}"
+                )
                 patientViewModel.submitPatientToFirebase(
                     currentForm.recordID.toString(),
                     currentForm
@@ -640,21 +637,21 @@ class CurrentRxFragment : Fragment() {
 
     private var takePhoto = false
 
-    // todo - replace
     @SuppressLint("SetTextI18n")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-//   Log.d(Constants.TAG, "initial file size = ${photoFile.length() / 1024} kBytes")
         if (requestCode == REQUEST_PHOTO && resultCode == Activity.RESULT_OK) {
             takePhoto = true
             scaleBitmap(photoFile)
             currentForm.reservedField = storageRef.toString()
-            storageRef.putFile(storageFile)
+            val ois = requireContext().contentResolver.openInputStream(storageFile)
+            storageRef.putStream(ois ?: return)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         binding.rotatePhoto.visibility = View.VISIBLE
                         updatePhotoView(photoFile)
                     }
+                    ois.close()
                 }
             if (photoUri != null) {
                 requireActivity().revokeUriPermission(
@@ -683,7 +680,7 @@ class CurrentRxFragment : Fragment() {
 
     private fun updatePhotoView(photoFile: File) {
         //   taskToGetFile
-        if (currentForm.reservedField.isBlank()){
+        if (currentForm.reservedField.isBlank()) {
             currentForm.reservedField = storageRef.toString()
         }
         if (currentForm.reservedField.isNotBlank() && currentForm.reservedField != "deleted") {
@@ -694,7 +691,8 @@ class CurrentRxFragment : Fragment() {
             }.addOnFailureListener {
                 // delete local file
                 Log.d(Constants.TAG, "No such file exist or error downloading. Delete local file")
-                if (photoFile.exists()) photoFile.delete()
+                if (photoFile.exists())
+                    photoFile.delete()
                 patientViewModel.readyToShowPhoto()
                 currentForm.reservedField = ""
             }
@@ -887,17 +885,6 @@ class CurrentRxFragment : Fragment() {
                     lensYear.text.toString()
 
             currentForm.sectionData = extractData.uppercase()
-
-//            val dataSelected = binding.practitionerName.selectedItem as String
-//
-//            val dataPractitioner = StringBuilder(dataSelected)
-//            val count = binding.practitionerName.adapter.count
-//            for (i in 0 until count) {
-//                val a = binding.practitionerName.adapter.getItem(i)
-//                if (a.toString() != dataSelected) {
-//                    dataPractitioner.append("|$a")
-//                }
-//            }
             currentForm.practitioner = (binding.practitionerName.selectedItem as String).uppercase()
 
             if (takePhoto) {
@@ -916,10 +903,12 @@ class CurrentRxFragment : Fragment() {
                         e.printStackTrace()
                     }
                 }
-                storageRef.putFile(storageFile).addOnCompleteListener { task ->
-//                    if (task.isSuccessful) {
-//                        updatePhotoView(photoFile)
-//                    }
+                val ois = requireContext().contentResolver.openInputStream(storageFile)
+                ois?.apply {
+                    storageRef.putStream(ois)
+                        .addOnCompleteListener { _ ->
+                            ois.close()
+                        }
                 }
             }
         }
@@ -946,10 +935,5 @@ class CurrentRxFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         downloadPhotoTask?.cancel()
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.clear()
     }
 }

@@ -137,4 +137,8 @@
         <item>WP LABUAN</item>
     </string-array>
 
+    <string-array name="use">
+        <item>Default</item>
+        <item>Select File</item>
+    </string-array>
 </resources>

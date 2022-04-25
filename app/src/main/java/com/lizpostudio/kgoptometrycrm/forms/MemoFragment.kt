@@ -526,17 +526,19 @@ class MemoFragment : Fragment() {
     @SuppressLint("SetTextI18n")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        Log.d(Constants.TAG, "initial file size = ${photoFile.length() / 1024} kBytes")
         if (requestCode == REQUEST_PHOTO && resultCode == Activity.RESULT_OK) {
             takePhoto = true
             scaleBitmap(photoFile)
             currentForm.reservedField = storageRef.toString()
-            storageRef.putFile(storageFile).addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    binding.rotatePhoto.visibility = View.VISIBLE
-                    updatePhotoView(photoFile)
+            val ois = requireContext().contentResolver.openInputStream(storageFile)
+            storageRef.putStream(ois ?: return)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        binding.rotatePhoto.visibility = View.VISIBLE
+                        updatePhotoView(photoFile)
+                    }
+                    ois.close()
                 }
-            }
             if (photoUri != null) {
                 requireActivity().revokeUriPermission(
                     photoUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION
@@ -700,16 +702,6 @@ class MemoFragment : Fragment() {
             if (sectionEditDate != -1L) currentForm.dateOfSection = sectionEditDate
             val extractData = settledCheck.isChecked.toString() // + "|"
             currentForm.sectionData = extractData.uppercase()
-
-//            val dataSelected = binding.practitionerName.selectedItem as String
-//            val dataPractitioner = StringBuilder(dataSelected)
-//            val count = binding.practitionerName.adapter.count
-//            for (i in 0 until count) {
-//                val a = binding.practitionerName.adapter.getItem(i)
-//                if (a.toString() != dataSelected) {
-//                    dataPractitioner.append("|$a")
-//                }
-//            }
             currentForm.practitioner = (binding.practitionerName.selectedItem as String).uppercase()
 
             currentForm.mm = "${binding.mmInput.text}".uppercase()
@@ -730,10 +722,12 @@ class MemoFragment : Fragment() {
                         e.printStackTrace()
                     }
                 }
-                storageRef.putFile(storageFile).addOnCompleteListener { task ->
-//                    if (task.isSuccessful) {
-//                        updatePhotoView(photoFile)
-//                    }
+                val ois = requireContext().contentResolver.openInputStream(storageFile)
+                ois?.apply {
+                    storageRef.putStream(ois)
+                        .addOnCompleteListener { _ ->
+                            ois.close()
+                        }
                 }
             }
         }
@@ -761,10 +755,5 @@ class MemoFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         downloadPhotoTask?.cancel()
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.clear()
     }
 }

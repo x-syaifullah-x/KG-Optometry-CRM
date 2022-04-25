@@ -1,10 +1,8 @@
 package com.lizpostudio.kgoptometrycrm
 
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.app.Application
 import android.content.Context
-import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -20,17 +18,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
-import com.firebase.ui.auth.AuthUI
-import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.lizpostudio.kgoptometrycrm.constant.Constants
 import com.lizpostudio.kgoptometrycrm.data.repository.PatientRepository
+import com.lizpostudio.kgoptometrycrm.data.source.remote.MyFirebase
 import com.lizpostudio.kgoptometrycrm.data.source.remote.firebase.KGMessage
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentLoginBinding
 import com.lizpostudio.kgoptometrycrm.search.SearchCostumerFragment
@@ -44,7 +40,6 @@ import id.xxx.module.view.binding.ktx.viewBinding
 class LoginFragment : Fragment() {
 
     companion object {
-        private const val RECORDS_CHILD = "records"
         private const val MESSAGES_CHILD = "messages"
         private const val SETTINGS_CHILD = "settings"
         private const val USERS_CHILD = "users"
@@ -53,10 +48,37 @@ class LoginFragment : Fragment() {
         private const val TRUSTED_CHILD = "trusted"
         private const val ADMIN_KEY = "admin"
         private const val USERS_KEY = "user"
-        private const val RC_SIGN_IN = 123
+
+        fun defaultFirebaseConfig(edit: SharedPreferences.Editor): Boolean {
+            return edit
+                .putString(
+                    MyFirebase.KEY_FIREBASE_URL,
+                    "https://kgoptometrycrm.firebaseio.com"
+                )
+                .putString(
+                    MyFirebase.KEY_PROJECT_NUMBER,
+                    "630259719920"
+                )
+                .putString(
+                    MyFirebase.KEY_API_KEY,
+                    "AIzaSyBI6-DpeH-ki0jLsQ64E3XVrw00wxG-qQI"
+                )
+                .putString(
+                    MyFirebase.KEY_APPLICATION_ID,
+                    "1:630259719920:android:02d8acd58e5fc3ad0d2c35"
+                )
+                .putString(
+                    MyFirebase.KEY_STORAGE_BUCKET,
+                    "kgoptometrycrm.appspot.com"
+                )
+                .putString(
+                    MyFirebase.KEY_PROJECT_ID,
+                    "kgoptometrycrm"
+                )
+                .commit()
+        }
     }
 
-    private lateinit var app: Application
     private var deviceCode = "NO"
     private var trustedDevice = false
     private var listOfTrustedDevices = MutableLiveData<List<String>>()
@@ -64,13 +86,11 @@ class LoginFragment : Fragment() {
     private var userNameAuth = "Guest"
     private var fireApp: FirebaseApp? = null
 
-    //        Log.d(TAG, "fireApp: ${fireApp}")
     private var firebaseDatabase: FirebaseDatabase? = null
 
-    //    Log.d(TAG, "database: ${database}")
     private var messagesReference: DatabaseReference? = null
 
-    private var mMessageListener: ChildEventListener? = null
+    //    private var mMessageListener: ChildEventListener? = null
     private var msgListener: ValueEventListener? = null
 
     //   private var mAdapter: FirebaseRecyclerAdapter<Message, MessageViewHolder>? = null
@@ -86,9 +106,9 @@ class LoginFragment : Fragment() {
 
     private val binding by viewBinding<FragmentLoginBinding>()
 
-    private val providers = arrayListOf(
-        AuthUI.IdpConfig.EmailBuilder().build()
-    )
+//    private val providers = arrayListOf(
+//        AuthUI.IdpConfig.EmailBuilder().build()
+//    )
 
     private fun updateUIOnSuccess() {
 
@@ -105,69 +125,60 @@ class LoginFragment : Fragment() {
         binding.helloUserText.text = getString(R.string.hello_user, userNameAuth)
 
         binding.editLoginName.visibility = View.GONE
+        binding.containerChangeConfiguration.visibility = View.GONE
         binding.editPassword.visibility = View.GONE
         binding.startButton.visibility = View.VISIBLE
         binding.customersText.visibility = View.VISIBLE
         //  Log.d(TAG, "user = ${mFirebaseUser?.email} === $mFirebaseUser")
     }
 
-
     // [START auth_fui_result]
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode == RC_SIGN_IN) {
-            val response = IdpResponse.fromResultIntent(data)
-
-            if (resultCode == Activity.RESULT_OK) {
-                // Successfully signed in
-                mFirebaseUser = FirebaseAuth.getInstance().currentUser
-                userNameAuth = mFirebaseUser?.displayName ?: mFirebaseUser?.email ?: "Guest"
-// if user logged in - launch listener
-                //          Log.d(TAG, "Initialize Listener at SUCCESS LOGIN ACTIVITY")
-                initReadingMessages()
-
-                binding.loginLogoutButton.setImageResource(R.drawable.log_out_36)
-                binding.loginLogoutText.text = getString(R.string.logout)
-                binding.helloUserText.text = getString(R.string.hello_user, userNameAuth)
-                //             Log.d(TAG, "user = ${mFirebaseUser?.email} === $mFirebaseUser")
-                // ...
-            } else {
-
-                binding.helloUserText.text = getString(R.string.sign_in_failure)
-                // Sign in failed. If response is null the user canceled the
-                // sign-in flow using the back button. Otherwise check
-                // response.getError().getErrorCode() and handle the error.
-                // ...
-            }
-        }
-    }
-
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+//
+//        if (requestCode == RC_SIGN_IN) {
+//            val response = IdpResponse.fromResultIntent(data)
+//
+//            if (resultCode == Activity.RESULT_OK) {
+//                // Successfully signed in
+//                mFirebaseUser = FirebaseAuth.getInstance().currentUser
+//                userNameAuth = mFirebaseUser?.displayName ?: mFirebaseUser?.email ?: "Guest"
+//// if user logged in - launch listener
+//                //          Log.d(TAG, "Initialize Listener at SUCCESS LOGIN ACTIVITY")
+//                initReadingMessages()
+//
+//                binding.loginLogoutButton.setImageResource(R.drawable.log_out_36)
+//                binding.loginLogoutText.text = getString(R.string.logout)
+//                binding.helloUserText.text = getString(R.string.hello_user, userNameAuth)
+//                //             Log.d(TAG, "user = ${mFirebaseUser?.email} === $mFirebaseUser")
+//                // ...
+//            } else {
+//
+//                binding.helloUserText.text = getString(R.string.sign_in_failure)
+//                // Sign in failed. If response is null the user canceled the
+//                // sign-in flow using the back button. Otherwise check
+//                // response.getError().getErrorCode() and handle the error.
+//                // ...
+//            }
+//        }
+//    }
 
     private fun signIn(email: String, password: String) {
-        //      Log.d(TAG, "signIn:$email")
-
-        // Initialize Firebase Auth
-        val auth = Firebase.auth
-        // [START sign_in_with_email]
+        val firebaseApp = MyFirebase.getInstance(requireContext())
+        val auth = FirebaseAuth.getInstance(firebaseApp)
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(requireActivity()) { task ->
                 if (task.isSuccessful) {
-                    // Sign in success, update UI with the signed-in user's information
-                    //       Log.d(TAG, "signInWithEmail:success")
                     mFirebaseUser = auth.currentUser
-
                     updateUIOnSuccess()
                     checkTrustedDevice()
                 } else {
-                    // If sign in fails, display a message to the user.
                     binding.helloUserText.text = getString(R.string.sign_in_failure)
-                    //          Log.d(TAG, "signInWithEmail:failure", task.exception)
-                    Toast.makeText(requireContext(), "Authentication failed.", Toast.LENGTH_SHORT)
-                        .show()
+                    Toast.makeText(
+                        requireContext(), "Authentication failed.", Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
-        // [END sign_in_with_email]
     }
 
     override fun onCreateView(
@@ -176,31 +187,20 @@ class LoginFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        val navController = this.findNavController()
-
-        app = requireNotNull(this.activity).application
-
-        /*     val dataSource = PatientsDatabase.getInstance(app).patientsDao
-
-
-             val viewModelFactory = LoginViewModelFactory(dataSource, app)
-             val loginViewModel = ViewModelProvider(this, viewModelFactory).get(LoginViewModel::class.java)*/
-        // binding.loginViewModel = loginViewModel
-
+        binding.tvChangeFirebaseConfig.setOnClickListener {
+            findNavController().navigate(R.id.settingLoginFragment)
+        }
         cleanSearch()
 
         // =============== Check the User and sign in if null =================
 
-        fireApp = FirebaseApp.initializeApp(requireContext())
-//        Log.d(TAG, "fireApp: ${fireApp}")
+        fireApp = MyFirebase.getInstance(requireContext())
         firebaseDatabase = fireApp?.let { Firebase.database(it) }
-        //    Log.d(TAG, "database: ${database}")
         messagesReference = firebaseDatabase?.reference?.child(MESSAGES_CHILD)
-        //     Log.d(TAG, "myRef: ${myRef}")
 
         // ================  Check if Device is TRUSTED ===================
         checkTrustedDevice()
-        mFirebaseUser = FirebaseAuth.getInstance().currentUser
+        mFirebaseUser = FirebaseAuth.getInstance(fireApp!!).currentUser
 
         if (mFirebaseUser != null) {
             updateUIOnSuccess()
@@ -228,12 +228,10 @@ class LoginFragment : Fragment() {
 
                 if (msgListener != null) {
                     messagesReference!!.removeEventListener(msgListener!!)
-                    //           Log.d(TAG, "REMOVE Listener at Log-out ")
                 }
                 recyclerAdapter.submitList(emptyList())
                 recyclerAdapter.notifyDataSetChanged()
 
-                //      Log.d(TAG, "login -logout clicked start to KICK OUT user = $mFirebaseUser")
                 signOut()
                 mFirebaseUser = null
             }
@@ -250,23 +248,16 @@ class LoginFragment : Fragment() {
 
         }
 
-/*        binding.kgOptometryMainText.setOnClickListener {
-            throw RuntimeException("Test Crash")
-        }*/
-
         binding.startButton.setOnClickListener {
-
             if (trustedDevice) {
                 if (mFirebaseUser != null) {
-                    navController.navigate(LoginFragmentDirections.actionLoginFragmentToDatabaseSearchFragment())
+                    findNavController().navigate(LoginFragmentDirections.actionLoginFragmentToDatabaseSearchFragment())
                 } else {
                     showPopup(getString(R.string.please_login))
                 }
             } else {
-                //           Log.d(TAG, "Your device = $trustedDevice")
                 showPopup("Your device is not recognized!\nPlease, contact your administrator to proceed!")
             }
-
         }
 
         val itemDecor = DividerItemDecoration(requireContext(), RecyclerView.VERTICAL)
@@ -321,33 +312,22 @@ class LoginFragment : Fragment() {
     }
 
     private fun initReadingMessages() {
-
         if (messagesReference != null) {
-            //      Log.d(TAG, "Listener STARTED")
-            //     var records= mutableListOf<FBRecords>()
-            //    val recordsRef = messagesReference!!.child(RECORDS_CHILD)
-
             val messagesListener = object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
 
                     if (snapshot.exists()) {
                         messagesList.clear()
-                        var simpleList = ""
                         snapshot.children.forEach {
                             var newMessage: KGMessage? = null
                             try {
-                                newMessage =
-                                    it.getValue(KGMessage::class.java)
+                                newMessage = it.getValue(KGMessage::class.java)
                             } catch (e: Exception) {
-                                //                       Log.d(TAG, "ERROR converting messages: $e")
+                                e.printStackTrace()
                             }
                             if (newMessage != null) {
                                 messagesList.add(
-                                    KGMessage(
-                                        newMessage.author,
-                                        newMessage.body,
-                                        newMessage.time
-                                    )
+                                    KGMessage(newMessage.author, newMessage.body, newMessage.time)
                                 )
                             }
                         }
@@ -391,11 +371,13 @@ class LoginFragment : Fragment() {
     private fun signOut() {
 
         binding.editPassword.setText("")
-        val auth = Firebase.auth
-        auth.signOut()
+        FirebaseAuth.getInstance(
+            MyFirebase.getInstance(requireContext())
+        ).signOut()
 
         val userLogged = "Guest! Please, log in to continue"
         binding.editLoginName.visibility = View.VISIBLE
+        binding.containerChangeConfiguration.visibility = View.VISIBLE
         binding.editPassword.visibility = View.VISIBLE
         binding.startButton.visibility = View.GONE
         binding.customersText.visibility = View.GONE
@@ -421,9 +403,7 @@ class LoginFragment : Fragment() {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()) {
                         snapshot.children.forEach {
-                            //                     Log.d(TAG, " Snapshot child  = ${it.value}, - ${it.key}")
                             if (it.value.toString().equals(userNameAuth, ignoreCase = true)) {
-
                                 if (it.key.toString() == ADMIN_KEY) {
                                     isAdmin.value = true
                                     saveUserToLocal(userNameAuth, ADMIN_KEY)
@@ -453,8 +433,10 @@ class LoginFragment : Fragment() {
             val timeStamp = System.currentTimeMillis()
             deviceCode = generateID(PatientRepository.getInstance(requireContext()))
 
-            val devicesFBReference = firebaseDatabase!!.reference.child(SETTINGS_CHILD)
-                .child(DEVICES_CHILD).child(NEW_CHILD)
+            val devicesFBReference = firebaseDatabase!!.reference
+                .child(SETTINGS_CHILD)
+                .child(DEVICES_CHILD)
+                .child(NEW_CHILD)
 
             val newDevice = "${convertLongToDDKey(timeStamp)}_M_${android.os.Build.MODEL}"
 
@@ -481,7 +463,6 @@ class LoginFragment : Fragment() {
                 @SuppressLint("DefaultLocale")
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()) {
-                        //                   Log.d(TAG, "Snapshot of trusted devices from firebase = ${snapshot.children.map { it.value.toString()}}")
                         listOfTrustedDevices.value = snapshot.children.map { it.value.toString() }
                     }
                 }
@@ -494,18 +475,14 @@ class LoginFragment : Fragment() {
 
 
     private fun saveUserToLocal(userName: String, userType: String) {
-
-        //      val app = requireActivity().application
         val sharedPref = activity
             ?.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE)
-        //   Log.d(TAG, " Saving USER TO STORE : userName = $userName, userType = $userType")
         if (sharedPref != null) {
             val editor = sharedPref.edit()
             editor.putString("user_name", userName)
             editor.putString("admin", userType)
             editor.apply()
         }
-
     }
 
     private fun cleanAdminRight() {
@@ -538,7 +515,7 @@ class LoginFragment : Fragment() {
 
         //       val app = requireNotNull(this.activity).application
         // inflate the layout of the popup window
-        val layoutInflater: LayoutInflater = LayoutInflater.from(app.applicationContext)
+        val layoutInflater: LayoutInflater = LayoutInflater.from(requireContext())
         val popupView: View =
             layoutInflater.inflate(R.layout.popup_action_info, binding.mainLayout, false)
 
@@ -558,6 +535,19 @@ class LoginFragment : Fragment() {
         popupView.setOnTouchListener { _, _ ->
             popupWindow.dismiss()
             true
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val pref = Constants.getSharedPreferences(requireContext())
+
+        val keyFirstInstall = "first_install"
+
+        if (pref.getBoolean(keyFirstInstall, true)) {
+            val edit = pref.edit()
+            edit.putBoolean(keyFirstInstall, false)
+            defaultFirebaseConfig(edit)
         }
     }
 }

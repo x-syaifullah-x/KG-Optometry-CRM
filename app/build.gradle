@@ -1,11 +1,8 @@
 plugins {
     id "com.android.application"
     id "androidx.navigation.safeargs"
-    id "com.google.firebase.crashlytics"
-    id "com.google.gms.google-services"
     id "kotlin-android"
     id "kotlin-kapt"
-    id "kotlin-parcelize"
 }
 
 android {
@@ -85,18 +82,12 @@ dependencies {
     implementation "id.xxx.module:viewbinding:0.0.100"
     implementation "id.xxx.module:handle-crash:0.0.100"
 
+    implementation "com.google.android.material:material:$vMaterial"
+
     implementation platform("com.google.firebase:firebase-bom:$vFirebaseBom")
-    implementation "com.google.firebase:firebase-analytics-ktx"
     implementation "com.google.firebase:firebase-auth-ktx"
-    implementation "com.google.firebase:firebase-crashlytics-ktx"
     implementation "com.google.firebase:firebase-database-ktx"
     implementation "com.google.firebase:firebase-storage-ktx"
-
-    implementation "com.firebaseui:firebase-ui-database:$vFirebaseUi"
-    implementation "com.firebaseui:firebase-ui-auth:$vFirebaseUi"
-
-    implementation "com.google.android.gms:play-services-auth:$vPlayServicesAuth"
-    implementation "com.google.android.material:material:$vMaterial"
 
     implementation "androidx.appcompat:appcompat:$vAppCompat"
     implementation "androidx.constraintlayout:constraintlayout:$vConstraintLayout"
@@ -105,6 +96,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$vLifecycle"
     implementation "androidx.navigation:navigation-fragment-ktx:$vNavigation"
     implementation "androidx.navigation:navigation-ui-ktx:$vNavigation"
+    implementation "androidx.preference:preference-ktx:$vPreferenceKtx"
     implementation "androidx.room:room-ktx:$vRoom"
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$vCoroutines"

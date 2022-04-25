@@ -8,11 +8,14 @@ import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PractitionerEntit
 interface PractitionerDao {
 
     @Query("SELECT * FROM PractitionerEntity WHERE id=1")
-    fun get(): LiveData<PractitionerEntity>
+    fun get(): LiveData<PractitionerEntity?>
 
     @Update
     fun update(practitionerEntity: PractitionerEntity): Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(practitionerEntity: PractitionerEntity): Long
+
+    @Query("DELETE FROM PractitionerEntity")
+    fun deletes(): Int
 }

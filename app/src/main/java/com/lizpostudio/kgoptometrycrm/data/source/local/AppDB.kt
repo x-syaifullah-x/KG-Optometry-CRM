@@ -17,7 +17,7 @@ import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PractitionerEntit
     entities = [
         PatientsEntity::class, PractitionerEntity::class
     ],
-    version = 7,
+    version = 8,
     exportSchema = false
 )
 abstract class AppDB : RoomDatabase() {

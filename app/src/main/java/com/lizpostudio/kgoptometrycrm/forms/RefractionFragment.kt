@@ -26,7 +26,6 @@ import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -327,7 +326,8 @@ class RefractionFragment : Fragment() {
                     }, 100L)
                 }
 
-                val hPosList = mapSectionName[sectionName]?.map { form -> form.recordID }?: listOf()
+                val hPosList =
+                    mapSectionName[sectionName]?.map { form -> form.recordID } ?: listOf()
                 val hPosBottomNav = hPosList.indexOf(recordID)
                 if (hPosBottomNav > 3) {
                     val scrollWidth = binding.chipsScroll2.width
@@ -634,18 +634,18 @@ class RefractionFragment : Fragment() {
     @SuppressLint("SetTextI18n")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-//   Log.d(_root_ide_package_.com.lizpostudio.kgoptometrycrm.constant.Constants.TAG, "initial file size = ${photoFile.length() / 1024} kBytes")
         if (requestCode == REQUEST_PHOTO && resultCode == Activity.RESULT_OK) {
             takePhoto = true
-
             scaleBitmap(photoFile)
             currentForm.reservedField = storageRef.toString()
-            storageRef.putFile(storageFile)
+            val ois = requireContext().contentResolver.openInputStream(storageFile)
+            storageRef.putStream(ois ?: return)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         binding.rotatePhoto.visibility = View.VISIBLE
                         updatePhotoView()
                     }
+                    ois.close()
                 }
             if (photoUri != null) {
                 requireActivity().revokeUriPermission(
@@ -675,7 +675,7 @@ class RefractionFragment : Fragment() {
 
     private fun updatePhotoView() {
         //   taskToGetFile
-        if (currentForm.reservedField.isBlank()){
+        if (currentForm.reservedField.isBlank()) {
             currentForm.reservedField = storageRef.toString()
         }
 
@@ -1267,10 +1267,12 @@ class RefractionFragment : Fragment() {
                         e.printStackTrace()
                     }
                 }
-                storageRef.putFile(storageFile).addOnCompleteListener { task ->
-//                    if (task.isSuccessful) {
-//                        updatePhotoView(photoFile)
-//                    }
+                val ois = requireContext().contentResolver.openInputStream(storageFile)
+                ois?.apply {
+                    storageRef.putStream(ois)
+                        .addOnCompleteListener { _ ->
+                            ois.close()
+                        }
                 }
             }
         }
@@ -1282,11 +1284,16 @@ class RefractionFragment : Fragment() {
         val myActivity = activity
 
         myActivity?.let {
-            val datePickerDialog = DatePickerDialog(it, { _, year, monthOfYear, dayOfMonth -> // set day of month , month and year value in the edit text
+            val datePickerDialog = DatePickerDialog(
+                it,
+                { _, year, monthOfYear, dayOfMonth -> // set day of month , month and year value in the edit text
                     sectionEditDate = convertYMDtoTimeMillis(year, monthOfYear, dayOfMonth)
                     if (sectionEditDate != -1L) binding.dateCaption.text =
                         convertLongToDDMMYY(sectionEditDate)
-                }, todayYear, todayMonth, todayDay
+                },
+                todayYear,
+                todayMonth,
+                todayDay
             )
             datePickerDialog.show()
         }
@@ -1295,10 +1302,5 @@ class RefractionFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         downloadPhotoTask?.cancel()
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.clear()
     }
 }

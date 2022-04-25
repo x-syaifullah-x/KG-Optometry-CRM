@@ -15,7 +15,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.lizpostudio.kgoptometrycrm.constant.Constants
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentPreviewWithOutNameBinding
-import com.lizpostudio.kgoptometrycrm.forms.SalesOrderFragment
 import com.lizpostudio.kgoptometrycrm.utils.BitmapUtils
 import com.lizpostudio.kgoptometrycrm.utils.convertLongTodd_MM_yy_hh_mm_ss
 import id.xxx.module.view.binding.ktx.viewBinding
@@ -28,10 +27,6 @@ class PreviewWithOutNameFragment : Fragment() {
     private val args by navArgs<PreviewWithOutNameFragmentArgs>()
 
     private fun navigateBack() {
-        requireActivity().getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE)
-            .edit()
-            .putString(SalesOrderFragment.KEY_REMARK_PRINT, args.model.remarksPrint)
-            .apply()
         findNavController().navigate(
             PreviewWithOutNameFragmentDirections.actionToSalesOrder(args.model.recordID)
         )
@@ -71,7 +66,8 @@ class PreviewWithOutNameFragment : Fragment() {
                     if (uri != null) {
                         val dialog = AlertDialog.Builder(it.context)
                         dialog.setTitle("Export Successful")
-                        val message = "\nSuccessfully export file to folder ${file.parent}, want to open it?"
+                        val message =
+                            "\nSuccessfully export file to folder ${file.parent}, want to open it?"
                         dialog.setMessage(message)
                         dialog.setPositiveButton("Yes") { _, _ ->
                             showImage(it.context, uri)

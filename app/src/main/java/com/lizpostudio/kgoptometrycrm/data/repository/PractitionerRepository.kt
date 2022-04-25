@@ -24,4 +24,6 @@ class PractitionerRepository private constructor(private val dao: PractitionerDa
     fun insert(practitionerEntity: PractitionerEntity) = dao.insert(practitionerEntity)
 
     fun update(practitionerEntity: PractitionerEntity) = dao.update(practitionerEntity)
+
+    fun deletes() = dao.deletes()
 }

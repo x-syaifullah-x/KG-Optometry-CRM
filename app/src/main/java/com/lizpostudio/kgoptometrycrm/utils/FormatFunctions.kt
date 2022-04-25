@@ -3,6 +3,7 @@ package com.lizpostudio.kgoptometrycrm.utils
 import android.annotation.SuppressLint
 import android.graphics.PointF
 import android.util.Log
+import com.lizpostudio.kgoptometrycrm.constant.Constants
 import com.lizpostudio.kgoptometrycrm.data.repository.PatientRepository
 import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
 import com.lizpostudio.kgoptometrycrm.data.source.remote.FBRecords
@@ -11,10 +12,10 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.random.Random
 
-private const val TAG = "LogTrace"
 private const val ONE_DAY = 24 * 3600 * 1000L
+
 fun convertFBRecordToPatients(f: FBRecords, key: Long): PatientsEntity {
-    val aa = f.sectionData.split("|")
+    val sectionData = f.sectionData.split("|")
 
     return PatientsEntity(
         key,
@@ -42,7 +43,7 @@ fun convertFBRecordToPatients(f: FBRecords, key: Long): PatientsEntity {
         solutionMiscRm = f.solutionMiscRm,
         frame = try {
             if (f.sectionName == "FINAL PRESCRIPTION" || f.sectionName == "CASH ORDER") {
-                aa[15]
+                sectionData[15]
             } else {
                 ""
             }
@@ -51,7 +52,7 @@ fun convertFBRecordToPatients(f: FBRecords, key: Long): PatientsEntity {
         },
         lens = try {
             if (f.sectionName == "FINAL PRESCRIPTION" || f.sectionName == "CASH ORDER") {
-                aa[17]
+                sectionData[17]
             } else {
                 ""
             }
@@ -60,14 +61,15 @@ fun convertFBRecordToPatients(f: FBRecords, key: Long): PatientsEntity {
         },
         contactLensSunglasses = try {
             if (f.sectionName == "FINAL PRESCRIPTION" || f.sectionName == "CASH ORDER") {
-                aa[19]
+                sectionData[19]
             } else {
                 ""
             }
         } catch (t: Throwable) {
             ""
         },
-        practitionerNameOptometrist = f.practitionerNameOptometrist
+        practitionerNameOptometrist = f.practitionerNameOptometrist,
+        remarkPrint = f.remarkPrint
     )
 }
 
@@ -95,7 +97,8 @@ fun convertFormToFBRecord(p: PatientsEntity): FBRecords {
         cs = p.cs,
         solutionMisc = p.solutionMisc,
         solutionMiscRm = p.solutionMiscRm,
-        practitionerNameOptometrist = p.practitionerNameOptometrist
+        practitionerNameOptometrist = p.practitionerNameOptometrist,
+        remarkPrint = p.remarkPrint
     )
 }
 
@@ -401,10 +404,7 @@ fun convertYYMMDDToDDMMYY(year: String, month: String, day: String): String {
 private val charPool: List<Char> = ('A'..'Z') + ('0'..'9')
 
 fun generateID(repository: PatientRepository): String {
-    val id = (1..10)
-        .map { i -> Random.nextInt(i, charPool.size) }
-        .map(charPool::get)
-        .joinToString("")
+    val id = generateID()
     return if (repository.idIsExist(id)) {
         generateID(repository)
     } else {
@@ -412,6 +412,12 @@ fun generateID(repository: PatientRepository): String {
     }
 }
 
+fun generateID(): String {
+    return (1..10)
+        .map { i -> Random.nextInt(i, charPool.size) }
+        .map(charPool::get)
+        .joinToString("")
+}
 // used format dd/mm/yy
 @SuppressLint("SimpleDateFormat")
 fun getDateStartAEndMillis(date: String): Pair<Long, Long> {
@@ -423,7 +429,7 @@ fun getDateStartAEndMillis(date: String): Pair<Long, Long> {
         dateStart = parser.parse(date.trim())?.time ?: 0L
         dateEnd = dateStart + ONE_DAY
     } catch (e: Exception) {
-        Log.d(TAG, "${e.message}")
+        Log.d(Constants.TAG, "${e.message}")
     }
 
     return Pair(dateStart, dateEnd)

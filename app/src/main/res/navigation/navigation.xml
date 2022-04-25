@@ -614,4 +614,15 @@
             android:id="@+id/action_to_form_selection"
             app:destination="@id/formSelectionFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/settingLoginFragment"
+        android:name="com.lizpostudio.kgoptometrycrm.SettingLoginFragment"
+        android:label="SettingLoginFragment"
+        tools:layout="@layout/fragment_settings_login">
+
+        <action
+            android:id="@+id/actionToLoginFragment"
+            app:destination="@id/loginFragment" />
+    </fragment>
 </navigation>

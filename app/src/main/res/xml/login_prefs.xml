@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:title="Firebase Configuration">
+
+        <DropDownPreference
+            android:entries="@array/use"
+            android:entryValues="@array/use"
+            android:key="@string/key_use_dropdown"
+            android:title="Using Method"
+            app:useSimpleSummaryProvider="true" />
+
+        <Preference
+            android:key="@string/key_select_file_preference"
+            app:title="Select File" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

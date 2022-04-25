@@ -5,17 +5,18 @@ import androidx.annotation.WorkerThread
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.ktx.storage
+import com.google.firebase.storage.FirebaseStorage
+import com.lizpostudio.kgoptometrycrm.constant.Constants
 import com.lizpostudio.kgoptometrycrm.data.source.local.AppDB
 import com.lizpostudio.kgoptometrycrm.data.source.local.dao.PatientsDao
 import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
+import com.lizpostudio.kgoptometrycrm.data.source.remote.MyFirebase
+import com.lizpostudio.kgoptometrycrm.utils.generateID
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 
 class PatientRepository private constructor(
-    firebaseApp: FirebaseApp?,
-    private val patientsDao: PatientsDao
+    val firebaseApp: FirebaseApp, private val patientsDao: PatientsDao
 ) {
 
     companion object {
@@ -32,32 +33,43 @@ class PatientRepository private constructor(
         private var INSTANCE: PatientRepository? = null
 
         fun getInstance(context: Context) = INSTANCE ?: synchronized(this) {
-            INSTANCE ?: PatientRepository(
-                FirebaseApp.initializeApp(context),
-                AppDB.getInstance(context).patientsDao
-            ).also { INSTANCE = it }
+            INSTANCE ?: run {
+                PatientRepository(
+                    MyFirebase.getInstance(context),
+                    AppDB.getInstance(context).patientsDao
+                ).also { INSTANCE = it }
+            }
+        }
+
+        fun reload(context: Context) {
+            val pref = Constants.getSharedPreferences(context)
+            val currentName = pref.getString(MyFirebase.KEY_FIREBASE_NAME, "")
+            val newName = generateID()
+            if (currentName == newName) {
+                return reload(context)
+            }
+            pref.edit().putString(MyFirebase.KEY_FIREBASE_NAME, newName).apply()
+            INSTANCE?.deleteAllRecords()
+            INSTANCE = null
+            MyFirebase.INSTANCE = null
         }
     }
 
-    private val firebaseDatabase = firebaseApp?.let { Firebase.database(it) }
-    val recordsReference = firebaseDatabase?.reference?.child(RECORDS_CHILD)
-    val historyReference = firebaseDatabase?.reference?.child(HISTORY_CHILD)
-    val deleteHistoryReference = firebaseDatabase?.reference?.child(DEL_HISTORY_CHILD)
-    val practitionerReference = firebaseDatabase?.reference
-        ?.child(SETTINGS_CHILD)
-        ?.child(USERS_CHILD)
-        ?.child(PRACTITIONERS_CHILD)
-    val fireStorage = Firebase.storage
+    private val firebaseDatabase = Firebase.database(firebaseApp)
+    private val firebaseDatabaseReference = firebaseDatabase.reference
 
-    val allPatientsEntity: Flow<List<PatientsEntity>> = patientsDao.getAllPatients()
+    val recordsReference = firebaseDatabaseReference
+        .child(RECORDS_CHILD)
+    val historyReference = firebaseDatabaseReference
+        .child(HISTORY_CHILD)
+    val deleteHistoryReference = firebaseDatabaseReference
+        .child(DEL_HISTORY_CHILD)
+    val practitionersReference = firebaseDatabaseReference
+        .child(SETTINGS_CHILD)
+        .child(USERS_CHILD)
+        .child(PRACTITIONERS_CHILD)
 
-    @WorkerThread
-    suspend fun insertForm(form: PatientsEntity): Boolean {
-        return withContext(Dispatchers.IO) {
-            patientsDao.insert(form)
-            true
-        }
-    }
+    val fireStorage = FirebaseStorage.getInstance(firebaseApp)
 
     @WorkerThread
     suspend fun addPatient(form: PatientsEntity): Long {
@@ -107,7 +119,10 @@ class PatientRepository private constructor(
     }
 
     @WorkerThread
-    suspend fun getRecordsBySectionAndDate(nameOfSection: String, date: Long): List<PatientsEntity>? {
+    suspend fun getRecordsBySectionAndDate(
+        nameOfSection: String,
+        date: Long
+    ): List<PatientsEntity>? {
         return patientsDao.getRecordsBySectionAndDate(nameOfSection, date)
     }
 
@@ -156,12 +171,9 @@ class PatientRepository private constructor(
         }
     }
 
-    @WorkerThread
-    suspend fun deleteAllRecords(): Boolean {
-        return withContext(Dispatchers.IO) {
-            patientsDao.deleteAllRecords()
-            true
-        }
+    fun deleteAllRecords(): Boolean {
+        patientsDao.deleteAllRecords()
+        return true
     }
 
     suspend fun getPatientByCashOrder(cs: String) =
@@ -170,28 +182,10 @@ class PatientRepository private constructor(
     suspend fun getPatientBySalesOrder(or: String) =
         patientsDao.querySalesOrder(or)
 
-    suspend fun getPatientByProduct(value: String) =
-        patientsDao.queryProducts(value)
-
-    fun getFlowPatientByProduct(value: String) =
-        patientsDao.queryFlowProducts(value)
-
     suspend fun getIdProducts(value: String) =
         patientsDao.queryIdProduct(value)
-
-    fun cashOrdersAndSalesOrders() = patientsDao.cashOrdersAndSalesOrders()
 
     fun getCsAndOr() = patientsDao.getCsAndOr()
 
     fun idIsExist(id: String) = patientsDao.idIsExist(id)
-
-    fun getInfoPatient(id: String) = patientsDao.getInfoPatient(id)
-
-//    init {
-//        patientsDao.updateSectionNameSalesOrder()
-//            .forEach {
-//                it.sectionName = "FINAL PRESCRIPTION"
-//                recordsReference?.child(it.recordID.toString())?.setValue(convertFormToFBRecord(it))
-//            }
-//    }
 }

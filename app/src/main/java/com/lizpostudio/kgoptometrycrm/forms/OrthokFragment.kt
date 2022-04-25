@@ -28,7 +28,6 @@ import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -667,7 +666,8 @@ class OrthokFragment : Fragment() {
                     }, 100L)
                 }
 
-                val hPosList = mapSectionName[sectionName]?.map { form -> form.recordID }?: listOf()
+                val hPosList =
+                    mapSectionName[sectionName]?.map { form -> form.recordID } ?: listOf()
                 val hPosBottomNav = hPosList.indexOf(recordID)
                 if (hPosBottomNav > 3) {
                     val scrollWidth = binding.chipsScroll2.width
@@ -939,17 +939,19 @@ class OrthokFragment : Fragment() {
     @SuppressLint("SetTextI18n")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-//   Log.d(Constants.TAG, "initial file size = ${photoFile.length() / 1024} kBytes")
         if (requestCode == REQUEST_PHOTO && resultCode == Activity.RESULT_OK) {
             takePhoto = true
             scaleBitmap(photoFile)
             currentForm.reservedField = storageRef.toString()
-            storageRef.putFile(storageFile)
+
+            val ois = requireContext().contentResolver.openInputStream(storageFile)
+            storageRef.putStream(ois ?: return)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         binding.rotatePhoto.visibility = View.VISIBLE
                         updatePhotoView(photoFile)
                     }
+                    ois.close()
                 }
             if (photoUri != null) {
                 requireActivity().revokeUriPermission(
@@ -1387,10 +1389,12 @@ class OrthokFragment : Fragment() {
                     e.printStackTrace()
                 }
             }
-            storageRef.putFile(storageFile).addOnCompleteListener { task ->
-//                    if (task.isSuccessful) {
-//                        updatePhotoView(photoFile)
-//                    }
+            val ois = requireContext().contentResolver.openInputStream(storageFile)
+            ois?.apply {
+                storageRef.putStream(ois)
+                    .addOnCompleteListener { _ ->
+                        ois.close()
+                    }
             }
         }
 
@@ -1412,10 +1416,5 @@ class OrthokFragment : Fragment() {
             )
             datePickerDialog.show()
         }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.clear()
     }
 }

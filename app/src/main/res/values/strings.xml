@@ -195,4 +195,6 @@
     <string name="hint_mm_input">MM</string>
     <string name="frame_type">Frame Type</string>
     <string name="sales_order_from_selection">SALES ORDER</string>
+    <string name="key_use_dropdown">methode_dropdown</string>
+    <string name="key_select_file_preference">select_file_preference</string>
 </resources>
