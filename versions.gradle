@@ -17,7 +17,7 @@ ext {
     vFirebaseBom = "29.0.3"
     vFragmentKtx = "1.4.1"
     vLifecycle = "2.4.1"
-    vMaterial = "1.5.0"
+    vMaterial = "1.6.0"
     vNavigation = "2.4.2"
     vPreferenceKtx = "1.2.0"
     vRoom = "2.4.2"

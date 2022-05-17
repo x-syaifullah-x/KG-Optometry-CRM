@@ -870,12 +870,8 @@ class OrthokFragment : Fragment() {
 
         var rotation = 0F
         binding.rotatePhoto.setOnClickListener {
-            if (rotation == 360F) {
-                rotation = 0F
-            }
-            rotation += 90
             val bitmap =
-                BitmapUtils.rotate(BitmapFactory.decodeFile(photoFile.toString()), rotation)
+                BitmapUtils.rotate((binding.autorefPhoto.drawable as BitmapDrawable).bitmap, 90F)
 
             binding.autorefPhoto.setImageBitmap(bitmap)
 //            try {

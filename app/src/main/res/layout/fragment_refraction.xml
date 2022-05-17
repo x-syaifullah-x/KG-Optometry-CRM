@@ -405,30 +405,28 @@
                     app:layout_constraintStart_toEndOf="@+id/hint_x_left1"
                     app:layout_constraintTop_toBottomOf="@+id/edit_right_axis1"
                     tools:ignore="Autofill,LabelFor" />
-
                 <!-- END of RIGHT LEFT Sph, Cyl, Axis -->
 
                 <ImageView
                     android:id="@+id/autoref_photo"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
-                    android:layout_marginEnd="4dp"
-                    android:cropToPadding="true"
-                    android:scaleType="centerInside"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/spinner_chart"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/edit_left_axis1"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:ignore="ContentDescription" />
+                    app:layout_constraintTop_toTopOf="@+id/current_status_hint"
+                    tools:ignore="ContentDescription"
+                    tools:src="@tools:sample/avatars" />
 
                 <ImageView
                     android:id="@+id/delete_photo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
                     android:padding="8dp"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/autoref_photo"
                     app:layout_constraintTop_toTopOf="@+id/autoref_photo"
                     app:srcCompat="@drawable/ic_baseline_clear_24"
                     app:tint="@color/redCircle"
@@ -477,7 +475,7 @@
                     android:layout_height="2dp"
                     android:layout_marginTop="24dp"
                     android:background="?android:attr/listDivider"
-                    app:layout_constraintEnd_toStartOf="@+id/autoref_photo"
+                    app:layout_constraintEnd_toEndOf="@+id/edit_left_axis1"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/edit_left_axis1" />
 

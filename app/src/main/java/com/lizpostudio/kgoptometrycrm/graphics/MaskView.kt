@@ -19,7 +19,6 @@ class MaskView @JvmOverloads constructor(
         private const val LINE_STROKE = 3f
         private const val cRadius = 3f
         private const val shiftLeft = 16
-        private const val TAG = "Ocular_Health_Fragment"
     }
 
     var fillMask = mutableListOf<MutableList<PointF>>()

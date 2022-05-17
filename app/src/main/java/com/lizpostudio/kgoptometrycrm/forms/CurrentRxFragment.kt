@@ -513,14 +513,9 @@ class CurrentRxFragment : Fragment() {
             saveAndNavigate("home")
         }
 
-        var rotation = 0F
         binding.rotatePhoto.setOnClickListener {
-            if (rotation == 360F) {
-                rotation = 0F
-            }
-            rotation += 90
             val bitmap =
-                BitmapUtils.rotate(BitmapFactory.decodeFile(photoFile.toString()), rotation)
+                BitmapUtils.rotate((binding.autorefPhoto.drawable as BitmapDrawable).bitmap, 90F)
 
             binding.autorefPhoto.setImageBitmap(bitmap)
         }
@@ -899,16 +894,16 @@ class CurrentRxFragment : Fragment() {
                         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os)
                         os.flush()
                         os.close()
+                        val ois = requireContext().contentResolver.openInputStream(storageFile)
+                        ois?.apply {
+                            storageRef.putStream(ois)
+                                .addOnCompleteListener { _ ->
+                                    ois.close()
+                                }
+                        }
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
-                }
-                val ois = requireContext().contentResolver.openInputStream(storageFile)
-                ois?.apply {
-                    storageRef.putStream(ois)
-                        .addOnCompleteListener { _ ->
-                            ois.close()
-                        }
                 }
             }
         }

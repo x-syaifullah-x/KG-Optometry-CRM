@@ -352,7 +352,6 @@ class OcularHealthFragment : Fragment() {
         }
         binding.oculoTopOnOff.setOnClickListener {
             topOculusVisible = !topOculusVisible
-
             if (topOculusVisible) {
                 binding.apply {
                     frameTopOculus.visibility = View.VISIBLE
@@ -368,7 +367,6 @@ class OcularHealthFragment : Fragment() {
                     extraTextTop3.visibility = View.VISIBLE
                     extraTextTop4.visibility = View.VISIBLE
                 }
-
             } else {
                 binding.apply {
                     frameTopOculus.visibility = View.GONE
@@ -385,14 +383,26 @@ class OcularHealthFragment : Fragment() {
                     extraTextTop4.visibility = View.GONE
                     editAddTextTop.visibility = View.GONE
                 }
-
             }
+        }
 
+        binding.apply {
+            frameBottomOculus.visibility = View.GONE
+            clearBottomPicture.visibility = View.GONE
+            undoBottom.visibility = View.GONE
+            oculoBottomOnOff.setImageResource(R.drawable.ic_oculo_triple_icon_no)
+            imgEditBottom1.visibility = View.GONE
+            imgEditBottom2.visibility = View.GONE
+            imgEditBottom3.visibility = View.GONE
+            imgEditBottom4.visibility = View.GONE
+            extraTextBottom1.visibility = View.GONE
+            extraTextBottom2.visibility = View.GONE
+            extraTextBottom3.visibility = View.GONE
+            extraTextBottom4.visibility = View.GONE
+            editAddTextBottom.visibility = View.GONE
         }
 
         binding.oculoBottomOnOff.setOnClickListener {
-            bottomOculusVisible = !bottomOculusVisible
-
             if (bottomOculusVisible) {
                 binding.apply {
                     frameBottomOculus.visibility = View.VISIBLE
@@ -408,7 +418,6 @@ class OcularHealthFragment : Fragment() {
                     extraTextBottom3.visibility = View.VISIBLE
                     extraTextBottom4.visibility = View.VISIBLE
                 }
-
             } else {
                 binding.apply {
                     frameBottomOculus.visibility = View.GONE
@@ -425,10 +434,10 @@ class OcularHealthFragment : Fragment() {
                     extraTextBottom4.visibility = View.GONE
                     editAddTextBottom.visibility = View.GONE
                 }
-
             }
-
+            bottomOculusVisible = !bottomOculusVisible
         }
+
 
         patientViewModel.patientForm.observe(viewLifecycleOwner) { patientForm ->
             patientForm?.let {
@@ -639,8 +648,8 @@ class OcularHealthFragment : Fragment() {
             binding.frameTopOculus.layoutParams.height = screenWidthPx() / 2
             binding.frameBottomOculus.layoutParams.height = screenWidthPx() / 2
 
-            binding.frameTopOculus.visibility = View.VISIBLE
-            binding.frameBottomOculus.visibility = View.VISIBLE
+//            binding.frameTopOculus.visibility = View.VISIBLE
+//            binding.frameBottomOculus.visibility = View.VISIBLE
             //     Log.d(Constants.TAG, "${screenWidthPx() / 2}")
         }
 

@@ -455,9 +455,10 @@ class LoginFragment : Fragment() {
     }
 
     private fun checkFireBaseForTrusted() {
-        val trustedReference =
-            firebaseDatabase?.reference?.child(SETTINGS_CHILD)?.child(DEVICES_CHILD)
-                ?.child(TRUSTED_CHILD)
+        val trustedReference = firebaseDatabase?.reference
+            ?.child(SETTINGS_CHILD)
+            ?.child(DEVICES_CHILD)
+            ?.child(TRUSTED_CHILD)
         if (trustedReference != null) {
             val trustedListener = object : ValueEventListener {
                 @SuppressLint("DefaultLocale")

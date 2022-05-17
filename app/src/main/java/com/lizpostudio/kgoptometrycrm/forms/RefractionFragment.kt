@@ -1,19 +1,12 @@
 package com.lizpostudio.kgoptometrycrm.forms
 
-import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.DatePickerDialog
 import android.content.Context
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.content.pm.ResolveInfo
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
-import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -30,9 +23,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.google.firebase.storage.FileDownloadTask
 import com.google.firebase.storage.StorageReference
-import com.google.firebase.storage.StorageTask
 import com.lizpostudio.kgoptometrycrm.PatientsViewModel
 import com.lizpostudio.kgoptometrycrm.PatientsViewModelFactory
 import com.lizpostudio.kgoptometrycrm.R
@@ -41,27 +32,27 @@ import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentRefractionBinding
 import com.lizpostudio.kgoptometrycrm.utils.*
 import id.xxx.module.view.binding.ktx.viewBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.ByteArrayOutputStream
 import java.io.File
-import java.io.FileOutputStream
+import java.io.InputStream
 
 class RefractionFragment : Fragment() {
 
     companion object {
         private const val vaDefault = "6/"
-        private const val REQUEST_PHOTO = 2
-        private const val PHOTO_W = 330
-        private const val PHOTO_H = 528
+        private const val PHOTO_W = 500
+        private const val PHOTO_H = 700
 
         private lateinit var storageRef: StorageReference
-        private lateinit var storageFile: Uri
     }
 
-    private var downloadPhotoTask: StorageTask<FileDownloadTask.TaskSnapshot>? = null
     private val patientViewModel: PatientsViewModel by viewModels {
         PatientsViewModelFactory(requireContext())
     }
-
-    private var photoUri: Uri? = null
 
     private val binding by viewBinding<FragmentRefractionBinding>()
 
@@ -70,8 +61,7 @@ class RefractionFragment : Fragment() {
     private var viewOnlyMode = false
 
     private var recordID = 0L
-    private var photoFile: File = File("com.lizpostudio.kgoptometrycrm")
-    private var filesDir = File("com.lizpostudio.kgoptometrycrm")
+
     private var patientID = ""
     private var sectionEditDate = -1L
     private var showPhoto = true
@@ -79,6 +69,76 @@ class RefractionFragment : Fragment() {
     private var currentForm = PatientsEntity()
     private var navigateFormName = ""
     private var navigateFormRecordID = -1L
+
+    private var isTakePhoto = false
+
+    private val takePicture =
+        registerForActivityResult(TakePictureWithUriReturnContract()) { result ->
+            if (result != null) {
+                val parcelFileDescriptor =
+                    requireContext().contentResolver.openFileDescriptor(result, "rw")
+                        ?: return@registerForActivityResult
+                isTakePhoto = true
+                val bitmap = getScaledBitmap(
+                    parcelFileDescriptor.fileDescriptor, PHOTO_W, PHOTO_H
+                )
+                parcelFileDescriptor.close()
+                requireContext().contentResolver.delete(result, null, null)
+                binding.rotatePhoto.visibility = View.VISIBLE
+                binding.autorefPhoto.setImageBitmap(bitmap)
+                currentForm.reservedField = storageRef.toString()
+                val bos = ByteArrayOutputStream()
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos)
+                storageRef.putBytes(bos.toByteArray())
+                    .addOnCompleteListener { _ ->
+                        bos.close()
+                    }
+                    .addOnFailureListener {
+                        bos.close()
+                        Toast.makeText(
+                            requireContext(), it.localizedMessage, Toast.LENGTH_LONG
+                        ).show()
+                    }
+            }
+        }
+//        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+//            if (result.resultCode == Activity.RESULT_OK) {
+//                lifecycleScope.launchWhenCreated {
+//                    withContext(Dispatchers.IO) {
+//                        runCatching {
+//                            isTakePhoto = true
+//                            val bitmap = result.data?.extras?.get("data") as Bitmap
+//                            Bitmap.createScaledBitmap(bitmap, PHOTO_W, PHOTO_H, false)
+//                            val os = ByteArrayOutputStream()
+//                            binding.rotatePhoto.visibility = View.VISIBLE
+//                            binding.autorefPhoto.setImageBitmap(bitmap)
+//                            try {
+//                                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os)
+//                                currentForm.reservedField = storageRef.toString()
+//                                storageRef.putBytes(os.toByteArray() ?: return@withContext)
+//                                    .addOnCompleteListener { task ->
+////                                        if (task.isSuccessful) {
+////
+////                                        }
+//                                    }
+//                                    .addOnFailureListener {
+//                                        Toast.makeText(
+//                                            requireContext(), it.localizedMessage, Toast.LENGTH_LONG
+//                                        ).show()
+//                                    }
+//                            } catch (e: Exception) {
+//                                Toast.makeText(
+//                                    requireContext(), e.localizedMessage, Toast.LENGTH_LONG
+//                                ).show()
+//                                e.printStackTrace()
+//                            } finally {
+//                                os.close()
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,7 +148,6 @@ class RefractionFragment : Fragment() {
         }
     }
 
-    @SuppressLint("SetTextI18n")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -97,7 +156,7 @@ class RefractionFragment : Fragment() {
 
         val app = requireNotNull(this.activity).application
 
-        filesDir = app.applicationContext.filesDir
+//        filesDir = app.applicationContext.filesDir
 
         // change BINDING to Respective forms args!
         val safeArgs: RefractionFragmentArgs by navArgs()
@@ -354,35 +413,19 @@ class RefractionFragment : Fragment() {
                 binding.showHideButton.setImageResource(R.drawable.visibility_off_32)
             }
         }
-// Capture photo
 
-        binding.photoButton.setOnClickListener {
-            photoUri = FileProvider
-                .getUriForFile(requireActivity(), Constants.FILE_PROVIDER_AUTHORITY, photoFile)
-            val packageManager: PackageManager = requireActivity().packageManager
-
-            val captureImage = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-            val resolvedActivity: ResolveInfo? =
-                packageManager.resolveActivity(
-                    captureImage,
-                    PackageManager.MATCH_DEFAULT_ONLY
-                )
-            if (resolvedActivity != null && photoUri != null) {
-                captureImage.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
-                val cameraActivities: List<ResolveInfo> =
-                    packageManager.queryIntentActivities(
-                        captureImage,
-                        PackageManager.MATCH_DEFAULT_ONLY
-                    )
-                for (cameraActivity in cameraActivities) {
-                    requireActivity().grantUriPermission(
-                        cameraActivity.activityInfo.packageName,
-                        photoUri,
-                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-                    )
-                }
-                startActivityForResult(captureImage, REQUEST_PHOTO)
-            }
+        binding.photoButton.setOnClickListener { it: View ->
+//            Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
+//                takePictureIntent.resolveActivity(it.context.packageManager)?.also {
+//                    takePicture.launch(takePictureIntent)
+//                }
+//            }
+            val uri = FileProvider.getUriForFile(
+                it.context,
+                Constants.FILE_PROVIDER_AUTHORITY,
+                File.createTempFile("tmp_", ".png")
+            )
+            takePicture.launch(uri)
         }
 
 
@@ -394,7 +437,7 @@ class RefractionFragment : Fragment() {
                 sphListItems
             )
 
-        // sphSpinnerAdapter.setDropDownViewResource(R.layout.spinner_list_small_numbers)
+// sphSpinnerAdapter.setDropDownViewResource(R.layout.spinner_list_small_numbers)
         binding.spinnerLeftSph1.adapter = sphSpinnerAdapter
         binding.spinnerRightSph1.adapter = sphSpinnerAdapter
         binding.spinnerLeftSph2.adapter = sphSpinnerAdapter
@@ -404,7 +447,7 @@ class RefractionFragment : Fragment() {
         binding.spinnerLeftSph4.adapter = sphSpinnerAdapter
         binding.spinnerRightSph4.adapter = sphSpinnerAdapter
 
-        //      sphSpinnerAdapter.notifyDataSetChanged()
+//      sphSpinnerAdapter.notifyDataSetChanged()
 
 
         val cylListItems = cylList()
@@ -415,7 +458,7 @@ class RefractionFragment : Fragment() {
                 cylListItems
             )
 
-        //  cylSpinnerAdapter.setDropDownViewResource(R.layout.spinner_list_small_numbers)
+//  cylSpinnerAdapter.setDropDownViewResource(R.layout.spinner_list_small_numbers)
         binding.spinnerLeftCyl1.adapter = cylSpinnerAdapter
         binding.spinnerRightCyl1.adapter = cylSpinnerAdapter
         binding.spinnerLeftCyl2.adapter = cylSpinnerAdapter
@@ -424,7 +467,7 @@ class RefractionFragment : Fragment() {
         binding.spinnerRightCyl3.adapter = cylSpinnerAdapter
         binding.spinnerLeftCyl4.adapter = cylSpinnerAdapter
         binding.spinnerRightCyl4.adapter = cylSpinnerAdapter
-        //   cylSpinnerAdapter.notifyDataSetChanged()
+//   cylSpinnerAdapter.notifyDataSetChanged()
 
         val addListItems = addList()
         val addSpinnerAdapter: ArrayAdapter<String> =
@@ -434,16 +477,16 @@ class RefractionFragment : Fragment() {
                 addListItems
             )
 
-        //  addSpinnerAdapter.setDropDownViewResource(R.layout.spinner_list_small_numbers)
+//  addSpinnerAdapter.setDropDownViewResource(R.layout.spinner_list_small_numbers)
         binding.spinnerLeftAdd.adapter = addSpinnerAdapter
         binding.spinnerRightAdd.adapter = addSpinnerAdapter
         binding.spinnerAdd2.adapter = addSpinnerAdapter
         binding.spinnerAddMp.adapter = addSpinnerAdapter
         binding.spinnerAddLeft4.adapter = addSpinnerAdapter
         binding.spinnerAddRight4.adapter = addSpinnerAdapter
-        //    addSpinnerAdapter.notifyDataSetChanged()
+//    addSpinnerAdapter.notifyDataSetChanged()
 
-        // chart input adapter
+// chart input adapter
         ArrayAdapter.createFromResource(
             app.applicationContext,
             R.array.chart_choices,
@@ -455,27 +498,27 @@ class RefractionFragment : Fragment() {
 
         patientViewModel.navTrigger.observe(viewLifecycleOwner) { navOption ->
             navOption?.let {
-                Log.d(Constants.TAG, "RF: Launching Navigator: Nav Option == ${navOption}")
+                Log.d(Constants.TAG, "RF: Launching Navigator: Nav Option == $navOption")
                 launchNavigator(navOption)
             }
         }
 
-        patientViewModel.photoFromFBReady.observe(viewLifecycleOwner) { ready ->
-            ready?.let {
-                Log.d(Constants.TAG, "Photo file is $it")
-                if (it) uploadPhotoFileToImage()
-            }
-        }
+//        patientViewModel.photoFromFBReady.observe(viewLifecycleOwner) { ready ->
+//            ready?.let {
+//                Log.d(Constants.TAG, "Photo file is $it")
+//                if (it)
+//                    uploadPhotoFileToImage()
+//            }
+//        }
 
-        // DELETE FORM FUNCTIONALITY
+// DELETE FORM FUNCTIONALITY
 
         patientViewModel.recordDeleted.observe(viewLifecycleOwner) { ifDeleted ->
             ifDeleted?.let {
                 if (ifDeleted)
                     navController.navigate(
-                        RefractionFragmentDirections.actionRefractionFragmentToFormSelectionFragment(
-                            patientID
-                        )
+                        RefractionFragmentDirections
+                            .actionRefractionFragmentToFormSelectionFragment(patientID)
                     )
             }
         }
@@ -500,23 +543,37 @@ class RefractionFragment : Fragment() {
         }
 
         binding.deletePhoto.setOnClickListener {
-            if (photoFile.exists()) {
+            if (binding.autorefPhoto.drawable != null) {
                 actionConfirmDeletion(
                     title = resources.getString(R.string.photo_delete_title),
                     message = resources.getString(R.string.photo_delete),
                     isAdmin, requireContext(), checkPassword = false
                 ) { allowed ->
                     if (allowed) {
-                        if (photoFile.exists()) photoFile.delete()
+//                        if (photoFile.exists())
+//                            photoFile.delete()
                         currentForm.reservedField = ""
                         storageRef.delete() // .addOnCompleteListener { task ->}
                         binding.autorefPhoto.setImageDrawable(null)
                     }
                 }
-            } else {
-                Toast.makeText(app.applicationContext, "Nothing to delete!", Toast.LENGTH_SHORT)
-                    .show()
             }
+//            if (photoFile.exists()) {
+//                actionConfirmDeletion(
+//                    title = resources.getString(R.string.photo_delete_title),
+//                    message = resources.getString(R.string.photo_delete),
+//                    isAdmin, requireContext(), checkPassword = false
+//                ) { allowed ->
+//                    if (allowed) {
+//                        if (photoFile.exists()) photoFile.delete()
+//                        currentForm.reservedField = ""
+//                        storageRef.delete() // .addOnCompleteListener { task ->}
+//                        binding.autorefPhoto.setImageDrawable(null)
+//                    }
+//                }
+//            } else {
+//                Toast.makeText(app.applicationContext, "Nothing to delete!", Toast.LENGTH_SHORT).show()
+//            }
         }
 
         binding.copyToMpmva.setOnClickListener {
@@ -571,14 +628,11 @@ class RefractionFragment : Fragment() {
             saveAndNavigate("home")
         }
 
-        var rotation = 0F
         binding.rotatePhoto.setOnClickListener {
-            if (rotation == 360F) {
-                rotation = 0F
-            }
-            rotation += 90
             val bitmap =
-                BitmapUtils.rotate(BitmapFactory.decodeFile(photoFile.toString()), rotation)
+                BitmapUtils.rotate(
+                    (binding.autorefPhoto.drawable as BitmapDrawable).bitmap, 90F
+                )
 
             binding.autorefPhoto.setImageBitmap(bitmap)
         }
@@ -590,6 +644,24 @@ class RefractionFragment : Fragment() {
         if (viewOnlyMode) {
             launchNavigator(navOption)
         } else {
+            if (isTakePhoto) {
+                isTakePhoto = false
+                binding.rotatePhoto.visibility = View.INVISIBLE
+                currentForm.reservedField = storageRef.toString()
+                val bitmapDrawable = (binding.autorefPhoto.drawable as? BitmapDrawable)
+                val bitmap = bitmapDrawable?.bitmap
+                if (bitmap != null) {
+                    try {
+                        val os = ByteArrayOutputStream()
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os)
+                        storageRef.putBytes(os.toByteArray()).addOnCompleteListener {
+                            os.close()
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+            }
             if (formWasChanged()) {
                 Log.d(Constants.TAG, "Ref form CHANGED")
                 Log.d(Constants.TAG, "Submiting to FDB record ID ${currentForm.recordID}")
@@ -624,95 +696,56 @@ class RefractionFragment : Fragment() {
     }
 
     private fun createRefAssignPhFile() {
-        photoFile = File(filesDir, "IMG_$recordID.jpg")
+//        photoFile = File(filesDir, "IMG_$recordID.jpg")
         storageRef = patientViewModel.assignStorageRef("IMG_$recordID.jpg")
-        storageFile = Uri.fromFile(photoFile)
-    }
-
-    private var takePhoto = false
-
-    @SuppressLint("SetTextI18n")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_PHOTO && resultCode == Activity.RESULT_OK) {
-            takePhoto = true
-            scaleBitmap(photoFile)
-            currentForm.reservedField = storageRef.toString()
-            val ois = requireContext().contentResolver.openInputStream(storageFile)
-            storageRef.putStream(ois ?: return)
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        binding.rotatePhoto.visibility = View.VISIBLE
-                        updatePhotoView()
-                    }
-                    ois.close()
-                }
-            if (photoUri != null) {
-                requireActivity().revokeUriPermission(
-                    photoUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-                )
-            }
-        }
-    }
-
-    private fun scaleBitmap(photoFile: File) {
-        //take photoFile, compress it, delete original and replace with scaled
-        val bitmap = getScaledBitmap(photoFile.path, PHOTO_W, PHOTO_H)
-
-        //     photoFile.delete()
-        if (bitmap != null) {
-
-            try {
-                val os = FileOutputStream(photoFile)
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os)
-                os.flush()
-                os.close()
-            } catch (e: Exception) {
-                Log.d(Constants.TAG, "Error writing bitmap", e)
-            }
-        }
+//        storageFile = Uri.fromFile(photoFile)
     }
 
     private fun updatePhotoView() {
-        //   taskToGetFile
         if (currentForm.reservedField.isBlank()) {
             currentForm.reservedField = storageRef.toString()
         }
 
-        if (currentForm.reservedField.isNotBlank() && currentForm.reservedField != "deleted") {
-            downloadPhotoTask = storageRef.getFile(photoFile).addOnSuccessListener {
-                Log.d(Constants.TAG, "FB photo downloaded to local file")
-                patientViewModel.readyToShowPhoto()
-//                currentForm.reservedField = photoFile.toString()
-            }.addOnFailureListener {
-                // delete local file
-                Log.d(Constants.TAG, "No such file exist or error downloading. Delete local file")
-                if (photoFile.exists()) photoFile.delete()
-                patientViewModel.readyToShowPhoto()
-                currentForm.reservedField = ""
+        if (currentForm.reservedField.isNotBlank()) {
+            storageRef.getStream { state, stream ->
+                if (state.error != null) {
+                    uploadPhotoFileToImage(null)
+                } else {
+                    uploadPhotoFileToImage(stream)
+                }
             }
         } else {
-            binding.autorefPhoto.setImageDrawable(null)
+            uploadPhotoFileToImage(null)
         }
     }
 
-    private fun uploadPhotoFileToImage() {
-        if (photoFile.exists()) {
-            val bitmap = getScaledBitmap(photoFile.path, PHOTO_W, PHOTO_H)
-            if (bitmap != null) {
-                binding.autorefPhoto.setImageBitmap(bitmap)
+    private fun uploadPhotoFileToImage(inputStream: InputStream?) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val bitmap = BitmapFactory.decodeStream(inputStream)
+            withContext(Dispatchers.Main) {
+                if (bitmap != null) {
+                    binding.autorefPhoto.setImageBitmap(bitmap)
+                } else {
+                    binding.autorefPhoto.setImageBitmap(null)
+                }
             }
-        } else {
-            binding.autorefPhoto.setImageDrawable(null)
         }
     }
 
+//    private fun uploadPhotoFileToImage() {
+//        if (photoFile.exists()) {
+//            val bitmap = BitmapFactory.decodeFile(photoFile.path)
+//            if (bitmap != null) {
+//                binding.autorefPhoto.setImageBitmap(bitmap)
+//            }
+//        } else {
+//            binding.autorefPhoto.setImageDrawable(null)
+//        }
+//    }
 
-    @SuppressLint("SetTextI18n")
+
     private fun fillTheForm(patientForm: PatientsEntity) {
-
         val extractData = patientForm.sectionData.split('|').toMutableList()
-        //      Log.d(_root_ide_package_.com.lizpostudio.kgoptometrycrm.constant.Constants.TAG, "extract data size before = ${extractData.size}")
         if (extractData.size < 47) {
             for (index in extractData.size..47) {
                 extractData.add("")
@@ -1250,31 +1283,6 @@ class RefractionFragment : Fragment() {
             currentForm.sectionData = extractData.uppercase()
 
             currentForm.practitioner = (binding.practitionerName.selectedItem as String).uppercase()
-
-            if (takePhoto) {
-                takePhoto = false
-                binding.rotatePhoto.visibility = View.INVISIBLE
-                currentForm.reservedField = storageRef.toString()
-                val bitmapDrawable = binding.autorefPhoto.drawable as? BitmapDrawable
-                val bitmap = bitmapDrawable?.bitmap
-                if (bitmap != null) {
-                    try {
-                        val os = FileOutputStream(photoFile)
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os)
-                        os.flush()
-                        os.close()
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
-                }
-                val ois = requireContext().contentResolver.openInputStream(storageFile)
-                ois?.apply {
-                    storageRef.putStream(ois)
-                        .addOnCompleteListener { _ ->
-                            ois.close()
-                        }
-                }
-            }
         }
         return !currentForm.assertEqual(priorPatient)
     }
@@ -1301,6 +1309,6 @@ class RefractionFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        downloadPhotoTask?.cancel()
+        storageRef.stream.cancel()
     }
 }

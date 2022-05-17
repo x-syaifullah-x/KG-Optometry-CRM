@@ -450,12 +450,8 @@ class MemoFragment : Fragment() {
 
         var rotation = 0F
         binding.rotatePhoto.setOnClickListener {
-            if (rotation == 360F) {
-                rotation = 0F
-            }
-            rotation += 90
             val bitmap =
-                BitmapUtils.rotate(BitmapFactory.decodeFile(photoFile.toString()), rotation)
+                BitmapUtils.rotate((binding.refPhoto.drawable as BitmapDrawable).bitmap, 90F)
 
             binding.refPhoto.setImageBitmap(bitmap)
 //            try {
@@ -718,16 +714,17 @@ class MemoFragment : Fragment() {
                         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os)
                         os.flush()
                         os.close()
+
+                        val ois = requireContext().contentResolver.openInputStream(storageFile)
+                        ois?.apply {
+                            storageRef.putStream(ois)
+                                .addOnCompleteListener { _ ->
+                                    ois.close()
+                                }
+                        }
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
-                }
-                val ois = requireContext().contentResolver.openInputStream(storageFile)
-                ois?.apply {
-                    storageRef.putStream(ois)
-                        .addOnCompleteListener { _ ->
-                            ois.close()
-                        }
                 }
             }
         }

@@ -349,5 +349,4 @@
                 app:layout_constraintTop_toBottomOf="@+id/cash_order_button" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 </layout>
