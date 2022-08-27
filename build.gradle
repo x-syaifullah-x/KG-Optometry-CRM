@@ -1,0 +1,20 @@
+buildscript {
+    apply from: "versions.gradle"
+
+    addRepos(repositories)
+
+    dependencies {
+
+        classpath "com.android.tools.build:gradle:$vGradle"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$vKotlin"
+        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$vNavigation"
+    }
+}
+
+allprojects {
+    addRepos(repositories)
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}

@@ -1,0 +1,118 @@
+plugins {
+    id "com.android.application"
+    id "androidx.navigation.safeargs"
+    id "kotlin-android"
+    id "kotlin-kapt"
+}
+
+android {
+    compileSdkVersion build_versions.compile_sdk
+    buildToolsVersion build_versions.build_tools
+
+    defaultConfig {
+        applicationId "com.lizpostudio.kgoptometrycrm"
+        minSdkVersion build_versions.min_sdk
+        targetSdkVersion build_versions.target_sdk
+        versionCode build_versions.code
+        versionName build_versions.name
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        resConfigs "en"
+    }
+
+    signingConfigs {
+        debug {
+            def store_file_release = file("$rootDir/key_store/debug/debug.jks")
+            storeFile store_file_release
+            storePassword "android"
+            keyAlias "androiddebugkey"
+            keyPassword "android"
+        }
+
+        release {
+            def store_file_release = file("$rootDir/key_store/debug/debug.jks")
+            storeFile store_file_release
+            storePassword "android"
+            keyAlias "androiddebugkey"
+            keyPassword "android"
+        }
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+            signingConfig signingConfigs.debug
+        }
+
+        release {
+            minifyEnabled true
+            debuggable false
+            jniDebuggable false
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+            signingConfig signingConfigs.release
+        }
+    }
+
+    buildFeatures {
+        dataBinding true
+        viewBinding true
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
+    packagingOptions {
+        exclude "META-INF/**"
+        exclude "id/**"
+        exclude "androidx/**"
+        exclude "okhttp3/**"
+        exclude "kotlin/**"
+        exclude "org/**"
+        exclude "**.properties"
+        exclude "**.bin"
+        exclude "kotlin-tooling-metadata.json"
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: "libs", include: ["*.jar", "*.aar"])
+
+    implementation "id.xxx.module:viewbinding:0.0.100"
+    implementation "id.xxx.module:handle-crash:0.0.100"
+
+    implementation "com.google.android.material:material:$vMaterial"
+
+    implementation platform("com.google.firebase:firebase-bom:$vFirebaseBom")
+    implementation "com.google.firebase:firebase-auth-ktx"
+    implementation "com.google.firebase:firebase-database-ktx"
+    implementation "com.google.firebase:firebase-storage-ktx"
+
+    implementation "androidx.appcompat:appcompat:$vAppCompat"
+    implementation "androidx.constraintlayout:constraintlayout:$vConstraintLayout"
+    implementation "androidx.fragment:fragment-ktx:$vFragmentKtx"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$vLifecycle"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$vLifecycle"
+    implementation "androidx.navigation:navigation-fragment-ktx:$vNavigation"
+    implementation "androidx.navigation:navigation-ui-ktx:$vNavigation"
+    implementation "androidx.preference:preference-ktx:$vPreferenceKtx"
+    implementation "androidx.room:room-ktx:$vRoom"
+
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$vCoroutines"
+
+    testImplementation "junit:junit:$vJunit"
+
+    androidTestImplementation "androidx.room:room-testing:$vRoom"
+    androidTestImplementation "androidx.test.ext:junit-ktx:$vAndroidJunit"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$vEspresso"
+    androidTestImplementation "com.android.support.test:rules:$vTestRules"
+
+    kapt "androidx.room:room-compiler:$vRoom"
+}

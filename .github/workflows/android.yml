@@ -1,0 +1,81 @@
+name: android
+
+on:
+  push:
+    branches: [ master ]
+#  pull_request:
+#    branches: [ started ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: set up JDK 11
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+          distribution: 'adopt'
+          # cache: gradle
+
+      #        - name: create avd
+      #          run: |
+      #            SYSTEM_IMAGES="system-images;android-30;google_apis;x86"
+      #            $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/./sdkmanager "$SYSTEM_IMAGES"
+      #            $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/./sdkmanager "emulator"
+      #            echo "no" | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/./avdmanager --verbose create avd -n test -k "$SYSTEM_IMAGES"
+      #            $ANDROID_SDK_ROOT/emulator/./emulator -avd test -delay-adb -verbose -no-window -noaudio -no-boot-anim -memory 4096 -accel on -qemu -disable-kvm
+
+      - name: set local.properties
+        run: |
+          echo debug_store_password="${{ secrets.DEBUG_STORE_PASSWORD }}" >> local.properties
+          echo debug_key_alias="${{ secrets.DEBUG_KEY_ALIAS }}" >> local.properties
+          echo debug_key_password="${{ secrets.DEBUG_KEY_PASSWORD }}" >> local.properties
+          echo debug_store_file=~/debug.keystore >> local.properties
+
+          echo release_store_password="${{ secrets.DEBUG_STORE_PASSWORD }}" >> local.properties
+          echo release_key_alias="${{ secrets.DEBUG_KEY_ALIAS }}" >> local.properties
+          echo release_key_password="${{ secrets.DEBUG_KEY_PASSWORD }}" >> local.properties
+          echo release_store_file=~/release.keystore >> local.properties
+
+#      - name: generate key store
+#        run: |
+#          echo "${{ secrets.DEBUG_STORE_FILE_ASC_BASE64 }}" | base64 --decode > ~/debug.keystore.jks.asc
+#          gpg -d --passphrase "${{ secrets.DEBUG_STORE_FILE_ASC_BASE64_PASSPHRASE }}" --batch ~/debug.keystore.jks.asc > ~/debug.keystore
+#
+#          echo "${{ secrets.RELEASE_STORE_FILE_ASC_BASE64 }}" | base64 --decode > ~/release.keystore.jks.asc
+#          gpg -d --passphrase "${{ secrets.RELEASE_STORE_FILE_ASC_BASE64_PASSPHRASE }}" --batch ~/release.keystore.jks.asc > ~/release.keystore
+
+      - name: generate key store debug
+        run: |
+          [ ! -d ~/.android ] && mkdir ~/.android
+          echo y | keytool -genkey -dname "cn=debug, ou=debug, o=debug, c=debug" -alias androiddebugkey -keypass android --storepass android -keyalg RSA -keystore ~/.android/debug.keystore -validity 10000
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: gradlew dependencies
+        run: ./gradlew dependencies
+
+      - name: gradle clean build
+        run: ./gradlew clean build
+
+      - name: upload outputs
+        uses: actions/upload-artifact@v2
+        with:
+          name: outputs
+          path: app/build/outputs
+
+      - name: upload apk debug
+        uses: actions/upload-artifact@v2
+        with:
+          name: apk-debug
+          path: app/build/outputs/apk/debug/app-debug.apk
+
+      - name: upload apk release
+        uses: actions/upload-artifact@v2
+        with:
+          name: apk-release
+          path: app/build/outputs/apk/release/app-release.apk
