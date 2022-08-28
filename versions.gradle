@@ -1,6 +1,6 @@
 def build_versions = [:]
 build_versions.min_sdk = 21 // android 5.0
-build_versions.target_sdk = 31 // android 12
+build_versions.target_sdk = 32 // android 12
 build_versions.compile_sdk = build_versions.target_sdk
 build_versions.build_tools = "33.0.0"
 build_versions.code = 5
@@ -11,14 +11,14 @@ ext {
     vGradle = "7.2.2"
     vKotlin = "1.7.10"
 
-    vAppCompat = "1.4.1"
-    vConstraintLayout = "2.1.3"
+    vAppCompat = "1.5.0"
+    vConstraintLayout = "2.1.4"
     vCoroutines = "1.6.0"
     vFirebaseBom = "29.0.3"
-    vFragmentKtx = "1.4.1"
-    vLifecycle = "2.4.1"
-    vMaterial = "1.6.0"
-    vNavigation = "2.4.2"
+    vFragmentKtx = "1.5.2"
+    vLifecycle = "2.5.1"
+    vMaterial = "1.6.1"
+    vNavigation = "2.5.1"
     vPreferenceKtx = "1.2.0"
     vRoom = "2.4.3"
 

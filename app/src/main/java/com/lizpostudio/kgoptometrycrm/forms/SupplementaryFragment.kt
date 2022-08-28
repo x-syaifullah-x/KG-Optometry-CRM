@@ -16,7 +16,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.core.content.ContextCompat
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -80,7 +79,7 @@ class SupplementaryFragment : Fragment() {
             Constants.PREF_NAME,
             Context.MODE_PRIVATE
         )
-        isAdmin = sharedPref?.getString("admin", "") ?: "" == "admin"
+        isAdmin = (sharedPref?.getString("admin", "") ?: "") == "admin"
         viewOnlyMode = sharedPref?.getBoolean("viewOnly", false) ?: false
         if (viewOnlyMode) {
             binding.mainLayout.setBackgroundColor(
@@ -198,7 +197,7 @@ class SupplementaryFragment : Fragment() {
                     }
 
 //                    val sectionShortName = makeShortSectionName(patientForm.sectionName)
-                    val sectionShortName = makeShortSectionName(patientForm)
+                    val sectionShortName = makeShortSectionName(requireContext(), patientForm)
 //                    chip.text = "$sectionShortName\n${convertLongToDDMMYY(patientForm.dateOfSection)}"
                     chip.text = sectionShortName
 
@@ -251,7 +250,8 @@ class SupplementaryFragment : Fragment() {
                                 )
                             )
 
-                        val sectionShortName = makeShortSectionName(patientForm.sectionName)
+                        val sectionShortName =
+                            makeShortSectionName(requireContext(), patientForm.sectionName)
                         chip.text =
                             "$sectionShortName\n${convertLongToDDMMYY(patientForm.dateOfSection)}"
 
@@ -295,7 +295,8 @@ class SupplementaryFragment : Fragment() {
                     }, 100L)
                 }
 
-                val hPosList = mapSectionName[sectionName]?.map { form -> form.recordID }?: listOf()
+                val hPosList =
+                    mapSectionName[sectionName]?.map { form -> form.recordID } ?: listOf()
                 val hPosBottomNav = hPosList.indexOf(recordID)
                 if (hPosBottomNav > 3) {
                     val scrollWidth = binding.chipsScroll2.width
@@ -355,12 +356,10 @@ class SupplementaryFragment : Fragment() {
         // DELETE FORM FUNCTIONALITY
         patientViewModel.recordDeleted.observe(viewLifecycleOwner) { ifDeleted ->
             ifDeleted?.let {
-            if (ifDeleted) navController.navigate(
-                SupplementaryFragmentDirections.actionSupplementaryFragmentToFormSelectionFragment(
-                    patientID
+                if (ifDeleted) navController.navigate(
+                    SupplementaryFragmentDirections.actionToFormSelectionFragment(patientID)
                 )
-            )
-        }
+            }
         }
 
         binding.deleteForm.setOnClickListener {
@@ -433,9 +432,7 @@ class SupplementaryFragment : Fragment() {
                 fillTheForm(currentForm)
             }
             "back" -> this.findNavController().navigate(
-                SupplementaryFragmentDirections.actionSupplementaryFragmentToFormSelectionFragment(
-                    patientID
-                )
+                SupplementaryFragmentDirections.actionToFormSelectionFragment(patientID)
             )
             "home" -> findNavController().navigate(
                 SupplementaryFragmentDirections.actionToDatabaseSearchFragment()
@@ -445,75 +442,51 @@ class SupplementaryFragment : Fragment() {
     }
 
     private fun navigateToSelectedForm() {
-        val navController = this.findNavController()
-        val orderOfSections = listOf(*resources.getStringArray(R.array.forms_order))
-        // if same fragment - load new record
-        // info section could be onlyUnique
         when (navigateFormName) {
-            // INFO=0  CURRENTRx=1  REFRACTION=2  OCULAR HEALTH=3
-            // SUPPLEMENTARY TESTS =4  FINAL PRESCRIPTION=5
-            // CONTACT LENS EXAM = 6  ORTHOK=7
-            orderOfSections[0] -> navController.navigate(
-                SupplementaryFragmentDirections
-                    .actionSupplementaryFragmentToInfoFragment(navigateFormRecordID)
+            getString(R.string.info_form_caption) -> findNavController().navigate(
+                SupplementaryFragmentDirections.actionToInfoFragment(navigateFormRecordID)
             )
-
-            orderOfSections[1] -> navController.navigate(
-                SupplementaryFragmentDirections.actionSupplementaryFragmentToMemoFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.follow_up_form_caption) -> findNavController().navigate(
+                SupplementaryFragmentDirections.actionToFollowUpFragment(navigateFormRecordID)
             )
-            orderOfSections[2] -> navController.navigate(
-                SupplementaryFragmentDirections.actionSupplementaryFragmentToCurrentRxFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.memo_form_caption) -> findNavController().navigate(
+                SupplementaryFragmentDirections.actionToMemoFragment(navigateFormRecordID)
             )
-
-            orderOfSections[3] -> navController.navigate(
-                SupplementaryFragmentDirections.actionSupplementaryFragmentToRefractionFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.current_rx_caption) -> findNavController().navigate(
+                SupplementaryFragmentDirections.actionToCurrentRxFragment(navigateFormRecordID)
             )
-
-            orderOfSections[4] -> navController.navigate(
-                SupplementaryFragmentDirections.actionSupplementaryFragmentToOcularHealthFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.refraction_caption) -> findNavController().navigate(
+                SupplementaryFragmentDirections.actionToRefractionFragment(navigateFormRecordID)
             )
-            orderOfSections[5] -> {
+            getString(R.string.ocular_health_caption) -> findNavController().navigate(
+                SupplementaryFragmentDirections.actionToOcularHealthFragment(navigateFormRecordID)
+            )
+            getString(R.string.supplementary_test_caption) -> {
                 if (recordID != navigateFormRecordID) {
-
                     recordID = navigateFormRecordID
                     patientViewModel.getPatientForm(navigateFormRecordID)
                 }
             }
-            orderOfSections[6] -> navController.navigate(
-                SupplementaryFragmentDirections.actionSupplementaryFragmentToContactLensFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.contact_lens_exam_caption) -> findNavController().navigate(
+                SupplementaryFragmentDirections.actionToContactLensFragment(navigateFormRecordID)
             )
-
-            orderOfSections[7] -> navController.navigate(
-                SupplementaryFragmentDirections.actionSupplementaryFragmentToOrthokFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.orthox_caption) -> findNavController().navigate(
+                SupplementaryFragmentDirections.actionToOrthokFragment(navigateFormRecordID)
             )
-
-            orderOfSections[8] -> {
-                navController.navigate(
-                    SupplementaryFragmentDirections
-                        .actionSupplementaryFragmentToCashOrderFragment(navigateFormRecordID)
-                )
+            getString(R.string.cash_order) -> findNavController().navigate(
+                SupplementaryFragmentDirections.actionToCashOrderFragment(navigateFormRecordID)
+            )
+            getString(R.string.sales_order_caption) -> findNavController().navigate(
+                SupplementaryFragmentDirections.actionToSalesOrderFragment(navigateFormRecordID)
+            )
+            getString(R.string.final_prescription_caption) -> findNavController().navigate(
+                SupplementaryFragmentDirections.actionToSalesOrderFragment(navigateFormRecordID)
+            )
+            else -> {
+                Toast.makeText(
+                    context, "$navigateFormName not implemented yet", Toast.LENGTH_SHORT
+                ).show()
             }
-
-            orderOfSections[9] -> navController.navigate(
-                SupplementaryFragmentDirections.actionSupplementaryFragmentToFinalPrescriptionFragment(
-                    navigateFormRecordID
-                )
-            )
-            else -> Toast.makeText(context, getString(R.string.navigation_else), Toast.LENGTH_SHORT)
-                .show()
-
         }
     }
 

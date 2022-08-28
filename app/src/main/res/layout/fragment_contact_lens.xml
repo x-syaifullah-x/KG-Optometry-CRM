@@ -235,7 +235,7 @@
             android:layout_height="match_parent"
             android:fontFamily="@font/didact_gothic"
             android:paddingStart="16dp"
-            android:text="@string/contact_lens_caption"
+            android:text="@string/contact_lens_exam_caption"
             android:textColor="@color/colorPrimaryDark"
             android:textSize="20sp"
             android:textStyle="bold"

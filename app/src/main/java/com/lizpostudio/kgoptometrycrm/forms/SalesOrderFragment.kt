@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
@@ -48,10 +49,8 @@ class SalesOrderFragment : Fragment() {
     private var currentForm = PatientsEntity()
     private var navigateFormName = ""
     private var navigateFormRecordID = -1L
-    private var navigateBack = false
     private var refractionForms = listOf<PatientsEntity>()
 
-    private var recordSaved = false
     private var viewOnlyMode = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -83,7 +82,7 @@ class SalesOrderFragment : Fragment() {
         val sharedPref = app.getSharedPreferences(
             Constants.PREF_NAME, Context.MODE_PRIVATE
         )
-        isAdmin = sharedPref?.getString("admin", "") ?: "" == "admin"
+        isAdmin = (sharedPref?.getString("admin", "") ?: "") == "admin"
 
         viewOnlyMode = sharedPref?.getBoolean("viewOnly", false) ?: false
         if (viewOnlyMode) {
@@ -221,7 +220,7 @@ class SalesOrderFragment : Fragment() {
                     }
 
 //                    val sectionShortName = makeShortSectionName(patientForm.sectionName)
-                    val sectionShortName = makeShortSectionName(patientForm)
+                    val sectionShortName = makeShortSectionName(requireContext(), patientForm)
 //                    chip.text = "$sectionShortName\n${convertLongToDDMMYY(patientForm.dateOfSection)}"
                     chip.text = sectionShortName
 
@@ -274,7 +273,8 @@ class SalesOrderFragment : Fragment() {
                                 )
                             )
 
-                        val sectionShortName = makeShortSectionName(patientForm.sectionName)
+                        val sectionShortName =
+                            makeShortSectionName(requireContext(), patientForm.sectionName)
                         chip.text =
                             "$sectionShortName\n${convertLongToDDMMYY(patientForm.dateOfSection)}"
 
@@ -381,8 +381,7 @@ class SalesOrderFragment : Fragment() {
         patientViewModel.recordDeleted.observe(viewLifecycleOwner) { ifDeleted ->
             ifDeleted?.let {
                 if (ifDeleted) navController.navigate(
-                    SalesOrderFragmentDirections
-                        .actionFinalPrescriptionFragmentToFormSelectionFragment(patientID)
+                    SalesOrderFragmentDirections.actionToFormSelectionFragment(patientID)
                 )
             }
         }
@@ -591,8 +590,7 @@ class SalesOrderFragment : Fragment() {
                 fillTheForm(currentForm)
             }
             "back" -> this.findNavController().navigate(
-                SalesOrderFragmentDirections
-                    .actionFinalPrescriptionFragmentToFormSelectionFragment(patientID)
+                SalesOrderFragmentDirections.actionToFormSelectionFragment(patientID)
             )
             "home" -> findNavController().navigate(
                 SalesOrderFragmentDirections.actionToDatabaseSearchFragment()
@@ -602,64 +600,53 @@ class SalesOrderFragment : Fragment() {
     }
 
     private fun navigateToSelectedForm() {
-        val navController = this.findNavController()
-        val orderOfSections = listOf(*resources.getStringArray(R.array.forms_order))
-        // if same fragment - load new record
-        // info section could be onlyUnique
         when (navigateFormName) {
-
-            orderOfSections[0] -> navController.navigate(
-                SalesOrderFragmentDirections
-                    .actionFinalPrescriptionFragmentToInfoFragment(navigateFormRecordID)
+            getString(R.string.info_form_caption) -> findNavController().navigate(
+                SalesOrderFragmentDirections.actionToInfoFragment(navigateFormRecordID)
             )
-
-            orderOfSections[1] -> navController.navigate(
-                SalesOrderFragmentDirections
-                    .actionFinalPrescriptionFragmentToMemoFragment(navigateFormRecordID)
+            getString(R.string.follow_up_form_caption) -> findNavController().navigate(
+                SalesOrderFragmentDirections.actionToFollowUpFragment(navigateFormRecordID)
             )
-
-            orderOfSections[2] -> navController.navigate(
-                SalesOrderFragmentDirections
-                    .actionFinalPrescriptionFragmentToCurrentRxFragment(navigateFormRecordID)
+            getString(R.string.memo_form_caption) -> findNavController().navigate(
+                SalesOrderFragmentDirections.actionToMemoFragment(navigateFormRecordID)
             )
-
-            orderOfSections[3] -> navController.navigate(
-                SalesOrderFragmentDirections
-                    .actionFinalPrescriptionFragmentToRefractionFragment(navigateFormRecordID)
+            getString(R.string.current_rx_caption) -> findNavController().navigate(
+                SalesOrderFragmentDirections.actionToCurrentRxFragment(navigateFormRecordID)
             )
-
-            orderOfSections[4] -> navController.navigate(
-                SalesOrderFragmentDirections
-                    .actionFinalPrescriptionFragmentToOcularHealthFragment(navigateFormRecordID)
+            getString(R.string.refraction_caption) -> findNavController().navigate(
+                SalesOrderFragmentDirections.actionToRefractionFragment(navigateFormRecordID)
             )
-
-            orderOfSections[5] -> navController.navigate(
-                SalesOrderFragmentDirections
-                    .actionFinalPrescriptionFragmentToSupplementaryFragment(navigateFormRecordID)
+            getString(R.string.ocular_health_caption) -> findNavController().navigate(
+                SalesOrderFragmentDirections.actionToOcularHealthFragment(navigateFormRecordID)
             )
-
-            orderOfSections[6] -> navController.navigate(
-                SalesOrderFragmentDirections
-                    .actionFinalPrescriptionFragmentToContactLensFragment(navigateFormRecordID)
+            getString(R.string.supplementary_test_caption) -> findNavController().navigate(
+                SalesOrderFragmentDirections.actionToSupplementaryFragment(navigateFormRecordID)
             )
-
-            orderOfSections[7] -> navController.navigate(
-                SalesOrderFragmentDirections
-                    .actionFinalPrescriptionFragmentToOrthokFragment(navigateFormRecordID)
+            getString(R.string.contact_lens_exam_caption) -> findNavController().navigate(
+                SalesOrderFragmentDirections.actionToContactLensFragment(navigateFormRecordID)
             )
-
-            orderOfSections[8] -> {
-                navController.navigate(
-                    SalesOrderFragmentDirections
-                        .actionFinalPrescriptionFragmentToCashOrderFragment(navigateFormRecordID)
-                )
-            }
-
-            orderOfSections[9] -> {
+            getString(R.string.orthox_caption) -> findNavController().navigate(
+                SalesOrderFragmentDirections.actionToOrthokFragment(navigateFormRecordID)
+            )
+            getString(R.string.cash_order) -> findNavController().navigate(
+                SalesOrderFragmentDirections.actionToCashOrderFragment(navigateFormRecordID)
+            )
+            getString(R.string.sales_order_caption) -> {
                 if (recordID != navigateFormRecordID) {
                     recordID = navigateFormRecordID
                     patientViewModel.getPatientForm(navigateFormRecordID)
                 }
+            }
+            getString(R.string.final_prescription_caption) -> {
+                if (recordID != navigateFormRecordID) {
+                    recordID = navigateFormRecordID
+                    patientViewModel.getPatientForm(navigateFormRecordID)
+                }
+            }
+            else -> {
+                Toast.makeText(
+                    context, "$navigateFormName not implemented yet", Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }

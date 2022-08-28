@@ -675,7 +675,7 @@ class SearchSalesFragment : Fragment() {
 
         latestDataSynched = pref?.getLong(Constants.PREF_KEY_LAST_SYNC, 0L) ?: 0L
         isfetchedFromFirebaseCompleted = pref?.getBoolean("fireFetched", false) ?: false
-        isAdmin = pref?.getString("admin", "") ?: "" == "admin"
+        isAdmin = (pref?.getString("admin", "") ?: "") == "admin"
 
         if (isAdmin) {
             binding.refractionReport.visibility = View.VISIBLE

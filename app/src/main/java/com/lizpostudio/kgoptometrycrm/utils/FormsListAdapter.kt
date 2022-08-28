@@ -17,6 +17,7 @@ class FormsListAdapter :
 
     private val mapColor = mapOf(
         Pair("INFO", "#efebff"),
+        Pair("FOLLOW UP", "#ece8f8"),
         Pair("MEMO", "#ece8f8"),
         Pair("CURRENT / OLD Rx", "#dfd9f4"),
         Pair("REFRACTION", "#d2caef"),

@@ -6,6 +6,6 @@ class ExampleUnitTest {
 
     @Test
     fun addition_isCorrect() {
-
+        println(true)
     }
 }

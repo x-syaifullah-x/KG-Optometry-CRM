@@ -27,5 +27,6 @@ data class FBRecords(
     var solutionMisc: String = "",
     var solutionMiscRm: String = "",
     var practitionerNameOptometrist: String = "",
-    var remarkPrint: String = ""
+    var remarkPrint: String = "",
+    var followUpText: String = ""
 )

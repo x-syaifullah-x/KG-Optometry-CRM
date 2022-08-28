@@ -90,7 +90,7 @@ class RefractionFragment : Fragment() {
                 val bos = ByteArrayOutputStream()
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos)
                 storageRef.putBytes(bos.toByteArray())
-                    .addOnCompleteListener { _ ->
+                    .addOnCompleteListener {
                         bos.close()
                     }
                     .addOnFailureListener {
@@ -173,7 +173,7 @@ class RefractionFragment : Fragment() {
         val sharedPref = app.getSharedPreferences(
             Constants.PREF_NAME, Context.MODE_PRIVATE
         )
-        isAdmin = sharedPref?.getString("admin", "") ?: "" == "admin"
+        isAdmin = (sharedPref?.getString("admin", "") ?: "") == "admin"
         viewOnlyMode = sharedPref?.getBoolean("viewOnly", false) ?: false
 
         if (viewOnlyMode) {
@@ -288,7 +288,7 @@ class RefractionFragment : Fragment() {
                     }
 
 //                    val sectionShortName = makeShortSectionName(patientForm.sectionName)
-                    val sectionShortName = makeShortSectionName(patientForm)
+                    val sectionShortName = makeShortSectionName(requireContext(), patientForm)
 //                    chip.text = "$sectionShortName\n${convertLongToDDMMYY(patientForm.dateOfSection)}"
                     chip.text = sectionShortName
 
@@ -341,7 +341,7 @@ class RefractionFragment : Fragment() {
                                 )
                             )
 
-                        val sectionShortName = makeShortSectionName(patientForm.sectionName)
+                        val sectionShortName = makeShortSectionName(requireContext(), patientForm.sectionName)
                         chip.text =
                             "$sectionShortName\n${convertLongToDDMMYY(patientForm.dateOfSection)}"
 
@@ -414,12 +414,7 @@ class RefractionFragment : Fragment() {
             }
         }
 
-        binding.photoButton.setOnClickListener { it: View ->
-//            Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
-//                takePictureIntent.resolveActivity(it.context.packageManager)?.also {
-//                    takePicture.launch(takePictureIntent)
-//                }
-//            }
+        binding.photoButton.setOnClickListener {
             val uri = FileProvider.getUriForFile(
                 it.context,
                 Constants.FILE_PROVIDER_AUTHORITY,
@@ -517,8 +512,7 @@ class RefractionFragment : Fragment() {
             ifDeleted?.let {
                 if (ifDeleted)
                     navController.navigate(
-                        RefractionFragmentDirections
-                            .actionRefractionFragmentToFormSelectionFragment(patientID)
+                        RefractionFragmentDirections.actionToFormSelectionFragment(patientID)
                     )
             }
         }
@@ -684,9 +678,7 @@ class RefractionFragment : Fragment() {
                 fillTheForm(currentForm)
             }
             "back" -> this.findNavController().navigate(
-                RefractionFragmentDirections.actionRefractionFragmentToFormSelectionFragment(
-                    patientID
-                )
+                RefractionFragmentDirections.actionToFormSelectionFragment(patientID)
             )
             "home" -> findNavController().navigate(
                 RefractionFragmentDirections.actionToDatabaseSearchFragment()
@@ -1144,78 +1136,51 @@ class RefractionFragment : Fragment() {
     }
 
     private fun navigateToSelectedForm() {
-        val orderOfSections = listOf(*resources.getStringArray(R.array.forms_order))
-        // if same fragment - load new record
-        val navController = this.findNavController()
-
         when (navigateFormName) {
-
-            orderOfSections[0] -> navController.navigate(
-                RefractionFragmentDirections
-                    .actionRefractionFragmentToInfoFragment(navigateFormRecordID)
+            getString(R.string.info_form_caption) -> findNavController().navigate(
+                RefractionFragmentDirections.actionToInfoFragment(navigateFormRecordID)
             )
-
-            orderOfSections[1] -> navController.navigate(
-                RefractionFragmentDirections.actionRefractionFragmentToMemoFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.follow_up_form_caption) -> findNavController().navigate(
+                RefractionFragmentDirections.actionToFollowUpFragment(navigateFormRecordID)
             )
-
-            orderOfSections[2] -> navController.navigate(
-                RefractionFragmentDirections.actionRefractionFragmentToCurrentRxFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.memo_form_caption) -> findNavController().navigate(
+                RefractionFragmentDirections.actionToMemoFragment(navigateFormRecordID)
             )
-
-            orderOfSections[3] -> {
-                Log.d(Constants.TAG, "Navigating to another RF form:")
-                Log.d(Constants.TAG, "Old Record ID = $recordID")
-                Log.d(Constants.TAG, "New Record ID = $navigateFormRecordID")
+            getString(R.string.current_rx_caption) -> findNavController().navigate(
+                RefractionFragmentDirections.actionToCurrentRxFragment(navigateFormRecordID)
+            )
+            getString(R.string.refraction_caption) -> {
                 if (recordID != navigateFormRecordID) {
                     recordID = navigateFormRecordID
-                    createRefAssignPhFile()
                     patientViewModel.getPatientForm(navigateFormRecordID)
                 }
-
             }
-            orderOfSections[4] -> navController.navigate(
-                RefractionFragmentDirections.actionRefractionFragmentToOcularHealthFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.ocular_health_caption) -> findNavController().navigate(
+                RefractionFragmentDirections.actionToOcularHealthFragment(navigateFormRecordID)
             )
-
-            orderOfSections[5] -> navController.navigate(
-                RefractionFragmentDirections.actionRefractionFragmentToSupplementaryFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.supplementary_test_caption) -> findNavController().navigate(
+                RefractionFragmentDirections.actionToSupplementaryFragment(navigateFormRecordID)
             )
-
-            orderOfSections[6] -> navController.navigate(
-                RefractionFragmentDirections.actionRefractionFragmentToContactLensFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.contact_lens_exam_caption) -> findNavController().navigate(
+                RefractionFragmentDirections.actionToContactLensFragment(navigateFormRecordID)
             )
-
-            orderOfSections[7] -> navController.navigate(
-                RefractionFragmentDirections.actionRefractionFragmentToOrthokFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.orthox_caption) -> findNavController().navigate(
+                RefractionFragmentDirections.actionToOrthokFragment(navigateFormRecordID)
             )
-
-            orderOfSections[8] -> {
-                navController.navigate(
-                    RefractionFragmentDirections
-                        .actionRefractionFragmentToCashOrderFragment(navigateFormRecordID)
-                )
+            getString(R.string.cash_order) -> findNavController().navigate(
+                RefractionFragmentDirections.actionToCashOrderFragment(navigateFormRecordID)
+            )
+            getString(R.string.sales_order_caption) -> findNavController().navigate(
+                RefractionFragmentDirections.actionToSalesOrderFragment(navigateFormRecordID)
+            )
+            getString(R.string.final_prescription_caption) -> findNavController().navigate(
+                RefractionFragmentDirections.actionToSalesOrderFragment(navigateFormRecordID)
+            )
+            else -> {
+                Toast.makeText(
+                    context, "$navigateFormName not implemented yet", Toast.LENGTH_SHORT
+                ).show()
             }
-
-            orderOfSections[9] -> navController.navigate(
-                RefractionFragmentDirections.actionRefractionFragmentToFinalPrescriptionFragment(
-                    navigateFormRecordID
-                )
-            )
-            else -> Toast.makeText(context, getString(R.string.navigation_else), Toast.LENGTH_SHORT)
-                .show()
         }
     }
 

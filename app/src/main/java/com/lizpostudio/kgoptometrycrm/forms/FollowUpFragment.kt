@@ -25,11 +25,15 @@ import com.lizpostudio.kgoptometrycrm.PatientsViewModelFactory
 import com.lizpostudio.kgoptometrycrm.R
 import com.lizpostudio.kgoptometrycrm.constant.Constants
 import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
-import com.lizpostudio.kgoptometrycrm.databinding.FragmentCashOrderBinding
+import com.lizpostudio.kgoptometrycrm.databinding.FragmentFollowUpBinding
 import com.lizpostudio.kgoptometrycrm.utils.*
 import id.xxx.module.view.binding.ktx.viewBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.util.*
 
-class CashOrderFragment : Fragment() {
+class FollowUpFragment : Fragment() {
 
     private val patientViewModel: PatientsViewModel by viewModels {
         PatientsViewModelFactory(requireContext())
@@ -37,7 +41,7 @@ class CashOrderFragment : Fragment() {
 
     private var isAdmin = false
 
-    private val binding by viewBinding<FragmentCashOrderBinding>()
+    private val binding by viewBinding<FragmentFollowUpBinding>()
 
     private var recordID = 0L
     private var patientID = ""
@@ -47,9 +51,10 @@ class CashOrderFragment : Fragment() {
     private var currentForm = PatientsEntity()
     private var navigateFormName = ""
     private var navigateFormRecordID = -1L
-    private var cashOrderForms = listOf<PatientsEntity>()
+    private var followUpForms = listOf<PatientsEntity>()
 
     private var viewOnlyMode = false
+    private var isDataFollowUpChange = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,11 +71,9 @@ class CashOrderFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        val safeArgs: CashOrderFragmentArgs by navArgs()
-
+        val safeArgs: FollowUpFragmentArgs by navArgs()
         recordID = safeArgs.recordID
 
-        // get Patient data
         patientViewModel.getPatientForm(recordID)
 
         val navController = this.findNavController()
@@ -83,30 +86,44 @@ class CashOrderFragment : Fragment() {
         viewOnlyMode = sharedPref?.getBoolean("viewOnly", false) ?: false
         if (viewOnlyMode) {
             binding.mainLayout.setBackgroundColor(
-                ContextCompat.getColor(
-                    requireContext(),
-                    R.color.viewOnlyMode
-                )
+                ContextCompat.getColor(requireContext(), R.color.viewOnlyMode)
             )
             binding.saveFormButton.visibility = View.GONE
         } else binding.mainLayout.setBackgroundColor(
-            ContextCompat.getColor(
-                requireContext(),
-                R.color.lightBackground
-            )
+            ContextCompat.getColor(requireContext(), R.color.lightBackground)
         )
 
         binding.dateCaption.setOnClickListener {
             changeDate()
         }
 
+        fun getTimeInMillisNextMount(next: Int): Long {
+            val calendar = Calendar.getInstance()
+            calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) + next)
+            return calendar.timeInMillis
+        }
+        binding.btn3Months.setOnClickListener {
+            val nextMountInMillis = getTimeInMillisNextMount(3)
+            binding.dateCaption.text = convertLongToDDMMYY(nextMountInMillis)
+            sectionEditDate = nextMountInMillis
+        }
+        binding.btn6Months.setOnClickListener {
+            val nextMountInMillis = getTimeInMillisNextMount(6)
+            binding.dateCaption.text = convertLongToDDMMYY(nextMountInMillis)
+            sectionEditDate = nextMountInMillis
+        }
+        binding.btn12Months.setOnClickListener {
+            val nextMountInMillis = getTimeInMillisNextMount(12)
+            binding.dateCaption.text = convertLongToDDMMYY(nextMountInMillis)
+            sectionEditDate = nextMountInMillis
+        }
+
         patientViewModel.patientForm.observe(viewLifecycleOwner) { patientForm ->
             patientForm?.let {
                 currentForm = it
                 patientID = it.patientID
-                patientViewModel.getCashOrder(
-                    patientID,
-                    resources.getString(R.string.cash_order_caption)
+                patientViewModel.getFollowUp(
+                    patientID, resources.getString(R.string.follow_up_form_caption)
                 )
 
                 patientViewModel.createRecordListener(currentForm.recordID)
@@ -116,39 +133,35 @@ class CashOrderFragment : Fragment() {
             }
         }
 
-        patientViewModel.cashOrder.observe(viewLifecycleOwner) { refForms ->
+        patientViewModel.followUp.observe(viewLifecycleOwner) { refForms ->
             refForms?.let { forms ->
                 if (forms.isNotEmpty()) {
-
-                    // fill in spinner
                     val reversedForms = forms.sortedByDescending { it.dateOfSection }
-                    cashOrderForms = reversedForms
-
-//                    val refListItems = reversedForms.map { convertLongToDDMMYY(it.dateOfSection) }
-
-//                    val refSpinnerAdapter: ArrayAdapter<String> =
-//                        ArrayAdapter<String>(
-//                            app.applicationContext,
-//                            android.R.layout.simple_spinner_item,
-//                            refListItems
-//                        )
-//                    binding.spinnerFromRefraction.adapter = refSpinnerAdapter
+                    followUpForms = reversedForms
                 }
             }
         }
 
         patientViewModel.patientInitForms.observe(viewLifecycleOwner) { allForms ->
             allForms?.let {
+
                 var pAge = it.first().patientName + " "
                 for (patientsRec in it) {
                     if (patientsRec.sectionName == resources.getString(R.string.info_form_caption)) {
                         val ic = patientsRec.patientIC
                         val (dob, age) = computeAgeAndDOB(ic)
 
-                        pAge += resources.getString(
-                            R.string.number_of_years_patient,
-                            age, dob
-                        )
+                        pAge += resources.getString(R.string.number_of_years_patient, age, dob)
+
+                        if (patientsRec.sectionData != currentForm.sectionData) {
+                            currentForm.sectionData = patientsRec.sectionData
+                            isDataFollowUpChange = true
+                        }
+
+                        if (patientsRec.phone != currentForm.phone) {
+                            currentForm.phone = patientsRec.phone
+                            isDataFollowUpChange = true
+                        }
                     }
                 }
                 binding.patientName.text = pAge
@@ -170,11 +183,6 @@ class CashOrderFragment : Fragment() {
                     }
                 }
 
-                val newSectionName = newList
-                    .map { patientsForms -> patientsForms.sectionName }
-                    .toSet()
-
-                /* FOR BOTTOM NAVIGATION */
                 val mapSectionName = mutableMapOf<String, MutableList<PatientsEntity>>()
                 newList.forEach { patient ->
                     val key = mapSectionName[patient.sectionName]
@@ -185,10 +193,9 @@ class CashOrderFragment : Fragment() {
                 }
 
                 var sectionName = ""
-                val navChipGroup = binding.navigationLayout
-                val navChipGroup2 = binding.navigationLayout2
-                val children = newSectionName.map { patientForm ->
-                    val chip = TextView(requireContext())
+
+                fun createChip(context: Context): TextView {
+                    val chip = TextView(context)
 
                     val params = LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -202,25 +209,28 @@ class CashOrderFragment : Fragment() {
                         (8 * screenDst).toInt(),
                         (8 * screenDst).toInt()
                     )
+                    return chip
+                }
 
-//                    if (patientForm.recordID == recordID)
-                    if (patientForm == "CASH ORDER") {
+                val newSectionName = newList
+                    .map { patientsForms -> patientsForms.sectionName }
+                    .toSet()
+
+                val children = newSectionName.map { patientForm ->
+                    val chip = createChip(requireContext())
+                    if (patientForm == getString(R.string.follow_up_form_caption)) {
                         sectionName = patientForm
                         chip.setBackgroundColor(
                             ContextCompat.getColor(requireContext(), R.color.lightBackground)
                         )
                     } else {
-                        chip.setBackgroundColor(
-                            ContextCompat.getColor(requireContext(), R.color.cardBackgroundDarker)
+                        chip.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.cardBackgroundDarker)
                         )
                     }
 
-//                    val sectionShortName = makeShortSectionName(patientForm.sectionName)
                     val sectionShortName = makeShortSectionName(requireContext(), patientForm)
-//                    chip.text = "$sectionShortName\n${convertLongToDDMMYY(patientForm.dateOfSection)}"
                     chip.text = sectionShortName
 
-//                    chip.tag = patientForm.sectionName + "\n" + "${patientForm.recordID}"
                     chip.tag =
                         patientForm + "\n" + "${mapSectionName[patientForm]?.lastOrNull()?.recordID}"
 
@@ -239,22 +249,7 @@ class CashOrderFragment : Fragment() {
                 val children2 = mapSectionName[sectionName]
                     ?.sortedBy { p -> p.dateOfSection }
                     ?.map { patientForm ->
-                        val chip = TextView(requireContext())
-
-                        val params = LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.WRAP_CONTENT,
-                            LinearLayout.LayoutParams.WRAP_CONTENT
-                        ).apply {
-                            gravity = Gravity.CENTER
-                        }
-                        chip.layoutParams = params
-                        chip.setPadding(
-                            (8 * screenDst).toInt(),
-                            (4 * screenDst).toInt(),
-                            (8 * screenDst).toInt(),
-                            (4 * screenDst).toInt()
-                        )
-
+                        val chip = createChip(requireContext())
                         if (patientForm.recordID == recordID)
                             chip.setBackgroundColor(
                                 ContextCompat.getColor(requireContext(), R.color.lightBackground)
@@ -286,6 +281,7 @@ class CashOrderFragment : Fragment() {
                         chip
                     }
 
+                val navChipGroup = binding.navigationLayout
                 navChipGroup.removeAllViews()
                 for (chip in children) {
                     val chipDivider = TextView(requireContext())
@@ -294,6 +290,7 @@ class CashOrderFragment : Fragment() {
                     navChipGroup.addView(chipDivider)
                 }
 
+                val navChipGroup2 = binding.navigationLayout2
                 navChipGroup2.removeAllViews()
                 children2?.forEach { chip ->
                     val chipDivider = TextView(requireContext())
@@ -302,7 +299,7 @@ class CashOrderFragment : Fragment() {
                     navChipGroup2.addView(chipDivider)
                 }
 
-                val hPos = newSectionName.indexOf(getString(R.string.cash_order_caption))
+                val hPos = newSectionName.indexOf(getString(R.string.follow_up_form_caption))
                 if (hPos > 3) {
                     val scrollWidth = binding.chipsScroll.width
                     val scrollX = ((hPos - 2) * (scrollWidth / 6.25)).toInt()
@@ -326,38 +323,20 @@ class CashOrderFragment : Fragment() {
             }
         }
 
-        val sphListItems = sphList()
-        val sphSpinnerAdapter: ArrayAdapter<String> =
-            ArrayAdapter<String>(
-                requireContext(),
-                android.R.layout.simple_spinner_item,
-                sphListItems
-            )
-        binding.spinnerLeftSph.adapter = sphSpinnerAdapter
-        binding.spinnerRightSph.adapter = sphSpinnerAdapter
-
-        val cylListItems = cylList()
-        val cylSpinnerAdapter: ArrayAdapter<String> =
-            ArrayAdapter<String>(
-                requireContext(),
-                android.R.layout.simple_spinner_item,
-                cylListItems
-            )
-        binding.spinnerLeftCyl.adapter = cylSpinnerAdapter
-        binding.spinnerRightCyl.adapter = cylSpinnerAdapter
-
         patientViewModel.navTrigger.observe(viewLifecycleOwner) { navOption ->
             navOption?.let {
                 launchNavigator(navOption)
             }
         }
+
         patientViewModel.recordDeleted.observe(viewLifecycleOwner) { ifDeleted ->
             ifDeleted?.let {
                 if (ifDeleted) navController.navigate(
-                    CashOrderFragmentDirections.actionToFormSelectionFragment(patientID)
+                    FollowUpFragmentDirections.actionToFormSelectionFragment(patientID)
                 )
             }
         }
+
         binding.deleteForm.setOnClickListener {
             if (context != null)
                 actionConfirmDeletion(
@@ -375,12 +354,14 @@ class CashOrderFragment : Fragment() {
                     }
                 }
         }
+
         binding.saveFormButton.setOnClickListener {
             saveAndNavigate("none")
         }
         binding.backButton.setOnClickListener {
             saveAndNavigate("back")
         }
+
         binding.homeButton.setOnClickListener {
             saveAndNavigate("home")
         }
@@ -404,11 +385,11 @@ class CashOrderFragment : Fragment() {
         if (viewOnlyMode) {
             launchNavigator(navOption)
         } else {
+
             if (formWasChanged()) {
                 patientViewModel.submitPatientToFirebase(
                     currentForm.recordID.toString(), currentForm
                 )
-                // trigger navigation after update
                 patientViewModel.updateRecord(currentForm, navOption)
             } else {
                 launchNavigator(navOption)
@@ -420,64 +401,55 @@ class CashOrderFragment : Fragment() {
         when (option) {
             "none" -> fillTheForm(currentForm)
             "back" -> findNavController().navigate(
-                CashOrderFragmentDirections.actionToFormSelectionFragment(patientID)
+                FollowUpFragmentDirections.actionToFormSelectionFragment(patientID)
             )
             "home" -> findNavController().navigate(
-                CashOrderFragmentDirections.actionToDatabaseSearchFragment()
+                FollowUpFragmentDirections.actionToDatabaseSearchFragment()
             )
             else -> navigateToSelectedForm()
         }
     }
 
     private fun navigateToSelectedForm() {
-        val navController = this.findNavController()
         when (navigateFormName) {
-            getString(R.string.info_form_caption) -> navController.navigate(
-                CashOrderFragmentDirections.actionToInfoFragment(navigateFormRecordID)
+            getString(R.string.info_form_caption) -> findNavController().navigate(
+                FollowUpFragmentDirections.actionToInfoFragment(navigateFormRecordID)
             )
-
-            getString(R.string.follow_up_form_caption) -> navController.navigate(
-                CashOrderFragmentDirections.actionToFollowUpFragment(navigateFormRecordID)
-            )
-
-            getString(R.string.memo_form_caption) -> navController.navigate(
-                CashOrderFragmentDirections.actionToMemoFragment(navigateFormRecordID)
-            )
-
-            getString(R.string.current_rx_caption) -> navController.navigate(
-                CashOrderFragmentDirections.actionToCurrentRxFragment(navigateFormRecordID)
-            )
-
-            getString(R.string.refraction_caption) -> navController.navigate(
-                CashOrderFragmentDirections.actionToRefractionFragment(navigateFormRecordID)
-            )
-
-            getString(R.string.ocular_health_caption) -> navController.navigate(
-                CashOrderFragmentDirections.actionToOcularHealthFragment(navigateFormRecordID)
-            )
-
-            getString(R.string.supplementary_test_caption) -> navController.navigate(
-                CashOrderFragmentDirections.actionToSupplementaryFragment(navigateFormRecordID)
-            )
-
-            getString(R.string.contact_lens_exam_caption) -> navController.navigate(
-                CashOrderFragmentDirections.actionToContactLensFragment(navigateFormRecordID)
-            )
-
-            getString(R.string.orthox_caption) -> navController.navigate(
-                CashOrderFragmentDirections.actionToOrthokFragment(navigateFormRecordID)
-            )
-            getString(R.string.cash_order) -> {
+            getString(R.string.follow_up_form_caption) -> {
                 if (recordID != navigateFormRecordID) {
                     recordID = navigateFormRecordID
                     patientViewModel.getPatientForm(navigateFormRecordID)
                 }
             }
-            getString(R.string.sales_order_caption) -> findNavController().navigate(
-                CashOrderFragmentDirections.actionToSalesOrderFragment(navigateFormRecordID)
+            getString(R.string.memo_form_caption) -> findNavController().navigate(
+                FollowUpFragmentDirections.actionToMemoFragment(navigateFormRecordID)
             )
-            getString(R.string.final_prescription_caption) -> navController.navigate(
-                CashOrderFragmentDirections.actionToSalesOrderFragment(navigateFormRecordID)
+            getString(R.string.current_rx_caption) -> findNavController().navigate(
+                FollowUpFragmentDirections.actionToCurrentRxFragment(navigateFormRecordID)
+            )
+            getString(R.string.refraction_caption) -> findNavController().navigate(
+                FollowUpFragmentDirections.actionToRefractionFragment(navigateFormRecordID)
+            )
+            getString(R.string.ocular_health_caption) -> findNavController().navigate(
+                FollowUpFragmentDirections.actionToOcularHealthFragment(navigateFormRecordID)
+            )
+            getString(R.string.supplementary_test_caption) -> findNavController().navigate(
+                FollowUpFragmentDirections.actionToSupplementaryFragment(navigateFormRecordID)
+            )
+            getString(R.string.contact_lens_exam_caption) -> findNavController().navigate(
+                FollowUpFragmentDirections.actionToContactLensFragment(navigateFormRecordID)
+            )
+            getString(R.string.orthox_caption) -> findNavController().navigate(
+                FollowUpFragmentDirections.actionToOrthokFragment(navigateFormRecordID)
+            )
+            getString(R.string.cash_order) -> findNavController().navigate(
+                FollowUpFragmentDirections.actionToCashOrderFragment(navigateFormRecordID)
+            )
+            getString(R.string.sales_order_caption) -> findNavController().navigate(
+                FollowUpFragmentDirections.actionToSalesOrderFragment(navigateFormRecordID)
+            )
+            getString(R.string.final_prescription_caption) -> findNavController().navigate(
+                FollowUpFragmentDirections.actionToSalesOrderFragment(navigateFormRecordID)
             )
             else -> {
                 Toast.makeText(
@@ -489,9 +461,7 @@ class CashOrderFragment : Fragment() {
 
     @SuppressLint("SetTextI18n")
     private fun fillTheForm(patientForm: PatientsEntity) {
-
         val extractData = patientForm.sectionData.split('|').toMutableList()
-//      Log.d(Constants.TAG, "extract data size before = ${extractData.size}")
         if (extractData.size < 28) {
             for (index in extractData.size..28) {
                 extractData.add("")
@@ -499,81 +469,9 @@ class CashOrderFragment : Fragment() {
         }
 
         binding.apply {
-
-            //       patientName.text = patientForm.patientName
+            etFollowUpText.setText(patientForm.followUpText)
             dateCaption.text = convertLongToDDMMYY(patientForm.dateOfSection)
             sectionEditDate = patientForm.dateOfSection
-
-            var isEmpty = true
-            for (i in 0 until spinnerRightSph.adapter.count) {
-                if (extractData[1].trim() != "" &&
-                    extractData[1] == spinnerRightSph.adapter.getItem(i).toString()
-                ) {
-                    spinnerRightSph.setSelection(i)
-                    isEmpty = false
-                }
-            }
-            if (isEmpty) { // set " " as default value
-                for (i in 0 until spinnerRightSph.adapter.count) {
-                    if (" " == spinnerRightSph.adapter.getItem(i).toString()) {
-                        spinnerRightSph.setSelection(i)
-                    }
-                }
-            }
-
-            isEmpty = true
-            for (i in 0 until spinnerLeftSph.adapter.count) {
-                if (extractData[2].trim() != "" &&
-                    extractData[2] == spinnerLeftSph.adapter.getItem(i).toString()
-                ) {
-                    spinnerLeftSph.setSelection(i)
-                    isEmpty = false
-                }
-            }
-            if (isEmpty) { // set " " as default value
-                for (i in 0 until spinnerLeftSph.adapter.count) {
-                    if (" " == spinnerLeftSph.adapter.getItem(i).toString()) {
-                        spinnerLeftSph.setSelection(i)
-                    }
-                }
-            }
-
-            isEmpty = true
-            for (i in 0 until spinnerRightCyl.adapter.count) {
-                if (extractData[3].trim() != "" &&
-                    extractData[3].trim().toDoubleOrNull() == spinnerRightCyl.adapter.getItem(i)
-                        .toString().toDoubleOrNull()
-                ) {
-                    spinnerRightCyl.setSelection(i)
-                    isEmpty = false
-                }
-            }
-            if (isEmpty) spinnerRightCyl.setSelection(0)
-
-            isEmpty = true
-            for (i in 0 until spinnerLeftCyl.adapter.count) {
-                if (extractData[4].trim() != "" &&
-                    extractData[4].trim().toDoubleOrNull() == spinnerLeftCyl.adapter.getItem(i)
-                        .toString().toDoubleOrNull()
-                ) {
-                    spinnerLeftCyl.setSelection(i)
-                    isEmpty = false
-                }
-            }
-            if (isEmpty) spinnerLeftCyl.setSelection(0)
-
-            editRightAxis.setText(extractData[5])
-            editLeftAxis.setText(extractData[6])
-            editFrame.setText(extractData[15])
-            editFrameRm.setText(extractData[16])
-            editClSg.setText(extractData[17])
-            editClRm.setText(extractData[20])
-            editTotal.setText(extractData[21])
-            remarkInput.setText(patientForm.remarks)
-            editCs.setText(patientForm.cs)
-            editSolutionMisc.setText(patientForm.solutionMisc)
-            editSolutionMiscRm.setText(patientForm.solutionMiscRm)
-
             patientViewModel.practitioner.observe(viewLifecycleOwner) {
                 val adapterPractitioner =
                     ArrayAdapter(requireContext(), R.layout.spinner_list_basic_, it)
@@ -596,52 +494,22 @@ class CashOrderFragment : Fragment() {
         val priorPatient = currentForm.copy()
 
         binding.apply {
-            currentForm.remarks = remarkInput.text.toString().uppercase()
-            if (sectionEditDate != -1L) currentForm.dateOfSection = sectionEditDate
-            val extractData = "" + "|" +
-                    spinnerRightSph.selectedItem.toString() + "|" +
-                    spinnerLeftSph.selectedItem.toString() + "|" +
-                    spinnerRightCyl.selectedItem.toString() + "|" +
-                    spinnerLeftCyl.selectedItem.toString() + "|" +
-                    editRightAxis.text.toString() + "|" +
-                    editLeftAxis.text.toString() + "|" +
-                    "" + "|" +
-                    "" + "|" +
-                    "" + "|" +
-                    "" + "|" +
-                    "" + "|" +
-                    "" + "|" +
-                    "" + "|" +
-                    "" + "|" +
-                    editFrame.text.toString() + "|" +
-                    editFrameRm.text.toString() + "|" +
-                    editClSg.text.toString() + "|" +
-                    "" + "|" +
-                    "" + "|" +
-                    editClRm.text.toString() + "|" +
-                    editTotal.text.toString() + "|" +
-//                    editOptometrist.text.toString() + "|" +
-//                    editSalesperson.text.toString() + "|" +
-                    "" + "|" +
-                    "" + "|" +
-                    "" + "|" +
-                    ""
-
-            currentForm.sectionData = extractData.uppercase()
-
-            currentForm.cs = "${binding.editCs.text}".uppercase()
-            currentForm.solutionMisc = "${binding.editSolutionMisc.text}".uppercase()
-            currentForm.solutionMiscRm = "${binding.editSolutionMiscRm.text}".uppercase()
-            currentForm.frame = "${editFrame.text}".uppercase()
-            currentForm.lens = "${editClSg.text}".uppercase()
+            if (sectionEditDate != -1L)
+                currentForm.dateOfSection = sectionEditDate
             currentForm.practitioner = (binding.practitionerName.selectedItem as String).uppercase()
+            currentForm.followUpText = "${binding.etFollowUpText.text}"
         }
-        return !currentForm.assertEqual(priorPatient)
+        val result = !currentForm.assertEqual(priorPatient) || isDataFollowUpChange
+        if (isDataFollowUpChange)
+            isDataFollowUpChange = false
+        return result
     }
 
     private fun changeDate() {
         val (todayYear, todayMonth, todayDay) = dayMonthY()
-        activity?.let {
+        val myActivity = activity
+
+        myActivity?.let {
             val datePickerDialog = DatePickerDialog(
                 it, { _, year, monthOfYear, dayOfMonth ->
                     sectionEditDate = convertYMDtoTimeMillis(year, monthOfYear, dayOfMonth)
@@ -652,4 +520,5 @@ class CashOrderFragment : Fragment() {
             datePickerDialog.show()
         }
     }
+
 }

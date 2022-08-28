@@ -36,7 +36,6 @@ class InfoFragment : Fragment() {
         private const val NO = "NO"
         private const val defaultCity = "SP"
         private const val defaultCountry = "MALAYSIA"
-        private const val OCCASSIONALLY = "O"
 
         const val OTHER_ID_INDEX = 1
     }
@@ -357,7 +356,8 @@ class InfoFragment : Fragment() {
                             )
                         )
 
-                    val sectionShortName = makeShortSectionName(patientForm.sectionName)
+                    val sectionShortName =
+                        makeShortSectionName(requireContext(), patientForm.sectionName)
                     chip.text = " $sectionShortName\n${
                         convertLongToDDMMYY(patientForm.dateOfSection)
                     }"
@@ -498,8 +498,7 @@ class InfoFragment : Fragment() {
                 fillTheForm(currentForm)
             }
             "back" -> findNavController().navigate(
-                InfoFragmentDirections
-                    .actionInfoFragmentToFormSelectionFragment(patientID)
+                InfoFragmentDirections.actionToFormSelectionFragment(patientID)
             )
             "home" -> findNavController().navigate(
                 InfoFragmentDirections.actionToDatabaseSearchFragment()
@@ -527,7 +526,8 @@ class InfoFragment : Fragment() {
                     if (ifIDExists.isEmpty()) {
                         Log.d(Constants.TAG, "No such ID found")
                         // update patient id in all forms, save them and navigate
-                        val formsWithNewID = patientAllForms.filter { it.sectionName != getString(R.string.info_form_caption) }
+                        val formsWithNewID =
+                            patientAllForms.filter { it.sectionName != getString(R.string.info_form_caption) }
                         formsWithNewID.forEach { it.patientID = patientID }
 
                         patientViewModel.submitListOfPatientsToFB(formsWithNewID)
@@ -552,50 +552,51 @@ class InfoFragment : Fragment() {
     }
 
     private fun navigateToSelectedForm() {
-        val navController = this.findNavController()
-        val orderOfSections = listOf(*resources.getStringArray(R.array.forms_order))
-        // if same fragment - load new record
-        // info section could be onlyUnique
-
         when (navigateFormName) {
-
-            orderOfSections[1] -> navController.navigate(
-                InfoFragmentDirections.actionInfoFragmentToMemoFragment(navigateFormRecordID)
+            getString(R.string.info_form_caption) -> {
+                if (recordID != navigateFormRecordID) {
+                    recordID = navigateFormRecordID
+                    patientViewModel.getPatientForm(navigateFormRecordID)
+                }
+            }
+            getString(R.string.follow_up_form_caption) -> findNavController().navigate(
+                InfoFragmentDirections.actionToFollowUpFragment(navigateFormRecordID)
             )
-            orderOfSections[2] -> navController.navigate(
-                InfoFragmentDirections.actionInfoFragmentToCurrentRxFragment(navigateFormRecordID)
+            getString(R.string.memo_form_caption) -> findNavController().navigate(
+                InfoFragmentDirections.actionToMemoFragment(navigateFormRecordID)
             )
-            orderOfSections[3] -> navController.navigate(
-                InfoFragmentDirections.actionInfoFragmentToRefractionFragment(navigateFormRecordID)
+            getString(R.string.current_rx_caption) -> findNavController().navigate(
+                InfoFragmentDirections.actionToCurrentRxFragment(navigateFormRecordID)
             )
-            orderOfSections[4] -> navController.navigate(
-                InfoFragmentDirections.actionInfoFragmentToOcularHealthFragment(navigateFormRecordID)
+            getString(R.string.refraction_caption) -> findNavController().navigate(
+                InfoFragmentDirections.actionToRefractionFragment(navigateFormRecordID)
             )
-            orderOfSections[5] -> navController.navigate(
-                InfoFragmentDirections
-                    .actionInfoFragmentToSupplementaryFragment(navigateFormRecordID)
+            getString(R.string.ocular_health_caption) -> findNavController().navigate(
+                InfoFragmentDirections.actionToOcularHealthFragment(navigateFormRecordID)
             )
-            orderOfSections[6] -> navController.navigate(
-                InfoFragmentDirections
-                    .actionInfoFragmentToContactLensFragment(navigateFormRecordID)
+            getString(R.string.supplementary_test_caption) -> findNavController().navigate(
+                InfoFragmentDirections.actionToSupplementaryFragment(navigateFormRecordID)
             )
-            orderOfSections[7] -> navController.navigate(
-                InfoFragmentDirections
-                    .actionInfoFragmentToOrthokFragment(navigateFormRecordID)
+            getString(R.string.contact_lens_exam_caption) -> findNavController().navigate(
+                InfoFragmentDirections.actionToContactLensFragment(navigateFormRecordID)
             )
-            orderOfSections[8] -> navController.navigate(
-                InfoFragmentDirections
-                    .actionInfoFragmentToCashOrderFragment(navigateFormRecordID)
+            getString(R.string.orthox_caption) -> findNavController().navigate(
+                InfoFragmentDirections.actionToOrthokFragment(navigateFormRecordID)
             )
-            orderOfSections[9] -> navController.navigate(
-                InfoFragmentDirections
-                    .actionInfoFragmentToFinalPrescriptionFragment(navigateFormRecordID)
+            getString(R.string.cash_order) -> findNavController().navigate(
+                InfoFragmentDirections.actionToCashOrderFragment(navigateFormRecordID)
             )
-            else -> Toast.makeText(
-                requireContext(),
-                "You are here!",
-                Toast.LENGTH_SHORT
-            ).show()
+            getString(R.string.sales_order_caption) -> findNavController().navigate(
+                InfoFragmentDirections.actionToSalesOrderFragment(navigateFormRecordID)
+            )
+            getString(R.string.final_prescription_caption) -> findNavController().navigate(
+                InfoFragmentDirections.actionToSalesOrderFragment(navigateFormRecordID)
+            )
+            else -> {
+                Toast.makeText(
+                    context, "$navigateFormName not implemented yet", Toast.LENGTH_SHORT
+                ).show()
+            }
         }
     }
 
@@ -628,7 +629,6 @@ class InfoFragment : Fragment() {
             ageInput.text = age
             phone1Input.setText(patientForm.phone)
             phone2Input.setText(extractData[2])
-            phone3Input.setText(extractData[3])
             phone3Input.setText(extractData[3])
 
             var itemFound = false
@@ -670,8 +670,8 @@ class InfoFragment : Fragment() {
 
             itemFound = false
             for (i in 0 until binding.stateInput.adapter.count) {
-                if (extractData[8].trim().toUpperCase() == binding.stateInput.adapter.getItem(i)
-                        .toString().toUpperCase()
+                if (extractData[8].trim().uppercase() == binding.stateInput.adapter.getItem(i)
+                        .toString().uppercase()
                 ) {
                     binding.stateInput.setSelection(i)
                     itemFound = true
@@ -866,7 +866,8 @@ class InfoFragment : Fragment() {
                 } catch (t: Throwable) {
                     ""
                 }
-            val extractData = icInput.text.toString() + "|" + otherIdInput.text.toString() + "|" +
+            val extractData =
+                icInput.text.toString() + "|" + otherIdInput.text.toString() + "|" +
                     phone2Input.text.toString() + "|" + phone3Input.text.toString() + "|" +
                     raceInput.selectedItem.toString() + "|" + sexInput.selectedItem.toString() + "|" +
                     postCodeInput.text.toString() + "|" + cityInput.text.toString() + "|" +

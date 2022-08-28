@@ -90,7 +90,10 @@ data class PatientsEntity(
     var practitionerNameOptometrist: String = "",
 
     @ColumnInfo(name = "remark_print")
-    var remarkPrint: String = ""
+    var remarkPrint: String = "",
+
+    @ColumnInfo(name = "follow_up_text")
+    var followUpText: String = ""
 ) {
 
     fun assertEqual(toForm: PatientsEntity): Boolean {
@@ -117,7 +120,8 @@ data class PatientsEntity(
                 this.solutionMisc == toForm.solutionMisc &&
                 this.solutionMiscRm == toForm.solutionMiscRm &&
                 this.practitionerNameOptometrist == toForm.practitionerNameOptometrist &&
-                this.remarkPrint == toForm.remarkPrint)
+                this.remarkPrint == toForm.remarkPrint &&
+                this.followUpText == toForm.followUpText)
     }
 
     fun copyFrom(from: PatientsEntity) {
@@ -149,5 +153,6 @@ data class PatientsEntity(
         this.contactLensSunglasses = from.contactLensSunglasses
         this.practitionerNameOptometrist = from.practitionerNameOptometrist
         this.remarkPrint = from.remarkPrint
+        this.followUpText = from.followUpText
     }
 }

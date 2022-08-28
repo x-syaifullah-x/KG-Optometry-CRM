@@ -49,19 +49,6 @@
         <item>NO</item>
     </string-array>
 
-    <string-array name="forms_order">
-        <item>INFO</item>
-        <item>MEMO</item>
-        <item>CURRENT / OLD Rx</item>
-        <item>REFRACTION</item>
-        <item>OCULAR HEALTH</item>
-        <item>SUPPLEMENTARY TESTS</item>
-        <item>CONTACT LENS EXAM</item>
-        <item>ORTHOK</item>
-        <item>CASH ORDER</item>
-        <item>SALES ORDER</item>
-    </string-array>
-
     <string-array name="chart_choices">
         <item> </item>
         <item>SHERIDAN GARDINER</item>

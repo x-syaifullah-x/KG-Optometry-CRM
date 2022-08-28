@@ -30,6 +30,7 @@ import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentContactLensBinding
 import com.lizpostudio.kgoptometrycrm.utils.*
 import id.xxx.module.view.binding.ktx.viewBinding
+import java.util.*
 
 class ContactLensFragment : Fragment() {
 
@@ -104,7 +105,7 @@ class ContactLensFragment : Fragment() {
         val sharedPref = app.getSharedPreferences(
             Constants.PREF_NAME, Context.MODE_PRIVATE
         )
-        isAdmin = sharedPref?.getString("admin", "") ?: "" == "admin"
+        isAdmin = (sharedPref?.getString("admin", "") ?: "") == "admin"
         viewOnlyMode = sharedPref?.getBoolean("viewOnly", false) ?: false
         if (viewOnlyMode) {
             binding.mainLayout.setBackgroundColor(
@@ -827,7 +828,7 @@ class ContactLensFragment : Fragment() {
                     }
 
 //                    val sectionShortName = makeShortSectionName(patientForm.sectionName)
-                    val sectionShortName = makeShortSectionName(patientForm)
+                    val sectionShortName = makeShortSectionName(requireContext(), patientForm)
 //                    chip.text = "$sectionShortName\n${convertLongToDDMMYY(patientForm.dateOfSection)}"
                     chip.text = sectionShortName
 
@@ -880,7 +881,8 @@ class ContactLensFragment : Fragment() {
                                 )
                             )
 
-                        val sectionShortName = makeShortSectionName(patientForm.sectionName)
+                        val sectionShortName =
+                            makeShortSectionName(requireContext(), patientForm.sectionName)
                         chip.text =
                             "$sectionShortName\n${convertLongToDDMMYY(patientForm.dateOfSection)}"
 
@@ -949,9 +951,7 @@ class ContactLensFragment : Fragment() {
         patientViewModel.recordDeleted.observe(viewLifecycleOwner) { ifDeleted ->
             ifDeleted?.let {
                 if (ifDeleted) this.findNavController().navigate(
-                    ContactLensFragmentDirections.actionContactLensFragmentToFormSelectionFragment(
-                        patientID
-                    )
+                    ContactLensFragmentDirections.actionToFormSelectionFragment(patientID)
                 )
             }
         }
@@ -1029,8 +1029,7 @@ class ContactLensFragment : Fragment() {
                 fillTheForm(currentForm)
             }
             "back" -> this.findNavController().navigate(
-                ContactLensFragmentDirections
-                    .actionContactLensFragmentToFormSelectionFragment(patientID)
+                ContactLensFragmentDirections.actionToFormSelectionFragment(patientID)
             )
             "home" -> findNavController().navigate(
                 ContactLensFragmentDirections.actionToDatabaseSearchFragment()
@@ -1150,65 +1149,51 @@ class ContactLensFragment : Fragment() {
     }
 
     private fun navigateToSelectedForm() {
-
-        val orderOfSections = listOf(*resources.getStringArray(R.array.forms_order))
         when (navigateFormName) {
-            orderOfSections[0] -> this.findNavController().navigate(
-                ContactLensFragmentDirections
-                    .actionContactLensFragmentToInfoFragment(navigateFormRecordID)
+            getString(R.string.info_form_caption) -> findNavController().navigate(
+                ContactLensFragmentDirections.actionToInfoFragment(navigateFormRecordID)
             )
-
-            orderOfSections[1] -> this.findNavController().navigate(
-                ContactLensFragmentDirections.actionContactLensFragmentToMemoFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.follow_up_form_caption) -> findNavController().navigate(
+                ContactLensFragmentDirections.actionToFollowUpFragment(navigateFormRecordID)
             )
-
-            orderOfSections[2] -> this.findNavController().navigate(
-                ContactLensFragmentDirections.actionContactLensFragmentToCurrentRxFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.memo_form_caption) -> findNavController().navigate(
+                ContactLensFragmentDirections.actionToMemoFragment(navigateFormRecordID)
             )
-
-            orderOfSections[3] -> this.findNavController().navigate(
-                ContactLensFragmentDirections.actionContactLensFragmentToRefractionFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.current_rx_caption) -> findNavController().navigate(
+                ContactLensFragmentDirections.actionToCurrentRxFragment(navigateFormRecordID)
             )
-
-            orderOfSections[4] -> this.findNavController().navigate(
-                ContactLensFragmentDirections.actionContactLensFragmentToOcularHealthFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.refraction_caption) -> findNavController().navigate(
+                ContactLensFragmentDirections.actionToRefractionFragment(navigateFormRecordID)
             )
-
-            orderOfSections[5] -> this.findNavController().navigate(
-                ContactLensFragmentDirections.actionContactLensFragmentToSupplementaryFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.ocular_health_caption) -> findNavController().navigate(
+                ContactLensFragmentDirections.actionToOcularHealthFragment(navigateFormRecordID)
             )
-            orderOfSections[6] -> {
+            getString(R.string.supplementary_test_caption) -> findNavController().navigate(
+                ContactLensFragmentDirections.actionToSupplementaryFragment(navigateFormRecordID)
+            )
+            getString(R.string.contact_lens_exam_caption) -> {
                 if (recordID != navigateFormRecordID) {
                     recordID = navigateFormRecordID
                     patientViewModel.getPatientForm(navigateFormRecordID)
                 }
             }
-            orderOfSections[7] -> this.findNavController().navigate(
-                ContactLensFragmentDirections
-                    .actionContactLensFragmentToOrthokFragment(navigateFormRecordID)
+            getString(R.string.orthox_caption) -> findNavController().navigate(
+                ContactLensFragmentDirections.actionToOrthokFragment(navigateFormRecordID)
             )
-            orderOfSections[8] -> {
-                this.findNavController().navigate(
-                    ContactLensFragmentDirections
-                        .actionContactLensFragmentToCashOrderFragment(navigateFormRecordID)
-                )
+            getString(R.string.cash_order) -> findNavController().navigate(
+                ContactLensFragmentDirections.actionToCashOrderFragment(navigateFormRecordID)
+            )
+            getString(R.string.sales_order_caption) -> findNavController().navigate(
+                ContactLensFragmentDirections.actionToSalesOrderFragment(navigateFormRecordID)
+            )
+            getString(R.string.final_prescription_caption) -> findNavController().navigate(
+                ContactLensFragmentDirections.actionToSalesOrderFragment(navigateFormRecordID)
+            )
+            else -> {
+                Toast.makeText(
+                    context, "$navigateFormName not implemented yet", Toast.LENGTH_SHORT
+                ).show()
             }
-            orderOfSections[9] -> this.findNavController().navigate(
-                ContactLensFragmentDirections
-                    .actionContactLensFragmentToFinalPrescriptionFragment(navigateFormRecordID)
-            )
-            else -> Toast.makeText(context, getString(R.string.ok_hint), Toast.LENGTH_SHORT).show()
-
         }
     }
 
@@ -1710,7 +1695,7 @@ class ContactLensFragment : Fragment() {
             currentForm.graphicsLeft = graphicsLeft
             currentForm.reservedField = graphicsTop
 
-            currentForm.remarks = editRemark.text.toString().toUpperCase()
+            currentForm.remarks = editRemark.text.toString().uppercase(Locale.getDefault())
 
             if (sectionEditDate != -1L) currentForm.dateOfSection = sectionEditDate
 

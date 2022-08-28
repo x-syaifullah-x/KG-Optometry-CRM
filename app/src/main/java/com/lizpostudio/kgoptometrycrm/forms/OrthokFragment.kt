@@ -10,7 +10,6 @@ import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.content.res.Resources
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.PointF
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
@@ -131,7 +130,7 @@ class OrthokFragment : Fragment() {
             Constants.PREF_NAME,
             Context.MODE_PRIVATE
         )
-        isAdmin = sharedPref?.getString("admin", "") ?: "" == "admin"
+        isAdmin = (sharedPref?.getString("admin", "") ?: "") == "admin"
         viewOnlyMode = sharedPref?.getBoolean("viewOnly", false) ?: false
         if (viewOnlyMode) {
             binding.mainLayout.setBackgroundColor(
@@ -569,7 +568,7 @@ class OrthokFragment : Fragment() {
                     }
 
 //                    val sectionShortName = makeShortSectionName(patientForm.sectionName)
-                    val sectionShortName = makeShortSectionName(patientForm)
+                    val sectionShortName = makeShortSectionName(requireContext(), patientForm)
 //                    chip.text = "$sectionShortName\n${convertLongToDDMMYY(patientForm.dateOfSection)}"
                     chip.text = sectionShortName
 
@@ -622,7 +621,7 @@ class OrthokFragment : Fragment() {
                                 )
                             )
 
-                        val sectionShortName = makeShortSectionName(patientForm.sectionName)
+                        val sectionShortName = makeShortSectionName(requireContext(), patientForm.sectionName)
                         chip.text =
                             "$sectionShortName\n${convertLongToDDMMYY(patientForm.dateOfSection)}"
 
@@ -767,7 +766,7 @@ class OrthokFragment : Fragment() {
         patientViewModel.recordDeleted.observe(viewLifecycleOwner) { ifDeleted ->
             ifDeleted?.let {
                 if (ifDeleted) navController.navigate(
-                    OrthokFragmentDirections.actionOrthokFragmentToFormSelectionFragment(patientID)
+                    OrthokFragmentDirections.actionToFormSelectionFragment(patientID)
                 )
             }
         }
@@ -1005,7 +1004,7 @@ class OrthokFragment : Fragment() {
                 fillTheForm(currentForm)
             }
             "back" -> this.findNavController().navigate(
-                OrthokFragmentDirections.actionOrthokFragmentToFormSelectionFragment(
+                OrthokFragmentDirections.actionToFormSelectionFragment(
                     patientID
                 )
             )
@@ -1018,75 +1017,51 @@ class OrthokFragment : Fragment() {
 
 
     private fun navigateToSelectedForm() {
-        val navController = this.findNavController()
-        val orderOfSections = listOf(*resources.getStringArray(R.array.forms_order))
-
-
         when (navigateFormName) {
-
-            orderOfSections[0] -> navController.navigate(
-                OrthokFragmentDirections.actionOrthokFragmentToInfoFragment(navigateFormRecordID)
+            getString(R.string.info_form_caption) -> findNavController().navigate(
+                OrthokFragmentDirections.actionToInfoFragment(navigateFormRecordID)
             )
-
-            orderOfSections[1] -> navController.navigate(
-                OrthokFragmentDirections.actionOrthokFragmentToMemoFragment(navigateFormRecordID)
+            getString(R.string.follow_up_form_caption) -> findNavController().navigate(
+                OrthokFragmentDirections.actionToFollowUpFragment(navigateFormRecordID)
             )
-
-            orderOfSections[2] -> navController.navigate(
-                OrthokFragmentDirections.actionOrthokFragmentToCurrentRxFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.memo_form_caption) -> findNavController().navigate(
+                OrthokFragmentDirections.actionToMemoFragment(navigateFormRecordID)
             )
-
-            orderOfSections[3] -> navController.navigate(
-                OrthokFragmentDirections.actionOrthokFragmentToRefractionFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.current_rx_caption) -> findNavController().navigate(
+                OrthokFragmentDirections.actionToCurrentRxFragment(navigateFormRecordID)
             )
-
-            orderOfSections[4] -> navController.navigate(
-                OrthokFragmentDirections.actionOrthokFragmentToOcularHealthFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.refraction_caption) -> findNavController().navigate(
+                OrthokFragmentDirections.actionToRefractionFragment(navigateFormRecordID)
             )
-
-            orderOfSections[5] -> navController.navigate(
-                OrthokFragmentDirections.actionOrthokFragmentToSupplementaryFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.ocular_health_caption) -> findNavController().navigate(
+                OrthokFragmentDirections.actionToOcularHealthFragment(navigateFormRecordID)
             )
-            orderOfSections[6] -> navController.navigate(
-                OrthokFragmentDirections.actionOrthokFragmentToContactLensFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.supplementary_test_caption) -> findNavController().navigate(
+                OrthokFragmentDirections.actionToSupplementaryFragment(navigateFormRecordID)
             )
-
-            orderOfSections[7] -> {
+            getString(R.string.contact_lens_exam_caption) -> findNavController().navigate(
+                OrthokFragmentDirections.actionToContactLensFragment(navigateFormRecordID)
+            )
+            getString(R.string.orthox_caption) -> {
                 if (recordID != navigateFormRecordID) {
-
                     recordID = navigateFormRecordID
                     patientViewModel.getPatientForm(navigateFormRecordID)
                 }
             }
-
-            orderOfSections[8] -> {
-                navController.navigate(
-                    OrthokFragmentDirections
-                        .actionOrthokFragmentToCashOrderFragment(navigateFormRecordID)
-                )
-            }
-
-            orderOfSections[9] -> navController.navigate(
-                OrthokFragmentDirections.actionOrthokFragmentToFinalPrescriptionFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.cash_order) -> findNavController().navigate(
+                OrthokFragmentDirections.actionToCashOrderFragment(navigateFormRecordID)
             )
-
-            else -> Toast.makeText(
-                this.activity?.applicationContext,
-                getString(R.string.navigation_else),
-                Toast.LENGTH_SHORT
-            ).show()
+            getString(R.string.sales_order_caption) -> findNavController().navigate(
+                OrthokFragmentDirections.actionToSalesOrderFragment(navigateFormRecordID)
+            )
+            getString(R.string.final_prescription_caption) -> findNavController().navigate(
+                OrthokFragmentDirections.actionToSalesOrderFragment(navigateFormRecordID)
+            )
+            else -> {
+                Toast.makeText(
+                    context, "$navigateFormName not implemented yet", Toast.LENGTH_SHORT
+                ).show()
+            }
         }
     }
 
@@ -1388,7 +1363,7 @@ class OrthokFragment : Fragment() {
             val ois = requireContext().contentResolver.openInputStream(storageFile)
             ois?.apply {
                 storageRef.putStream(ois)
-                    .addOnCompleteListener { _ ->
+                    .addOnCompleteListener {
                         ois.close()
                     }
             }

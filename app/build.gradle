@@ -96,6 +96,7 @@ dependencies {
     implementation "com.google.firebase:firebase-storage-ktx"
 
     implementation "androidx.appcompat:appcompat:$vAppCompat"
+    implementation "androidx.appcompat:appcompat-resources:$vAppCompat"
     implementation "androidx.constraintlayout:constraintlayout:$vConstraintLayout"
     implementation "androidx.fragment:fragment-ktx:$vFragmentKtx"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$vLifecycle"

@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -57,24 +58,28 @@ class FormSelectionFragment : Fragment() {
 
     private val args by navArgs<FormSelectionFragmentArgs>()
 
-    private fun navigateBack() {
-        val pref = context?.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE)
-        val dest = pref?.getString(Constants.PREF_KEY_SEARCH_STATE, "")
+    private fun onBackPressed() {
+        if (binding.selectFormToAddLayout.isVisible) {
+            binding.selectFormToAddLayout.visibility = View.GONE
+        } else {
+            val pref = context?.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE)
+            val dest = pref?.getString(Constants.PREF_KEY_SEARCH_STATE, "")
 //        pref
 //            ?.edit()
 //            ?.putBoolean("viewOnly", false)
 //            ?.apply()
-        if (dest == SearchSalesFragment::class.java.name) {
-            findNavController().navigate(FormSelectionFragmentDirections.actionToSearchSalesFragment())
-        } else {
-            findNavController().navigate(FormSelectionFragmentDirections.actionToSearchCostumerFragment())
+            if (dest == SearchSalesFragment::class.java.name) {
+                findNavController().navigate(FormSelectionFragmentDirections.actionToSearchSalesFragment())
+            } else {
+                findNavController().navigate(FormSelectionFragmentDirections.actionToSearchCostumerFragment())
+            }
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requireActivity().onBackPressedDispatcher
-            .addCallback(this) { navigateBack() }
+            .addCallback(this) { onBackPressed() }
     }
 
     @SuppressLint("SetTextI18n")
@@ -85,14 +90,12 @@ class FormSelectionFragment : Fragment() {
     ): View {
         val app = requireNotNull(this.activity).application
 
-        var addFormVisibility = false
-
         binding.lifecycleOwner = this
         val navController = this.findNavController()
 
         // get if user is Admin
         val sharedPref = app.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE)
-        isAdmin = sharedPref?.getString("admin", "") ?: "" == "admin"
+        isAdmin = (sharedPref?.getString("admin", "") ?: "") == "admin"
         latestDataSynched = sharedPref?.getLong(Constants.PREF_KEY_LAST_SYNC, 0L) ?: 0L
 
         val safeArgs: FormSelectionFragmentArgs by navArgs()
@@ -173,6 +176,7 @@ class FormSelectionFragment : Fragment() {
                             if (section == sectionName) newList.add(forms)
                         }
                     }
+
                     recyclerAdapter.submitList(newList)
 
                 } else {
@@ -184,7 +188,7 @@ class FormSelectionFragment : Fragment() {
         }
 
         binding.backButton.setOnClickListener {
-            navigateBack()
+            onBackPressed()
         }
 
         binding.deleteForm.setOnClickListener {
@@ -215,8 +219,7 @@ class FormSelectionFragment : Fragment() {
                         "We are going to reduce  history list to ${historyList.size}"
                     )
                     val newHistory =
-                        historyList.map { item -> item.first.toString() to item.second.toString() }
-                            .toMap()
+                        historyList.associate { item -> item.first.toString() to item.second.toString() }
                     patientViewModel.updateHistoryFBReference(newHistory)
                 }
 
@@ -323,12 +326,7 @@ class FormSelectionFragment : Fragment() {
         }
 
         binding.addNewForm.setOnClickListener {
-            addFormVisibility = !addFormVisibility
-            if (addFormVisibility) {
-                binding.selectFormToAddLayout.visibility = View.VISIBLE
-            } else {
-                binding.selectFormToAddLayout.visibility = View.GONE
-            }
+            binding.selectFormToAddLayout.isVisible = !binding.selectFormToAddLayout.isVisible
         }
 
         binding.refractionButton.setOnClickListener {
@@ -360,7 +358,7 @@ class FormSelectionFragment : Fragment() {
 
         binding.contactLensButton.setOnClickListener {
             patientViewModel.createNewRecord(
-                patientInfoForm, resources.getString(R.string.contact_lens_caption)
+                patientInfoForm, resources.getString(R.string.contact_lens_exam_caption)
             )
         }
 
@@ -373,6 +371,12 @@ class FormSelectionFragment : Fragment() {
         binding.finalPrescriptionButton.setOnClickListener {
             patientViewModel.createNewRecord(
                 patientInfoForm, resources.getString(R.string.final_prescription_caption)
+            )
+        }
+
+        binding.followUp.setOnClickListener {
+            patientViewModel.createNewRecord(
+                patientInfoForm, resources.getString(R.string.follow_up_form_caption)
             )
         }
 
@@ -437,60 +441,53 @@ class FormSelectionFragment : Fragment() {
 
     private fun navigateToSelectedForm(p: PatientsEntity) {
         when (p.sectionName) {
-            resources.getString(R.string.info_form_caption) ->
+            getString(R.string.info_form_caption) ->
                 findNavController().navigate(
-                    FormSelectionFragmentDirections
-                        .actionFormSelectionFragmentToInfoFragment(p.recordID)
+                    FormSelectionFragmentDirections.actionToInfoFragment(p.recordID)
                 )
-            resources.getString(R.string.memo_form_caption) ->
+            getString(R.string.follow_up_form_caption) ->
                 findNavController().navigate(
-                    FormSelectionFragmentDirections
-                        .actionFormSelectionFragmentToMemoFragment(p.recordID)
+                    FormSelectionFragmentDirections.actionToFollowUpFragment(p.recordID)
                 )
-            resources.getString(R.string.refraction_caption) ->
+            getString(R.string.memo_form_caption) ->
                 findNavController().navigate(
-                    FormSelectionFragmentDirections
-                        .actionFormSelectionFragmentToRefractionFragment(p.recordID)
+                    FormSelectionFragmentDirections.actionToMemoFragment(p.recordID)
                 )
-            resources.getString(R.string.current_rx_caption) ->
+            getString(R.string.current_rx_caption) ->
                 findNavController().navigate(
-                    FormSelectionFragmentDirections
-                        .actionFormSelectionFragmentToCurrentRxFragment(p.recordID)
+                    FormSelectionFragmentDirections.actionToCurrentRxFragment(p.recordID)
                 )
-            resources.getString(R.string.ocular_health_caption) ->
+            getString(R.string.refraction_caption) ->
                 findNavController().navigate(
-                    FormSelectionFragmentDirections
-                        .actionFormSelectionFragmentToOcularHealthFragment(p.recordID)
+                    FormSelectionFragmentDirections.actionToRefractionFragment(p.recordID)
                 )
-            resources.getString(R.string.supplementary_test_caption) ->
+            getString(R.string.ocular_health_caption) ->
                 findNavController().navigate(
-                    FormSelectionFragmentDirections
-                        .actionFormSelectionFragmentToSupplementaryFragment(p.recordID)
+                    FormSelectionFragmentDirections.actionToOcularHealthFragment(p.recordID)
                 )
-            resources.getString(R.string.contact_lens_caption) ->
+            getString(R.string.supplementary_test_caption) ->
                 findNavController().navigate(
-                    FormSelectionFragmentDirections
-                        .actionFormSelectionFragmentToContactLensFragment(p.recordID)
+                    FormSelectionFragmentDirections.actionToSupplementaryFragment(p.recordID)
                 )
-            resources.getString(R.string.orthox_caption) ->
+            getString(R.string.contact_lens_exam_caption) ->
                 findNavController().navigate(
-                    FormSelectionFragmentDirections
-                        .actionFormSelectionFragmentToOrthokFragment(p.recordID)
+                    FormSelectionFragmentDirections.actionToContactLensFragment(p.recordID)
                 )
-            resources.getString(R.string.sales_order_from_selection) ->
+            getString(R.string.orthox_caption) ->
                 findNavController().navigate(
-                    FormSelectionFragmentDirections
-                        .actionFormSelectionFragmentToFinalPrescriptionFragment(p.recordID)
+                    FormSelectionFragmentDirections.actionToOrthokFragment(p.recordID)
                 )
-            resources.getString(R.string.final_prescription_caption) ->
+            getString(R.string.cash_order_caption) ->
                 findNavController().navigate(
-                    FormSelectionFragmentDirections
-                        .actionFormSelectionFragmentToFinalPrescriptionFragment(p.recordID)
+                    FormSelectionFragmentDirections.actionToCashOrderFragment(p.recordID)
                 )
-            resources.getString(R.string.cash_order) ->
+            getString(R.string.sales_order_caption) ->
                 findNavController().navigate(
-                    FormSelectionFragmentDirections
-                        .actionFormSelectionFragmentToCashOrderFragment(p.recordID)
+                    FormSelectionFragmentDirections.actionToSalesOrder(p.recordID)
+                )
+            getString(R.string.final_prescription_caption) ->
+                findNavController().navigate(
+                    FormSelectionFragmentDirections.actionToSalesOrder(p.recordID)
                 )
             else -> {
                 Toast.makeText(

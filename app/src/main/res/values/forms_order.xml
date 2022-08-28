@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="info_form_caption">INFO</string>
+    <string name="follow_up_form_caption">FOLLOW UP</string>
+    <string name="memo_form_caption">MEMO</string>
+    <string name="current_rx_caption">CURRENT / OLD Rx</string>
+    <string name="refraction_caption">REFRACTION</string>
+    <string name="ocular_health_caption">OCULAR HEALTH</string>
+    <string name="supplementary_test_caption">SUPPLEMENTARY TESTS</string>
+    <string name="contact_lens_exam_caption">CONTACT LENS EXAM</string>
+    <string name="cash_order_caption">CASH ORDER</string>
+    <string name="orthox_caption">ORTHOK</string>
+    <string name="final_prescription_caption">FINAL PRESCRIPTION</string>
+    <string name="sales_order_caption">SALES ORDER</string>
+
+    <string-array name="forms_order">
+        <item>INFO</item>
+        <item>FOLLOW UP</item>
+        <item>MEMO</item>
+        <item>CURRENT / OLD Rx</item>
+        <item>REFRACTION</item>
+        <item>OCULAR HEALTH</item>
+        <item>SUPPLEMENTARY TESTS</item>
+        <item>CONTACT LENS EXAM</item>
+        <item>ORTHOK</item>
+        <item>CASH ORDER</item>
+        <item>SALES ORDER</item>
+    </string-array>
+</resources>

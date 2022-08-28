@@ -85,6 +85,10 @@ class PatientsViewModel(
     val cashOrder: LiveData<List<PatientsEntity>>
         get() = _cashOrder
 
+    private val _followUp = MutableLiveData<List<PatientsEntity>>()
+    val followUp: LiveData<List<PatientsEntity>>
+        get() = _followUp
+
     private val _searchDateForms = MutableLiveData<List<PatientsEntity>>()
     val searchDateForms: LiveData<List<PatientsEntity>>
         get() = _searchDateForms
@@ -427,6 +431,13 @@ class PatientsViewModel(
     fun getCashOrder(patientID: String, sectionName: String) {
         viewModelScope.launch {
             _cashOrder.value =
+                repository.getRecordsByIDAndSection(patientID, sectionName)
+        }
+    }
+
+    fun getFollowUp(patientID: String, sectionName: String) {
+        viewModelScope.launch {
+            _followUp.value =
                 repository.getRecordsByIDAndSection(patientID, sectionName)
         }
     }

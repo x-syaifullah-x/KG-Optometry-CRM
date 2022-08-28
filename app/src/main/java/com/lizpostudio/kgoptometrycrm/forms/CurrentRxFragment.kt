@@ -9,7 +9,6 @@ import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.content.res.Resources
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
@@ -111,7 +110,7 @@ class CurrentRxFragment : Fragment() {
         val sharedPref = app.getSharedPreferences(
             Constants.PREF_NAME, Context.MODE_PRIVATE
         )
-        isAdmin = sharedPref?.getString("admin", "") ?: "" == "admin"
+        isAdmin = (sharedPref?.getString("admin", "") ?: "") == "admin"
         viewOnlyMode = sharedPref?.getBoolean("viewOnly", false) ?: false
         if (viewOnlyMode) {
             binding.mainLayout.setBackgroundColor(
@@ -227,7 +226,7 @@ class CurrentRxFragment : Fragment() {
                     }
 
 //                    val sectionShortName = makeShortSectionName(patientForm.sectionName)
-                    val sectionShortName = makeShortSectionName(patientForm)
+                    val sectionShortName = makeShortSectionName(requireContext(), patientForm)
 //                    chip.text = "$sectionShortName\n${convertLongToDDMMYY(patientForm.dateOfSection)}"
                     chip.text = sectionShortName
 
@@ -280,7 +279,8 @@ class CurrentRxFragment : Fragment() {
                                 )
                             )
 
-                        val sectionShortName = makeShortSectionName(patientForm.sectionName)
+                        val sectionShortName =
+                            makeShortSectionName(requireContext(), patientForm.sectionName)
                         chip.text =
                             "$sectionShortName\n${convertLongToDDMMYY(patientForm.dateOfSection)}"
 
@@ -444,8 +444,7 @@ class CurrentRxFragment : Fragment() {
         patientViewModel.recordDeleted.observe(viewLifecycleOwner) { ifDeleted ->
             ifDeleted?.let {
                 if (ifDeleted) navController.navigate(
-                    CurrentRxFragmentDirections
-                        .actionCurrentRxFragmentToFormSelectionFragment(patientID)
+                    CurrentRxFragmentDirections.actionToFormSelectionFragment(patientID)
                 )
             }
         }
@@ -552,7 +551,7 @@ class CurrentRxFragment : Fragment() {
                 fillTheForm(currentForm)
             }
             "back" -> this.findNavController().navigate(
-                CurrentRxFragmentDirections.actionCurrentRxFragmentToFormSelectionFragment(patientID)
+                CurrentRxFragmentDirections.actionToFormSelectionFragment(patientID)
             )
             "home" -> findNavController().navigate(
                 CurrentRxFragmentDirections.actionToDatabaseSearchFragment()
@@ -568,65 +567,51 @@ class CurrentRxFragment : Fragment() {
     }
 
     private fun navigateToSelectedForm() {
-        val navController = this.findNavController()
-        val orderOfSections = listOf(*resources.getStringArray(R.array.forms_order))
-
         when (navigateFormName) {
-
-            orderOfSections[0] -> navController.navigate(
-                CurrentRxFragmentDirections.actionCurrentRxFragmentToInfoFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.info_form_caption) -> findNavController().navigate(
+                CurrentRxFragmentDirections.actionToInfoFragment(navigateFormRecordID)
             )
-            orderOfSections[1] -> navController.navigate(
-                CurrentRxFragmentDirections.actionCurrentRxFragmentToMemoFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.follow_up_form_caption) -> findNavController().navigate(
+                CurrentRxFragmentDirections.actionToFollowUpFragment(navigateFormRecordID)
             )
-            orderOfSections[2] -> {
+            getString(R.string.memo_form_caption) -> findNavController().navigate(
+                CurrentRxFragmentDirections.actionToMemoFragment(navigateFormRecordID)
+            )
+            getString(R.string.current_rx_caption) -> {
                 if (recordID != navigateFormRecordID) {
                     recordID = navigateFormRecordID
-                    createRefAssignPhFile()
                     patientViewModel.getPatientForm(navigateFormRecordID)
                 }
             }
-            orderOfSections[3] -> navController.navigate(
-                CurrentRxFragmentDirections.actionCurrentRxFragmentToRefractionFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.refraction_caption) -> findNavController().navigate(
+                CurrentRxFragmentDirections.actionToRefractionFragment(navigateFormRecordID)
             )
-            orderOfSections[4] -> navController.navigate(
-                CurrentRxFragmentDirections.actionCurrentRxFragmentToOcularHealthFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.ocular_health_caption) -> findNavController().navigate(
+                CurrentRxFragmentDirections.actionToOcularHealthFragment(navigateFormRecordID)
             )
-
-            orderOfSections[5] -> navController.navigate(
-                CurrentRxFragmentDirections.actionCurrentRxFragmentToSupplementaryFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.supplementary_test_caption) -> findNavController().navigate(
+                CurrentRxFragmentDirections.actionToSupplementaryFragment(navigateFormRecordID)
             )
-            orderOfSections[6] -> navController.navigate(
-                CurrentRxFragmentDirections.actionCurrentRxFragmentToContactLensFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.contact_lens_exam_caption) -> findNavController().navigate(
+                CurrentRxFragmentDirections.actionToContactLensFragment(navigateFormRecordID)
             )
-            orderOfSections[7] -> navController.navigate(
-                CurrentRxFragmentDirections.actionCurrentRxFragmentToOrthokFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.orthox_caption) -> findNavController().navigate(
+                CurrentRxFragmentDirections.actionToOrthokFragment(navigateFormRecordID)
             )
-            orderOfSections[8] -> {
-                navController.navigate(
-                    CurrentRxFragmentDirections
-                        .actionCurrentRxFragmentToCashOrderFragment(navigateFormRecordID)
-                )
+            getString(R.string.cash_order) -> findNavController().navigate(
+                ContactLensFragmentDirections.actionToCashOrderFragment(navigateFormRecordID)
+            )
+            getString(R.string.sales_order_caption) -> findNavController().navigate(
+                CurrentRxFragmentDirections.actionToSalesOrderFragment(navigateFormRecordID)
+            )
+            getString(R.string.final_prescription_caption) -> findNavController().navigate(
+                CurrentRxFragmentDirections.actionToSalesOrderFragment(navigateFormRecordID)
+            )
+            else -> {
+                Toast.makeText(
+                    context, "$navigateFormName not implemented yet", Toast.LENGTH_SHORT
+                ).show()
             }
-            orderOfSections[9] -> navController.navigate(
-                CurrentRxFragmentDirections.actionCurrentRxFragmentToFinalPrescriptionFragment(
-                    navigateFormRecordID
-                )
-            )
         }
     }
 
@@ -725,7 +710,8 @@ class CurrentRxFragment : Fragment() {
             dateCaption.text = convertLongToDDMMYY(patientForm.dateOfSection)
             //  Log.d(Constants.TAG, " Extracted data: $extractData" )
 
-            var isEmpty = true
+            var isEmpty: Boolean
+
             if (extractData[0].trim() == "") {
                 // set default == 0  element
                 spinnerCurrentlyUsing.setSelection(0)
@@ -828,7 +814,6 @@ class CurrentRxFragment : Fragment() {
                 }
             }
             if (isEmpty) spinnerAdd.setSelection(0)
-            isEmpty = true
 
             currentLens.setText(extractData[11])
             lensYear.setText(extractData[12])
@@ -897,7 +882,7 @@ class CurrentRxFragment : Fragment() {
                         val ois = requireContext().contentResolver.openInputStream(storageFile)
                         ois?.apply {
                             storageRef.putStream(ois)
-                                .addOnCompleteListener { _ ->
+                                .addOnCompleteListener {
                                     ois.close()
                                 }
                         }

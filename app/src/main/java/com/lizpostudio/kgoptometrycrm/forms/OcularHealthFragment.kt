@@ -18,7 +18,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.core.content.ContextCompat
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -97,7 +96,7 @@ class OcularHealthFragment : Fragment() {
             Constants.PREF_NAME,
             Context.MODE_PRIVATE
         )
-        isAdmin = sharedPref?.getString("admin", "") ?: "" == "admin"
+        isAdmin = (sharedPref?.getString("admin", "") ?: "") == "admin"
         viewOnlyMode = sharedPref?.getBoolean("viewOnly", false) ?: false
         if (viewOnlyMode) {
             binding.mainLayout.setBackgroundColor(
@@ -536,7 +535,7 @@ class OcularHealthFragment : Fragment() {
                     }
 
 //                    val sectionShortName = makeShortSectionName(patientForm.sectionName)
-                    val sectionShortName = makeShortSectionName(patientForm)
+                    val sectionShortName = makeShortSectionName(requireContext(), patientForm)
 //                    chip.text = "$sectionShortName\n${convertLongToDDMMYY(patientForm.dateOfSection)}"
                     chip.text = sectionShortName
 
@@ -589,7 +588,8 @@ class OcularHealthFragment : Fragment() {
                                 )
                             )
 
-                        val sectionShortName = makeShortSectionName(patientForm.sectionName)
+                        val sectionShortName =
+                            makeShortSectionName(requireContext(), patientForm.sectionName)
                         chip.text =
                             "$sectionShortName\n${convertLongToDDMMYY(patientForm.dateOfSection)}"
 
@@ -633,7 +633,8 @@ class OcularHealthFragment : Fragment() {
                     }, 100L)
                 }
 
-                val hPosList = mapSectionName[sectionName]?.map { form -> form.recordID }?: listOf()
+                val hPosList =
+                    mapSectionName[sectionName]?.map { form -> form.recordID } ?: listOf()
                 val hPosBottomNav = hPosList.indexOf(recordID)
                 if (hPosBottomNav > 3) {
                     val scrollWidth = binding.chipsScroll2.width
@@ -769,15 +770,13 @@ class OcularHealthFragment : Fragment() {
 
         // DELETE FORM FUNCTIONALITY
 
-        patientViewModel.recordDeleted.observe(viewLifecycleOwner, { ifDeleted ->
+        patientViewModel.recordDeleted.observe(viewLifecycleOwner) { ifDeleted ->
             ifDeleted?.let {
                 if (ifDeleted) navController.navigate(
-                    OcularHealthFragmentDirections.actionOcularHealthFragmentToFormSelectionFragment(
-                        patientID
-                    )
+                    OcularHealthFragmentDirections.actionToFormSelectionFragment(patientID)
                 )
             }
-        })
+        }
 
         binding.deleteForm.setOnClickListener {
             if (context != null)
@@ -849,9 +848,7 @@ class OcularHealthFragment : Fragment() {
                 fillTheForm(currentForm)
             }
             "back" -> findNavController().navigate(
-                OcularHealthFragmentDirections.actionOcularHealthFragmentToFormSelectionFragment(
-                    patientID
-                )
+                OcularHealthFragmentDirections.actionToFormSelectionFragment(patientID)
             )
             "home" -> findNavController().navigate(
                 OcularHealthFragmentDirections.actionToDatabaseSearchFragment()
@@ -861,74 +858,51 @@ class OcularHealthFragment : Fragment() {
     }
 
     private fun navigateToSelectedForm() {
-        val navController = this.findNavController()
-        val orderOfSections = listOf(*resources.getStringArray(R.array.forms_order))
         when (navigateFormName) {
-
-            orderOfSections[0] -> navController.navigate(
-                OcularHealthFragmentDirections
-                    .actionOcularHealthFragmentToInfoFragment(navigateFormRecordID)
+            getString(R.string.info_form_caption) -> findNavController().navigate(
+                OcularHealthFragmentDirections.actionToInfoFragment(navigateFormRecordID)
             )
-
-            orderOfSections[1] -> navController.navigate(
-                OcularHealthFragmentDirections.actionOcularHealthFragmentToMemoFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.follow_up_form_caption) -> findNavController().navigate(
+                OcularHealthFragmentDirections.actionToFollowUpFragment(navigateFormRecordID)
             )
-
-            orderOfSections[2] -> navController.navigate(
-                OcularHealthFragmentDirections.actionOcularHealthFragmentToCurrentRxFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.memo_form_caption) -> findNavController().navigate(
+                OcularHealthFragmentDirections.actionToMemoFragment(navigateFormRecordID)
             )
-
-            orderOfSections[3] -> navController.navigate(
-                OcularHealthFragmentDirections.actionOcularHealthFragmentToRefractionFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.current_rx_caption) -> findNavController().navigate(
+                OcularHealthFragmentDirections.actionToCurrentRxFragment(navigateFormRecordID)
             )
-            orderOfSections[4] -> {
+            getString(R.string.refraction_caption) -> findNavController().navigate(
+                OcularHealthFragmentDirections.actionToRefractionFragment(navigateFormRecordID)
+            )
+            getString(R.string.ocular_health_caption) -> {
                 if (recordID != navigateFormRecordID) {
-
                     recordID = navigateFormRecordID
                     patientViewModel.getPatientForm(navigateFormRecordID)
                 }
             }
-            orderOfSections[5] -> navController.navigate(
-                OcularHealthFragmentDirections.actionOcularHealthFragmentToSupplementaryFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.supplementary_test_caption) -> findNavController().navigate(
+                OcularHealthFragmentDirections.actionToSupplementaryFragment(navigateFormRecordID)
             )
-
-            orderOfSections[6] -> navController.navigate(
-                OcularHealthFragmentDirections.actionOcularHealthFragmentToContactLensFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.contact_lens_exam_caption) -> findNavController().navigate(
+                OcularHealthFragmentDirections.actionToContactLensFragment(navigateFormRecordID)
             )
-
-            orderOfSections[7] -> navController.navigate(
-                OcularHealthFragmentDirections.actionOcularHealthFragmentToOrthokFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.orthox_caption) -> findNavController().navigate(
+                OcularHealthFragmentDirections.actionToOrthokFragment(navigateFormRecordID)
             )
-
-            orderOfSections[8] -> {
-                navController.navigate(
-                    OcularHealthFragmentDirections
-                        .actionOcularHealthFragmentToCashOrderFragment(navigateFormRecordID)
-                )
+            getString(R.string.cash_order) -> findNavController().navigate(
+                OcularHealthFragmentDirections.actionToCashOrderFragment(navigateFormRecordID)
+            )
+            getString(R.string.sales_order_caption) -> findNavController().navigate(
+                OcularHealthFragmentDirections.actionToSalesOrderFragment(navigateFormRecordID)
+            )
+            getString(R.string.final_prescription_caption) -> findNavController().navigate(
+                OcularHealthFragmentDirections.actionToSalesOrderFragment(navigateFormRecordID)
+            )
+            else -> {
+                Toast.makeText(
+                    context, "$navigateFormName not implemented yet", Toast.LENGTH_SHORT
+                ).show()
             }
-
-            orderOfSections[9] -> navController.navigate(
-                OcularHealthFragmentDirections.actionOcularHealthFragmentToFinalPrescriptionFragment(
-                    navigateFormRecordID
-                )
-            )
-            else -> Toast.makeText(
-                this.activity?.applicationContext,
-                getString(R.string.navigation_else),
-                Toast.LENGTH_SHORT
-            ).show()
         }
     }
 

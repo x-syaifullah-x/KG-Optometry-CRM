@@ -9,7 +9,6 @@ import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.content.res.Resources
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
@@ -110,7 +109,7 @@ class MemoFragment : Fragment() {
         val sharedPref = app.getSharedPreferences(
             Constants.PREF_NAME, Context.MODE_PRIVATE
         )
-        isAdmin = sharedPref?.getString("admin", "") ?: "" == "admin"
+        isAdmin = (sharedPref?.getString("admin", "") ?: "") == "admin"
 
         viewOnlyMode = sharedPref?.getBoolean("viewOnly", false) ?: false
         if (viewOnlyMode) {
@@ -227,7 +226,7 @@ class MemoFragment : Fragment() {
                     }
 
 //                    val sectionShortName = makeShortSectionName(patientForm.sectionName)
-                    val sectionShortName = makeShortSectionName(patientForm)
+                    val sectionShortName = makeShortSectionName(requireContext(), patientForm)
 //                    chip.text = "$sectionShortName\n${convertLongToDDMMYY(patientForm.dateOfSection)}"
                     chip.text = sectionShortName
 
@@ -280,7 +279,8 @@ class MemoFragment : Fragment() {
                                 )
                             )
 
-                        val sectionShortName = makeShortSectionName(patientForm.sectionName)
+                        val sectionShortName =
+                            makeShortSectionName(requireContext(), patientForm.sectionName)
                         chip.text =
                             "$sectionShortName\n${convertLongToDDMMYY(patientForm.dateOfSection)}"
 
@@ -348,7 +348,7 @@ class MemoFragment : Fragment() {
         patientViewModel.recordDeleted.observe(viewLifecycleOwner) { ifDeleted ->
             ifDeleted?.let {
                 if (ifDeleted) navController.navigate(
-                    MemoFragmentDirections.actionMemoFragmentToFormSelectionFragment(patientID)
+                    MemoFragmentDirections.actionToFormSelectionFragment(patientID)
                 )
             }
         }
@@ -448,7 +448,6 @@ class MemoFragment : Fragment() {
             }
         }
 
-        var rotation = 0F
         binding.rotatePhoto.setOnClickListener {
             val bitmap =
                 BitmapUtils.rotate((binding.refPhoto.drawable as BitmapDrawable).bitmap, 90F)
@@ -571,7 +570,7 @@ class MemoFragment : Fragment() {
                 fillTheForm(currentForm)
             }
             "back" -> findNavController().navigate(
-                MemoFragmentDirections.actionMemoFragmentToFormSelectionFragment(
+                MemoFragmentDirections.actionToFormSelectionFragment(
                     patientID
                 )
             )
@@ -589,63 +588,51 @@ class MemoFragment : Fragment() {
     }
 
     private fun navigateToSelectedForm() {
-        val navController = this.findNavController()
-        val orderOfSections = listOf(*resources.getStringArray(R.array.forms_order))
-        // if same fragment - load new record
-        // info section could be onlyUnique
         when (navigateFormName) {
-            orderOfSections[0] -> navController.navigate(
-                MemoFragmentDirections
-                    .actionMemoFragmentToInfoFragment(navigateFormRecordID)
+            getString(R.string.info_form_caption) -> findNavController().navigate(
+                MemoFragmentDirections.actionToInfoFragment(navigateFormRecordID)
             )
-
-            orderOfSections[1] -> {
+            getString(R.string.follow_up_form_caption) -> findNavController().navigate(
+                MemoFragmentDirections.actionToFollowUpFragment(navigateFormRecordID)
+            )
+            getString(R.string.memo_form_caption) -> {
                 if (recordID != navigateFormRecordID) {
                     recordID = navigateFormRecordID
-                    createRefAssignPhFile()
                     patientViewModel.getPatientForm(navigateFormRecordID)
                 }
             }
-
-            orderOfSections[2] -> navController.navigate(
-                MemoFragmentDirections
-                    .actionMemoFragmentToCurrentRxFragment(navigateFormRecordID)
+            getString(R.string.current_rx_caption) -> findNavController().navigate(
+                MemoFragmentDirections.actionToCurrentRxFragment(navigateFormRecordID)
             )
-
-            orderOfSections[3] -> navController.navigate(
-                MemoFragmentDirections
-                    .actionMemoFragmentToRefractionFragment(navigateFormRecordID)
+            getString(R.string.refraction_caption) -> findNavController().navigate(
+                MemoFragmentDirections.actionToRefractionFragment(navigateFormRecordID)
             )
-
-            orderOfSections[4] -> navController.navigate(
-                MemoFragmentDirections
-                    .actionMemoFragmentToOcularHealthFragment(navigateFormRecordID)
+            getString(R.string.ocular_health_caption) -> findNavController().navigate(
+                MemoFragmentDirections.actionToOcularHealthFragment(navigateFormRecordID)
             )
-
-            orderOfSections[5] -> navController.navigate(
-                MemoFragmentDirections
-                    .actionMemoFragmentToSupplementaryFragment(navigateFormRecordID)
+            getString(R.string.supplementary_test_caption) -> findNavController().navigate(
+                MemoFragmentDirections.actionToSupplementaryFragment(navigateFormRecordID)
             )
-
-            orderOfSections[6] -> navController.navigate(
-                MemoFragmentDirections
-                    .actionMemoFragmentToContactLensFragment(navigateFormRecordID)
+            getString(R.string.contact_lens_exam_caption) -> findNavController().navigate(
+                MemoFragmentDirections.actionToContactLensFragment(navigateFormRecordID)
             )
-
-            orderOfSections[7] -> navController.navigate(
-                MemoFragmentDirections
-                    .actionMemoFragmentToOrthokFragment(navigateFormRecordID)
+            getString(R.string.orthox_caption) -> findNavController().navigate(
+                MemoFragmentDirections.actionToOrthokFragment(navigateFormRecordID)
             )
-
-            orderOfSections[8] -> navController.navigate(
-                MemoFragmentDirections
-                    .actionMemoFragmentToCashOrderFragment(navigateFormRecordID)
+            getString(R.string.cash_order) -> findNavController().navigate(
+                MemoFragmentDirections.actionToCashOrderFragment(navigateFormRecordID)
             )
-
-            orderOfSections[9] -> navController.navigate(
-                MemoFragmentDirections
-                    .actionMemoFragmentToFinalPrescriptionFragment(navigateFormRecordID)
+            getString(R.string.sales_order_caption) -> findNavController().navigate(
+                MemoFragmentDirections.actionToSalesOrderFragment(navigateFormRecordID)
             )
+            getString(R.string.final_prescription_caption) -> findNavController().navigate(
+                MemoFragmentDirections.actionToSalesOrderFragment(navigateFormRecordID)
+            )
+            else -> {
+                Toast.makeText(
+                    context, "$navigateFormName not implemented yet", Toast.LENGTH_SHORT
+                ).show()
+            }
         }
     }
 
@@ -718,7 +705,7 @@ class MemoFragment : Fragment() {
                         val ois = requireContext().contentResolver.openInputStream(storageFile)
                         ois?.apply {
                             storageRef.putStream(ois)
-                                .addOnCompleteListener { _ ->
+                                .addOnCompleteListener {
                                     ois.close()
                                 }
                         }

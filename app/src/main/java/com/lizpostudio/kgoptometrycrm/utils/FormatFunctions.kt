@@ -69,7 +69,8 @@ fun convertFBRecordToPatients(f: FBRecords, key: Long): PatientsEntity {
             ""
         },
         practitionerNameOptometrist = f.practitionerNameOptometrist,
-        remarkPrint = f.remarkPrint
+        remarkPrint = f.remarkPrint,
+        followUpText = f.followUpText
     )
 }
 
@@ -98,7 +99,8 @@ fun convertFormToFBRecord(p: PatientsEntity): FBRecords {
         solutionMisc = p.solutionMisc,
         solutionMiscRm = p.solutionMiscRm,
         practitionerNameOptometrist = p.practitionerNameOptometrist,
-        remarkPrint = p.remarkPrint
+        remarkPrint = p.remarkPrint,
+        followUpText = p.followUpText
     )
 }
 
@@ -280,7 +282,7 @@ fun cylList(): MutableList<String> {
     val list = mutableListOf<String>()
     list.add("")
     var cyl = -0.25
-    while (cyl > -6.25) {
+    while (cyl > -8.25) {
         list.add(df.format(cyl))
         cyl -= 0.25
     }
@@ -437,8 +439,7 @@ fun getDateStartAEndMillis(date: String): Pair<Long, Long> {
 
 @SuppressLint("SimpleDateFormat")
 fun convertLongToDDMMYY(timeMillis: Long): String {
-    return SimpleDateFormat("dd/MM/yy")
-        .format(timeMillis).toString()
+    return SimpleDateFormat("dd/MM/yy").format(timeMillis).toString()
 }
 
 @SuppressLint("SimpleDateFormat")

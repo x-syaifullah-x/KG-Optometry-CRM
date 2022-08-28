@@ -16,7 +16,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class PatientRepository private constructor(
-    val firebaseApp: FirebaseApp, private val patientsDao: PatientsDao
+    val firebaseApp: FirebaseApp,
+    private val patientsDao: PatientsDao
 ) {
 
     companion object {
