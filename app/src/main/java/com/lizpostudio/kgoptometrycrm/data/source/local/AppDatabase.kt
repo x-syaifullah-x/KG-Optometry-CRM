@@ -10,24 +10,27 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.lizpostudio.kgoptometrycrm.data.source.local.dao.PatientsDao
 import com.lizpostudio.kgoptometrycrm.data.source.local.dao.PractitionerDao
-import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
+import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientEntity
 import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PractitionerEntity
+import com.lizpostudio.kgoptometrycrm.search.recycle_bin.data.local.RecycleBinDao
 
 @Database(
     entities = [
-        PatientsEntity::class, PractitionerEntity::class
+        PatientEntity::class,
+        PractitionerEntity::class
     ],
-    version = 9,
+    version = 12,
     exportSchema = false
 )
-abstract class AppDB : RoomDatabase() {
+abstract class AppDatabase : RoomDatabase() {
 
     abstract val patientsDao: PatientsDao
     abstract val practitionerDao: PractitionerDao
+    abstract val recycleBinDao: RecycleBinDao
 
     companion object {
         @Volatile
-        private var INSTANCE: AppDB? = null
+        private var INSTANCE: AppDatabase? = null
 
         private val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(database: SupportSQLiteDatabase) {
@@ -35,11 +38,11 @@ abstract class AppDB : RoomDatabase() {
             }
         }
 
-        fun getInstance(context: Context): AppDB {
+        fun getInstance(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
                 INSTANCE ?: setCursorSize(Int.MAX_VALUE).run {
                     Room.databaseBuilder(
-                        context.applicationContext, AppDB::class.java, "all_patients_database"
+                        context.applicationContext, AppDatabase::class.java, "all_patients_database"
                     )
                         .fallbackToDestructiveMigration()
                         .addMigrations(MIGRATION_1_2)

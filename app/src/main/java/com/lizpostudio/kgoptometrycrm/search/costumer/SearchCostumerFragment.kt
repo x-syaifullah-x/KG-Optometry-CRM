@@ -1,4 +1,4 @@
-package com.lizpostudio.kgoptometrycrm.search
+package com.lizpostudio.kgoptometrycrm.search.costumer
 
 import android.annotation.SuppressLint
 import android.app.Application
@@ -20,67 +20,82 @@ import androidx.activity.addCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
-import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
+import com.lizpostudio.kgoptometrycrm.MainActivity
 import com.lizpostudio.kgoptometrycrm.PatientsViewModel
-import com.lizpostudio.kgoptometrycrm.PatientsViewModelFactory
 import com.lizpostudio.kgoptometrycrm.R
+import com.lizpostudio.kgoptometrycrm.ViewModelProviderFactory
 import com.lizpostudio.kgoptometrycrm.constant.Constants
-import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
-import com.lizpostudio.kgoptometrycrm.databinding.FragmentSearchFollowUpBinding
+import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientEntity
+import com.lizpostudio.kgoptometrycrm.databinding.FragmentSearchCostumerBinding
+import com.lizpostudio.kgoptometrycrm.forms.InfoFragment
+import com.lizpostudio.kgoptometrycrm.search.SearchSave
+import com.lizpostudio.kgoptometrycrm.search.follow_up.SearchFollowUpFragment
+import com.lizpostudio.kgoptometrycrm.search.recycle_bin.SearchRecycleBinFragment
+import com.lizpostudio.kgoptometrycrm.search.sales.SearchSalesFragment
 import com.lizpostudio.kgoptometrycrm.utils.*
 import id.xxx.module.view.binding.ktx.viewBinding
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.withContext
 import java.util.*
 
-class SearchFollowUpFragment : Fragment() {
+class SearchCostumerFragment : Fragment() {
 
     companion object {
         private const val PATIENT_NAME = "NAME"
         private const val DATE_SELECTED = "DATE"
-        private const val CASH_ORDER = "CS"
-        private const val SALES_ORDER = "OR"
+        private const val ID_SELECTED = "ID"
+        private const val PHONE = "PHONE"
+        private const val FAMILY_CODE = "FAMILY CODE"
+        private const val IC_SELECTED = "IC"
+        private const val ADDRESS = "ADDRESS"
+        private const val OCCUPATION = "OCCUPATION"
+        private const val CASH_ORDER = "CASH ORDER"
+        private const val SALES_ORDER = "SALES ORDER"
+        private const val PRODUCT = "PRODUCT"
+        private const val OTHER_ID = "OTHER ID"
 
         private const val ONE_DAY = 24 * 3600 * 1000L
         private const val TWO_WEEKS = 14 * ONE_DAY
 
-        const val KEY_SEARCH_BY = "follow_up_search_by"
-        const val KEY_SEARCH_VALUE = "follow_up_search_value"
+        const val KEY_SEARCH_BY = "searchBy"
+        const val KEY_SEARCH_VALUE = "searchValue"
+
     }
 
     private var listenToSearchSpinner = false
     private var allowSync = true
 
     private val patientViewModel: PatientsViewModel by viewModels {
-        PatientsViewModelFactory(requireContext())
+        ViewModelProviderFactory.getInstance(context)
     }
 
     private val historyUpdateList = mutableListOf<Long>()
-    private val recordsToBeInserted = mutableListOf<PatientsEntity>()
+    private val recordsToBeInserted = mutableListOf<PatientEntity>()
 
     private var isAdmin = false
 
-    private var searchValues = SearchSave(
-        search = DATE_SELECTED
-    )
+    private var searchValues = SearchSave()
     private var filterByFamily = false
 
-    private val binding by viewBinding<FragmentSearchFollowUpBinding>()
+    private val binding by viewBinding<FragmentSearchCostumerBinding>()
 
-    private val allInfoForms = mutableListOf<PatientsEntity>()
+    private val allInfoForms = mutableListOf<PatientEntity>()
 
     // recycler adapter reference list
-    private val recyclerList = mutableListOf<PatientsEntity>()
-    private val recyclerAdapter = FollowUpListAdapter(recyclerList)
+    private val recyclerList = mutableListOf<PatientEntity>()
+    private val recyclerAdapter = PatientsListAdapter(recyclerList)
 
     private var shareText = ""
+
+    // temp vat to keep record of when sync was started
+    //  private var latestDeletedHistorySynched = 0L
 
     private var syncHistoryStart = 0L
     private var latestDataSynched = 0L
@@ -88,16 +103,14 @@ class SearchFollowUpFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         context?.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE)
             ?.edit()
-            ?.putString(
-                Constants.PREF_KEY_SEARCH_STATE, SearchFollowUpFragment::class.java.name
-            )?.apply()
+            ?.putString(Constants.SEARCH_STATE_KEY, SearchCostumerFragment::class.java.name)
+            ?.apply()
         requireActivity().onBackPressedDispatcher
             .addCallback(this) {
-                findNavController().navigate(
-                    SearchFollowUpFragmentDirections.actionToSearchCostumerFragment()
-                )
+                findNavController().navigate(SearchCostumerFragmentDirections.actionToLoginFragment())
             }
     }
 
@@ -123,10 +136,11 @@ class SearchFollowUpFragment : Fragment() {
             val editor = sharedPref.edit()
             editor.putString(KEY_SEARCH_BY, searchValues.search)
             editor.putString(KEY_SEARCH_VALUE, searchValues.value)
-            editor.putLong("lastSynch", latestDataSynched)
+            editor.putLong(Constants.PREF_KEY_LAST_SYNC, latestDataSynched)
             // editor.putLong("lastDeletedSynch", latestDeletedHistorySynched)
             editor.apply()
         }
+
     }
 
     override fun onPause() {
@@ -134,7 +148,6 @@ class SearchFollowUpFragment : Fragment() {
         persistDataToStore()
     }
 
-    @SuppressLint("SetTextI18n")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -149,10 +162,19 @@ class SearchFollowUpFragment : Fragment() {
 
         ArrayAdapter.createFromResource(
             app,
-            R.array.search_follow_up_choices,
+            R.array.search_customer_choices,
             android.R.layout.simple_spinner_item
         ).also { adapter ->
             spinner.adapter = adapter
+        }
+
+        lifecycleScope.launchWhenCreated {
+            binding.searchInputText.asFlow().collectLatest {
+                if (searchValues.search != DATE_SELECTED) {
+                    searchValues.value = it
+                    filterRecyclerList()
+                }
+            }
         }
 
         restoreDataAndSearch()
@@ -165,6 +187,8 @@ class SearchFollowUpFragment : Fragment() {
             "Last sync: ${convertLongToDDMMYYHRSMIN(latestDataSynched)}",
             Toast.LENGTH_SHORT
         ).show()
+
+        patientViewModel.getAllFormsBySectionName(getString(R.string.info_form_caption))
 
         binding.topNavigation.toggleFamily.setOnClickListener {
             filterByFamily = !filterByFamily
@@ -187,8 +211,12 @@ class SearchFollowUpFragment : Fragment() {
 
         binding.topNavigation.home.setOnClickListener {
             val editor = Constants.getSharedPreferences(it.context).edit()
-            editor.putString(SearchCostumerFragment.KEY_SEARCH_BY, "")
-            editor.putString(SearchCostumerFragment.KEY_SEARCH_VALUE, "")
+            editor.putString(SearchSalesFragment.KEY_SEARCH_BY, "")
+            editor.putString(SearchSalesFragment.KEY_SEARCH_VALUE, "")
+            editor.putString(SearchFollowUpFragment.KEY_SEARCH_BY, "")
+            editor.putString(SearchFollowUpFragment.KEY_SEARCH_VALUE, "")
+            editor.putString(SearchRecycleBinFragment.KEY_SEARCH_BY, "")
+            editor.putString(SearchRecycleBinFragment.KEY_SEARCH_VALUE, "")
             editor.apply()
             binding.searchInputText.setText("")
         }
@@ -215,17 +243,16 @@ class SearchFollowUpFragment : Fragment() {
                 ).show()
             }
         }
-
+// COPY FIREBASE DATA
         patientViewModel.deletedDatabase.observe(viewLifecycleOwner) { isLocalDeleted ->
             isLocalDeleted?.let {
                 if (it) {
-                    //         Log.d(Constants.TAG2, "Local database cleaned!")
+                    //         Log.d(_root_ide_package_.com.lizpostudio.kgoptometrycrm.constant.Constants.TAG2, "Local database cleaned!")
                     binding.progressText.text = "Fetching data from Firebase ..."
                     patientViewModel.getAllRecordsFromFirebase()
                 }
             }
         }
-
         patientViewModel.allFirebaseDB.observe(viewLifecycleOwner) { fireRecs ->
             fireRecs?.let { fireRecords ->
                 isfetchedFromFirebaseCompleted = true
@@ -242,10 +269,12 @@ class SearchFollowUpFragment : Fragment() {
             }
         }
 
+        // =============   READ HISTORY AND LISTEN TO IT CHANGES =================
+
         patientViewModel.recordDeleted.observe(viewLifecycleOwner) { ifDeleted ->
             ifDeleted?.let {
                 if (it) {
-//                    patientViewModel.getAllFormsBySectionName(getString(R.string.info_form_caption))
+                    patientViewModel.getAllFormsBySectionName(getString(R.string.info_form_caption))
                 }
             }
         }
@@ -313,7 +342,7 @@ class SearchFollowUpFragment : Fragment() {
                     latestDataSynched = syncHistoryStart
                     isfetchedFromFirebaseCompleted = true
                     persistFBCompletedToStore()
-//                    patientViewModel.getAllFormsBySectionName(getString(R.string.info_form_caption))
+                    patientViewModel.getAllFormsBySectionName(getString(R.string.info_form_caption))
                     Toast.makeText(
                         context,
                         "Updated/Inserted ${recordsToBeInserted.size} records from Firebase!",
@@ -355,7 +384,7 @@ class SearchFollowUpFragment : Fragment() {
         binding.patientsList.addItemDecoration(itemDecor)
         binding.patientsList.adapter = recyclerAdapter
 
-        patientViewModel.recordsFollowUp.observe(viewLifecycleOwner) { recordsDB ->
+        patientViewModel.allFormsBySectionName.observe(viewLifecycleOwner) { recordsDB ->
             allInfoForms.clear()
             allInfoForms.addAll(recordsDB)
 
@@ -363,7 +392,9 @@ class SearchFollowUpFragment : Fragment() {
                 val (startDate, endDate) = getDateStartAEndMillis(searchValues.value)
                 patientViewModel.getFormsForSelectedDate(startDate, endDate)
             } else {
-                filterRecyclerList()
+                lifecycleScope.launchWhenCreated {
+                    filterRecyclerList()
+                }
             }
             listenToSearchSpinner = true
         }
@@ -379,16 +410,9 @@ class SearchFollowUpFragment : Fragment() {
             searchValues.value = ""
         }
 
-
-        binding.searchInputText.doOnTextChanged { text, _, _, _ ->
-            searchValues.value = text.toString()
-            filterRecyclerList()
-        }
-
         binding.searchIcon.setOnClickListener {
             hideKeyboard(app)
-//            if (searchValues.search == DATE_SELECTED)
-            filterByDate()
+            if (searchValues.search == DATE_SELECTED) filterByDate()
         }
 
         recyclerAdapter.patientSelected.observe(viewLifecycleOwner) { patient ->
@@ -404,8 +428,9 @@ class SearchFollowUpFragment : Fragment() {
             } else {
                 hideKeyboard(app)
                 navController.navigate(
-                    SearchFollowUpFragmentDirections
-                        .actionToFormSelectionFragment(patient.patientID)
+                    SearchCostumerFragmentDirections.actionToFormSelectionFragment(
+                        patient.patientID
+                    )
                 )
             }
         }
@@ -415,7 +440,7 @@ class SearchFollowUpFragment : Fragment() {
             newRecordID?.let {
                 Constants.setCreatedFrom(requireContext())
                 navController.navigate(
-                    SearchFollowUpFragmentDirections.actionToInfoFragment(newRecordID)
+                    SearchCostumerFragmentDirections.actionToInfoFragment(newRecordID)
                 )
             }
         }
@@ -472,69 +497,111 @@ class SearchFollowUpFragment : Fragment() {
 
         binding.topNavigation.salesButton.setOnClickListener {
             findNavController().navigate(
-                SearchFollowUpFragmentDirections.actionToSearchSalesFragment()
+                SearchCostumerFragmentDirections.actionToDatabaseSalesScreen()
             )
         }
 
         binding.topNavigation.followUp.setOnClickListener {
             findNavController().navigate(
-                SearchFollowUpFragmentDirections.actionToSearchCostumerFragment()
+                SearchCostumerFragmentDirections.actionToSearchFollowUpScreen()
+            )
+        }
+
+        binding.topNavigation.recycleBin.setOnClickListener {
+            findNavController().navigate(
+                SearchCostumerFragmentDirections.actionToSearchRecycleBinFragment()
             )
         }
 
         return binding.root
     }
 
-    private val dispatcherFilterRecyclerList = CoroutineScope(Dispatchers.IO)
-
-    private fun filterRecyclerList() {
-        dispatcherFilterRecyclerList.launch {
+    private suspend fun filterRecyclerList() {
+        withContext(Dispatchers.IO) {
             val inputText = searchValues.value
             val newList =
                 if (inputText.isNotBlank()) {
                     when (searchValues.search) {
-                        DATE_SELECTED -> {
-                            if (searchValues.value.matches(Regex("\\d{2}/\\d{2}/\\d{2}"))) {
-                                val (startDate, endDate) = getDateStartAEndMillis(searchValues.value)
-                                allInfoForms.filter {
-                                    it.dateOfSection in startDate..endDate
-                                }
-                            } else {
-                                listOf()
-                            }
-                        }
                         PATIENT_NAME -> allInfoForms
                             .filter { it.patientName.contains(inputText, true) }
-                            .sortedByDescending { it.dateOfSection }
+                            .sortedBy { it.patientName }
+
+                        ID_SELECTED -> allInfoForms
+                            .filter { it.patientID.contains(inputText, true) }
+                            .sortedBy { it.patientName }
+
+                        IC_SELECTED -> allInfoForms
+                            .filter { it.patientIC.contains(inputText) }
+                            .sortedBy { it.patientName }
+
+                        PHONE -> allInfoForms
+                            .filter { it.phone.contains(inputText, true) }
+                            .sortedBy { it.patientName }
+
+                        ADDRESS -> allInfoForms
+                            .filter { it.address.contains(inputText, true) }
+                            .sortedBy { it.patientName }
+
+                        OCCUPATION -> allInfoForms
+                            .filter { patientForm ->
+                                val occupation = patientForm.sectionData.split('|').toMutableList()
+                                val extractData = if (occupation.size > 10) occupation[10] else ""
+                                extractData.contains(inputText, true)
+                            }
+                            .sortedBy { it.patientName }
 
                         CASH_ORDER -> {
-                            allInfoForms
-                                .filter { it.cs.contains(inputText, true) }
-                                .sortedByDescending { it.dateOfSection }
-//                            patientViewModel.getPatientByCashOrder(inputText)
-//                                .flatMap { cs ->
-//                                    allInfoForms.filter { cs.patientID == it.patientID }
-//                                }
-//                                .sortedByDescending { it.dateOfSection }
+                            patientViewModel.getPatientByCashOrder(inputText)
+                                .flatMap { cs ->
+                                    allInfoForms.filter { cs.patientID == it.patientID }
+                                }
+                                .sortedBy { it.patientName }
                         }
 
                         SALES_ORDER -> {
-                            allInfoForms
-                                .filter { it.or.contains(inputText, true) }
-                                .sortedByDescending { it.dateOfSection }
-//                            patientViewModel.getPatientBySalesOrder(inputText)
-//                                .flatMap { cs ->
-//                                    allInfoForms.filter { cs.patientID == it.patientID }
-//                                        .sortedByDescending { it.dateOfSection }
+                            patientViewModel.getPatientBySalesOrder(inputText)
+                                .flatMap { cs ->
+                                    allInfoForms.filter { cs.patientID == it.patientID }
+                                        .sortedBy { it.patientName }
+                                }
+                        }
+
+                        PRODUCT -> {
+                            patientViewModel.getIdProducts(inputText)
+                                .sortedBy { sort -> sort.patientName }
+//                                .flatMap { idProduct ->
+//                                    if (inputText != searchValues.value)
+//                                        cancel()
+//                                    allInfoForms.filter { allInfoForm ->
+//                                        if (inputText != searchValues.value)
+//                                            cancel()
+//                                        idProduct == allInfoForm.patientID
+//                                    }
+//                                }.sortedBy { sort ->
+//                                    if (inputText != searchValues.value)
+//                                        cancel()
+//                                    sort.patientName
 //                                }
                         }
 
+                        OTHER_ID -> allInfoForms
+                            .filter {
+                                val otherId =
+                                    try {
+                                        it.sectionData.split("|")[InfoFragment.OTHER_ID_INDEX]
+                                    } catch (t: Throwable) {
+                                        ""
+                                    }
+                                otherId.contains(inputText, true)
+                            }
+                            .sortedBy { it.patientName }
+
                         else -> allInfoForms
                             .filter { it.familyCode.contains(inputText, true) }
-                            .sortedByDescending { it.dateOfSection }
+                            .sortedBy { it.patientName }
                     }
                 } else {
-                    allInfoForms.sortedByDescending { it.dateOfSection }
+                    allInfoForms.sortedBy { it.patientName }
                 }
 
             withContext(Dispatchers.Main) {
@@ -544,9 +611,9 @@ class SearchFollowUpFragment : Fragment() {
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    private fun updateRecyclerView(newList: List<PatientsEntity>) {
+    private fun updateRecyclerView(newList: List<PatientEntity>) {
         binding.foundItemsText.text = resources
-            .getString(R.string.entries_found_in_database_follow_up, newList.size.toString())
+            .getString(R.string.entries_found_in_database, newList.size.toString())
         recyclerList.clear()
         recyclerList.addAll(newList)
         recyclerAdapter.notifyDataSetChanged()
@@ -570,18 +637,29 @@ class SearchFollowUpFragment : Fragment() {
                 id: Long
             ) {
                 searchValues.search = when (position) {
-                    0 -> DATE_SELECTED
+                    0 -> PATIENT_NAME
+                    1 -> DATE_SELECTED
+                    2 -> ID_SELECTED
+                    3 -> IC_SELECTED
+                    4 -> PHONE
+                    5 -> FAMILY_CODE
+                    6 -> ADDRESS
+                    7 -> OCCUPATION
+                    8 -> CASH_ORDER
+                    9 -> SALES_ORDER
+                    10 -> PRODUCT
+                    11 -> OTHER_ID
                     else -> throw Throwable("NOT SELECTED")
                 }
+                Log.d(Constants.TAG, "onItem Spinner selected: ${searchValues.search} ")
 
-                if (searchValues.search == DATE_SELECTED) {
+                if (position == 1) {
+//                if (searchValues.search == DATE_SELECTED) {
                     binding.searchIcon.setImageResource(R.drawable.ic_baseline_calendar_today_24)
-                    if (listenToSearchSpinner)
-                        filterByDate()
+                    if (listenToSearchSpinner) filterByDate()
                 } else {
                     binding.searchIcon.setImageResource(R.drawable.ic_search_icon)
-                    if (listenToSearchSpinner)
-                        binding.searchInputText.setText("")
+                    if (listenToSearchSpinner) binding.searchInputText.setText("")
                 }
             }
 
@@ -594,9 +672,7 @@ class SearchFollowUpFragment : Fragment() {
 
         Log.d(Constants.TAG, "listOfPatientsID size = ${listOfPatientsID.size}")
         val newList = allInfoForms.filter { listOfPatientsID.contains(it.patientID) }
-            .toHashSet()
-            .toList()
-            .sortedByDescending { item -> item.dateOfSection }
+            .sortedBy { item -> item.patientName }
         Log.d(Constants.TAG, "Filtered by date list size = ${newList.size}")
         updateRecyclerView(newList)
         binding.searchInputText.setText(searchValues.value)
@@ -612,20 +688,18 @@ class SearchFollowUpFragment : Fragment() {
 
         myActivity?.let { myFragmentActivity ->
             val datePickerDialog = DatePickerDialog(
-                myFragmentActivity, { _, year, monthOfYear, dayOfMonth ->
+                myFragmentActivity,
+                { _, year, monthOfYear, dayOfMonth -> // set day of month , month and year value in the edit text
+
                     searchValues.value =
                         convertLongToDDMMYY(convertYMDtoTimeMillis(year, monthOfYear, dayOfMonth))
                     Log.d(
                         Constants.TAG,
                         "searchValues.value from date picker = ${searchValues.value}"
                     )
-//                    val (startDate, endDate) = getDateStartAEndMillis(searchValues.value)
-//                    Log.d(Constants.TAG, "startDate = $startDate, endDate = $endDate")
-//                    patientViewModel.getFormsForSelectedDate(
-//                        getString(R.string.follow_up_form_caption),
-//                        startDate
-//                    )
-                    binding.searchInputText.setText(searchValues.value)
+                    val (startDate, endDate) = getDateStartAEndMillis(searchValues.value)
+                    Log.d(Constants.TAG, "startDate = $startDate, endDate = $endDate")
+                    patientViewModel.getFormsForSelectedDate(startDate, endDate)
                 }, todayYear, todayMonth, todayDay
             )
             datePickerDialog.show()
@@ -639,7 +713,7 @@ class SearchFollowUpFragment : Fragment() {
         }
     }
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint("SetTextI18n", "NotifyDataSetChanged")
     private fun actionConfirm(message: String) {
         val dialogBuilder = AlertDialog.Builder(context as Context)
 
@@ -649,7 +723,7 @@ class SearchFollowUpFragment : Fragment() {
             recyclerList.clear()
             recyclerAdapter.notifyDataSetChanged()
             binding.progressText.visibility = View.VISIBLE
-            //        Log.d(Constants.TAG2, "Deleting local database")
+            //        Log.d(_root_ide_package_.com.lizpostudio.kgoptometrycrm.constant.Constants.TAG2, "Deleting local database")
             binding.progressText.text = "Deleting local database ..."
             allowSync = false
             patientViewModel.deleteAllRecords()
@@ -661,12 +735,12 @@ class SearchFollowUpFragment : Fragment() {
     }
 
     private fun restoreDataAndSearch() {
+        val sharedPref = activity?.getSharedPreferences(
+            Constants.PREF_NAME, Context.MODE_PRIVATE
+        )
 
-        val pref = activity
-            ?.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE)
-
-        searchValues.search = pref?.getString(KEY_SEARCH_BY, PATIENT_NAME) ?: PATIENT_NAME
-        searchValues.value = pref?.getString(KEY_SEARCH_VALUE, "") ?: ""
+        searchValues.search = sharedPref?.getString(KEY_SEARCH_BY, PATIENT_NAME) ?: PATIENT_NAME
+        searchValues.value = sharedPref?.getString(KEY_SEARCH_VALUE, "") ?: ""
 
         for (i in 0 until binding.searchBySpinner.adapter.count) {
             val item = binding.searchBySpinner.adapter.getItem(i).toString()
@@ -682,16 +756,18 @@ class SearchFollowUpFragment : Fragment() {
             Log.d(Constants.TAG, "Setting search Text to ${searchValues.value}")
         }
 
-        latestDataSynched = pref?.getLong(Constants.PREF_KEY_LAST_SYNC, 0L) ?: 0L
-        isfetchedFromFirebaseCompleted = pref?.getBoolean("fireFetched", false) ?: false
-        isAdmin = (pref?.getString("admin", "") ?: "") == "admin"
+        latestDataSynched = sharedPref?.getLong("lastSynch", 0L) ?: 0L
+        isfetchedFromFirebaseCompleted = sharedPref?.getBoolean("fireFetched", false) ?: false
+        isAdmin = (sharedPref?.getString("admin", "") ?: "") == "admin"
 
         if (isAdmin) {
             binding.topNavigation.refractionReport.visibility = View.VISIBLE
             binding.topNavigation.shareReport.visibility = View.VISIBLE
+            binding.topNavigation.recycleBin.visibility = View.VISIBLE
         } else {
             binding.topNavigation.refractionReport.visibility = View.GONE
             binding.topNavigation.shareReport.visibility = View.GONE
+            binding.topNavigation.recycleBin.visibility = View.GONE
         }
     }
 }

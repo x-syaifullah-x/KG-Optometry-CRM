@@ -107,7 +107,7 @@ dependencies {
     implementation "androidx.room:room-ktx:$vRoom"
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$vCoroutines"
-
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:$vCoroutines"
     testImplementation "junit:junit:$vJunit"
 
     androidTestImplementation "androidx.room:room-testing:$vRoom"

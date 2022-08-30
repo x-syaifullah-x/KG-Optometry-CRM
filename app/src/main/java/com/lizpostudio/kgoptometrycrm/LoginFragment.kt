@@ -2,7 +2,6 @@ package com.lizpostudio.kgoptometrycrm
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -25,12 +24,13 @@ import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.lizpostudio.kgoptometrycrm.constant.Constants
-import com.lizpostudio.kgoptometrycrm.data.repository.PatientRepository
-import com.lizpostudio.kgoptometrycrm.data.source.remote.MyFirebase
+import com.lizpostudio.kgoptometrycrm.data.source.remote.firebase.AppFirebase
 import com.lizpostudio.kgoptometrycrm.data.source.remote.firebase.KGMessage
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentLoginBinding
-import com.lizpostudio.kgoptometrycrm.search.SearchCostumerFragment
-import com.lizpostudio.kgoptometrycrm.search.SearchSalesFragment
+import com.lizpostudio.kgoptometrycrm.search.costumer.SearchCostumerFragment
+import com.lizpostudio.kgoptometrycrm.search.follow_up.SearchFollowUpFragment
+import com.lizpostudio.kgoptometrycrm.search.recycle_bin.SearchRecycleBinFragment
+import com.lizpostudio.kgoptometrycrm.search.sales.SearchSalesFragment
 import com.lizpostudio.kgoptometrycrm.utils.MessagesListAdapter
 import com.lizpostudio.kgoptometrycrm.utils.convertLongToDDKey
 import com.lizpostudio.kgoptometrycrm.utils.convertLongToDDMMYYHRSMIN
@@ -48,35 +48,6 @@ class LoginFragment : Fragment() {
         private const val TRUSTED_CHILD = "trusted"
         private const val ADMIN_KEY = "admin"
         private const val USERS_KEY = "user"
-
-        fun defaultFirebaseConfig(edit: SharedPreferences.Editor): Boolean {
-            return edit
-                .putString(
-                    MyFirebase.KEY_FIREBASE_URL,
-                    "https://kgoptometrycrm.firebaseio.com"
-                )
-                .putString(
-                    MyFirebase.KEY_PROJECT_NUMBER,
-                    "630259719920"
-                )
-                .putString(
-                    MyFirebase.KEY_API_KEY,
-                    "AIzaSyBI6-DpeH-ki0jLsQ64E3XVrw00wxG-qQI"
-                )
-                .putString(
-                    MyFirebase.KEY_APPLICATION_ID,
-                    "1:630259719920:android:02d8acd58e5fc3ad0d2c35"
-                )
-                .putString(
-                    MyFirebase.KEY_STORAGE_BUCKET,
-                    "kgoptometrycrm.appspot.com"
-                )
-                .putString(
-                    MyFirebase.KEY_PROJECT_ID,
-                    "kgoptometrycrm"
-                )
-                .commit()
-        }
     }
 
     private var deviceCode = "NO"
@@ -164,7 +135,7 @@ class LoginFragment : Fragment() {
 //    }
 
     private fun signIn(email: String, password: String) {
-        val firebaseApp = MyFirebase.getInstance(requireContext())
+        val firebaseApp = AppFirebase.getInstance(requireContext())
         val auth = FirebaseAuth.getInstance(firebaseApp)
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(requireActivity()) { task ->
@@ -194,7 +165,7 @@ class LoginFragment : Fragment() {
 
         // =============== Check the User and sign in if null =================
 
-        fireApp = MyFirebase.getInstance(requireContext())
+        fireApp = AppFirebase.getInstance(requireContext())
         firebaseDatabase = fireApp?.let { Firebase.database(it) }
         messagesReference = firebaseDatabase?.reference?.child(MESSAGES_CHILD)
 
@@ -372,7 +343,7 @@ class LoginFragment : Fragment() {
 
         binding.editPassword.setText("")
         FirebaseAuth.getInstance(
-            MyFirebase.getInstance(requireContext())
+            AppFirebase.getInstance(requireContext())
         ).signOut()
 
         val userLogged = "Guest! Please, log in to continue"
@@ -431,7 +402,7 @@ class LoginFragment : Fragment() {
         if (deviceCode == "NO" && mFirebaseUser != null) {
             // record device code to Firebase
             val timeStamp = System.currentTimeMillis()
-            deviceCode = generateID(PatientRepository.getInstance(requireContext()))
+            deviceCode = generateID(requireContext())
 
             val devicesFBReference = firebaseDatabase!!.reference
                 .child(SETTINGS_CHILD)
@@ -496,10 +467,16 @@ class LoginFragment : Fragment() {
         val editor = Constants.getSharedPreferences(requireContext()).edit()
         val searchCostumerBy = resources.getStringArray(R.array.search_customer_choices)[0]
         val searchSalesBy = resources.getStringArray(R.array.search_sales_choices)[0]
+        val searchFollowUpBy = resources.getStringArray(R.array.search_follow_up_choices)[0]
+        val searchRecycleBinBy = resources.getStringArray(R.array.search_recycle_bin_choices)[0]
         editor.putString(SearchCostumerFragment.KEY_SEARCH_BY, searchCostumerBy)
         editor.putString(SearchCostumerFragment.KEY_SEARCH_VALUE, "")
         editor.putString(SearchSalesFragment.KEY_SEARCH_BY, searchSalesBy)
         editor.putString(SearchSalesFragment.KEY_SEARCH_VALUE, "")
+        editor.putString(SearchFollowUpFragment.KEY_SEARCH_BY, searchFollowUpBy)
+        editor.putString(SearchFollowUpFragment.KEY_SEARCH_VALUE, "")
+        editor.putString(SearchRecycleBinFragment.KEY_SEARCH_BY, searchRecycleBinBy)
+        editor.putString(SearchRecycleBinFragment.KEY_SEARCH_VALUE, "")
         editor.apply()
     }
 
@@ -536,19 +513,6 @@ class LoginFragment : Fragment() {
         popupView.setOnTouchListener { _, _ ->
             popupWindow.dismiss()
             true
-        }
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        val pref = Constants.getSharedPreferences(requireContext())
-
-        val keyFirstInstall = "first_install"
-
-        if (pref.getBoolean(keyFirstInstall, true)) {
-            val edit = pref.edit()
-            edit.putBoolean(keyFirstInstall, false)
-            defaultFirebaseConfig(edit)
         }
     }
 }

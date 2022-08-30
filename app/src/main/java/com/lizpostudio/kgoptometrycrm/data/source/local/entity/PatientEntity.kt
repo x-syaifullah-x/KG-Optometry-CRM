@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 
 @Keep
 @Entity(tableName = "patients_table")
-data class PatientsEntity(
+data class PatientEntity(
     @PrimaryKey
     var recordID: Long = System.currentTimeMillis() - 100000000000L,
 
@@ -93,10 +93,13 @@ data class PatientsEntity(
     var remarkPrint: String = "",
 
     @ColumnInfo(name = "follow_up_text")
-    var followUpText: String = ""
+    var followUpText: String = "",
+
+    @ColumnInfo(name = "delete_at")
+    var deleteAt: Long = 0
 ) {
 
-    fun assertEqual(toForm: PatientsEntity): Boolean {
+    fun assertEqual(toForm: PatientEntity): Boolean {
         return (this.patientID == toForm.patientID &&
                 this.patientIC == toForm.patientIC &&
                 this.patientName == toForm.patientName &&
@@ -121,10 +124,11 @@ data class PatientsEntity(
                 this.solutionMiscRm == toForm.solutionMiscRm &&
                 this.practitionerNameOptometrist == toForm.practitionerNameOptometrist &&
                 this.remarkPrint == toForm.remarkPrint &&
-                this.followUpText == toForm.followUpText)
+                this.followUpText == toForm.followUpText &&
+                this.deleteAt == deleteAt)
     }
 
-    fun copyFrom(from: PatientsEntity) {
+    fun copyFrom(from: PatientEntity) {
         this.recordID = from.recordID
         this.patientID = from.patientID
         this.patientIC = from.patientIC
@@ -154,5 +158,6 @@ data class PatientsEntity(
         this.practitionerNameOptometrist = from.practitionerNameOptometrist
         this.remarkPrint = from.remarkPrint
         this.followUpText = from.followUpText
+        this.deleteAt = from.deleteAt
     }
 }

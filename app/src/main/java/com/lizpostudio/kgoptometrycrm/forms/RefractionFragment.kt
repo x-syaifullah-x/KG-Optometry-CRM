@@ -25,10 +25,10 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.firebase.storage.StorageReference
 import com.lizpostudio.kgoptometrycrm.PatientsViewModel
-import com.lizpostudio.kgoptometrycrm.PatientsViewModelFactory
 import com.lizpostudio.kgoptometrycrm.R
+import com.lizpostudio.kgoptometrycrm.ViewModelProviderFactory
 import com.lizpostudio.kgoptometrycrm.constant.Constants
-import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
+import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientEntity
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentRefractionBinding
 import com.lizpostudio.kgoptometrycrm.utils.*
 import id.xxx.module.view.binding.ktx.viewBinding
@@ -51,7 +51,7 @@ class RefractionFragment : Fragment() {
     }
 
     private val patientViewModel: PatientsViewModel by viewModels {
-        PatientsViewModelFactory(requireContext())
+        ViewModelProviderFactory.getInstance(context)
     }
 
     private val binding by viewBinding<FragmentRefractionBinding>()
@@ -66,14 +66,14 @@ class RefractionFragment : Fragment() {
     private var sectionEditDate = -1L
     private var showPhoto = true
 
-    private var currentForm = PatientsEntity()
+    private var currentForm = PatientEntity()
     private var navigateFormName = ""
     private var navigateFormRecordID = -1L
 
     private var isTakePhoto = false
 
     private val takePicture =
-        registerForActivityResult(TakePictureWithUriReturnContract()) { result ->
+        registerForActivityResult(TakePictureResultContract()) { result ->
             if (result != null) {
                 val parcelFileDescriptor =
                     requireContext().contentResolver.openFileDescriptor(result, "rw")
@@ -199,7 +199,6 @@ class RefractionFragment : Fragment() {
                 patientViewModel.createRecordListener(currentForm.recordID)
                 fillTheForm(it)
                 patientViewModel.getAllFormsForPatient(patientID)
-                updatePhotoView()
             }
         }
 
@@ -222,7 +221,7 @@ class RefractionFragment : Fragment() {
                 val screenDst = Resources.getSystem().displayMetrics.density
 
                 val sortedList = it.sortedBy { patientsForms -> patientsForms.dateOfSection }
-                val newList = mutableListOf<PatientsEntity>()
+                val newList = mutableListOf<PatientEntity>()
 
                 for (section in orderOfSections) {
                     for (forms in sortedList) {
@@ -241,7 +240,7 @@ class RefractionFragment : Fragment() {
                     .toSet()
 
                 /* FOR BOTTOM NAVIGATION */
-                val mapSectionName = mutableMapOf<String, MutableList<PatientsEntity>>()
+                val mapSectionName = mutableMapOf<String, MutableList<PatientEntity>>()
                 newList.forEach { patient ->
                     val key = mapSectionName[patient.sectionName]
                     if (key == null) {
@@ -327,13 +326,15 @@ class RefractionFragment : Fragment() {
                             (4 * screenDst).toInt()
                         )
 
-                        if (patientForm.recordID == recordID)
+                        if (patientForm.recordID == recordID) {
                             chip.setBackgroundColor(
                                 ContextCompat.getColor(
                                     app.applicationContext, R.color.lightBackground
                                 )
                             )
-                        else
+                            createRefAssignPhFile()
+                            updatePhotoView()
+                        } else
                             chip.setBackgroundColor(
                                 ContextCompat.getColor(
                                     app.applicationContext,
@@ -341,7 +342,8 @@ class RefractionFragment : Fragment() {
                                 )
                             )
 
-                        val sectionShortName = makeShortSectionName(requireContext(), patientForm.sectionName)
+                        val sectionShortName =
+                            makeShortSectionName(requireContext(), patientForm.sectionName)
                         chip.text =
                             "$sectionShortName\n${convertLongToDDMMYY(patientForm.dateOfSection)}"
 
@@ -530,7 +532,7 @@ class RefractionFragment : Fragment() {
                 ) { allowed ->
                     if (allowed) {
                         patientViewModel.deleteRecord(currentForm)
-                        patientViewModel.deletePatientFromFirebase(currentForm.recordID.toString())
+                        patientViewModel.deletePatientFromFirebase(currentForm)
 
                     }
                 }
@@ -694,6 +696,7 @@ class RefractionFragment : Fragment() {
     }
 
     private fun updatePhotoView() {
+        uploadPhotoFileToImage(null)
         if (currentForm.reservedField.isBlank()) {
             currentForm.reservedField = storageRef.toString()
         }
@@ -705,6 +708,8 @@ class RefractionFragment : Fragment() {
                 } else {
                     uploadPhotoFileToImage(stream)
                 }
+            }.addOnFailureListener {
+                uploadPhotoFileToImage(null)
             }
         } else {
             uploadPhotoFileToImage(null)
@@ -736,7 +741,7 @@ class RefractionFragment : Fragment() {
 //    }
 
 
-    private fun fillTheForm(patientForm: PatientsEntity) {
+    private fun fillTheForm(patientForm: PatientEntity) {
         val extractData = patientForm.sectionData.split('|').toMutableList()
         if (extractData.size < 47) {
             for (index in extractData.size..47) {

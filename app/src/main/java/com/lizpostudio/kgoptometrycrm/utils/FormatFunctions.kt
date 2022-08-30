@@ -1,12 +1,14 @@
 package com.lizpostudio.kgoptometrycrm.utils
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.PointF
 import android.util.Log
 import com.lizpostudio.kgoptometrycrm.constant.Constants
 import com.lizpostudio.kgoptometrycrm.data.repository.PatientRepository
-import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
-import com.lizpostudio.kgoptometrycrm.data.source.remote.FBRecords
+import com.lizpostudio.kgoptometrycrm.data.source.local.AppDatabase
+import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientEntity
+import com.lizpostudio.kgoptometrycrm.data.source.remote.firebase.FBRecords
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -14,10 +16,10 @@ import kotlin.random.Random
 
 private const val ONE_DAY = 24 * 3600 * 1000L
 
-fun convertFBRecordToPatients(f: FBRecords, key: Long): PatientsEntity {
+fun convertFBRecordToPatients(f: FBRecords, key: Long): PatientEntity {
     val sectionData = f.sectionData.split("|")
 
-    return PatientsEntity(
+    return PatientEntity(
         key,
         patientID = f.patientID,
         patientIC = f.patientIC,
@@ -70,11 +72,12 @@ fun convertFBRecordToPatients(f: FBRecords, key: Long): PatientsEntity {
         },
         practitionerNameOptometrist = f.practitionerNameOptometrist,
         remarkPrint = f.remarkPrint,
-        followUpText = f.followUpText
+        followUpText = f.followUpText,
+        deleteAt = f.deleteAt
     )
 }
 
-fun convertFormToFBRecord(p: PatientsEntity): FBRecords {
+fun convertFormToFBRecord(p: PatientEntity): FBRecords {
     return FBRecords(
         address = p.address,
         dateOfSection = p.dateOfSection.toString(),
@@ -100,7 +103,8 @@ fun convertFormToFBRecord(p: PatientsEntity): FBRecords {
         solutionMiscRm = p.solutionMiscRm,
         practitionerNameOptometrist = p.practitionerNameOptometrist,
         remarkPrint = p.remarkPrint,
-        followUpText = p.followUpText
+        followUpText = p.followUpText,
+        deleteAt = p.deleteAt
     )
 }
 
@@ -414,12 +418,23 @@ fun generateID(repository: PatientRepository): String {
     }
 }
 
+fun generateID(context: Context): String {
+    val id = generateID()
+    val isExist = AppDatabase.getInstance(context).patientsDao.idIsExist(id)
+    return if (isExist) {
+        generateID(context)
+    } else {
+        id
+    }
+}
+
 fun generateID(): String {
     return (1..10)
         .map { i -> Random.nextInt(i, charPool.size) }
         .map(charPool::get)
         .joinToString("")
 }
+
 // used format dd/mm/yy
 @SuppressLint("SimpleDateFormat")
 fun getDateStartAEndMillis(date: String): Pair<Long, Long> {

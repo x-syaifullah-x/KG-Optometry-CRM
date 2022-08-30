@@ -12,18 +12,47 @@
         tools:layout="@layout/fragment_login">
         <action
             android:id="@+id/action_loginFragment_to_databaseSearchFragment"
-            app:destination="@id/databaseSearchFragment" />
+            app:destination="@id/searchCostumerFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/searchRecycleBinFragment"
+        android:name="com.lizpostudio.kgoptometrycrm.search.recycle_bin.SearchRecycleBinFragment"
+        android:label="Search Recycle Bin Fragment"
+        tools:layout="@layout/fragment_search_recycle_bin">
+        <action
+            android:id="@+id/action_to_form_selection"
+            app:destination="@id/formSelectionFragment" />
+        <action
+            android:id="@+id/action_to_info"
+            app:destination="@id/infoFragment"
+            app:popUpToInclusive="false" />
+        <action
+            android:id="@+id/action_to_login"
+            app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_to_search_sales_screen"
+            app:destination="@id/databaseSearchSalesFragment" />
+        <action
+            android:id="@+id/action_to_search_follow_up_screen"
+            app:destination="@id/searchFollowUpFragment" />
+        <action
+            android:id="@+id/action_to_search_costumer"
+            app:destination="@id/searchCostumerFragment" />
     </fragment>
     <fragment
-        android:id="@+id/databaseSearchFragment"
-        android:name="com.lizpostudio.kgoptometrycrm.search.SearchCostumerFragment"
+        android:id="@+id/searchCostumerFragment"
+        android:name="com.lizpostudio.kgoptometrycrm.search.costumer.SearchCostumerFragment"
         android:label="DatabaseSearchFragment"
         tools:layout="@layout/fragment_search_costumer">
         <action
-            android:id="@+id/action_databaseSearchFragment_to_formSelectionFragment"
+            android:id="@+id/action_to_search_recycle_bin_fragment"
+            app:destination="@id/searchRecycleBinFragment" />
+        <action
+            android:id="@+id/action_to_formSelectionFragment"
             app:destination="@id/formSelectionFragment" />
         <action
-            android:id="@+id/action_databaseSearchFragment_to_infoFragment"
+            android:id="@+id/action_to_infoFragment"
             app:destination="@id/infoFragment"
             app:popUpToInclusive="false" />
         <action
@@ -34,16 +63,19 @@
             app:destination="@id/databaseSearchSalesFragment" />
         <action
             android:id="@+id/action_to_search_follow_up_screen"
-            app:destination="@id/databaseSearchFollowUpFragment" />
+            app:destination="@id/searchFollowUpFragment" />
     </fragment>
     <fragment
-        android:id="@+id/databaseSearchFollowUpFragment"
-        android:name="com.lizpostudio.kgoptometrycrm.search.SearchFollowUpFragment"
+        android:id="@+id/searchFollowUpFragment"
+        android:name="com.lizpostudio.kgoptometrycrm.search.follow_up.SearchFollowUpFragment"
         android:label="DatabaseSearchFollowUpScreenFragment"
         tools:layout="@layout/fragment_search_sales">
         <action
+            android:id="@+id/action_to_search_recycle_bin_fragment"
+            app:destination="@id/searchRecycleBinFragment" />
+        <action
             android:id="@+id/action_to_search_costumer_fragment"
-            app:destination="@id/databaseSearchFragment" />
+            app:destination="@id/searchCostumerFragment" />
         <action
             android:id="@+id/action_to_search_sales_fragment"
             app:destination="@id/databaseSearchSalesFragment" />
@@ -63,12 +95,15 @@
     </fragment>
     <fragment
         android:id="@+id/databaseSearchSalesFragment"
-        android:name="com.lizpostudio.kgoptometrycrm.search.SearchSalesFragment"
+        android:name="com.lizpostudio.kgoptometrycrm.search.sales.SearchSalesFragment"
         android:label="DatabaseSearchSalesScreenFragment"
         tools:layout="@layout/fragment_search_sales">
         <action
+            android:id="@+id/action_to_search_recycle_bin_fragment"
+            app:destination="@id/searchRecycleBinFragment" />
+        <action
             android:id="@+id/action_to_database_search"
-            app:destination="@id/databaseSearchFragment" />
+            app:destination="@id/searchCostumerFragment" />
         <action
             android:id="@+id/action_to_login"
             app:destination="@id/loginFragment" />
@@ -84,7 +119,7 @@
             app:destination="@id/loginFragment" />
         <action
             android:id="@+id/action_to_search_follow_up_screen"
-            app:destination="@id/databaseSearchFollowUpFragment" />
+            app:destination="@id/searchFollowUpFragment" />
     </fragment>
     <fragment
         android:id="@+id/formSelectionFragment"
@@ -95,10 +130,16 @@
             android:name="patientID"
             app:argType="string" />
         <action
+            android:id="@+id/action_to_searchFollowUpFragment"
+            app:destination="@id/searchFollowUpFragment" />
+        <action
             android:id="@+id/action_to_searchCostumerFragment"
-            app:destination="@id/databaseSearchFragment" />
+            app:destination="@id/searchCostumerFragment" />
         <action
             android:id="@+id/action_to_searchSalesFragment"
+            app:destination="@id/databaseSearchSalesFragment" />
+        <action
+            android:id="@+id/action_to_search_recycle_bin_fragment"
             app:destination="@id/databaseSearchSalesFragment" />
         <action
             android:id="@+id/action_to_infoFragment"
@@ -174,7 +215,7 @@
             app:argType="long" />
         <action
             android:id="@+id/actionToDatabaseSearchFragment"
-            app:destination="@id/databaseSearchFragment" />
+            app:destination="@id/searchCostumerFragment" />
         <action
             android:id="@+id/action_to_cashOrderFragment"
             app:destination="@id/cashOrderFragment" />
@@ -219,7 +260,7 @@
             app:argType="long" />
         <action
             android:id="@+id/actionToDatabaseSearchFragment"
-            app:destination="@id/databaseSearchFragment" />
+            app:destination="@id/searchCostumerFragment" />
         <action
             android:id="@+id/action_to_cashOrderFragment"
             app:destination="@id/cashOrderFragment" />
@@ -264,7 +305,7 @@
             app:argType="long" />
         <action
             android:id="@+id/action_to_DatabaseSearchFragment"
-            app:destination="@id/databaseSearchFragment" />
+            app:destination="@id/searchCostumerFragment" />
         <action
             android:id="@+id/action_to_cashOrderFragment"
             app:destination="@id/cashOrderFragment" />
@@ -310,7 +351,7 @@
             app:argType="long" />
         <action
             android:id="@+id/actionToDatabaseSearchFragment"
-            app:destination="@id/databaseSearchFragment" />
+            app:destination="@id/searchCostumerFragment" />
         <action
             android:id="@+id/action_to_cashOrderFragment"
             app:destination="@id/cashOrderFragment" />
@@ -355,7 +396,7 @@
             app:argType="long" />
         <action
             android:id="@+id/actionToDatabaseSearchFragment"
-            app:destination="@id/databaseSearchFragment" />
+            app:destination="@id/searchCostumerFragment" />
         <action
             android:id="@+id/action_to_cashOrderFragment"
             app:destination="@id/cashOrderFragment" />
@@ -400,7 +441,7 @@
             app:argType="long" />
         <action
             android:id="@+id/actionToDatabaseSearchFragment"
-            app:destination="@id/databaseSearchFragment" />
+            app:destination="@id/searchCostumerFragment" />
         <action
             android:id="@+id/action_to_cashOrderFragment"
             app:destination="@id/cashOrderFragment" />
@@ -445,7 +486,7 @@
             app:argType="long" />
         <action
             android:id="@+id/actionToDatabaseSearchFragment"
-            app:destination="@id/databaseSearchFragment" />
+            app:destination="@id/searchCostumerFragment" />
         <action
             android:id="@+id/action_to_orthokFragment"
             app:destination="@id/orthokFragment" />
@@ -496,7 +537,7 @@
             app:argType="long" />
         <action
             android:id="@+id/actionToDatabaseSearchFragment"
-            app:destination="@id/databaseSearchFragment" />
+            app:destination="@id/searchCostumerFragment" />
         <action
             android:id="@+id/action_to_cashOrderFragment"
             app:destination="@id/cashOrderFragment" />
@@ -545,7 +586,7 @@
             app:destination="@+id/followUpFragment" />
         <action
             android:id="@+id/actionToDatabaseSearchFragment"
-            app:destination="@+id/databaseSearchFragment" />
+            app:destination="@+id/searchCostumerFragment" />
         <action
             android:id="@+id/action_to_cashOrderFragment"
             app:destination="@id/cashOrderFragment" />
@@ -577,7 +618,6 @@
             android:id="@+id/action_to_contactLensFragment"
             app:destination="@id/contactLensFragment" />
     </fragment>
-
     <fragment
         android:id="@+id/followUpFragment"
         android:name="com.lizpostudio.kgoptometrycrm.forms.FollowUpFragment"
@@ -591,7 +631,7 @@
             app:destination="@id/cashOrderFragment" />
         <action
             android:id="@+id/actionToDatabaseSearchFragment"
-            app:destination="@id/databaseSearchFragment" />
+            app:destination="@id/searchCostumerFragment" />
         <action
             android:id="@+id/action_to_salesOrderFragment"
             app:destination="@id/salesOrderFragment" />
@@ -623,7 +663,6 @@
             android:id="@+id/action_to_refractionFragment"
             app:destination="@id/refractionFragment" />
     </fragment>
-
     <fragment
         android:id="@+id/cashOrderFragment"
         android:name="com.lizpostudio.kgoptometrycrm.forms.CashOrderFragment"
@@ -635,7 +674,7 @@
 
         <action
             android:id="@+id/actionToDatabaseSearchFragment"
-            app:destination="@id/databaseSearchFragment" />
+            app:destination="@id/searchCostumerFragment" />
         <action
             android:id="@+id/action_to_salesOrderFragment"
             app:destination="@id/salesOrderFragment" />
@@ -698,7 +737,6 @@
             android:id="@+id/actionToSalesOrder"
             app:destination="@id/salesOrderFragment" />
     </fragment>
-
     <fragment
         android:id="@+id/targetCopyFragment"
         android:name="com.lizpostudio.kgoptometrycrm.copy.TargetCopyFragment"
@@ -711,7 +749,6 @@
             android:id="@+id/action_to_form_selection"
             app:destination="@id/formSelectionFragment" />
     </fragment>
-
     <fragment
         android:id="@+id/settingLoginFragment"
         android:name="com.lizpostudio.kgoptometrycrm.SettingLoginFragment"

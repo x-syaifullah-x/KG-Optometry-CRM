@@ -1,25 +1,25 @@
-package com.lizpostudio.kgoptometrycrm.utils
+package com.lizpostudio.kgoptometrycrm.search.sales
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
-import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
+import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientEntity
 import com.lizpostudio.kgoptometrycrm.databinding.ListItemReportSalesBinding
 
-class PatientsSalesListAdapter(private val patients: List<PatientsEntity>) :
+class PatientsSalesListAdapter(private val patients: List<PatientEntity>) :
     RecyclerView.Adapter<PatientsSalesListAdapter.ViewHolder>() {
 
     init {
         setHasStableIds(true)
     }
 
-    var patientSelected = MutableLiveData<PatientsEntity>()
+    var patientSelected = MutableLiveData<PatientEntity>()
 
     class ViewHolder private constructor(val binding: ListItemReportSalesBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: PatientsEntity) {
+        fun bind(item: PatientEntity) {
             binding.patient = item
             val name = item.patientName.split(" - ")[0]
             binding.sectionName.text = name

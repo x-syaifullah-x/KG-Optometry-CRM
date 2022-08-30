@@ -1,7 +1,7 @@
 package com.lizpostudio.kgoptometrycrm.export
 
 import androidx.annotation.Keep
-import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
+import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientEntity
 import java.io.Serializable
 
 @Keep
@@ -28,7 +28,7 @@ data class ExportModel(
 
     companion object {
 
-        fun PatientsEntity.toPrintModel(): ExportModel {
+        fun PatientEntity.toPrintModel(): ExportModel {
             val extractData = sectionData.split("|")
 
             val sphRight = try {

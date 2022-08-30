@@ -1,4 +1,4 @@
-package com.lizpostudio.kgoptometrycrm.search
+package com.lizpostudio.kgoptometrycrm.search.sales
 
 import android.annotation.SuppressLint
 import android.app.Application
@@ -27,11 +27,15 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.lizpostudio.kgoptometrycrm.PatientsViewModel
-import com.lizpostudio.kgoptometrycrm.PatientsViewModelFactory
+import com.lizpostudio.kgoptometrycrm.ViewModelProviderFactory
 import com.lizpostudio.kgoptometrycrm.R
 import com.lizpostudio.kgoptometrycrm.constant.Constants
-import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
+import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientEntity
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentSearchSalesBinding
+import com.lizpostudio.kgoptometrycrm.search.SearchSave
+import com.lizpostudio.kgoptometrycrm.search.costumer.SearchCostumerFragment
+import com.lizpostudio.kgoptometrycrm.search.follow_up.SearchFollowUpFragment
+import com.lizpostudio.kgoptometrycrm.search.recycle_bin.SearchRecycleBinFragment
 import com.lizpostudio.kgoptometrycrm.utils.*
 import id.xxx.module.view.binding.ktx.viewBinding
 import kotlinx.coroutines.CoroutineScope
@@ -53,17 +57,19 @@ class SearchSalesFragment : Fragment() {
 
         const val KEY_SEARCH_BY = "sales_search_by"
         const val KEY_SEARCH_VALUE = "sales_search_value"
+
+        val SEARCH_STATE_VALUE: String = SearchSalesFragment::class.java.name
     }
 
     private var listenToSearchSpinner = false
     private var allowSync = true
 
     private val patientViewModel: PatientsViewModel by viewModels {
-        PatientsViewModelFactory(requireContext())
+        ViewModelProviderFactory.getInstance(context)
     }
 
     private val historyUpdateList = mutableListOf<Long>()
-    private val recordsToBeInserted = mutableListOf<PatientsEntity>()
+    private val recordsToBeInserted = mutableListOf<PatientEntity>()
 
     private var isAdmin = false
 
@@ -72,10 +78,10 @@ class SearchSalesFragment : Fragment() {
 
     private val binding by viewBinding<FragmentSearchSalesBinding>()
 
-    private val allInfoForms = mutableListOf<PatientsEntity>()
+    private val allInfoForms = mutableListOf<PatientEntity>()
 
     // recycler adapter reference list
-    private val recyclerList = mutableListOf<PatientsEntity>()
+    private val recyclerList = mutableListOf<PatientEntity>()
     private val recyclerAdapter = PatientsSalesListAdapter(recyclerList)
 
     private var shareText = ""
@@ -92,9 +98,8 @@ class SearchSalesFragment : Fragment() {
 
         context?.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE)
             ?.edit()
-            ?.putString(
-                Constants.PREF_KEY_SEARCH_STATE, SearchSalesFragment::class.java.name
-            )?.apply()
+            ?.putString(Constants.SEARCH_STATE_KEY, SEARCH_STATE_VALUE)
+            ?.apply()
         requireActivity().onBackPressedDispatcher
             .addCallback(this) {
                 findNavController().navigate(SearchSalesFragmentDirections.actionToDatabaseSearch())
@@ -191,6 +196,10 @@ class SearchSalesFragment : Fragment() {
             val editor = Constants.getSharedPreferences(it.context).edit()
             editor.putString(SearchCostumerFragment.KEY_SEARCH_BY, "")
             editor.putString(SearchCostumerFragment.KEY_SEARCH_VALUE, "")
+            editor.putString(SearchRecycleBinFragment.KEY_SEARCH_BY, "")
+            editor.putString(SearchRecycleBinFragment.KEY_SEARCH_VALUE, "")
+            editor.putString(SearchFollowUpFragment.KEY_SEARCH_BY, "")
+            editor.putString(SearchFollowUpFragment.KEY_SEARCH_VALUE, "")
             editor.apply()
             binding.searchInputText.setText("")
         }
@@ -410,8 +419,9 @@ class SearchSalesFragment : Fragment() {
             } else {
                 hideKeyboard(app)
                 navController.navigate(
-                    SearchSalesFragmentDirections
-                        .actionToFormSelectionFragment(patient.patientID)
+                    SearchSalesFragmentDirections.actionToFormSelectionFragment(
+                        patient.patientID
+                    )
                 )
             }
         }
@@ -421,7 +431,9 @@ class SearchSalesFragment : Fragment() {
             newRecordID?.let {
                 Constants.setCreatedFrom(requireContext())
                 navController.navigate(
-                    SearchSalesFragmentDirections.actionToInfoFragment(newRecordID)
+                    SearchSalesFragmentDirections.actionToInfoFragment(
+                        newRecordID
+                    )
                 )
             }
         }
@@ -489,7 +501,9 @@ class SearchSalesFragment : Fragment() {
         }
 
         binding.topNavigation.recycleBin.setOnClickListener {
-            throw Throwable("not implemented")
+            findNavController().navigate(
+                SearchSalesFragmentDirections.actionToSearchRecycleBinFragment()
+            )
         }
 
         return binding.root
@@ -544,7 +558,7 @@ class SearchSalesFragment : Fragment() {
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    private fun updateRecyclerView(newList: List<PatientsEntity>) {
+    private fun updateRecyclerView(newList: List<PatientEntity>) {
         binding.foundItemsText.text = resources
             .getString(R.string.entries_found_in_database_sales, newList.size.toString())
         recyclerList.clear()
@@ -690,9 +704,11 @@ class SearchSalesFragment : Fragment() {
         if (isAdmin) {
             binding.topNavigation.refractionReport.visibility = View.VISIBLE
             binding.topNavigation.shareReport.visibility = View.VISIBLE
+            binding.topNavigation.recycleBin.visibility = View.VISIBLE
         } else {
             binding.topNavigation.refractionReport.visibility = View.GONE
             binding.topNavigation.shareReport.visibility = View.GONE
+            binding.topNavigation.recycleBin.visibility = View.GONE
         }
     }
 }

@@ -20,10 +20,10 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.lizpostudio.kgoptometrycrm.PatientsViewModel
-import com.lizpostudio.kgoptometrycrm.PatientsViewModelFactory
+import com.lizpostudio.kgoptometrycrm.ViewModelProviderFactory
 import com.lizpostudio.kgoptometrycrm.R
 import com.lizpostudio.kgoptometrycrm.constant.Constants
-import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
+import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientEntity
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentInfoFormBinding
 import com.lizpostudio.kgoptometrycrm.utils.*
 import id.xxx.module.view.binding.ktx.viewBinding
@@ -41,7 +41,7 @@ class InfoFragment : Fragment() {
     }
 
     private val patientViewModel: PatientsViewModel by viewModels {
-        PatientsViewModelFactory(requireContext())
+        ViewModelProviderFactory.getInstance(context)
     }
     private var viewOnlyMode = false
 
@@ -50,11 +50,11 @@ class InfoFragment : Fragment() {
     private var recordID = 0L
     private var patientID = ""
     private var sectionEditDate = -1L
-    private var allSectionsList: List<PatientsEntity> = emptyList()
-    private var patientAllForms: List<PatientsEntity> = emptyList()
+    private var allSectionsList: List<PatientEntity> = emptyList()
+    private var patientAllForms: List<PatientEntity> = emptyList()
     private var patientRecordIDDublicate = -1L
 
-    private var currentForm = PatientsEntity()
+    private var currentForm = PatientEntity()
     private var navigateFormName = ""
     private var navigateFormRecordID = -1L
 
@@ -304,7 +304,7 @@ class InfoFragment : Fragment() {
                 val screenDst = Resources.getSystem().displayMetrics.density
 
                 val sortedList = it.sortedBy { patientsForms -> patientsForms.dateOfSection }
-                val newList = mutableListOf<PatientsEntity>()
+                val newList = mutableListOf<PatientEntity>()
 
                 for (section in orderOfSections) {
                     for (forms in sortedList) {
@@ -600,7 +600,7 @@ class InfoFragment : Fragment() {
     }
 
     @SuppressLint("SetTextI18n", "DefaultLocale")
-    private fun fillTheForm(patientForm: PatientsEntity) {
+    private fun fillTheForm(patientForm: PatientEntity) {
 
         val extractData = patientForm.sectionData.split('|').toMutableList()
         //    Log.d(Constants.TAG, "extract data size before = ${extractData.size}")

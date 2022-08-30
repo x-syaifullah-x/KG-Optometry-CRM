@@ -1,4 +1,4 @@
-package com.lizpostudio.kgoptometrycrm.data.source.remote
+package com.lizpostudio.kgoptometrycrm.data.source.remote.firebase
 
 import androidx.annotation.Keep
 
@@ -28,5 +28,6 @@ data class FBRecords(
     var solutionMiscRm: String = "",
     var practitionerNameOptometrist: String = "",
     var remarkPrint: String = "",
-    var followUpText: String = ""
+    var followUpText: String = "",
+    var deleteAt: Long = 0
 )

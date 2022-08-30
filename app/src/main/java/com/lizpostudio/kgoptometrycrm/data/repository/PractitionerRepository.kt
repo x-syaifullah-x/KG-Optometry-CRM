@@ -1,7 +1,5 @@
 package com.lizpostudio.kgoptometrycrm.data.repository
 
-import android.content.Context
-import com.lizpostudio.kgoptometrycrm.data.source.local.AppDB
 import com.lizpostudio.kgoptometrycrm.data.source.local.dao.PractitionerDao
 import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PractitionerEntity
 
@@ -11,19 +9,22 @@ class PractitionerRepository private constructor(private val dao: PractitionerDa
         @Volatile
         private var INSTANCE: PractitionerRepository? = null
 
-        fun getInstance(context: Context) =
+        fun getInstance(dao: PractitionerDao) =
             INSTANCE ?: synchronized(this) {
-                INSTANCE ?: PractitionerRepository(
-                    AppDB.getInstance(context).practitionerDao
-                ).also { INSTANCE = it }
+                INSTANCE ?: PractitionerRepository(dao)
+                    .also { INSTANCE = it }
             }
     }
 
-    fun get() = dao.get()
+    fun get() =
+        dao.get()
 
-    fun insert(practitionerEntity: PractitionerEntity) = dao.insert(practitionerEntity)
+    fun insert(practitionerEntity: PractitionerEntity) =
+        dao.insert(practitionerEntity)
 
-    fun update(practitionerEntity: PractitionerEntity) = dao.update(practitionerEntity)
+    fun update(practitionerEntity: PractitionerEntity) =
+        dao.update(practitionerEntity)
 
-    fun deletes() = dao.deletes()
+    fun deletes() =
+        dao.deletes()
 }

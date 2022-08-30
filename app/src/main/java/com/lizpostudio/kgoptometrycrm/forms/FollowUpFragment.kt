@@ -21,10 +21,10 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.lizpostudio.kgoptometrycrm.PatientsViewModel
-import com.lizpostudio.kgoptometrycrm.PatientsViewModelFactory
 import com.lizpostudio.kgoptometrycrm.R
+import com.lizpostudio.kgoptometrycrm.ViewModelProviderFactory
 import com.lizpostudio.kgoptometrycrm.constant.Constants
-import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
+import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientEntity
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentFollowUpBinding
 import com.lizpostudio.kgoptometrycrm.utils.*
 import id.xxx.module.view.binding.ktx.viewBinding
@@ -33,7 +33,7 @@ import java.util.*
 class FollowUpFragment : Fragment() {
 
     private val patientViewModel: PatientsViewModel by viewModels {
-        PatientsViewModelFactory(requireContext())
+        ViewModelProviderFactory.getInstance(context)
     }
 
     private var isAdmin = false
@@ -45,10 +45,10 @@ class FollowUpFragment : Fragment() {
 
     private var sectionEditDate = -1L
 
-    private var currentForm = PatientsEntity()
+    private var currentForm = PatientEntity()
     private var navigateFormName = ""
     private var navigateFormRecordID = -1L
-    private var followUpForms = listOf<PatientsEntity>()
+    private var followUpForms = listOf<PatientEntity>()
 
     private var viewOnlyMode = false
 
@@ -93,25 +93,30 @@ class FollowUpFragment : Fragment() {
             changeDate()
         }
 
+        val calendar = Calendar.getInstance()
+
         fun getTimeInMillisNextMount(next: Int): Long {
-            val calendar = Calendar.getInstance()
+            calendar.timeInMillis = sectionEditDate
             calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) + next)
             return calendar.timeInMillis
         }
+
+        sectionEditDate = convertYYMMDDtoTimemillis("${binding.dateCaption.text}")
+
         binding.btn3Months.setOnClickListener {
             val nextMountInMillis = getTimeInMillisNextMount(3)
             binding.dateCaption.text = convertLongToDDMMYY(nextMountInMillis)
-            sectionEditDate = nextMountInMillis
+//            sectionEditDate = nextMountInMillis
         }
         binding.btn6Months.setOnClickListener {
             val nextMountInMillis = getTimeInMillisNextMount(6)
             binding.dateCaption.text = convertLongToDDMMYY(nextMountInMillis)
-            sectionEditDate = nextMountInMillis
+//            sectionEditDate = nextMountInMillis
         }
         binding.btn12Months.setOnClickListener {
             val nextMountInMillis = getTimeInMillisNextMount(12)
             binding.dateCaption.text = convertLongToDDMMYY(nextMountInMillis)
-            sectionEditDate = nextMountInMillis
+//            sectionEditDate = nextMountInMillis
         }
 
         patientViewModel.patientForm.observe(viewLifecycleOwner) { patientForm ->
@@ -155,7 +160,7 @@ class FollowUpFragment : Fragment() {
                 val screenDst = Resources.getSystem().displayMetrics.density
 
                 val sortedList = it.sortedBy { patientsForms -> patientsForms.dateOfSection }
-                val newList = mutableListOf<PatientsEntity>()
+                val newList = mutableListOf<PatientEntity>()
 
                 for (section in orderOfSections) {
                     for (forms in sortedList) {
@@ -169,7 +174,7 @@ class FollowUpFragment : Fragment() {
                     }
                 }
 
-                val mapSectionName = mutableMapOf<String, MutableList<PatientsEntity>>()
+                val mapSectionName = mutableMapOf<String, MutableList<PatientEntity>>()
                 newList.forEach { patient ->
                     val key = mapSectionName[patient.sectionName]
                     if (key == null) {
@@ -337,7 +342,7 @@ class FollowUpFragment : Fragment() {
                 ) { allowed ->
                     if (allowed) {
                         patientViewModel.deleteRecord(currentForm)
-                        patientViewModel.deletePatientFromFirebase(currentForm.recordID.toString())
+                        patientViewModel.deletePatientFromFirebase(currentForm)
                     }
                 }
         }
@@ -446,7 +451,7 @@ class FollowUpFragment : Fragment() {
     }
 
     @SuppressLint("SetTextI18n")
-    private fun fillTheForm(patientForm: PatientsEntity) {
+    private fun fillTheForm(patientForm: PatientEntity) {
         val extractData = patientForm.sectionData.split('|').toMutableList()
         if (extractData.size < 28) {
             for (index in extractData.size..28) {
@@ -481,9 +486,9 @@ class FollowUpFragment : Fragment() {
 
         binding.apply {
             if (sectionEditDate != -1L)
-                currentForm.dateOfSection = sectionEditDate
+                currentForm.dateOfSection = convertYYMMDDtoTimemillis("${binding.dateCaption.text}")
             currentForm.practitioner = (binding.practitionerName.selectedItem as String).uppercase()
-            currentForm.followUpText = "${binding.etFollowUpText.text}"
+            currentForm.followUpText = "${binding.etFollowUpText.text}".uppercase()
         }
         return !currentForm.assertEqual(priorPatient)
     }
@@ -496,8 +501,9 @@ class FollowUpFragment : Fragment() {
             val datePickerDialog = DatePickerDialog(
                 it, { _, year, monthOfYear, dayOfMonth ->
                     sectionEditDate = convertYMDtoTimeMillis(year, monthOfYear, dayOfMonth)
-                    if (sectionEditDate != -1L)
+                    if (sectionEditDate != -1L) {
                         binding.dateCaption.text = convertLongToDDMMYY(sectionEditDate)
+                    }
                 }, todayYear, todayMonth, todayDay
             )
             datePickerDialog.show()

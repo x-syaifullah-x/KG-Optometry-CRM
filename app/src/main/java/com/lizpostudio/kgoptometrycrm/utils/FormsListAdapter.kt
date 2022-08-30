@@ -7,13 +7,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
+import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientEntity
 import com.lizpostudio.kgoptometrycrm.databinding.FormItemReportBinding
 
 class FormsListAdapter :
-    ListAdapter<PatientsEntity, FormsListAdapter.ViewHolder>(FormItemDiffCallback()) {
+    ListAdapter<PatientEntity, FormsListAdapter.ViewHolder>(FormItemDiffCallback()) {
 
-    var finalItemSelected = MutableLiveData<PatientsEntity>()
+    var finalItemSelected = MutableLiveData<PatientEntity>()
 
     private val mapColor = mapOf(
         Pair("INFO", "#efebff"),
@@ -47,7 +47,7 @@ class FormsListAdapter :
     class ViewHolder private constructor(val binding: FormItemReportBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: PatientsEntity) {
+        fun bind(item: PatientEntity) {
             binding.patients = item
             if (item.sectionName == "CASH ORDER") {
                 binding.csOrOr.text = if (item.cs.isNotBlank()) " CS ${item.cs}" else " CS -"
@@ -70,12 +70,12 @@ class FormsListAdapter :
     }
 }
 
-class FormItemDiffCallback : DiffUtil.ItemCallback<PatientsEntity>() {
-    override fun areItemsTheSame(oldItem: PatientsEntity, newItem: PatientsEntity): Boolean {
+class FormItemDiffCallback : DiffUtil.ItemCallback<PatientEntity>() {
+    override fun areItemsTheSame(oldItem: PatientEntity, newItem: PatientEntity): Boolean {
         return (oldItem.patientID == newItem.patientID)
     }
 
-    override fun areContentsTheSame(oldItem: PatientsEntity, newItem: PatientsEntity): Boolean {
+    override fun areContentsTheSame(oldItem: PatientEntity, newItem: PatientEntity): Boolean {
         return oldItem == newItem
     }
 }

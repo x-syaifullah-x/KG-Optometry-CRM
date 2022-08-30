@@ -18,12 +18,14 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.lizpostudio.kgoptometrycrm.PatientsViewModel
-import com.lizpostudio.kgoptometrycrm.PatientsViewModelFactory
 import com.lizpostudio.kgoptometrycrm.R
+import com.lizpostudio.kgoptometrycrm.ViewModelProviderFactory
 import com.lizpostudio.kgoptometrycrm.constant.Constants
-import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
+import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientEntity
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentFormSelectionBinding
-import com.lizpostudio.kgoptometrycrm.search.SearchSalesFragment
+import com.lizpostudio.kgoptometrycrm.search.follow_up.SearchFollowUpFragment
+import com.lizpostudio.kgoptometrycrm.search.recycle_bin.SearchRecycleBinFragment
+import com.lizpostudio.kgoptometrycrm.search.sales.SearchSalesFragment
 import com.lizpostudio.kgoptometrycrm.utils.FormsListAdapter
 import com.lizpostudio.kgoptometrycrm.utils.actionConfirmDeletion
 import com.lizpostudio.kgoptometrycrm.utils.computeAgeAndDOB
@@ -37,23 +39,23 @@ class FormSelectionFragment : Fragment() {
     }
 
     private var isAdmin = false
-    private val patientInfoForm = PatientsEntity()
+    private val patientInfoForm = PatientEntity()
 
     private var allowSync = true
     private var syncHistoryStart = 0L
     private var latestDataSynched = 0L
 
     private val historyUpdateList = mutableListOf<Long>()
-    private val recordsToBeInserted = mutableListOf<PatientsEntity>()
+    private val recordsToBeInserted = mutableListOf<PatientEntity>()
 
     private val recyclerAdapter = FormsListAdapter()
     private val binding by viewBinding<FragmentFormSelectionBinding>()
 
     private val patientViewModel: PatientsViewModel by viewModels {
-        PatientsViewModelFactory(requireContext())
+        ViewModelProviderFactory.getInstance(context)
     }
 
-    private val allPatientForms = mutableListOf<PatientsEntity>()
+    private val allPatientForms = mutableListOf<PatientEntity>()
     private var viewOnlyMode = false
 
     private val args by navArgs<FormSelectionFragmentArgs>()
@@ -63,16 +65,21 @@ class FormSelectionFragment : Fragment() {
             binding.selectFormToAddLayout.visibility = View.GONE
         } else {
             val pref = context?.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE)
-            val dest = pref?.getString(Constants.PREF_KEY_SEARCH_STATE, "")
-//        pref
+            //        pref
 //            ?.edit()
 //            ?.putBoolean("viewOnly", false)
 //            ?.apply()
-            if (dest == SearchSalesFragment::class.java.name) {
-                findNavController().navigate(FormSelectionFragmentDirections.actionToSearchSalesFragment())
-            } else {
-                findNavController().navigate(FormSelectionFragmentDirections.actionToSearchCostumerFragment())
+            val navDirections = when (pref?.getString(Constants.SEARCH_STATE_KEY, "")) {
+                SearchSalesFragment.SEARCH_STATE_VALUE ->
+                    FormSelectionFragmentDirections.actionToSearchSalesFragment()
+                SearchFollowUpFragment.SEARCH_STATE_VALUE ->
+                    FormSelectionFragmentDirections.actionToSearchFollowUpFragment()
+                SearchRecycleBinFragment.SEARCH_STATE_VALUE ->
+                    FormSelectionFragmentDirections.actionToSearchRecycleBinFragment()
+                else ->
+                    FormSelectionFragmentDirections.actionToSearchCostumerFragment()
             }
+            findNavController().navigate(navDirections)
         }
     }
 
@@ -164,7 +171,7 @@ class FormSelectionFragment : Fragment() {
                     val sortedForms = patientForms.sortedBy { forms -> forms.dateOfSection }
 
                     val orderOfSections = listOf(*resources.getStringArray(R.array.forms_order))
-                    val newList = mutableListOf<PatientsEntity>()
+                    val newList = mutableListOf<PatientEntity>()
 
                     for (section in orderOfSections) {
                         for (forms in sortedForms) {
@@ -311,12 +318,18 @@ class FormSelectionFragment : Fragment() {
 
                         val dest =
                             context?.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE)
-                                ?.getString(Constants.PREF_KEY_SEARCH_STATE, "")
-                        if (dest == SearchSalesFragment::class.java.name) {
-                            navController.navigate(FormSelectionFragmentDirections.actionToSearchSalesFragment())
-                        } else {
-                            navController.navigate(FormSelectionFragmentDirections.actionToSearchCostumerFragment())
+                                ?.getString(Constants.SEARCH_STATE_KEY, "")
+                        val navDirections = when (dest) {
+                            SearchRecycleBinFragment.SEARCH_STATE_VALUE ->
+                                FormSelectionFragmentDirections.actionToSearchRecycleBinFragment()
+                            SearchSalesFragment.SEARCH_STATE_VALUE ->
+                                FormSelectionFragmentDirections.actionToSearchSalesFragment()
+                            SearchFollowUpFragment.SEARCH_STATE_VALUE ->
+                                FormSelectionFragmentDirections.actionToSearchFollowUpFragment()
+                            else ->
+                                FormSelectionFragmentDirections.actionToSearchCostumerFragment()
                         }
+                        findNavController().navigate(navDirections)
                     }
                 }
             } else {
@@ -439,7 +452,7 @@ class FormSelectionFragment : Fragment() {
         return binding.root
     }
 
-    private fun navigateToSelectedForm(p: PatientsEntity) {
+    private fun navigateToSelectedForm(p: PatientEntity) {
         when (p.sectionName) {
             getString(R.string.info_form_caption) ->
                 findNavController().navigate(
@@ -499,16 +512,17 @@ class FormSelectionFragment : Fragment() {
         }
     }
 
-    private fun onDeleted(allowed: Boolean) {
-        if (allowed) {
+    private fun onDeleted(isConfirm: Boolean) {
+        if (isConfirm) {
             patientViewModel.deleteListOfRecords(allPatientForms)
-            Log.d(
-                Constants.TAG,
-                "These list of records will be eliminated from Firebase: ${allPatientForms.map { forms -> forms.recordID.toString() }}"
-            )
+            val logMessage =
+                "These list of records will be eliminated from Firebase: ${allPatientForms.map { forms -> forms.recordID }}"
+            Log.d(Constants.TAG, logMessage)
 
-            patientViewModel.deleteListOfRecordsFromFirebase(
-                allPatientForms.map { forms -> forms.recordID.toString() })
+            patientViewModel.deleteListOfRecordsFromFirebase(allPatientForms)
+//            patientViewModel.deleteListOfRecordsFromFirebase(
+////                allPatientForms.map { forms -> forms.recordID.toString() }
+//            )
         }
     }
 }

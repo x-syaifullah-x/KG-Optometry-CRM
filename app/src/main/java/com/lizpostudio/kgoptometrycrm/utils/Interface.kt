@@ -27,7 +27,8 @@ fun actionConfirmDeletion(
     dialogBuilder.setMessage(message)
     dialogBuilder.setView(passwordBox)
 
-    if (!checkPassword) passwordBox.visibility = View.GONE
+    if (!checkPassword)
+        passwordBox.visibility = View.GONE
 
     dialogBuilder.setPositiveButton(
         context.getString(R.string.yes_answer)

@@ -7,7 +7,7 @@
 
         <variable
             name="patient"
-            type="com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity" />
+            type="com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientEntity" />
 
         <import type="com.lizpostudio.kgoptometrycrm.utils.FormatFunctionsKt" />
 

@@ -35,10 +35,10 @@ import com.google.firebase.storage.FileDownloadTask
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.StorageTask
 import com.lizpostudio.kgoptometrycrm.PatientsViewModel
-import com.lizpostudio.kgoptometrycrm.PatientsViewModelFactory
+import com.lizpostudio.kgoptometrycrm.ViewModelProviderFactory
 import com.lizpostudio.kgoptometrycrm.R
 import com.lizpostudio.kgoptometrycrm.constant.Constants
-import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
+import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientEntity
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentOrthokBinding
 import com.lizpostudio.kgoptometrycrm.utils.*
 import id.xxx.module.view.binding.ktx.viewBinding
@@ -52,7 +52,7 @@ class OrthokFragment : Fragment() {
     }
 
     private val patientViewModel: PatientsViewModel by viewModels {
-        PatientsViewModelFactory(requireContext())
+        ViewModelProviderFactory.getInstance(context)
     }
     private var isAdmin = false
 
@@ -70,7 +70,7 @@ class OrthokFragment : Fragment() {
 
     private var sectionEditDate = -1L
 
-    private var currentForm = PatientsEntity()
+    private var currentForm = PatientEntity()
     private var navigateFormName = ""
     private var navigateFormRecordID = -1L
 
@@ -461,7 +461,6 @@ class OrthokFragment : Fragment() {
                 fillTheForm(it)
 
                 patientViewModel.getAllFormsForPatient(patientID)
-                updatePhotoView(photoFile)
             }
 
             binding.showHideButton.setOnClickListener {
@@ -502,7 +501,7 @@ class OrthokFragment : Fragment() {
                 val screenDst = Resources.getSystem().displayMetrics.density
 
                 val sortedList = it.sortedBy { patientsForms -> patientsForms.dateOfSection }
-                val newList = mutableListOf<PatientsEntity>()
+                val newList = mutableListOf<PatientEntity>()
 
                 for (section in orderOfSections) {
                     for (forms in sortedList) {
@@ -521,7 +520,7 @@ class OrthokFragment : Fragment() {
                     .toSet()
 
                 /* FOR BOTTOM NAVIGATION */
-                val mapSectionName = mutableMapOf<String, MutableList<PatientsEntity>>()
+                val mapSectionName = mutableMapOf<String, MutableList<PatientEntity>>()
                 newList.forEach { patient ->
                     val key = mapSectionName[patient.sectionName]
                     if (key == null) {
@@ -607,13 +606,17 @@ class OrthokFragment : Fragment() {
                             (4 * screenDst).toInt()
                         )
 
-                        if (patientForm.recordID == recordID)
+                        if (patientForm.recordID == recordID){
                             chip.setBackgroundColor(
                                 ContextCompat.getColor(
                                     app.applicationContext, R.color.lightBackground
                                 )
                             )
-                        else
+                            if (!photoFile.path.contains("${patientForm.recordID}")) {
+                                createRefAssignPhFile()
+                            }
+                            updatePhotoView(photoFile)
+                        } else
                             chip.setBackgroundColor(
                                 ContextCompat.getColor(
                                     app.applicationContext,
@@ -785,7 +788,7 @@ class OrthokFragment : Fragment() {
                 ) { allowed ->
                     if (allowed) {
                         patientViewModel.deleteRecord(currentForm)
-                        patientViewModel.deletePatientFromFirebase(currentForm.recordID.toString())
+                        patientViewModel.deletePatientFromFirebase(currentForm)
 
                     }
                 }
@@ -961,6 +964,8 @@ class OrthokFragment : Fragment() {
     private var showPhoto = true
 
     private fun updatePhotoView(photoFile: File) {
+        binding.autorefPhoto.setImageDrawable(null)
+
         //   taskToGetFile
         if (currentForm.reservedField.isNotBlank() && currentForm.reservedField != "deleted") {
             downloadPhotoTask = storageRef.getFile(photoFile).addOnSuccessListener {
@@ -973,6 +978,7 @@ class OrthokFragment : Fragment() {
                 if (photoFile.exists()) photoFile.delete()
                 patientViewModel.readyToShowPhoto()
                 currentForm.reservedField = ""
+                binding.autorefPhoto.setImageDrawable(null)
             }
         } else {
             binding.autorefPhoto.setImageDrawable(null)
@@ -1081,7 +1087,7 @@ class OrthokFragment : Fragment() {
 
 
     @SuppressLint("SetTextI18n")
-    private fun fillTheForm(patientForm: PatientsEntity) {
+    private fun fillTheForm(patientForm: PatientEntity) {
 
         val extractData = patientForm.sectionData.split('|').toMutableList()
         if (extractData.size < 44) {

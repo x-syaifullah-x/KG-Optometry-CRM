@@ -33,10 +33,10 @@ import com.google.firebase.storage.FileDownloadTask
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.StorageTask
 import com.lizpostudio.kgoptometrycrm.PatientsViewModel
-import com.lizpostudio.kgoptometrycrm.PatientsViewModelFactory
 import com.lizpostudio.kgoptometrycrm.R
+import com.lizpostudio.kgoptometrycrm.ViewModelProviderFactory
 import com.lizpostudio.kgoptometrycrm.constant.Constants
-import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
+import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientEntity
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentCurrentRxFormBinding
 import com.lizpostudio.kgoptometrycrm.utils.*
 import id.xxx.module.view.binding.ktx.viewBinding
@@ -57,7 +57,7 @@ class CurrentRxFragment : Fragment() {
 
     private var downloadPhotoTask: StorageTask<FileDownloadTask.TaskSnapshot>? = null
     private val patientViewModel: PatientsViewModel by viewModels {
-        PatientsViewModelFactory(requireContext())
+        ViewModelProviderFactory.getInstance(context)
     }
 
     private val binding by viewBinding<FragmentCurrentRxFormBinding>()
@@ -73,7 +73,7 @@ class CurrentRxFragment : Fragment() {
     private var showPhoto = true
     private var sectionEditDate = -1L
 
-    private var currentForm = PatientsEntity()
+    private var currentForm = PatientEntity()
     private var navigateFormName = ""
     private var navigateFormRecordID = -1L
 
@@ -137,7 +137,6 @@ class CurrentRxFragment : Fragment() {
                 patientViewModel.createRecordListener(currentForm.recordID)
                 fillTheForm(it)
                 patientViewModel.getAllFormsForPatient(patientID)
-                updatePhotoView(photoFile)
             }
         }
 
@@ -160,7 +159,7 @@ class CurrentRxFragment : Fragment() {
                 val screenDst = Resources.getSystem().displayMetrics.density
 
                 val sortedList = it.sortedBy { patientsForms -> patientsForms.dateOfSection }
-                val newList = mutableListOf<PatientsEntity>()
+                val newList = mutableListOf<PatientEntity>()
 
                 for (section in orderOfSections) {
                     for (forms in sortedList) {
@@ -179,7 +178,7 @@ class CurrentRxFragment : Fragment() {
                     .toSet()
 
                 /* FOR BOTTOM NAVIGATION */
-                val mapSectionName = mutableMapOf<String, MutableList<PatientsEntity>>()
+                val mapSectionName = mutableMapOf<String, MutableList<PatientEntity>>()
                 newList.forEach { patient ->
                     val key = mapSectionName[patient.sectionName]
                     if (key == null) {
@@ -265,13 +264,17 @@ class CurrentRxFragment : Fragment() {
                             (4 * screenDst).toInt()
                         )
 
-                        if (patientForm.recordID == recordID)
+                        if (patientForm.recordID == recordID) {
                             chip.setBackgroundColor(
                                 ContextCompat.getColor(
                                     app.applicationContext, R.color.lightBackground
                                 )
                             )
-                        else
+                            if (!photoFile.path.contains("${patientForm.recordID}")) {
+                                createRefAssignPhFile()
+                            }
+                            updatePhotoView(photoFile)
+                        } else
                             chip.setBackgroundColor(
                                 ContextCompat.getColor(
                                     app.applicationContext,
@@ -462,7 +465,7 @@ class CurrentRxFragment : Fragment() {
                 ) { allowed ->
                     if (allowed) {
                         patientViewModel.deleteRecord(currentForm)
-                        patientViewModel.deletePatientFromFirebase(currentForm.recordID.toString())
+                        patientViewModel.deletePatientFromFirebase(currentForm)
                     }
                 }
         }
@@ -659,6 +662,8 @@ class CurrentRxFragment : Fragment() {
 
 
     private fun updatePhotoView(photoFile: File) {
+        binding.autorefPhoto.setImageDrawable(null)
+
         //   taskToGetFile
         if (currentForm.reservedField.isBlank()) {
             currentForm.reservedField = storageRef.toString()
@@ -675,6 +680,7 @@ class CurrentRxFragment : Fragment() {
                     photoFile.delete()
                 patientViewModel.readyToShowPhoto()
                 currentForm.reservedField = ""
+                binding.autorefPhoto.setImageDrawable(null)
             }
         } else {
             binding.autorefPhoto.setImageDrawable(null)
@@ -693,7 +699,7 @@ class CurrentRxFragment : Fragment() {
     }
 
     @SuppressLint("SetTextI18n")
-    private fun fillTheForm(patientForm: PatientsEntity) {
+    private fun fillTheForm(patientForm: PatientEntity) {
 
         val extractData = patientForm.sectionData.split('|').toMutableList()
 //      Log.d(Constants.TAG, "extract data size before = ${extractData.size}")

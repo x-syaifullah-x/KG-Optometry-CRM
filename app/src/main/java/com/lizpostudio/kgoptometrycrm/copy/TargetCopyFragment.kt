@@ -24,13 +24,14 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.lizpostudio.kgoptometrycrm.PatientsViewModel
-import com.lizpostudio.kgoptometrycrm.PatientsViewModelFactory
 import com.lizpostudio.kgoptometrycrm.R
+import com.lizpostudio.kgoptometrycrm.ViewModelProviderFactory
 import com.lizpostudio.kgoptometrycrm.constant.Constants
-import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
+import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientEntity
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentTargetCopyBinding
 import com.lizpostudio.kgoptometrycrm.forms.InfoFragment
 import com.lizpostudio.kgoptometrycrm.search.SearchSave
+import com.lizpostudio.kgoptometrycrm.search.costumer.PatientsListAdapter
 import com.lizpostudio.kgoptometrycrm.utils.*
 import id.xxx.module.view.binding.ktx.viewBinding
 import kotlinx.coroutines.Dispatchers
@@ -65,11 +66,11 @@ class TargetCopyFragment : Fragment() {
     private var allowSync = true
 
     private val patientViewModel: PatientsViewModel by viewModels {
-        PatientsViewModelFactory(requireContext())
+        ViewModelProviderFactory.getInstance(context)
     }
 
     private val historyUpdateList = mutableListOf<Long>()
-    private val recordsToBeInserted = mutableListOf<PatientsEntity>()
+    private val recordsToBeInserted = mutableListOf<PatientEntity>()
 
     private var isAdmin = false
 
@@ -78,10 +79,10 @@ class TargetCopyFragment : Fragment() {
 
     private val binding by viewBinding<FragmentTargetCopyBinding>()
 
-    private val allInfoForms = mutableListOf<PatientsEntity>()
+    private val allInfoForms = mutableListOf<PatientEntity>()
 
     // recycler adapter reference list
-    private val recyclerList = mutableListOf<PatientsEntity>()
+    private val recyclerList = mutableListOf<PatientEntity>()
     private val recyclerAdapter = PatientsListAdapter(recyclerList)
 
     private var shareText = ""
@@ -120,7 +121,7 @@ class TargetCopyFragment : Fragment() {
 
         context?.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE)
             ?.edit()
-            ?.putString(Constants.PREF_KEY_SEARCH_STATE, TargetCopyFragment::class.java.name)
+            ?.putString(Constants.SEARCH_STATE_KEY, TargetCopyFragment::class.java.name)
             ?.apply()
         requireActivity().onBackPressedDispatcher
             .addCallback(this) { navigateBack(args.patientID) }
@@ -676,7 +677,7 @@ class TargetCopyFragment : Fragment() {
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    private fun updateRecyclerView(newList: List<PatientsEntity>) {
+    private fun updateRecyclerView(newList: List<PatientEntity>) {
         binding.foundItemsText.text = resources
             .getString(R.string.entries_found_in_database, newList.size.toString())
         recyclerList.clear()

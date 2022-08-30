@@ -11,6 +11,7 @@
     <string name="entries_found_in_database">Found %1$s Customers</string>
     <string name="entries_found_in_database_sales">Found %1$s Sales</string>
     <string name="entries_found_in_database_follow_up">Found %1$s FOLLOW UP CASE</string>
+    <string name="entries_found_in_database_recycle_bin">Found %1$s Deleted Record</string>
     <string name="hint_start_typing">Start typing to search database</string>
     <string name="hint_phone">Phone:</string>
     <string name="hint_family_code">Family code:</string>
@@ -39,7 +40,6 @@
     <string name="hint_contact_lens">Contact Lens:</string>
     <string name="yes_answer">Yes</string>
     <string name="no_answer">No</string>
-    <string name="ok_hint">OK</string>
     <string name="hint_hypertension">Hypertension:</string>
     <string name="hint_diabetes">Diabetes:</string>
     <string name="hint_allergy">Allergy:</string>
@@ -96,9 +96,7 @@
     <string name="right_mem">Right MEM</string>
     <string name="left_mem">Left MEM</string>
     <string name="phoria">Phoria</string>
-    <string name="cover_test_distance">Cover Test - Distance</string>
     <string name="cover_test_near">Cover Test - Near</string>
-    <string name="howell_card_distance">Howell Card - Distance</string>
     <string name="howell_card_near">Howell Card - Near</string>
     <string name="omt">OMT</string>
     <string name="range_of_movement">Range of movement</string>
@@ -173,7 +171,6 @@
     <string name="to_prescribe">TO PRESCRIBE</string>
     <string name="t_slash_h">T/H</string>
     <string name="settled_checkbox_caption">SETTLED</string>
-    <string name="navigation_else">Navigation was not defined</string>
     <string name="goto_customers">Customers</string>
     <string name="or">OR</string>
     <string name="frame_size">Frame Size</string>

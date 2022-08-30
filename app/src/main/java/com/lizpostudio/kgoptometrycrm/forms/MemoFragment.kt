@@ -1,18 +1,14 @@
 package com.lizpostudio.kgoptometrycrm.forms
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.content.pm.ResolveInfo
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -23,6 +19,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.addCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
@@ -33,10 +30,10 @@ import com.google.firebase.storage.FileDownloadTask
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.StorageTask
 import com.lizpostudio.kgoptometrycrm.PatientsViewModel
-import com.lizpostudio.kgoptometrycrm.PatientsViewModelFactory
 import com.lizpostudio.kgoptometrycrm.R
+import com.lizpostudio.kgoptometrycrm.ViewModelProviderFactory
 import com.lizpostudio.kgoptometrycrm.constant.Constants
-import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
+import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientEntity
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentMemoBinding
 import com.lizpostudio.kgoptometrycrm.utils.*
 import id.xxx.module.view.binding.ktx.viewBinding
@@ -49,14 +46,14 @@ class MemoFragment : Fragment() {
         private lateinit var storageRef: StorageReference
         private lateinit var storageFile: Uri
 
-        private const val REQUEST_PHOTO = 2
+        //        private const val REQUEST_PHOTO = 2
         private const val PHOTO_W = 600
         private const val PHOTO_H = 800
     }
 
     private var downloadPhotoTask: StorageTask<FileDownloadTask.TaskSnapshot>? = null
     private val patientViewModel: PatientsViewModel by viewModels {
-        PatientsViewModelFactory(requireContext())
+        ViewModelProviderFactory.getInstance(context)
     }
 
     private var photoUri: Uri? = null
@@ -73,9 +70,30 @@ class MemoFragment : Fragment() {
 
     private var sectionEditDate = -1L
 
-    private var currentForm = PatientsEntity()
+    private var currentForm = PatientEntity()
     private var navigateFormName = ""
     private var navigateFormRecordID = -1L
+
+    private val takePicture = registerForActivityResult(ActivityResultContracts.TakePicture()) {
+        if (it) {
+            takePhoto = true
+            scaleBitmap(photoFile)
+            currentForm.reservedField = storageRef.toString()
+            val ois = requireContext().contentResolver.openInputStream(storageFile)
+            storageRef.putStream(ois ?: return@registerForActivityResult)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        binding.rotatePhoto.visibility = View.VISIBLE
+                        updatePhotoView(photoFile)
+                    }
+                    ois.close()
+                }
+            if (photoUri != null) {
+                requireActivity()
+                    .revokeUriPermission(photoUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -137,7 +155,7 @@ class MemoFragment : Fragment() {
                 fillTheForm(patient)
                 patientViewModel.getAllFormsForPatient(patientID)
                 //      Log.d(Constants.TAG, "Loading photo")
-                updatePhotoView(photoFile)
+//                updatePhotoView(photoFile)
             }
         }
 
@@ -160,7 +178,7 @@ class MemoFragment : Fragment() {
                 val screenDst = Resources.getSystem().displayMetrics.density
 
                 val sortedList = it.sortedBy { patientsForms -> patientsForms.dateOfSection }
-                val newList = mutableListOf<PatientsEntity>()
+                val newList = mutableListOf<PatientEntity>()
 
                 for (section in orderOfSections) {
                     for (forms in sortedList) {
@@ -179,7 +197,7 @@ class MemoFragment : Fragment() {
                     .toSet()
 
                 /* FOR BOTTOM NAVIGATION */
-                val mapSectionName = mutableMapOf<String, MutableList<PatientsEntity>>()
+                val mapSectionName = mutableMapOf<String, MutableList<PatientEntity>>()
                 newList.forEach { patient ->
                     val key = mapSectionName[patient.sectionName]
                     if (key == null) {
@@ -265,13 +283,17 @@ class MemoFragment : Fragment() {
                             (4 * screenDst).toInt()
                         )
 
-                        if (patientForm.recordID == recordID)
+                        if (patientForm.recordID == recordID) {
+                            if (!photoFile.path.contains("${patientForm.recordID}")) {
+                                createRefAssignPhFile()
+                            }
+                            updatePhotoView(photoFile)
                             chip.setBackgroundColor(
                                 ContextCompat.getColor(
                                     app.applicationContext, R.color.lightBackground
                                 )
                             )
-                        else
+                        } else
                             chip.setBackgroundColor(
                                 ContextCompat.getColor(
                                     app.applicationContext,
@@ -365,7 +387,7 @@ class MemoFragment : Fragment() {
             ) { allowed ->
                 if (allowed) {
                     patientViewModel.deleteRecord(currentForm)
-                    patientViewModel.deletePatientFromFirebase(currentForm.recordID.toString())
+                    patientViewModel.deletePatientFromFirebase(currentForm)
                 }
             }
         }
@@ -389,29 +411,29 @@ class MemoFragment : Fragment() {
             photoUri = FileProvider.getUriForFile(
                 requireActivity(), Constants.FILE_PROVIDER_AUTHORITY, photoFile
             )
-            val packageManager: PackageManager = requireActivity().packageManager
-
-            val captureImage = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-            val resolvedActivity: ResolveInfo? =
-                packageManager.resolveActivity(
-                    captureImage,
-                    PackageManager.MATCH_DEFAULT_ONLY
-                )
-            if (resolvedActivity != null && photoUri != null) {
-                captureImage.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
-                val cameraActivities: List<ResolveInfo> =
-                    packageManager.queryIntentActivities(
-                        captureImage, PackageManager.MATCH_DEFAULT_ONLY
-                    )
-                for (cameraActivity in cameraActivities) {
-                    requireActivity().grantUriPermission(
-                        cameraActivity.activityInfo.packageName,
-                        photoUri,
-                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-                    )
-                }
-                startActivityForResult(captureImage, REQUEST_PHOTO)
-            }
+            takePicture.launch(photoUri)
+//            val packageManager: PackageManager = requireActivity().packageManager
+//            val captureImage = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+//            val resolvedActivity: ResolveInfo? =
+//                packageManager.resolveActivity(
+//                    captureImage,
+//                    PackageManager.MATCH_DEFAULT_ONLY
+//                )
+//            if (resolvedActivity != null && photoUri != null) {
+//                captureImage.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
+//                val cameraActivities: List<ResolveInfo> =
+//                    packageManager.queryIntentActivities(
+//                        captureImage, PackageManager.MATCH_DEFAULT_ONLY
+//                    )
+//                for (cameraActivity in cameraActivities) {
+//                    requireActivity().grantUriPermission(
+//                        cameraActivity.activityInfo.packageName,
+//                        photoUri,
+//                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+//                    )
+//                }
+//                startActivityForResult(captureImage, REQUEST_PHOTO)
+//            }
         }
 
         binding.deletePhoto.setOnClickListener {
@@ -490,6 +512,7 @@ class MemoFragment : Fragment() {
     }
 
     private fun updatePhotoView(photoFile: File) {
+        binding.refPhoto.setImageDrawable(null)
         if (currentForm.reservedField.isNotBlank() && currentForm.reservedField != "deleted") {
             downloadPhotoTask = storageRef.getFile(photoFile).addOnSuccessListener {
                 Log.d(Constants.TAG, "FB photo downloaded to Memo")
@@ -498,9 +521,11 @@ class MemoFragment : Fragment() {
             }.addOnFailureListener {
                 // delete local file
                 Log.d(Constants.TAG, "No such file at Memo. Delete local file")
-                if (photoFile.exists()) photoFile.delete()
+                if (photoFile.exists())
+                    photoFile.delete()
                 patientViewModel.readyToShowPhoto()
                 currentForm.reservedField = ""
+                binding.refPhoto.setImageDrawable(null)
             }
         } else {
             binding.refPhoto.setImageDrawable(null)
@@ -517,31 +542,6 @@ class MemoFragment : Fragment() {
     }
 
     private var takePhoto = false
-
-    @SuppressLint("SetTextI18n")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_PHOTO && resultCode == Activity.RESULT_OK) {
-            takePhoto = true
-            scaleBitmap(photoFile)
-            currentForm.reservedField = storageRef.toString()
-            val ois = requireContext().contentResolver.openInputStream(storageFile)
-            storageRef.putStream(ois ?: return)
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        binding.rotatePhoto.visibility = View.VISIBLE
-                        updatePhotoView(photoFile)
-                    }
-                    ois.close()
-                }
-            if (photoUri != null) {
-                requireActivity().revokeUriPermission(
-                    photoUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-                )
-            }
-
-        }
-    }
 
     private fun saveAndNavigate(navOption: String) {
         patientViewModel.removeRecordsChangesListener()
@@ -570,9 +570,7 @@ class MemoFragment : Fragment() {
                 fillTheForm(currentForm)
             }
             "back" -> findNavController().navigate(
-                MemoFragmentDirections.actionToFormSelectionFragment(
-                    patientID
-                )
+                MemoFragmentDirections.actionToFormSelectionFragment(patientID)
             )
             "home" -> findNavController().navigate(
                 MemoFragmentDirections.actionToDatabaseSearchFragment()
@@ -637,7 +635,7 @@ class MemoFragment : Fragment() {
     }
 
     @SuppressLint("SetTextI18n")
-    private fun fillTheForm(patientForm: PatientsEntity) {
+    private fun fillTheForm(patientForm: PatientEntity) {
 
         val extractData = patientForm.sectionData.split('|').toMutableList()
 //      Log.d(Constants.TAG, "extract data size before = ${extractData.size}")
