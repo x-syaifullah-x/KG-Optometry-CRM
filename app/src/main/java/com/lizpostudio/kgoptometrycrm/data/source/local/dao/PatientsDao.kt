@@ -3,7 +3,6 @@ package com.lizpostudio.kgoptometrycrm.data.source.local.dao
 import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PatientsDao {
@@ -31,6 +30,9 @@ interface PatientsDao {
 
     @Query("SELECT * FROM patients_table WHERE section_name =(:nameOfSection)")
     suspend fun getRecordsBySectionName(nameOfSection: String): List<PatientsEntity>?
+
+    @Query("SELECT * FROM patients_table WHERE section_name =(:nameOfSection)")
+    fun getRecordsBySectionNameAsLiveData(nameOfSection: String): LiveData<List<PatientsEntity>>
 
     @Query("SELECT * FROM patients_table WHERE section_name =(:nameOfSection) AND date_of_section < (:date)")
     suspend fun getRecordsBySectionAndDate(nameOfSection: String, date: Long): List<PatientsEntity>?

@@ -22,6 +22,10 @@
         <item>DATE</item>
     </string-array>
 
+    <string-array name="search_follow_up_choices">
+        <item>DATE</item>
+    </string-array>
+
     <string-array name="worth_four_dots">
         <item> </item>
         <item>4 DOTS</item>

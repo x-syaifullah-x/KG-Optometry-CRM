@@ -1,5 +1,6 @@
 package com.lizpostudio.kgoptometrycrm
 
+import android.app.Application
 import android.util.Log
 import androidx.lifecycle.*
 import com.google.firebase.auth.FirebaseAuth
@@ -23,9 +24,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class PatientsViewModel(
+    val app: Application,
     private val repository: PatientRepository,
-    private val practitionerRepository: PractitionerRepository
-) : ViewModel() {
+    private val practitionerRepository: PractitionerRepository,
+) : AndroidViewModel(app) {
 
     init {
         CoroutineScope(Dispatchers.IO).launch {
@@ -318,9 +320,36 @@ class PatientsViewModel(
 
     fun submitPatientToFirebase(recordID: String, patient: PatientsEntity) {
 //        removeFBListener()
-        repository.recordsReference.child(recordID).setValue(convertFormToFBRecord(patient))
+        repository.recordsReference
+            .child(recordID)
+            .setValue(convertFormToFBRecord(patient))
+
+        if (patient.sectionName == app.getString(R.string.info_form_caption)) {
+            viewModelScope.launch {
+                /* update data follow is info change */
+                val records = repository.getRecordsByPatientID(patient.patientID)
+                records?.filter { it.sectionName == app.getString(R.string.follow_up_form_caption) }
+                    ?.forEach {
+                        repository.recordsReference
+                            .child(it.recordID.toString())
+                            .setValue(
+                                convertFormToFBRecord(
+                                    it.copy(
+                                        patientName = patient.patientName,
+                                        patientIC = patient.patientIC,
+                                        sectionData = patient.sectionData,
+                                        phone = patient.phone,
+                                    )
+                                )
+                            )
+                    }
+            }
+        }
+
         val timeKey = System.currentTimeMillis().toString()
-        repository.historyReference.child(timeKey).setValue(recordID)
+        repository.historyReference
+            .child(timeKey)
+            .setValue(recordID)
     }
 
     fun submitListOfPatientsToFB(patients: List<PatientsEntity>) {
@@ -449,6 +478,13 @@ class PatientsViewModel(
         }
     }
 
+    fun getFormsForSelectedDate(sectionName: String, startDate: Long) {
+        viewModelScope.launch {
+            _searchDateForms.value =
+                repository.getRecordsBySectionAndDate(sectionName, startDate)
+        }
+    }
+
     private fun addPatient(patientForm: PatientsEntity) {
         viewModelScope.launch {
             _patientAdded.value =
@@ -473,6 +509,20 @@ class PatientsViewModel(
         viewModelScope.launch {
             if (repository.updateRecord(patientForm)) {
                 _navTrigger.value = navOption
+                if (patientForm.sectionName == app.getString(R.string.info_form_caption)) {
+                    val records = repository.getRecordsByPatientID(patientForm.patientID)
+                    records?.filter { it.sectionName == app.getString(R.string.follow_up_form_caption) }
+                        ?.forEach {
+                            repository.updateRecord(
+                                it.copy(
+                                    patientName = patientForm.patientName,
+                                    patientIC = patientForm.patientIC,
+                                    sectionData = patientForm.sectionData,
+                                    phone = patientForm.phone,
+                                )
+                            )
+                        }
+                }
             }
         }
     }
@@ -517,4 +567,6 @@ class PatientsViewModel(
     suspend fun getIdProducts(value: String) = repository.getIdProducts(value)
 
     val csAndOr = repository.getCsAndOr()
+
+    val recordsFollowUp = repository.getRecordsBySectionNameAsLiveData("FOLLOW UP")
 }

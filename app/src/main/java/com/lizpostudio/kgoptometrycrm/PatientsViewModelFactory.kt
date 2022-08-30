@@ -1,5 +1,6 @@
 package com.lizpostudio.kgoptometrycrm
 
+import android.app.Application
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -12,6 +13,7 @@ class PatientsViewModelFactory(private val context: Context) : ViewModelProvider
         if (modelClass.isAssignableFrom(PatientsViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
             return PatientsViewModel(
+                context.applicationContext as Application,
                 PatientRepository.getInstance(context),
                 PractitionerRepository.getInstance(context)
             ) as T

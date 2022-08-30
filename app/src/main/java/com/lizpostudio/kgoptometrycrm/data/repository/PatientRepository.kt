@@ -188,5 +188,8 @@ class PatientRepository private constructor(
 
     fun getCsAndOr() = patientsDao.getCsAndOr()
 
+    fun getRecordsBySectionNameAsLiveData(sectionName:String) =
+        patientsDao.getRecordsBySectionNameAsLiveData(sectionName)
+
     fun idIsExist(id: String) = patientsDao.idIsExist(id)
 }

@@ -28,9 +28,6 @@ import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentFollowUpBinding
 import com.lizpostudio.kgoptometrycrm.utils.*
 import id.xxx.module.view.binding.ktx.viewBinding
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.util.*
 
 class FollowUpFragment : Fragment() {
@@ -54,7 +51,6 @@ class FollowUpFragment : Fragment() {
     private var followUpForms = listOf<PatientsEntity>()
 
     private var viewOnlyMode = false
-    private var isDataFollowUpChange = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -152,16 +148,6 @@ class FollowUpFragment : Fragment() {
                         val (dob, age) = computeAgeAndDOB(ic)
 
                         pAge += resources.getString(R.string.number_of_years_patient, age, dob)
-
-                        if (patientsRec.sectionData != currentForm.sectionData) {
-                            currentForm.sectionData = patientsRec.sectionData
-                            isDataFollowUpChange = true
-                        }
-
-                        if (patientsRec.phone != currentForm.phone) {
-                            currentForm.phone = patientsRec.phone
-                            isDataFollowUpChange = true
-                        }
                     }
                 }
                 binding.patientName.text = pAge
@@ -224,7 +210,8 @@ class FollowUpFragment : Fragment() {
                             ContextCompat.getColor(requireContext(), R.color.lightBackground)
                         )
                     } else {
-                        chip.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.cardBackgroundDarker)
+                        chip.setBackgroundColor(
+                            ContextCompat.getColor(requireContext(), R.color.cardBackgroundDarker)
                         )
                     }
 
@@ -385,7 +372,6 @@ class FollowUpFragment : Fragment() {
         if (viewOnlyMode) {
             launchNavigator(navOption)
         } else {
-
             if (formWasChanged()) {
                 patientViewModel.submitPatientToFirebase(
                     currentForm.recordID.toString(), currentForm
@@ -499,10 +485,7 @@ class FollowUpFragment : Fragment() {
             currentForm.practitioner = (binding.practitionerName.selectedItem as String).uppercase()
             currentForm.followUpText = "${binding.etFollowUpText.text}"
         }
-        val result = !currentForm.assertEqual(priorPatient) || isDataFollowUpChange
-        if (isDataFollowUpChange)
-            isDataFollowUpChange = false
-        return result
+        return !currentForm.assertEqual(priorPatient)
     }
 
     private fun changeDate() {

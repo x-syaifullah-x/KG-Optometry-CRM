@@ -539,8 +539,7 @@ class InfoFragment : Fragment() {
                 }
                 // update current form
                 patientViewModel.submitPatientToFirebase(
-                    currentForm.recordID.toString(),
-                    currentForm
+                    currentForm.recordID.toString(), currentForm
                 )
                 // trigger navigation after update
                 patientViewModel.updateRecord(currentForm, navOption)
@@ -868,17 +867,17 @@ class InfoFragment : Fragment() {
                 }
             val extractData =
                 icInput.text.toString() + "|" + otherIdInput.text.toString() + "|" +
-                    phone2Input.text.toString() + "|" + phone3Input.text.toString() + "|" +
-                    raceInput.selectedItem.toString() + "|" + sexInput.selectedItem.toString() + "|" +
-                    postCodeInput.text.toString() + "|" + cityInput.text.toString() + "|" +
-                    stateInput.selectedItem.toString() + "|" + countryInput.text.toString() + "|" +
-                    occupationInput.text.toString() + "|" + contactLensYN + "|" +
-                    contactLensInfoInput.text.toString() + "|" + vduInput + "|" +
-                    drivingYN + "|" + hypertensionYN + "|" + hypertensionInfoInput.text.toString() + "|" +
-                    diabetesYN + "|" + diabetesInfoInput.text.toString() + "|" + allergyYN + "|" +
-                    allergyInfoInput.text.toString() + "|" + medicationYN + "|" + medicationsInfoInput.text.toString() + "|" +
-                    cataractYN + "|" + cataractInfoInput.text.toString() + "|" + glaucomaYN + "|" +
-                    glaucomaInfoInput.text.toString() + "|" + eyeSurgeryYN + "|" + eyeSurgeryInfoInput.text.toString()
+                        phone2Input.text.toString() + "|" + phone3Input.text.toString() + "|" +
+                        raceInput.selectedItem.toString() + "|" + sexInput.selectedItem.toString() + "|" +
+                        postCodeInput.text.toString() + "|" + cityInput.text.toString() + "|" +
+                        stateInput.selectedItem.toString() + "|" + countryInput.text.toString() + "|" +
+                        occupationInput.text.toString() + "|" + contactLensYN + "|" +
+                        contactLensInfoInput.text.toString() + "|" + vduInput + "|" +
+                        drivingYN + "|" + hypertensionYN + "|" + hypertensionInfoInput.text.toString() + "|" +
+                        diabetesYN + "|" + diabetesInfoInput.text.toString() + "|" + allergyYN + "|" +
+                        allergyInfoInput.text.toString() + "|" + medicationYN + "|" + medicationsInfoInput.text.toString() + "|" +
+                        cataractYN + "|" + cataractInfoInput.text.toString() + "|" + glaucomaYN + "|" +
+                        glaucomaInfoInput.text.toString() + "|" + eyeSurgeryYN + "|" + eyeSurgeryInfoInput.text.toString()
 
             //       Log.d(Constants.TAG, "saving data [7] = ${extractData.split('|')[7]} and [9] = ${extractData.split('|')[9]}")
             currentForm.sectionData = extractData.uppercase()

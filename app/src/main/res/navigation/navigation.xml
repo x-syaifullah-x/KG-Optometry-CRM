@@ -32,6 +32,34 @@
         <action
             android:id="@+id/action_to_database_sales_screen"
             app:destination="@id/databaseSearchSalesFragment" />
+        <action
+            android:id="@+id/action_to_search_follow_up_screen"
+            app:destination="@id/databaseSearchFollowUpFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/databaseSearchFollowUpFragment"
+        android:name="com.lizpostudio.kgoptometrycrm.search.SearchFollowUpFragment"
+        android:label="DatabaseSearchFollowUpScreenFragment"
+        tools:layout="@layout/fragment_search_sales">
+        <action
+            android:id="@+id/action_to_search_costumer_fragment"
+            app:destination="@id/databaseSearchFragment" />
+        <action
+            android:id="@+id/action_to_search_sales_fragment"
+            app:destination="@id/databaseSearchSalesFragment" />
+        <action
+            android:id="@+id/action_to_login"
+            app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_to_formSelectionFragment"
+            app:destination="@id/formSelectionFragment" />
+        <action
+            android:id="@+id/action_to_infoFragment"
+            app:destination="@id/infoFragment"
+            app:popUpToInclusive="false" />
+        <action
+            android:id="@+id/action_to_loginFragment"
+            app:destination="@id/loginFragment" />
     </fragment>
     <fragment
         android:id="@+id/databaseSearchSalesFragment"
@@ -54,6 +82,9 @@
         <action
             android:id="@+id/action_to_loginFragment"
             app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_to_search_follow_up_screen"
+            app:destination="@id/databaseSearchFollowUpFragment" />
     </fragment>
     <fragment
         android:id="@+id/formSelectionFragment"

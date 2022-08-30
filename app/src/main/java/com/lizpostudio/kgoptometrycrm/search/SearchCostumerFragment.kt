@@ -43,7 +43,6 @@ import java.util.*
 class SearchCostumerFragment : Fragment() {
 
     companion object {
-        private const val INFO_SECTION = "INFO"
         private const val PATIENT_NAME = "NAME"
         private const val DATE_SELECTED = "DATE"
         private const val ID_SELECTED = "ID"
@@ -186,17 +185,17 @@ class SearchCostumerFragment : Fragment() {
 
         patientViewModel.getAllFormsBySectionName(getString(R.string.info_form_caption))
 
-        binding.toggleFamily.setOnClickListener {
+        binding.topNavigation.toggleFamily.setOnClickListener {
             filterByFamily = !filterByFamily
             if (filterByFamily) {
-                binding.toggleFamily.setColorFilter(
+                binding.topNavigation.toggleFamily.setColorFilter(
                     ContextCompat.getColor(
                         requireContext(),
                         R.color.greenCircle
                     ), android.graphics.PorterDuff.Mode.SRC_IN
                 )
             } else {
-                binding.toggleFamily.setColorFilter(
+                binding.topNavigation.toggleFamily.setColorFilter(
                     ContextCompat.getColor(
                         requireContext(),
                         R.color.iconTopStandard
@@ -205,7 +204,7 @@ class SearchCostumerFragment : Fragment() {
             }
         }
 
-        binding.home.setOnClickListener {
+        binding.topNavigation.home.setOnClickListener {
             val sharedPref = activity?.getSharedPreferences(
                 Constants.PREF_NAME, Context.MODE_PRIVATE
             )
@@ -219,7 +218,7 @@ class SearchCostumerFragment : Fragment() {
             binding.searchInputText.setText("")
         }
 
-        binding.uploadDb.setOnClickListener {
+        binding.topNavigation.uploadDb.setOnClickListener {
             if (allowSync) {
                 actionConfirm(
                     "This operation will delete your local database and upload data from Firebase. It could take 1 or more minutes to complete.\n" +
@@ -228,7 +227,7 @@ class SearchCostumerFragment : Fragment() {
             }
         }
 
-        binding.synchDbButton.setOnClickListener {
+        binding.topNavigation.synchDbButton.setOnClickListener {
             if (allowSync) {
                 syncHistoryStart = System.currentTimeMillis()
                 patientViewModel.updateLocalDBFromFirebase(latestDataSynched, TWO_WEEKS)
@@ -290,8 +289,7 @@ class SearchCostumerFragment : Fragment() {
                     Log.d(Constants.TAG, "historyList.size = ${historyList.size}")
                     Log.d(Constants.TAG, "historyOriginalList.size = ${historyOriginalList.size}")
                     val newHistory =
-                        historyList.map { item -> item.first.toString() to item.second.toString() }
-                            .toMap()
+                        historyList.associate { item -> item.first.toString() to item.second.toString() }
                     patientViewModel.updateHistoryFBReference(newHistory)
                 }
 
@@ -445,13 +443,13 @@ class SearchCostumerFragment : Fragment() {
             }
         }
 
-        binding.createNewPatient.setOnClickListener {
+        binding.topNavigation.createNewPatient.setOnClickListener {
             patientViewModel.createNewRecord(getString(R.string.info_form_caption))
         }
 
         // get all refraction forms, observe them and launch the report
 
-        binding.refractionReport.setOnClickListener {
+        binding.topNavigation.refractionReport.setOnClickListener {
             Toast.makeText(context, "Working on it!\nWait a second ...", Toast.LENGTH_SHORT).show()
             val yearAgoMillis = System.currentTimeMillis() - ONE_DAY * 365L
             patientViewModel.getOldRecordsBySectionAndDate(
@@ -475,7 +473,7 @@ class SearchCostumerFragment : Fragment() {
 
         // share refractions report
 
-        binding.shareReport.setOnClickListener {
+        binding.topNavigation.shareReport.setOnClickListener {
             val emailIntent = Intent(Intent.ACTION_SEND)
             emailIntent.type = "text/plain"
             emailIntent.putExtra(
@@ -495,10 +493,20 @@ class SearchCostumerFragment : Fragment() {
             }
         }
 
-        binding.salesButton.setOnClickListener {
+        binding.topNavigation.salesButton.setOnClickListener {
             findNavController().navigate(
                 SearchCostumerFragmentDirections.actionToDatabaseSalesScreen()
             )
+        }
+
+        binding.topNavigation.followUp.setOnClickListener {
+            findNavController().navigate(
+                SearchCostumerFragmentDirections.actionToSearchFollowUpScreen()
+            )
+        }
+
+        binding.topNavigation.recycleBin.setOnClickListener {
+            throw Throwable("not implemented")
         }
 
         return binding.root
@@ -743,14 +751,14 @@ class SearchCostumerFragment : Fragment() {
 
         latestDataSynched = sharedPref?.getLong("lastSynch", 0L) ?: 0L
         isfetchedFromFirebaseCompleted = sharedPref?.getBoolean("fireFetched", false) ?: false
-        isAdmin = sharedPref?.getString("admin", "") ?: "" == "admin"
+        isAdmin = (sharedPref?.getString("admin", "") ?: "") == "admin"
 
         if (isAdmin) {
-            binding.refractionReport.visibility = View.VISIBLE
-            binding.shareReport.visibility = View.VISIBLE
+            binding.topNavigation.refractionReport.visibility = View.VISIBLE
+            binding.topNavigation.shareReport.visibility = View.VISIBLE
         } else {
-            binding.refractionReport.visibility = View.GONE
-            binding.shareReport.visibility = View.GONE
+            binding.topNavigation.refractionReport.visibility = View.GONE
+            binding.topNavigation.shareReport.visibility = View.GONE
         }
     }
 }

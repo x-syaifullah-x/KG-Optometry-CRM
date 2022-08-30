@@ -10,6 +10,7 @@
     <string name="hint_search_by">Search by:</string>
     <string name="entries_found_in_database">Found %1$s Customers</string>
     <string name="entries_found_in_database_sales">Found %1$s Sales</string>
+    <string name="entries_found_in_database_follow_up">Found %1$s FOLLOW UP CASE</string>
     <string name="hint_start_typing">Start typing to search database</string>
     <string name="hint_phone">Phone:</string>
     <string name="hint_family_code">Family code:</string>
