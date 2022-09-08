@@ -21,18 +21,19 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.firebase.storage.StorageReference
 import com.lizpostudio.kgoptometrycrm.PatientsViewModel
 import com.lizpostudio.kgoptometrycrm.R
 import com.lizpostudio.kgoptometrycrm.ViewModelProviderFactory
+import com.lizpostudio.kgoptometrycrm.camera.CameraActivity
 import com.lizpostudio.kgoptometrycrm.constant.Constants
 import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientEntity
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentRefractionBinding
 import com.lizpostudio.kgoptometrycrm.utils.*
 import id.xxx.module.view.binding.ktx.viewBinding
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -73,17 +74,17 @@ class RefractionFragment : Fragment() {
     private var isTakePhoto = false
 
     private val takePicture =
-        registerForActivityResult(TakePictureResultContract()) { result ->
-            if (result != null) {
+        registerForActivityResult(CameraActivity.ResultContract()) { uri ->
+            if (uri != null) {
                 val parcelFileDescriptor =
-                    requireContext().contentResolver.openFileDescriptor(result, "rw")
+                    requireContext().contentResolver.openFileDescriptor(uri, "rw")
                         ?: return@registerForActivityResult
                 isTakePhoto = true
                 val bitmap = getScaledBitmap(
                     parcelFileDescriptor.fileDescriptor, PHOTO_W, PHOTO_H
                 )
                 parcelFileDescriptor.close()
-                requireContext().contentResolver.delete(result, null, null)
+                requireContext().contentResolver.delete(uri, null, null)
                 binding.rotatePhoto.visibility = View.VISIBLE
                 binding.autorefPhoto.setImageBitmap(bitmap)
                 currentForm.reservedField = storageRef.toString()
@@ -101,44 +102,6 @@ class RefractionFragment : Fragment() {
                     }
             }
         }
-//        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-//            if (result.resultCode == Activity.RESULT_OK) {
-//                lifecycleScope.launchWhenCreated {
-//                    withContext(Dispatchers.IO) {
-//                        runCatching {
-//                            isTakePhoto = true
-//                            val bitmap = result.data?.extras?.get("data") as Bitmap
-//                            Bitmap.createScaledBitmap(bitmap, PHOTO_W, PHOTO_H, false)
-//                            val os = ByteArrayOutputStream()
-//                            binding.rotatePhoto.visibility = View.VISIBLE
-//                            binding.autorefPhoto.setImageBitmap(bitmap)
-//                            try {
-//                                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os)
-//                                currentForm.reservedField = storageRef.toString()
-//                                storageRef.putBytes(os.toByteArray() ?: return@withContext)
-//                                    .addOnCompleteListener { task ->
-////                                        if (task.isSuccessful) {
-////
-////                                        }
-//                                    }
-//                                    .addOnFailureListener {
-//                                        Toast.makeText(
-//                                            requireContext(), it.localizedMessage, Toast.LENGTH_LONG
-//                                        ).show()
-//                                    }
-//                            } catch (e: Exception) {
-//                                Toast.makeText(
-//                                    requireContext(), e.localizedMessage, Toast.LENGTH_LONG
-//                                ).show()
-//                                e.printStackTrace()
-//                            } finally {
-//                                os.close()
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -148,18 +111,19 @@ class RefractionFragment : Fragment() {
         }
     }
 
+    private val safeArgs: RefractionFragmentArgs by navArgs()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        return binding.root
+    }
 
-        val app = requireNotNull(this.activity).application
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-//        filesDir = app.applicationContext.filesDir
-
-        // change BINDING to Respective forms args!
-        val safeArgs: RefractionFragmentArgs by navArgs()
         recordID = safeArgs.recordID
 
         // get Patient data
@@ -170,7 +134,7 @@ class RefractionFragment : Fragment() {
         val navController = this.findNavController()
 
         // get if user is Admin
-        val sharedPref = app.getSharedPreferences(
+        val sharedPref = requireContext().getSharedPreferences(
             Constants.PREF_NAME, Context.MODE_PRIVATE
         )
         isAdmin = (sharedPref?.getString("admin", "") ?: "") == "admin"
@@ -254,7 +218,7 @@ class RefractionFragment : Fragment() {
                 val navChipGroup2 = binding.navigationLayout2
 //                val children = newList.map { patientForm ->
                 val children = newSectionName.map { patientForm ->
-                    val chip = TextView(app.applicationContext)
+                    val chip = TextView(requireContext().applicationContext)
 
                     val params = LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -274,13 +238,13 @@ class RefractionFragment : Fragment() {
                         sectionName = patientForm
                         chip.setBackgroundColor(
                             ContextCompat.getColor(
-                                app.applicationContext, R.color.lightBackground
+                                requireContext(), R.color.lightBackground
                             )
                         )
                     } else {
                         chip.setBackgroundColor(
                             ContextCompat.getColor(
-                                app.applicationContext,
+                                requireContext(),
                                 R.color.cardBackgroundDarker
                             )
                         )
@@ -310,7 +274,7 @@ class RefractionFragment : Fragment() {
                 val children2 = mapSectionName[sectionName]
                     ?.sortedBy { p -> p.dateOfSection }
                     ?.map { patientForm ->
-                        val chip = TextView(app.applicationContext)
+                        val chip = TextView(requireContext())
 
                         val params = LinearLayout.LayoutParams(
                             LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -329,7 +293,7 @@ class RefractionFragment : Fragment() {
                         if (patientForm.recordID == recordID) {
                             chip.setBackgroundColor(
                                 ContextCompat.getColor(
-                                    app.applicationContext, R.color.lightBackground
+                                    requireContext(), R.color.lightBackground
                                 )
                             )
                             createRefAssignPhFile()
@@ -337,7 +301,7 @@ class RefractionFragment : Fragment() {
                         } else
                             chip.setBackgroundColor(
                                 ContextCompat.getColor(
-                                    app.applicationContext,
+                                    requireContext(),
                                     R.color.cardBackgroundDarker
                                 )
                             )
@@ -363,7 +327,7 @@ class RefractionFragment : Fragment() {
 
                 navChipGroup.removeAllViews()
                 for (chip in children) {
-                    val chipDivider = TextView(app.applicationContext)
+                    val chipDivider = TextView(requireContext())
                     chipDivider.text = "  "
                     navChipGroup.addView(chip)
                     navChipGroup.addView(chipDivider)
@@ -371,7 +335,7 @@ class RefractionFragment : Fragment() {
 
                 navChipGroup2.removeAllViews()
                 children2?.forEach { chip ->
-                    val chipDivider = TextView(app.applicationContext)
+                    val chipDivider = TextView(requireContext())
                     chipDivider.text = "  "
                     navChipGroup2.addView(chip)
                     navChipGroup2.addView(chipDivider)
@@ -429,7 +393,7 @@ class RefractionFragment : Fragment() {
         val sphListItems = sphList()
         val sphSpinnerAdapter: ArrayAdapter<String> =
             ArrayAdapter<String>(
-                app.applicationContext,
+                requireContext(),
                 android.R.layout.simple_spinner_item,
                 sphListItems
             )
@@ -450,7 +414,7 @@ class RefractionFragment : Fragment() {
         val cylListItems = cylList()
         val cylSpinnerAdapter: ArrayAdapter<String> =
             ArrayAdapter<String>(
-                app.applicationContext,
+                requireContext(),
                 android.R.layout.simple_spinner_item,
                 cylListItems
             )
@@ -469,7 +433,7 @@ class RefractionFragment : Fragment() {
         val addListItems = addList()
         val addSpinnerAdapter: ArrayAdapter<String> =
             ArrayAdapter<String>(
-                app.applicationContext,
+                requireContext(),
                 android.R.layout.simple_spinner_item,
                 addListItems
             )
@@ -485,7 +449,7 @@ class RefractionFragment : Fragment() {
 
 // chart input adapter
         ArrayAdapter.createFromResource(
-            app.applicationContext,
+            requireContext(),
             R.array.chart_choices,
             android.R.layout.simple_spinner_item
         ).also { adapter ->
@@ -568,7 +532,7 @@ class RefractionFragment : Fragment() {
 //                    }
 //                }
 //            } else {
-//                Toast.makeText(app.applicationContext, "Nothing to delete!", Toast.LENGTH_SHORT).show()
+//                Toast.makeText(requireContext(), "Nothing to delete!", Toast.LENGTH_SHORT).show()
 //            }
         }
 
@@ -632,7 +596,6 @@ class RefractionFragment : Fragment() {
 
             binding.autorefPhoto.setImageBitmap(bitmap)
         }
-        return binding.root
     }
 
     private fun saveAndNavigate(navOption: String) {
@@ -717,7 +680,7 @@ class RefractionFragment : Fragment() {
     }
 
     private fun uploadPhotoFileToImage(inputStream: InputStream?) {
-        CoroutineScope(Dispatchers.IO).launch {
+        lifecycleScope.launch(Dispatchers.IO) {
             val bitmap = BitmapFactory.decodeStream(inputStream)
             withContext(Dispatchers.Main) {
                 if (bitmap != null) {
@@ -1278,7 +1241,7 @@ class RefractionFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         storageRef.stream.cancel()
+        super.onDestroyView()
     }
 }

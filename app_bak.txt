@@ -1,0 +1,41 @@
+E/JavaBinder: !!! FAILED BINDER TRANSACTION !!!  (parcel size = 1211384)
+W/ActivityStopInfo: Bundle stats:
+W/BpBinder: Slow Binder: BpBinder transact took 210 ms, interface=android.hardware.camera2.ICameraDeviceUser, code=6 oneway=false
+D/CaptureSession: Attempting to send capture request onConfigured
+D/CaptureSession: Issuing request for session.
+D/CaptureSession: CameraCaptureSession.onConfigured() mState=OPENED
+D/CaptureSession: CameraCaptureSession.onReady() OPENED
+W/ActivityStopInfo:   androidx.lifecycle.BundlableSavedStateRegistry.key [size=1210004]
+W/ActivityStopInfo:     android:support:activity-result [size=50372]
+W/ActivityStopInfo:       KEY_COMPONENT_ACTIVITY_REGISTERED_KEYS [size=46928]
+W/ActivityStopInfo:       KEY_COMPONENT_ACTIVITY_REGISTERED_RCS [size=2408]
+W/ActivityStopInfo:     android:support:fragments [size=1159256]
+W/ActivityStopInfo:       fragment_51508dfa-b4b8-465e-9291-007242765295 [size=1158764]
+D/StreamStateObserver: Update Preview stream state to STREAMING
+W/ActivityStopInfo:         state [size=1158732]
+W/ActivityStopInfo: PersistableBundle stats:
+W/ActivityStopInfo:   [null]
+D/AndroidRuntime: Shutting down VM
+E/AndroidRuntime: FATAL EXCEPTION: main
+    Process: com.lizpostudio.kgoptometrycrm, PID: 2858
+    java.lang.RuntimeException: android.os.TransactionTooLargeException: data parcel size 1211384 bytes
+        at android.app.servertransaction.PendingTransactionActions$StopInfo.run(PendingTransactionActions.java:161)
+        at android.os.Handler.handleCallback(Handler.java:883)
+        at android.os.Handler.dispatchMessage(Handler.java:100)
+        at android.os.Looper.loop(Looper.java:224)
+        at android.app.ActivityThread.main(ActivityThread.java:7562)
+        at java.lang.reflect.Method.invoke(Native Method)
+        at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:539)
+        at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:950)
+     Caused by: android.os.TransactionTooLargeException: data parcel size 1211384 bytes
+        at android.os.BinderProxy.transactNative(Native Method)
+        at android.os.BinderProxy.transact(BinderProxy.java:511)
+        at android.app.IActivityTaskManager$Stub$Proxy.activityStopped(IActivityTaskManager.java:4646)
+        at android.app.servertransaction.PendingTransactionActions$StopInfo.run(PendingTransactionActions.java:145)
+        at android.os.Handler.handleCallback(Handler.java:883) 
+        at android.os.Handler.dispatchMessage(Handler.java:100) 
+        at android.os.Looper.loop(Looper.java:224) 
+        at android.app.ActivityThread.main(ActivityThread.java:7562) 
+        at java.lang.reflect.Method.invoke(Native Method) 
+        at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:539) 
+        at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:950) 

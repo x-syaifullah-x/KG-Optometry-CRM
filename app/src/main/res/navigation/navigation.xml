@@ -12,9 +12,9 @@
         tools:layout="@layout/fragment_login">
         <action
             android:id="@+id/action_loginFragment_to_databaseSearchFragment"
-            app:destination="@id/searchCostumerFragment" />
+            app:destination="@id/searchCostumerFragment"
+            app:popUpToInclusive="false" />
     </fragment>
-
     <fragment
         android:id="@+id/searchRecycleBinFragment"
         android:name="com.lizpostudio.kgoptometrycrm.search.recycle_bin.SearchRecycleBinFragment"
@@ -22,23 +22,40 @@
         tools:layout="@layout/fragment_search_recycle_bin">
         <action
             android:id="@+id/action_to_form_selection"
-            app:destination="@id/formSelectionFragment" />
+            app:destination="@id/formSelectionFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_info"
             app:destination="@id/infoFragment"
-            app:popUpToInclusive="false" />
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_login"
-            app:destination="@id/loginFragment" />
+            app:destination="@id/loginFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_search_sales_screen"
-            app:destination="@id/databaseSearchSalesFragment" />
+            app:destination="@id/databaseSearchSalesFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_search_follow_up_screen"
-            app:destination="@id/searchFollowUpFragment" />
+            app:destination="@id/searchFollowUpFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_search_costumer"
-            app:destination="@id/searchCostumerFragment" />
+            app:destination="@id/searchCostumerFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/searchCostumerFragment"
@@ -47,23 +64,40 @@
         tools:layout="@layout/fragment_search_costumer">
         <action
             android:id="@+id/action_to_search_recycle_bin_fragment"
-            app:destination="@id/searchRecycleBinFragment" />
+            app:destination="@id/searchRecycleBinFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_formSelectionFragment"
-            app:destination="@id/formSelectionFragment" />
+            app:destination="@id/formSelectionFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_infoFragment"
             app:destination="@id/infoFragment"
-            app:popUpToInclusive="false" />
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_loginFragment"
-            app:destination="@id/loginFragment" />
+            app:destination="@id/loginFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_database_sales_screen"
-            app:destination="@id/databaseSearchSalesFragment" />
+            app:destination="@id/databaseSearchSalesFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_search_follow_up_screen"
-            app:destination="@id/searchFollowUpFragment" />
+            app:destination="@id/searchFollowUpFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/searchFollowUpFragment"
@@ -72,26 +106,46 @@
         tools:layout="@layout/fragment_search_sales">
         <action
             android:id="@+id/action_to_search_recycle_bin_fragment"
-            app:destination="@id/searchRecycleBinFragment" />
+            app:destination="@id/searchRecycleBinFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_search_costumer_fragment"
-            app:destination="@id/searchCostumerFragment" />
+            app:destination="@id/searchCostumerFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_search_sales_fragment"
-            app:destination="@id/databaseSearchSalesFragment" />
+            app:destination="@id/databaseSearchSalesFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_login"
-            app:destination="@id/loginFragment" />
+            app:destination="@id/loginFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_formSelectionFragment"
-            app:destination="@id/formSelectionFragment" />
+            app:destination="@id/formSelectionFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_infoFragment"
             app:destination="@id/infoFragment"
-            app:popUpToInclusive="false" />
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_loginFragment"
-            app:destination="@id/loginFragment" />
+            app:destination="@id/loginFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/databaseSearchSalesFragment"
@@ -100,26 +154,46 @@
         tools:layout="@layout/fragment_search_sales">
         <action
             android:id="@+id/action_to_search_recycle_bin_fragment"
-            app:destination="@id/searchRecycleBinFragment" />
+            app:destination="@id/searchRecycleBinFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_database_search"
-            app:destination="@id/searchCostumerFragment" />
+            app:destination="@id/searchCostumerFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_login"
-            app:destination="@id/loginFragment" />
+            app:destination="@id/loginFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_formSelectionFragment"
-            app:destination="@id/formSelectionFragment" />
+            app:destination="@id/formSelectionFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_infoFragment"
             app:destination="@id/infoFragment"
-            app:popUpToInclusive="false" />
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_loginFragment"
-            app:destination="@id/loginFragment" />
+            app:destination="@id/loginFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_search_follow_up_screen"
-            app:destination="@id/searchFollowUpFragment" />
+            app:destination="@id/searchFollowUpFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/formSelectionFragment"
@@ -131,79 +205,126 @@
             app:argType="string" />
         <action
             android:id="@+id/action_to_searchFollowUpFragment"
-            app:destination="@id/searchFollowUpFragment" />
+            app:destination="@id/searchFollowUpFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_searchCostumerFragment"
-            app:destination="@id/searchCostumerFragment" />
+            app:destination="@id/searchCostumerFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_searchSalesFragment"
-            app:destination="@id/databaseSearchSalesFragment" />
+            app:destination="@id/databaseSearchSalesFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_search_recycle_bin_fragment"
-            app:destination="@id/databaseSearchSalesFragment" />
+            app:destination="@id/databaseSearchSalesFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_infoFragment"
             app:destination="@id/infoFragment"
             app:enterAnim="@android:anim/slide_in_left"
-            app:exitAnim="@android:anim/slide_out_right" />
+            app:exitAnim="@android:anim/slide_out_right"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_currentRxFragment"
             app:destination="@id/currentRxFragment"
             app:enterAnim="@android:anim/slide_in_left"
-            app:exitAnim="@android:anim/slide_out_right" />
+            app:exitAnim="@android:anim/slide_out_right"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_ocularHealthFragment"
             app:destination="@id/ocularHealthFragment"
             app:enterAnim="@android:anim/slide_in_left"
-            app:exitAnim="@android:anim/slide_out_right" />
+            app:exitAnim="@android:anim/slide_out_right"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_supplementaryFragment"
             app:destination="@id/supplementaryFragment"
             app:enterAnim="@android:anim/slide_in_left"
-            app:exitAnim="@android:anim/slide_out_right" />
+            app:exitAnim="@android:anim/slide_out_right"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_contactLensFragment"
             app:destination="@id/contactLensFragment"
             app:enterAnim="@android:anim/slide_in_left"
             app:exitAnim="@android:anim/slide_out_right"
-            app:popUpTo="@id/formSelectionFragment" />
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_orthokFragment"
             app:destination="@id/orthokFragment"
             app:enterAnim="@android:anim/slide_in_left"
-            app:exitAnim="@android:anim/slide_out_right" />
+            app:exitAnim="@android:anim/slide_out_right"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_sales_order"
             app:destination="@id/salesOrderFragment"
             app:enterAnim="@android:anim/slide_in_left"
-            app:exitAnim="@android:anim/slide_out_right" />
+            app:exitAnim="@android:anim/slide_out_right"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_cashOrderFragment"
             app:destination="@id/cashOrderFragment"
             app:enterAnim="@android:anim/slide_in_left"
             app:exitAnim="@android:anim/slide_out_right"
+            app:launchSingleTop="true"
+            app:popEnterAnim="@android:anim/slide_in_left"
+            app:popUpTo="@id/navigation"
 
-            app:popEnterAnim="@android:anim/slide_in_left" />
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_followUpFragment"
             app:destination="@id/followUpFragment"
             app:enterAnim="@android:anim/slide_in_left"
-            app:exitAnim="@android:anim/slide_out_right" />
+            app:exitAnim="@android:anim/slide_out_right"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_memoFragment"
             app:destination="@id/memoFragment"
             app:enterAnim="@android:anim/slide_in_left"
-            app:exitAnim="@android:anim/slide_out_right" />
+            app:exitAnim="@android:anim/slide_out_right"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_refractionFragment"
             app:destination="@id/refractionFragment"
             app:enterAnim="@android:anim/slide_in_left"
-            app:exitAnim="@android:anim/slide_out_right" />
+            app:exitAnim="@android:anim/slide_out_right"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_targetCopyFragment"
             app:destination="@id/targetCopyFragment"
             app:enterAnim="@android:anim/slide_in_left"
-            app:exitAnim="@android:anim/slide_out_right" />
+            app:exitAnim="@android:anim/slide_out_right"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/infoFragment"
@@ -215,40 +336,76 @@
             app:argType="long" />
         <action
             android:id="@+id/actionToDatabaseSearchFragment"
-            app:destination="@id/searchCostumerFragment" />
+            app:destination="@id/searchCostumerFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_cashOrderFragment"
-            app:destination="@id/cashOrderFragment" />
+            app:destination="@id/cashOrderFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_formSelectionFragment"
-            app:destination="@id/formSelectionFragment" />
+            app:destination="@id/formSelectionFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_currentRxFragment"
-            app:destination="@id/currentRxFragment" />
+            app:destination="@id/currentRxFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_ocularHealthFragment"
-            app:destination="@id/ocularHealthFragment" />
+            app:destination="@id/ocularHealthFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_supplementaryFragment"
-            app:destination="@id/supplementaryFragment" />
+            app:destination="@id/supplementaryFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_contactLensFragment"
-            app:destination="@id/contactLensFragment" />
+            app:destination="@id/contactLensFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_orthokFragment"
-            app:destination="@id/orthokFragment" />
+            app:destination="@id/orthokFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_salesOrderFragment"
-            app:destination="@id/salesOrderFragment" />
+            app:destination="@id/salesOrderFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_followUpFragment"
-            app:destination="@id/followUpFragment" />
+            app:destination="@id/followUpFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_memoFragment"
-            app:destination="@id/memoFragment" />
+            app:destination="@id/memoFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_refractionFragment"
-            app:destination="@id/refractionFragment" />
+            app:destination="@id/refractionFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/currentRxFragment"
@@ -260,40 +417,76 @@
             app:argType="long" />
         <action
             android:id="@+id/actionToDatabaseSearchFragment"
-            app:destination="@id/searchCostumerFragment" />
+            app:destination="@id/searchCostumerFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_cashOrderFragment"
-            app:destination="@id/cashOrderFragment" />
+            app:destination="@id/cashOrderFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_infoFragment"
-            app:destination="@id/infoFragment" />
+            app:destination="@id/infoFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_followUpFragment"
-            app:destination="@id/followUpFragment" />
+            app:destination="@id/followUpFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_formSelectionFragment"
-            app:destination="@id/formSelectionFragment" />
+            app:destination="@id/formSelectionFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_ocularHealthFragment"
-            app:destination="@id/ocularHealthFragment" />
+            app:destination="@id/ocularHealthFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_supplementaryFragment"
-            app:destination="@id/supplementaryFragment" />
+            app:destination="@id/supplementaryFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_contactLensFragment"
-            app:destination="@id/contactLensFragment" />
+            app:destination="@id/contactLensFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_orthokFragment"
-            app:destination="@id/orthokFragment" />
+            app:destination="@id/orthokFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_salesOrderFragment"
-            app:destination="@id/salesOrderFragment" />
+            app:destination="@id/salesOrderFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_memoFragment"
-            app:destination="@id/memoFragment" />
+            app:destination="@id/memoFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_refractionFragment"
-            app:destination="@id/refractionFragment" />
+            app:destination="@id/refractionFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/ocularHealthFragment"
@@ -305,41 +498,76 @@
             app:argType="long" />
         <action
             android:id="@+id/action_to_DatabaseSearchFragment"
-            app:destination="@id/searchCostumerFragment" />
+            app:destination="@id/searchCostumerFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_cashOrderFragment"
-            app:destination="@id/cashOrderFragment" />
+            app:destination="@id/cashOrderFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_formSelectionFragment"
-            app:destination="@id/formSelectionFragment" />
+            app:destination="@id/formSelectionFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_infoFragment"
-            app:destination="@id/infoFragment" />
+            app:destination="@id/infoFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_currentRxFragment"
             app:destination="@id/currentRxFragment"
-            app:popUpTo="@id/formSelectionFragment" />
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_supplementaryFragment"
-            app:destination="@id/supplementaryFragment" />
+            app:destination="@id/supplementaryFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_contactLensFragment"
-            app:destination="@id/contactLensFragment" />
+            app:destination="@id/contactLensFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_orthokFragment"
-            app:destination="@id/orthokFragment" />
+            app:destination="@id/orthokFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_salesOrderFragment"
-            app:destination="@id/salesOrderFragment" />
+            app:destination="@id/salesOrderFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_memoFragment"
-            app:destination="@id/memoFragment" />
+            app:destination="@id/memoFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_followUpFragment"
-            app:destination="@id/followUpFragment" />
+            app:destination="@id/followUpFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_refractionFragment"
-            app:destination="@id/refractionFragment" />
+            app:destination="@id/refractionFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/supplementaryFragment"
@@ -351,40 +579,76 @@
             app:argType="long" />
         <action
             android:id="@+id/actionToDatabaseSearchFragment"
-            app:destination="@id/searchCostumerFragment" />
+            app:destination="@id/searchCostumerFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_cashOrderFragment"
-            app:destination="@id/cashOrderFragment" />
+            app:destination="@id/cashOrderFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_followUpFragment"
-            app:destination="@id/followUpFragment" />
+            app:destination="@id/followUpFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_ocularHealthFragment"
-            app:destination="@id/ocularHealthFragment" />
+            app:destination="@id/ocularHealthFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_currentRxFragment"
-            app:destination="@id/currentRxFragment" />
+            app:destination="@id/currentRxFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_infoFragment"
-            app:destination="@id/infoFragment" />
+            app:destination="@id/infoFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_formSelectionFragment"
-            app:destination="@id/formSelectionFragment" />
+            app:destination="@id/formSelectionFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_contactLensFragment"
-            app:destination="@id/contactLensFragment" />
+            app:destination="@id/contactLensFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_orthokFragment"
-            app:destination="@id/orthokFragment" />
+            app:destination="@id/orthokFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_salesOrderFragment"
-            app:destination="@id/salesOrderFragment" />
+            app:destination="@id/salesOrderFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_memoFragment"
-            app:destination="@id/memoFragment" />
+            app:destination="@id/memoFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_refractionFragment"
-            app:destination="@id/refractionFragment" />
+            app:destination="@id/refractionFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/contactLensFragment"
@@ -396,40 +660,76 @@
             app:argType="long" />
         <action
             android:id="@+id/actionToDatabaseSearchFragment"
-            app:destination="@id/searchCostumerFragment" />
+            app:destination="@id/searchCostumerFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_cashOrderFragment"
-            app:destination="@id/cashOrderFragment" />
+            app:destination="@id/cashOrderFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_formSelectionFragment"
-            app:destination="@id/formSelectionFragment" />
+            app:destination="@id/formSelectionFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_infoFragment"
-            app:destination="@id/infoFragment" />
+            app:destination="@id/infoFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_followUpFragment"
-            app:destination="@id/followUpFragment" />
+            app:destination="@id/followUpFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_currentRxFragment"
-            app:destination="@id/currentRxFragment" />
+            app:destination="@id/currentRxFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_ocularHealthFragment"
-            app:destination="@id/ocularHealthFragment" />
+            app:destination="@id/ocularHealthFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_supplementaryFragment"
-            app:destination="@id/supplementaryFragment" />
+            app:destination="@id/supplementaryFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_orthokFragment"
-            app:destination="@id/orthokFragment" />
+            app:destination="@id/orthokFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_salesOrderFragment"
-            app:destination="@id/salesOrderFragment" />
+            app:destination="@id/salesOrderFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_memoFragment"
-            app:destination="@id/memoFragment" />
+            app:destination="@id/memoFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_refractionFragment"
-            app:destination="@id/refractionFragment" />
+            app:destination="@id/refractionFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/orthokFragment"
@@ -441,40 +741,76 @@
             app:argType="long" />
         <action
             android:id="@+id/actionToDatabaseSearchFragment"
-            app:destination="@id/searchCostumerFragment" />
+            app:destination="@id/searchCostumerFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_cashOrderFragment"
-            app:destination="@id/cashOrderFragment" />
+            app:destination="@id/cashOrderFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_contactLensFragment"
-            app:destination="@id/contactLensFragment" />
+            app:destination="@id/contactLensFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_currentRxFragment"
-            app:destination="@id/currentRxFragment" />
+            app:destination="@id/currentRxFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_ocularHealthFragment"
-            app:destination="@id/ocularHealthFragment" />
+            app:destination="@id/ocularHealthFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_supplementaryFragment"
-            app:destination="@id/supplementaryFragment" />
+            app:destination="@id/supplementaryFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_infoFragment"
-            app:destination="@id/infoFragment" />
+            app:destination="@id/infoFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_formSelectionFragment"
-            app:destination="@id/formSelectionFragment" />
+            app:destination="@id/formSelectionFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_salesOrderFragment"
-            app:destination="@id/salesOrderFragment" />
+            app:destination="@id/salesOrderFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_memoFragment"
-            app:destination="@id/memoFragment" />
+            app:destination="@id/memoFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_refractionFragment"
-            app:destination="@id/refractionFragment" />
+            app:destination="@id/refractionFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_followUpFragment"
-            app:destination="@id/followUpFragment" />
+            app:destination="@id/followUpFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/salesOrderFragment"
@@ -486,46 +822,88 @@
             app:argType="long" />
         <action
             android:id="@+id/actionToDatabaseSearchFragment"
-            app:destination="@id/searchCostumerFragment" />
+            app:destination="@id/searchCostumerFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_orthokFragment"
-            app:destination="@id/orthokFragment" />
+            app:destination="@id/orthokFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_followUpFragment"
-            app:destination="@id/followUpFragment" />
+            app:destination="@id/followUpFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_contactLensFragment"
-            app:destination="@id/contactLensFragment" />
+            app:destination="@id/contactLensFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_formSelectionFragment"
-            app:destination="@id/formSelectionFragment" />
+            app:destination="@id/formSelectionFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_currentRxFragment"
-            app:destination="@id/currentRxFragment" />
+            app:destination="@id/currentRxFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_ocularHealthFragment"
-            app:destination="@id/ocularHealthFragment" />
+            app:destination="@id/ocularHealthFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_infoFragment"
-            app:destination="@id/infoFragment" />
+            app:destination="@id/infoFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_supplementaryFragment"
-            app:destination="@id/supplementaryFragment" />
+            app:destination="@id/supplementaryFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_memoFragment"
-            app:destination="@id/memoFragment" />
+            app:destination="@id/memoFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_refractionFragment"
-            app:destination="@id/refractionFragment" />
+            app:destination="@id/refractionFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_cashOrderFragment"
-            app:destination="@id/cashOrderFragment" />
+            app:destination="@id/cashOrderFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_preview_with_name_fragment"
-            app:destination="@id/previewWithNameFragment" />
+            app:destination="@id/previewWithNameFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_preview_with_out_name_fragment"
-            app:destination="@id/previewWithOutNameFragment" />
+            app:destination="@id/previewWithOutNameFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/memoFragment"
@@ -537,40 +915,76 @@
             app:argType="long" />
         <action
             android:id="@+id/actionToDatabaseSearchFragment"
-            app:destination="@id/searchCostumerFragment" />
+            app:destination="@id/searchCostumerFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_cashOrderFragment"
-            app:destination="@id/cashOrderFragment" />
+            app:destination="@id/cashOrderFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_formSelectionFragment"
-            app:destination="@id/formSelectionFragment" />
+            app:destination="@id/formSelectionFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_supplementaryFragment"
-            app:destination="@id/supplementaryFragment" />
+            app:destination="@id/supplementaryFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_infoFragment"
-            app:destination="@id/infoFragment" />
+            app:destination="@id/infoFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_salesOrderFragment"
-            app:destination="@id/salesOrderFragment" />
+            app:destination="@id/salesOrderFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_followUpFragment"
-            app:destination="@id/followUpFragment" />
+            app:destination="@id/followUpFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_orthokFragment"
-            app:destination="@id/orthokFragment" />
+            app:destination="@id/orthokFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_contactLensFragment"
-            app:destination="@id/contactLensFragment" />
+            app:destination="@id/contactLensFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_currentRxFragment"
-            app:destination="@id/currentRxFragment" />
+            app:destination="@id/currentRxFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_ocularHealthFragment"
-            app:destination="@id/ocularHealthFragment" />
+            app:destination="@id/ocularHealthFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_refractionFragment"
-            app:destination="@id/refractionFragment" />
+            app:destination="@id/refractionFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/refractionFragment"
@@ -583,40 +997,76 @@
             app:argType="long" />
         <action
             android:id="@+id/action_to_followUpFragment"
-            app:destination="@+id/followUpFragment" />
+            app:destination="@+id/followUpFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/actionToDatabaseSearchFragment"
-            app:destination="@+id/searchCostumerFragment" />
+            app:destination="@+id/searchCostumerFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_cashOrderFragment"
-            app:destination="@id/cashOrderFragment" />
+            app:destination="@id/cashOrderFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_formSelectionFragment"
-            app:destination="@id/formSelectionFragment" />
+            app:destination="@id/formSelectionFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_currentRxFragment"
-            app:destination="@id/currentRxFragment" />
+            app:destination="@id/currentRxFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_ocularHealthFragment"
-            app:destination="@id/ocularHealthFragment" />
+            app:destination="@id/ocularHealthFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_memoFragment"
-            app:destination="@id/memoFragment" />
+            app:destination="@id/memoFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_supplementaryFragment"
-            app:destination="@id/supplementaryFragment" />
+            app:destination="@id/supplementaryFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_infoFragment"
-            app:destination="@id/infoFragment" />
+            app:destination="@id/infoFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_salesOrderFragment"
-            app:destination="@id/salesOrderFragment" />
+            app:destination="@id/salesOrderFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_orthokFragment"
-            app:destination="@id/orthokFragment" />
+            app:destination="@id/orthokFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_contactLensFragment"
-            app:destination="@id/contactLensFragment" />
+            app:destination="@id/contactLensFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/followUpFragment"
@@ -628,40 +1078,76 @@
             app:argType="long" />
         <action
             android:id="@+id/actionToCashOrderFragment"
-            app:destination="@id/cashOrderFragment" />
+            app:destination="@id/cashOrderFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/actionToDatabaseSearchFragment"
-            app:destination="@id/searchCostumerFragment" />
+            app:destination="@id/searchCostumerFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_salesOrderFragment"
-            app:destination="@id/salesOrderFragment" />
+            app:destination="@id/salesOrderFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_orthokFragment"
-            app:destination="@id/orthokFragment" />
+            app:destination="@id/orthokFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_contactLensFragment"
-            app:destination="@id/contactLensFragment" />
+            app:destination="@id/contactLensFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_formSelectionFragment"
-            app:destination="@id/formSelectionFragment" />
+            app:destination="@id/formSelectionFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_currentRxFragment"
-            app:destination="@id/currentRxFragment" />
+            app:destination="@id/currentRxFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_ocularHealthFragment"
-            app:destination="@id/ocularHealthFragment" />
+            app:destination="@id/ocularHealthFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_infoFragment"
-            app:destination="@id/infoFragment" />
+            app:destination="@id/infoFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_supplementaryFragment"
-            app:destination="@id/supplementaryFragment" />
+            app:destination="@id/supplementaryFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_memoFragment"
-            app:destination="@id/memoFragment" />
+            app:destination="@id/memoFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_refractionFragment"
-            app:destination="@id/refractionFragment" />
+            app:destination="@id/refractionFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/cashOrderFragment"
@@ -671,71 +1157,108 @@
         <argument
             android:name="recordID"
             app:argType="long" />
-
         <action
             android:id="@+id/actionToDatabaseSearchFragment"
-            app:destination="@id/searchCostumerFragment" />
+            app:destination="@id/searchCostumerFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_salesOrderFragment"
-            app:destination="@id/salesOrderFragment" />
+            app:destination="@id/salesOrderFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_orthokFragment"
-            app:destination="@id/orthokFragment" />
+            app:destination="@id/orthokFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_contactLensFragment"
-            app:destination="@id/contactLensFragment" />
+            app:destination="@id/contactLensFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_formSelectionFragment"
-            app:destination="@id/formSelectionFragment" />
+            app:destination="@id/formSelectionFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_currentRxFragment"
-            app:destination="@id/currentRxFragment" />
+            app:destination="@id/currentRxFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_ocularHealthFragment"
-            app:destination="@id/ocularHealthFragment" />
+            app:destination="@id/ocularHealthFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_infoFragment"
-            app:destination="@id/infoFragment" />
+            app:destination="@id/infoFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_followUpFragment"
-            app:destination="@id/followUpFragment" />
+            app:destination="@id/followUpFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_supplementaryFragment"
-            app:destination="@id/supplementaryFragment" />
+            app:destination="@id/supplementaryFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_memoFragment"
-            app:destination="@id/memoFragment" />
+            app:destination="@id/memoFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_refractionFragment"
-            app:destination="@id/refractionFragment" />
+            app:destination="@id/refractionFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/previewWithNameFragment"
         android:name="com.lizpostudio.kgoptometrycrm.export.PreviewWithNameFragment"
         android:label="PreviewWithNameFragment"
         tools:layout="@layout/fragment_preview_with_name">
-
         <argument
             android:name="model"
             app:argType="com.lizpostudio.kgoptometrycrm.export.ExportModel" />
-
         <action
             android:id="@+id/actionToSalesOrder"
-            app:destination="@id/salesOrderFragment" />
+            app:destination="@id/salesOrderFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/previewWithOutNameFragment"
         android:name="com.lizpostudio.kgoptometrycrm.export.PreviewWithOutNameFragment"
         android:label="PreviewWithOutNameFragment"
         tools:layout="@layout/fragment_preview_with_out_name">
-
         <argument
             android:name="model"
             app:argType="com.lizpostudio.kgoptometrycrm.export.ExportModel" />
-
         <action
             android:id="@+id/actionToSalesOrder"
-            app:destination="@id/salesOrderFragment" />
+            app:destination="@id/salesOrderFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/targetCopyFragment"
@@ -747,7 +1270,10 @@
             app:argType="string" />
         <action
             android:id="@+id/action_to_form_selection"
-            app:destination="@id/formSelectionFragment" />
+            app:destination="@id/formSelectionFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/settingLoginFragment"
@@ -757,6 +1283,9 @@
 
         <action
             android:id="@+id/actionToLoginFragment"
-            app:destination="@id/loginFragment" />
+            app:destination="@id/loginFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true" />
     </fragment>
 </navigation>

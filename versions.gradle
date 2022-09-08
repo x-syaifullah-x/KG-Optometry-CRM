@@ -12,6 +12,7 @@ ext {
     vKotlin = "1.7.10"
 
     vAppCompat = "1.5.0"
+    vCamera = "1.1.0"
     vConstraintLayout = "2.1.4"
     vCoroutines = "1.6.0"
     vFirebaseBom = "29.0.3"

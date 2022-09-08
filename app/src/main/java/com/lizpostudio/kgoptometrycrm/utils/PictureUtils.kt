@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import android.media.ExifInterface
 import android.os.Build
 import java.io.FileDescriptor
+import java.io.InputStream
 import kotlin.math.roundToInt
 
 fun screenWidthPx(): Int {
@@ -87,6 +88,57 @@ fun getScaledBitmap(
     val newBitmap =
         if (exifAttributeInt == ExifInterface.ORIENTATION_ROTATE_90) {
             BitmapUtils.rotate(result, 90F)
+        } else {
+            result
+        }
+    return newBitmap
+}
+
+fun getScaledBitmap(
+    inputStream: InputStream?,
+    destWidth: Int,
+    destHeight: Int
+): Bitmap? {
+    // Read in the dimensions of the image on disk
+    var options = BitmapFactory.Options()
+    options.inJustDecodeBounds = true
+
+    BitmapFactory.decodeStream(inputStream, null, options)
+    val srcWidth = options.outWidth.toFloat()
+    val srcHeight = options.outHeight.toFloat()
+
+    // Figure out how much to scale down by
+    var inSampleSize = 1
+    if (srcHeight > destHeight || srcWidth > destWidth) {
+        val heightScale = srcHeight / destHeight
+        val widthScale = srcWidth / destWidth
+
+        val sampleScale =
+            if (heightScale > widthScale) {
+                heightScale
+            } else {
+                widthScale
+            }
+        inSampleSize = sampleScale.roundToInt()
+    }
+
+    options = BitmapFactory.Options()
+    options.inSampleSize = inSampleSize
+    options.inJustDecodeBounds = false
+
+    // Read in and create final bitmap
+    val result = BitmapFactory.decodeStream(inputStream, null, options)
+
+    val exifAttributeInt =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            val exif = ExifInterface(inputStream ?: return null)
+            exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1)
+        } else {
+            0
+        }
+    val newBitmap =
+        if (exifAttributeInt == ExifInterface.ORIENTATION_ROTATE_90) {
+            BitmapUtils.rotate(result ?: return null, 90F)
         } else {
             result
         }

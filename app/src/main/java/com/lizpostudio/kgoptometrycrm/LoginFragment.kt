@@ -11,9 +11,11 @@ import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
@@ -152,6 +154,20 @@ class LoginFragment : Fragment() {
             }
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        requireActivity().onBackPressedDispatcher.addCallback(this) {
+            if (mFirebaseUser != null) {
+                if (trustedDevice) {
+                    findNavController().navigate(LoginFragmentDirections.actionLoginFragmentToDatabaseSearchFragment())
+                }
+            } else {
+                requireActivity().finishAfterTransition()
+            }
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -159,7 +175,11 @@ class LoginFragment : Fragment() {
     ): View {
 
         binding.tvChangeFirebaseConfig.setOnClickListener {
-            findNavController().navigate(R.id.settingLoginFragment)
+            val navOption = NavOptions.Builder()
+                .setLaunchSingleTop(true)
+                .setPopUpTo(null, true)
+                .build()
+            findNavController().navigate(R.id.settingLoginFragment, null, navOption)
         }
         cleanSearch()
 

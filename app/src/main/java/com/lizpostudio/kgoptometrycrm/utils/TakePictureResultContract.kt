@@ -15,7 +15,6 @@ class TakePictureResultContract : ActivityResultContract<Uri, Uri?>() {
 
     @CallSuper
     override fun createIntent(context: Context, input: Uri): Intent {
-        ActivityResultContracts.TakePicture()
         return Intent(MediaStore.ACTION_IMAGE_CAPTURE)
             .putExtra(MediaStore.EXTRA_OUTPUT, input)
             .also { takePictureIntent ->

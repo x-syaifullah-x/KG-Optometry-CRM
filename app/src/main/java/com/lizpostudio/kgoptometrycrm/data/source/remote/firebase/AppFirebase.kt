@@ -1,6 +1,7 @@
 package com.lizpostudio.kgoptometrycrm.data.source.remote.firebase
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.net.Uri
 import androidx.room.RoomDatabase
 import com.google.firebase.FirebaseApp
@@ -24,18 +25,25 @@ class AppFirebase private constructor() {
         private const val KEY_PROJECT_ID = "PROJECT_ID"
         private const val KEY_FIREBASE_NAME = "firebase_name"
 
+        private const val DEFAULT_PROJECT_NUMBER = "630259719920"
+        private const val DEFAULT_API_KEY = "AIzaSyBI6-DpeH-ki0jLsQ64E3XVrw00wxG-qQI"
+        private const val DEFAULT_APPLICATION_ID = "1:630259719920:android:02d8acd58e5fc3ad0d2c35"
+        private const val DEFAULT_STORAGE_BUCKET = "kgoptometrycrm.appspot.com"
+        private const val DEFAULT_PROJECT_ID = "kgoptometrycrm"
+        private const val DEFAULT_FIREBASE_URL = "https://kgoptometrycrm.firebaseio.com"
+
         @Volatile
         private var INSTANCE: FirebaseApp? = null
 
         fun setDefaultConfiguration(context: Context?): Boolean {
             return setConfiguration(
                 context = context,
-                projectNumber = "630259719920",
-                firebaseUrl = "https://kgoptometrycrm.firebaseio.com",
-                storageBucket = "kgoptometrycrm.appspot.com",
-                projectId = "kgoptometrycrm",
-                apiKey = "AIzaSyBI6-DpeH-ki0jLsQ64E3XVrw00wxG-qQI",
-                mobilesdkAppId = "1:630259719920:android:02d8acd58e5fc3ad0d2c35"
+                projectNumber = DEFAULT_PROJECT_NUMBER,
+                firebaseUrl = DEFAULT_FIREBASE_URL,
+                storageBucket = DEFAULT_STORAGE_BUCKET,
+                projectId = DEFAULT_PROJECT_ID,
+                apiKey = DEFAULT_API_KEY,
+                mobilesdkAppId = DEFAULT_APPLICATION_ID
             )
         }
 
@@ -64,13 +72,11 @@ class AppFirebase private constructor() {
             )
         }
 
-        fun setConfiguration(context: Context?, googleServicesJsonString: String): Boolean {
-            return setConfiguration(context, JSONObject(googleServicesJsonString))
-        }
+        fun setConfiguration(context: Context?, googleServicesJsonString: String) =
+            setConfiguration(context, JSONObject(googleServicesJsonString))
 
-        fun setConfiguration(context: Context?, googleServicesBytes: ByteArray): Boolean {
-            return setConfiguration(context, String(googleServicesBytes))
-        }
+        fun setConfiguration(context: Context?, googleServicesBytes: ByteArray) =
+            setConfiguration(context, String(googleServicesBytes))
 
         fun setConfiguration(context: Context?, googleServiceFileUri: Uri?): Boolean {
             var result = false
@@ -135,23 +141,43 @@ class AppFirebase private constructor() {
             }
         }
 
+        private fun getName(pref: SharedPreferences): String {
+            val currentName = pref.getString(KEY_FIREBASE_NAME, "")
+            if (currentName.isNullOrEmpty()) {
+                var newFirebaseName: String
+                while (true) {
+                    newFirebaseName = generateID()
+                    if (currentName != newFirebaseName) {
+                        pref.edit()
+                            .putString(KEY_FIREBASE_NAME, newFirebaseName)
+                            .apply()
+                        return newFirebaseName
+                    }
+                }
+            }
+            return currentName
+        }
+
         fun getInstance(context: Context) = INSTANCE ?: synchronized(this) {
             INSTANCE ?: run {
                 val pref = Constants.getSharedPreferences(context)
-                val firebaseName = pref.getString(KEY_FIREBASE_NAME, "") ?: ""
-                if (firebaseName.isEmpty())
-                    if (!setDefaultConfiguration(context))
-                        throw Throwable("invalid set configuration")
+                val projectNumber = "${pref.getString(KEY_PROJECT_NUMBER, DEFAULT_PROJECT_NUMBER)}"
+                val apiKey = "${pref.getString(KEY_API_KEY, DEFAULT_API_KEY)}"
+                val applicationId = "${pref.getString(KEY_APPLICATION_ID, DEFAULT_APPLICATION_ID)}"
+                val storageBucket = "${pref.getString(KEY_STORAGE_BUCKET, DEFAULT_STORAGE_BUCKET)}"
+                val projectId = "${pref.getString(KEY_PROJECT_ID, DEFAULT_PROJECT_ID)}"
+                val firebaseUrl = "${pref.getString(KEY_FIREBASE_URL, DEFAULT_FIREBASE_URL)}"
+                val name = getName(pref)
                 val firebaseOption = FirebaseOptions.Builder()
-                    .setDatabaseUrl("${pref.getString(KEY_FIREBASE_URL, "")}")
-                    .setGcmSenderId("${pref.getString(KEY_PROJECT_NUMBER, "")}")
-                    .setApiKey("${pref.getString(KEY_API_KEY, "")}")
-                    .setApplicationId("${pref.getString(KEY_APPLICATION_ID, "")}")
-                    .setStorageBucket("${pref.getString(KEY_STORAGE_BUCKET, "")}")
-                    .setProjectId("${pref.getString(KEY_PROJECT_ID, "")}")
+                    .setDatabaseUrl(firebaseUrl)
+                    .setGcmSenderId(projectNumber)
+                    .setApiKey(apiKey)
+                    .setApplicationId(applicationId)
+                    .setStorageBucket(storageBucket)
+                    .setProjectId(projectId)
                     .build()
                 FirebaseApp.initializeApp(
-                    context, firebaseOption, firebaseName
+                    context, firebaseOption, name
                 ).also { INSTANCE = it }
             }
         }
