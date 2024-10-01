@@ -107,12 +107,12 @@
         android:drawableStart="@drawable/person_24"
         android:ems="10"
         android:hint="@string/login_hint"
+        android:importantForAutofill="no"
         android:inputType="textPersonName"
         android:textColor="@color/lightBackground"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/hello_user_text"
-        tools:ignore="Autofill" />
+        app:layout_constraintTop_toBottomOf="@+id/hello_user_text" />
 
     <EditText
         android:id="@+id/editPassword"
@@ -124,12 +124,12 @@
         android:drawableStart="@drawable/lock_24"
         android:ems="10"
         android:hint="password"
+        android:importantForAutofill="no"
         android:inputType="textVisiblePassword"
         android:textColor="@color/lightBackground"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editLoginName"
-        tools:ignore="Autofill" />
+        app:layout_constraintTop_toBottomOf="@+id/editLoginName" />
 
     <TextView
         android:id="@+id/hello_user_text"

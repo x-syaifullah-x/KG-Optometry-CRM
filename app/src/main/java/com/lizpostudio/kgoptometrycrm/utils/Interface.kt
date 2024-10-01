@@ -17,7 +17,7 @@ fun actionConfirmDeletion(
     isAdmin: Boolean,
     context: Context,
     checkPassword: Boolean = true,
-    callback: (deleteAllowed: Boolean) -> Unit
+    onDeleted: (deleteAllowed: Boolean) -> Unit
 ) {
 
     val passwordBox = EditText(context)
@@ -27,14 +27,15 @@ fun actionConfirmDeletion(
     dialogBuilder.setMessage(message)
     dialogBuilder.setView(passwordBox)
 
-    if (!checkPassword) passwordBox.visibility = View.GONE
+    if (!checkPassword)
+        passwordBox.visibility = View.GONE
 
     dialogBuilder.setPositiveButton(
         context.getString(R.string.yes_answer)
     ) { _, _ ->
         val textInput = passwordBox.text.toString()
         if (textInput == "Kgopto" || isAdmin || !checkPassword) {
-            callback(true)
+            onDeleted(true)
         } else {
             Toast.makeText(context, "Incorrect password", Toast.LENGTH_SHORT).show()
         }

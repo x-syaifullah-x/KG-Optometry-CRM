@@ -12,6 +12,7 @@ import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
@@ -25,15 +26,17 @@ import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.lizpostudio.kgoptometrycrm.constant.Constants
-import com.lizpostudio.kgoptometrycrm.data.repository.PatientRepository
-import com.lizpostudio.kgoptometrycrm.data.source.remote.MyFirebase
 import com.lizpostudio.kgoptometrycrm.data.source.remote.firebase.KGMessage
+import com.lizpostudio.kgoptometrycrm.data.source.remote.firebase.RemoteDataSource
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentLoginBinding
-import com.lizpostudio.kgoptometrycrm.search.SearchCostumerFragment
-import com.lizpostudio.kgoptometrycrm.search.SearchSalesFragment
+import com.lizpostudio.kgoptometrycrm.ktx.hideKeyboard
+import com.lizpostudio.kgoptometrycrm.search.costumer.SearchCostumerFragment
+import com.lizpostudio.kgoptometrycrm.search.follow_up.SearchFollowUpFragment
+import com.lizpostudio.kgoptometrycrm.search.recycle_bin.SearchRecycleBinFragment
+import com.lizpostudio.kgoptometrycrm.search.sales.SearchSalesFragment
 import com.lizpostudio.kgoptometrycrm.utils.MessagesListAdapter
 import com.lizpostudio.kgoptometrycrm.utils.convertLongToDDKey
-import com.lizpostudio.kgoptometrycrm.utils.convertLongToDDMMYYHRSMIN
+import com.lizpostudio.kgoptometrycrm.utils.convertTo_dd_MM_yy_hh_mm_a
 import com.lizpostudio.kgoptometrycrm.utils.generateID
 import id.xxx.module.view.binding.ktx.viewBinding
 
@@ -48,38 +51,21 @@ class LoginFragment : Fragment() {
         private const val TRUSTED_CHILD = "trusted"
         private const val ADMIN_KEY = "admin"
         private const val USERS_KEY = "user"
+        private const val KEY_USER_NAME = "user_name"
+        private const val KEY_USER_TYPE = "admin"
 
-        fun defaultFirebaseConfig(edit: SharedPreferences.Editor): Boolean {
-            return edit
-                .putString(
-                    MyFirebase.KEY_FIREBASE_URL,
-                    "https://kgoptometrycrm.firebaseio.com"
-                )
-                .putString(
-                    MyFirebase.KEY_PROJECT_NUMBER,
-                    "630259719920"
-                )
-                .putString(
-                    MyFirebase.KEY_API_KEY,
-                    "AIzaSyBI6-DpeH-ki0jLsQ64E3XVrw00wxG-qQI"
-                )
-                .putString(
-                    MyFirebase.KEY_APPLICATION_ID,
-                    "1:630259719920:android:02d8acd58e5fc3ad0d2c35"
-                )
-                .putString(
-                    MyFirebase.KEY_STORAGE_BUCKET,
-                    "kgoptometrycrm.appspot.com"
-                )
-                .putString(
-                    MyFirebase.KEY_PROJECT_ID,
-                    "kgoptometrycrm"
-                )
-                .commit()
+        fun getDatabaseUserLogin(
+            firebaseDatabase: FirebaseDatabase, uid: String
+        ): DatabaseReference {
+            return firebaseDatabase.reference
+                .child("users")
+                .child("login")
+                .child(uid)
         }
     }
 
     private var deviceCode = "NO"
+
     private var trustedDevice = false
     private var listOfTrustedDevices = MutableLiveData<List<String>>()
 
@@ -110,6 +96,17 @@ class LoginFragment : Fragment() {
 //        AuthUI.IdpConfig.EmailBuilder().build()
 //    )
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            if (mFirebaseUser == null) {
+                requireActivity().finishAfterTransition()
+            }
+        }
+    }
+
+
     private fun updateUIOnSuccess() {
 
         userNameAuth = getUsernameFromEmail(mFirebaseUser!!.email)
@@ -130,6 +127,10 @@ class LoginFragment : Fragment() {
         binding.startButton.visibility = View.VISIBLE
         binding.customersText.visibility = View.VISIBLE
         //  Log.d(TAG, "user = ${mFirebaseUser?.email} === $mFirebaseUser")
+        val mainActivity = requireActivity()
+        if (mainActivity is MainActivity) {
+            mainActivity.addUsersEventListener()
+        }
     }
 
     // [START auth_fui_result]
@@ -163,15 +164,29 @@ class LoginFragment : Fragment() {
 //        }
 //    }
 
-    private fun signIn(email: String, password: String) {
-        val firebaseApp = MyFirebase.getInstance(requireContext())
-        val auth = FirebaseAuth.getInstance(firebaseApp)
+    private fun signIn(email: String, password: String, view: View) {
+        val remote = RemoteDataSource.getInstance(requireContext())
+        val auth = remote.getFirebaseAuth()
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(requireActivity()) { task ->
                 if (task.isSuccessful) {
-                    mFirebaseUser = auth.currentUser
-                    updateUIOnSuccess()
-                    checkTrustedDevice()
+                    val currentUser = auth.currentUser
+                    mFirebaseUser = currentUser
+                    hideKeyboard(view) {
+                        if (currentUser != null) {
+                            val uid = currentUser.uid
+                            getDatabaseUserLogin(remote.getFirebaseDatabase(), uid)
+                                .setValue(
+                                    mapOf(
+                                        "uid" to uid,
+                                        "timestamp" to System.currentTimeMillis(),
+                                        "email" to currentUser.email
+                                    )
+                                )
+                        }
+                        updateUIOnSuccess()
+                        checkTrustedDevice()
+                    }
                 } else {
                     binding.helloUserText.text = getString(R.string.sign_in_failure)
                     Toast.makeText(
@@ -194,7 +209,7 @@ class LoginFragment : Fragment() {
 
         // =============== Check the User and sign in if null =================
 
-        fireApp = MyFirebase.getInstance(requireContext())
+        fireApp = RemoteDataSource.getInstance(requireContext()).getFirebaseApp()
         firebaseDatabase = fireApp?.let { Firebase.database(it) }
         messagesReference = firebaseDatabase?.reference?.child(MESSAGES_CHILD)
 
@@ -204,7 +219,6 @@ class LoginFragment : Fragment() {
 
         if (mFirebaseUser != null) {
             updateUIOnSuccess()
-
         } else {
             // No user is signed in
             val userLogged = "Guest! Please, log in to continue"
@@ -215,17 +229,17 @@ class LoginFragment : Fragment() {
         }
 
         binding.loginLogoutButton.setOnClickListener {
+
             //         Log.d(TAG, "login - logout clicked user = $mFirebaseUser")
             if (mFirebaseUser == null) { // log on user
                 val userEmail = binding.editLoginName.text.toString() + "@gmail.com"
                 val userPass = binding.editPassword.text.toString()
 
                 // WORKAROUND #1
-                if (userEmail.isNotBlank() && userPass.isNotBlank()) signIn(userEmail, userPass)
+                if (userEmail.isNotBlank() && userPass.isNotBlank())
+                    signIn(userEmail, userPass, it)
 
-            } else { // log out user
-                // remove listeners and clean-up messages
-
+            } else {
                 if (msgListener != null) {
                     messagesReference!!.removeEventListener(msgListener!!)
                 }
@@ -234,6 +248,10 @@ class LoginFragment : Fragment() {
 
                 signOut()
                 mFirebaseUser = null
+                val mainActivity = requireActivity();
+                if (mainActivity is MainActivity) {
+                    mainActivity.removeUsersEventListener()
+                }
             }
         }
 
@@ -249,7 +267,11 @@ class LoginFragment : Fragment() {
         }
 
         binding.startButton.setOnClickListener {
-            if (trustedDevice) {
+            if (mFirebaseUser?.email == "tester@gmail.com") {
+                findNavController().navigate(LoginFragmentDirections.actionLoginFragmentToDatabaseSearchFragment())
+                return@setOnClickListener
+            }
+            if (trustedDevice || BuildConfig.DEBUG) {
                 if (mFirebaseUser != null) {
                     findNavController().navigate(LoginFragmentDirections.actionLoginFragmentToDatabaseSearchFragment())
                 } else {
@@ -352,7 +374,7 @@ class LoginFragment : Fragment() {
 
     private fun submitMessage() {
         val body = binding.messageEditText.text.toString()
-        val time = convertLongToDDMMYYHRSMIN(System.currentTimeMillis())
+        val time = convertTo_dd_MM_yy_hh_mm_a(System.currentTimeMillis())
         val message = KGMessage(userNameAuth, body, time)
 
         val key = messagesReference!!.push().key
@@ -371,9 +393,16 @@ class LoginFragment : Fragment() {
     private fun signOut() {
 
         binding.editPassword.setText("")
-        FirebaseAuth.getInstance(
-            MyFirebase.getInstance(requireContext())
-        ).signOut()
+
+        val remote = RemoteDataSource.getInstance(requireContext())
+        val auth = remote.getFirebaseAuth()
+        val firebaseDatabase = remote.getFirebaseDatabase()
+        val uid = auth.uid
+        if (uid != null) {
+            getDatabaseUserLogin(firebaseDatabase, uid)
+                .removeValue()
+        }
+        remote.getFirebaseAuth().signOut()
 
         val userLogged = "Guest! Please, log in to continue"
         binding.editLoginName.visibility = View.VISIBLE
@@ -383,12 +412,10 @@ class LoginFragment : Fragment() {
         binding.customersText.visibility = View.GONE
         binding.settingsButton.visibility = View.GONE
 
-        cleanAdminRight()
-
+        cleanAdminRight(Constants.getSharedPreferences(context))
         binding.loginLogoutButton.setImageResource(R.drawable.login_36)
         binding.loginLogoutText.text = getString(R.string.login)
         binding.helloUserText.text = getString(R.string.hello_user, userLogged)
-
     }
 
 
@@ -431,7 +458,7 @@ class LoginFragment : Fragment() {
         if (deviceCode == "NO" && mFirebaseUser != null) {
             // record device code to Firebase
             val timeStamp = System.currentTimeMillis()
-            deviceCode = generateID(PatientRepository.getInstance(requireContext()))
+            deviceCode = generateID(requireContext())
 
             val devicesFBReference = firebaseDatabase!!.reference
                 .child(SETTINGS_CHILD)
@@ -476,19 +503,16 @@ class LoginFragment : Fragment() {
 
 
     private fun saveUserToLocal(userName: String, userType: String) {
-        val sharedPref = activity
-            ?.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE)
-        if (sharedPref != null) {
-            val editor = sharedPref.edit()
-            editor.putString("user_name", userName)
-            editor.putString("admin", userType)
-            editor.apply()
-        }
+        val sharedPref = Constants.getSharedPreferences(context)
+        val editor = sharedPref.edit()
+        editor.putString(KEY_USER_NAME, userName)
+        editor.putString(KEY_USER_TYPE, userType)
+        editor.apply()
     }
 
-    private fun cleanAdminRight() {
-        val editor = Constants.getSharedPreferences(requireContext()).edit()
-        editor.putString("admin", USERS_KEY)
+    private fun cleanAdminRight(sharedPreferences: SharedPreferences) {
+        val editor = sharedPreferences.edit()
+        editor.putString(KEY_USER_TYPE, USERS_KEY)
         editor.apply()
     }
 
@@ -496,10 +520,16 @@ class LoginFragment : Fragment() {
         val editor = Constants.getSharedPreferences(requireContext()).edit()
         val searchCostumerBy = resources.getStringArray(R.array.search_customer_choices)[0]
         val searchSalesBy = resources.getStringArray(R.array.search_sales_choices)[0]
+        val searchFollowUpBy = resources.getStringArray(R.array.search_follow_up_choices)[0]
+        val searchRecycleBinBy = resources.getStringArray(R.array.search_recycle_bin_choices)[0]
         editor.putString(SearchCostumerFragment.KEY_SEARCH_BY, searchCostumerBy)
         editor.putString(SearchCostumerFragment.KEY_SEARCH_VALUE, "")
         editor.putString(SearchSalesFragment.KEY_SEARCH_BY, searchSalesBy)
         editor.putString(SearchSalesFragment.KEY_SEARCH_VALUE, "")
+        editor.putString(SearchFollowUpFragment.KEY_SEARCH_BY, searchFollowUpBy)
+        editor.putString(SearchFollowUpFragment.KEY_SEARCH_VALUE, "")
+        editor.putString(SearchRecycleBinFragment.KEY_SEARCH_BY, searchRecycleBinBy)
+        editor.putString(SearchRecycleBinFragment.KEY_SEARCH_VALUE, "")
         editor.apply()
     }
 
@@ -511,7 +541,6 @@ class LoginFragment : Fragment() {
         }
     }
 
-    @SuppressLint("ClickableViewAccessibility")
     private fun showPopup(message: String) {
 
         //       val app = requireNotNull(this.activity).application
@@ -533,22 +562,11 @@ class LoginFragment : Fragment() {
         popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0)
 
         // dismiss the popup window when touched
-        popupView.setOnTouchListener { _, _ ->
-            popupWindow.dismiss()
+        popupView.setOnTouchListener { v, _ ->
+            if (v.performClick()) {
+                popupWindow.dismiss()
+            }
             true
-        }
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        val pref = Constants.getSharedPreferences(requireContext())
-
-        val keyFirstInstall = "first_install"
-
-        if (pref.getBoolean(keyFirstInstall, true)) {
-            val edit = pref.edit()
-            edit.putBoolean(keyFirstInstall, false)
-            defaultFirebaseConfig(edit)
         }
     }
 }

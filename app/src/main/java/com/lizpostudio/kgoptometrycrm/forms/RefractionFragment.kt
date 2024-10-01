@@ -25,10 +25,11 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.firebase.storage.StorageReference
 import com.lizpostudio.kgoptometrycrm.PatientsViewModel
-import com.lizpostudio.kgoptometrycrm.PatientsViewModelFactory
 import com.lizpostudio.kgoptometrycrm.R
+import com.lizpostudio.kgoptometrycrm.ViewModelProviderFactory
+import com.lizpostudio.kgoptometrycrm.camera.CameraActivity
 import com.lizpostudio.kgoptometrycrm.constant.Constants
-import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
+import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientEntity
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentRefractionBinding
 import com.lizpostudio.kgoptometrycrm.utils.*
 import id.xxx.module.view.binding.ktx.viewBinding
@@ -43,7 +44,7 @@ import java.io.InputStream
 class RefractionFragment : Fragment() {
 
     companion object {
-        private const val vaDefault = "6/"
+        const val vaDefault = "6/"
         private const val PHOTO_W = 500
         private const val PHOTO_H = 700
 
@@ -51,10 +52,12 @@ class RefractionFragment : Fragment() {
     }
 
     private val patientViewModel: PatientsViewModel by viewModels {
-        PatientsViewModelFactory(requireContext())
+        ViewModelProviderFactory.getInstance(context)
     }
 
-    private val binding by viewBinding<FragmentRefractionBinding>()
+    private val bindingRoot by viewBinding<FragmentRefractionBinding>()
+
+    private val binding by lazy { bindingRoot.content }
 
     private var isAdmin = false
 
@@ -66,79 +69,40 @@ class RefractionFragment : Fragment() {
     private var sectionEditDate = -1L
     private var showPhoto = true
 
-    private var currentForm = PatientsEntity()
+    private var currentForm = PatientEntity()
     private var navigateFormName = ""
     private var navigateFormRecordID = -1L
 
     private var isTakePhoto = false
 
-    private val takePicture =
-        registerForActivityResult(TakePictureWithUriReturnContract()) { result ->
-            if (result != null) {
-                val parcelFileDescriptor =
-                    requireContext().contentResolver.openFileDescriptor(result, "rw")
-                        ?: return@registerForActivityResult
-                isTakePhoto = true
-                val bitmap = getScaledBitmap(
-                    parcelFileDescriptor.fileDescriptor, PHOTO_W, PHOTO_H
-                )
-                parcelFileDescriptor.close()
-                requireContext().contentResolver.delete(result, null, null)
-                binding.rotatePhoto.visibility = View.VISIBLE
-                binding.autorefPhoto.setImageBitmap(bitmap)
-                currentForm.reservedField = storageRef.toString()
-                val bos = ByteArrayOutputStream()
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos)
-                storageRef.putBytes(bos.toByteArray())
-                    .addOnCompleteListener { _ ->
-                        bos.close()
-                    }
-                    .addOnFailureListener {
-                        bos.close()
-                        Toast.makeText(
-                            requireContext(), it.localizedMessage, Toast.LENGTH_LONG
-                        ).show()
-                    }
-            }
+    private val takePicture = registerForActivityResult(CameraActivity.ResultContract()) { result ->
+        if (result != null) {
+            val parcelFileDescriptor =
+                requireContext().contentResolver.openFileDescriptor(result, "rw")
+                    ?: return@registerForActivityResult
+            isTakePhoto = true
+            val bitmap = getScaledBitmap(
+                parcelFileDescriptor.fileDescriptor, PHOTO_W, PHOTO_H
+            )
+            parcelFileDescriptor.close()
+            requireContext().contentResolver.delete(result, null, null)
+            binding.rotatePhoto.visibility = View.VISIBLE
+            binding.autorefPhoto.setImageBitmap(bitmap)
+            currentForm.reservedField = storageRef.toString()
+            val bos = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos)
+            storageRef.putBytes(bos.toByteArray())
+                .addOnCompleteListener {
+                    bos.close()
+                }
+                .addOnFailureListener {
+                    bos.close()
+                    Toast.makeText(
+                        requireContext(), it.localizedMessage, Toast.LENGTH_LONG
+                    ).show()
+                }
         }
-//        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-//            if (result.resultCode == Activity.RESULT_OK) {
-//                lifecycleScope.launchWhenCreated {
-//                    withContext(Dispatchers.IO) {
-//                        runCatching {
-//                            isTakePhoto = true
-//                            val bitmap = result.data?.extras?.get("data") as Bitmap
-//                            Bitmap.createScaledBitmap(bitmap, PHOTO_W, PHOTO_H, false)
-//                            val os = ByteArrayOutputStream()
-//                            binding.rotatePhoto.visibility = View.VISIBLE
-//                            binding.autorefPhoto.setImageBitmap(bitmap)
-//                            try {
-//                                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os)
-//                                currentForm.reservedField = storageRef.toString()
-//                                storageRef.putBytes(os.toByteArray() ?: return@withContext)
-//                                    .addOnCompleteListener { task ->
-////                                        if (task.isSuccessful) {
-////
-////                                        }
-//                                    }
-//                                    .addOnFailureListener {
-//                                        Toast.makeText(
-//                                            requireContext(), it.localizedMessage, Toast.LENGTH_LONG
-//                                        ).show()
-//                                    }
-//                            } catch (e: Exception) {
-//                                Toast.makeText(
-//                                    requireContext(), e.localizedMessage, Toast.LENGTH_LONG
-//                                ).show()
-//                                e.printStackTrace()
-//                            } finally {
-//                                os.close()
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -173,7 +137,7 @@ class RefractionFragment : Fragment() {
         val sharedPref = app.getSharedPreferences(
             Constants.PREF_NAME, Context.MODE_PRIVATE
         )
-        isAdmin = sharedPref?.getString("admin", "") ?: "" == "admin"
+        isAdmin = (sharedPref?.getString("admin", "") ?: "") == "admin"
         viewOnlyMode = sharedPref?.getBoolean("viewOnly", false) ?: false
 
         if (viewOnlyMode) {
@@ -183,7 +147,7 @@ class RefractionFragment : Fragment() {
                     R.color.viewOnlyMode
                 )
             )
-            binding.saveFormButton.visibility = View.GONE
+            bindingRoot.saveFormButton.visibility = View.GONE
         } else binding.mainLayout.setBackgroundColor(
             ContextCompat.getColor(
                 requireContext(),
@@ -199,7 +163,6 @@ class RefractionFragment : Fragment() {
                 patientViewModel.createRecordListener(currentForm.recordID)
                 fillTheForm(it)
                 patientViewModel.getAllFormsForPatient(patientID)
-                updatePhotoView()
             }
         }
 
@@ -215,6 +178,10 @@ class RefractionFragment : Fragment() {
                             R.string.number_of_years_patient,
                             age, dob
                         )
+
+                        if (currentForm.patientIC != ic) {
+                            currentForm.patientIC = ic
+                        }
                     }
                 }
                 binding.patientName.text = pAge
@@ -222,7 +189,7 @@ class RefractionFragment : Fragment() {
                 val screenDst = Resources.getSystem().displayMetrics.density
 
                 val sortedList = it.sortedBy { patientsForms -> patientsForms.dateOfSection }
-                val newList = mutableListOf<PatientsEntity>()
+                val newList = mutableListOf<PatientEntity>()
 
                 for (section in orderOfSections) {
                     for (forms in sortedList) {
@@ -241,7 +208,7 @@ class RefractionFragment : Fragment() {
                     .toSet()
 
                 /* FOR BOTTOM NAVIGATION */
-                val mapSectionName = mutableMapOf<String, MutableList<PatientsEntity>>()
+                val mapSectionName = mutableMapOf<String, MutableList<PatientEntity>>()
                 newList.forEach { patient ->
                     val key = mapSectionName[patient.sectionName]
                     if (key == null) {
@@ -251,8 +218,8 @@ class RefractionFragment : Fragment() {
                 }
 
                 var sectionName = ""
-                val navChipGroup = binding.navigationLayout
-                val navChipGroup2 = binding.navigationLayout2
+                val navChipGroup = bindingRoot.navigationLayout
+                val navChipGroup2 = bindingRoot.navigationLayout2
 //                val children = newList.map { patientForm ->
                 val children = newSectionName.map { patientForm ->
                     val chip = TextView(app.applicationContext)
@@ -288,7 +255,7 @@ class RefractionFragment : Fragment() {
                     }
 
 //                    val sectionShortName = makeShortSectionName(patientForm.sectionName)
-                    val sectionShortName = makeShortSectionName(patientForm)
+                    val sectionShortName = makeShortSectionName(requireContext(), patientForm)
 //                    chip.text = "$sectionShortName\n${convertLongToDDMMYY(patientForm.dateOfSection)}"
                     chip.text = sectionShortName
 
@@ -327,13 +294,15 @@ class RefractionFragment : Fragment() {
                             (4 * screenDst).toInt()
                         )
 
-                        if (patientForm.recordID == recordID)
+                        if (patientForm.recordID == recordID) {
                             chip.setBackgroundColor(
                                 ContextCompat.getColor(
                                     app.applicationContext, R.color.lightBackground
                                 )
                             )
-                        else
+                            createRefAssignPhFile()
+                            updatePhotoView()
+                        } else
                             chip.setBackgroundColor(
                                 ContextCompat.getColor(
                                     app.applicationContext,
@@ -341,9 +310,11 @@ class RefractionFragment : Fragment() {
                                 )
                             )
 
-                        val sectionShortName = makeShortSectionName(patientForm.sectionName)
-                        chip.text =
+                        val sectionShortName =
+                            makeShortSectionName(requireContext(), patientForm.sectionName)
+                        val text =
                             "$sectionShortName\n${convertLongToDDMMYY(patientForm.dateOfSection)}"
+                        chip.text = text
 
                         chip.tag = patientForm.sectionName + "\n" + "${patientForm.recordID}"
 
@@ -377,11 +348,11 @@ class RefractionFragment : Fragment() {
 
                 val hPos = newSectionName.indexOf("REFRACTION")
                 if (hPos > 3) {
-                    val scrollWidth = binding.chipsScroll.width
+                    val scrollWidth = bindingRoot.chipsScroll.width
                     val scrollX = ((hPos - 2) * (scrollWidth / 6.25)).toInt()
-                    binding.chipsScroll.postDelayed({
+                    bindingRoot.chipsScroll.postDelayed({
                         if (context != null)
-                            binding.chipsScroll.smoothScrollTo(scrollX, 0)
+                            bindingRoot.chipsScroll.smoothScrollTo(scrollX, 0)
                     }, 100L)
                 }
 
@@ -389,11 +360,11 @@ class RefractionFragment : Fragment() {
                     mapSectionName[sectionName]?.map { form -> form.recordID } ?: listOf()
                 val hPosBottomNav = hPosList.indexOf(recordID)
                 if (hPosBottomNav > 3) {
-                    val scrollWidth = binding.chipsScroll2.width
+                    val scrollWidth = bindingRoot.chipsScroll2.width
                     val scrollX = ((hPosBottomNav - 2) * (scrollWidth / 6.25)).toInt()
-                    binding.chipsScroll2.postDelayed({
+                    bindingRoot.chipsScroll2.postDelayed({
                         if (context != null)
-                            binding.chipsScroll2.smoothScrollTo(scrollX, 0)
+                            bindingRoot.chipsScroll2.smoothScrollTo(scrollX, 0)
                     }, 100L)
                 }
             }
@@ -414,12 +385,7 @@ class RefractionFragment : Fragment() {
             }
         }
 
-        binding.photoButton.setOnClickListener { it: View ->
-//            Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
-//                takePictureIntent.resolveActivity(it.context.packageManager)?.also {
-//                    takePicture.launch(takePictureIntent)
-//                }
-//            }
+        binding.photoButton.setOnClickListener {
             val uri = FileProvider.getUriForFile(
                 it.context,
                 Constants.FILE_PROVIDER_AUTHORITY,
@@ -496,6 +462,24 @@ class RefractionFragment : Fragment() {
             binding.spinnerChart.adapter = adapter
         }
 
+        ArrayAdapter.createFromResource(
+            app.applicationContext,
+            R.array.ret_currentrx_unaided,
+            android.R.layout.simple_spinner_item
+        ).also { adapter ->
+            adapter.setDropDownViewResource(R.layout.spinner_list_basic)
+            binding.spinnerRetCurrentrxUnaided.adapter = adapter
+        }
+
+        ArrayAdapter.createFromResource(
+            app.applicationContext,
+            R.array.dominance,
+            android.R.layout.simple_spinner_item
+        ).also { adapter ->
+            adapter.setDropDownViewResource(R.layout.spinner_list_basic)
+            binding.spinnerDominance.adapter = adapter
+        }
+
         patientViewModel.navTrigger.observe(viewLifecycleOwner) { navOption ->
             navOption?.let {
                 Log.d(Constants.TAG, "RF: Launching Navigator: Nav Option == $navOption")
@@ -517,13 +501,12 @@ class RefractionFragment : Fragment() {
             ifDeleted?.let {
                 if (ifDeleted)
                     navController.navigate(
-                        RefractionFragmentDirections
-                            .actionRefractionFragmentToFormSelectionFragment(patientID)
+                        RefractionFragmentDirections.actionToFormSelectionFragment(patientID)
                     )
             }
         }
 
-        binding.deleteForm.setOnClickListener {
+        bindingRoot.deleteForm.setOnClickListener {
             if (context != null)
                 actionConfirmDeletion(
                     title = resources.getString(R.string.form_delete_title),
@@ -536,7 +519,7 @@ class RefractionFragment : Fragment() {
                 ) { allowed ->
                     if (allowed) {
                         patientViewModel.deleteRecord(currentForm)
-                        patientViewModel.deletePatientFromFirebase(currentForm.recordID.toString())
+                        patientViewModel.deletePatientFromFirebase(currentForm)
 
                     }
                 }
@@ -584,7 +567,7 @@ class RefractionFragment : Fragment() {
                 spinnerRightCyl3.setSelection(spinnerRightCyl2.selectedItemPosition)
                 editLeftAxis3.setText(editLeftAxis2.text.toString())
                 editRightAxis3.setText(editRightAxis2.text.toString())
-                ouVa.setText(editRightPd.text.toString())
+                editOuva2.setText(editOuva.text.toString())
                 spinnerAddMp.setSelection(spinnerAdd2.selectedItemPosition)
             }
         }
@@ -616,15 +599,15 @@ class RefractionFragment : Fragment() {
             }
         }
 
-        binding.saveFormButton.setOnClickListener {
+        bindingRoot.saveFormButton.setOnClickListener {
             saveAndNavigate("none")
         }
 
-        binding.backButton.setOnClickListener {
+        bindingRoot.backButton.setOnClickListener {
             saveAndNavigate("back")
         }
 
-        binding.homeButton.setOnClickListener {
+        bindingRoot.homeButton.setOnClickListener {
             saveAndNavigate("home")
         }
 
@@ -636,7 +619,7 @@ class RefractionFragment : Fragment() {
 
             binding.autorefPhoto.setImageBitmap(bitmap)
         }
-        return binding.root
+        return bindingRoot.root
     }
 
     private fun saveAndNavigate(navOption: String) {
@@ -684,9 +667,7 @@ class RefractionFragment : Fragment() {
                 fillTheForm(currentForm)
             }
             "back" -> this.findNavController().navigate(
-                RefractionFragmentDirections.actionRefractionFragmentToFormSelectionFragment(
-                    patientID
-                )
+                RefractionFragmentDirections.actionToFormSelectionFragment(patientID)
             )
             "home" -> findNavController().navigate(
                 RefractionFragmentDirections.actionToDatabaseSearchFragment()
@@ -702,6 +683,7 @@ class RefractionFragment : Fragment() {
     }
 
     private fun updatePhotoView() {
+        uploadPhotoFileToImage(null)
         if (currentForm.reservedField.isBlank()) {
             currentForm.reservedField = storageRef.toString()
         }
@@ -713,6 +695,8 @@ class RefractionFragment : Fragment() {
                 } else {
                     uploadPhotoFileToImage(stream)
                 }
+            }.addOnFailureListener {
+                uploadPhotoFileToImage(null)
             }
         } else {
             uploadPhotoFileToImage(null)
@@ -723,31 +707,23 @@ class RefractionFragment : Fragment() {
         CoroutineScope(Dispatchers.IO).launch {
             val bitmap = BitmapFactory.decodeStream(inputStream)
             withContext(Dispatchers.Main) {
-                if (bitmap != null) {
-                    binding.autorefPhoto.setImageBitmap(bitmap)
-                } else {
-                    binding.autorefPhoto.setImageBitmap(null)
+                try {
+                    if (bitmap != null) {
+                        binding.autorefPhoto.setImageBitmap(bitmap)
+                    } else {
+                        binding.autorefPhoto.setImageBitmap(null)
+                    }
+                } catch (t: Throwable) {
+                    t.printStackTrace()
                 }
             }
         }
     }
 
-//    private fun uploadPhotoFileToImage() {
-//        if (photoFile.exists()) {
-//            val bitmap = BitmapFactory.decodeFile(photoFile.path)
-//            if (bitmap != null) {
-//                binding.autorefPhoto.setImageBitmap(bitmap)
-//            }
-//        } else {
-//            binding.autorefPhoto.setImageDrawable(null)
-//        }
-//    }
-
-
-    private fun fillTheForm(patientForm: PatientsEntity) {
+    private fun fillTheForm(patientForm: PatientEntity) {
         val extractData = patientForm.sectionData.split('|').toMutableList()
-        if (extractData.size < 47) {
-            for (index in extractData.size..47) {
+        if (extractData.size < 51) {
+            for (index in extractData.size..51) {
                 extractData.add("")
             }
         }
@@ -831,9 +807,29 @@ class RefractionFragment : Fragment() {
             }
             if (isEmpty) spinnerChart.setSelection(1)
 
-//      Log.d(_root_ide_package_.com.lizpostudio.kgoptometrycrm.constant.Constants.TAG, "Chart value = ${extractData[6]} ")
+            isEmpty = true
+            if (extractData[46] != "") {
+                for (i in 0 until spinnerRetCurrentrxUnaided.adapter.count) {
+                    if (extractData[46] == spinnerRetCurrentrxUnaided.adapter.getItem(i).toString()) {
+                        spinnerRetCurrentrxUnaided.setSelection(i)
+                        isEmpty = false
+                    }
+                }
+            }
+            if (isEmpty) spinnerRetCurrentrxUnaided.setSelection(0)
 
             isEmpty = true
+            if (extractData[49] != "") {
+                for (i in 0 until spinnerDominance.adapter.count) {
+                    if (extractData[49] == spinnerDominance.adapter.getItem(i).toString()) {
+                        spinnerDominance.setSelection(i)
+                        isEmpty = false
+                    }
+                }
+            }
+            if (isEmpty) spinnerDominance.setSelection(0)
+
+//      Log.d(_root_ide_package_.com.lizpostudio.kgoptometrycrm.constant.Constants.TAG, "Chart value = ${extractData[6]} ")
 
             for (i in 0 until spinnerRightSph2.adapter.count) {
                 if (extractData[7].trim() != "" &&
@@ -896,9 +892,15 @@ class RefractionFragment : Fragment() {
             isEmpty = true
 
             editLeftAxis2.setText(extractData[12])
+
             if (extractData[13] != "") editRightVa.setText(extractData[13]) else editRightVa.setText(
                 vaDefault
             )
+
+            if (extractData[47] != "") editRightVa2.setText(extractData[47]) else editRightVa2.setText(
+                vaDefault
+            )
+
             for (i in 0 until spinnerRightAdd.adapter.count) {
                 if (extractData[14].trim() != "" &&
                     extractData[14].trim().toDoubleOrNull() == spinnerRightAdd.adapter.getItem(i)
@@ -911,11 +913,17 @@ class RefractionFragment : Fragment() {
             if (isEmpty) spinnerRightAdd.setSelection(0)
             isEmpty = true
 
-            editRightPd.setText(extractData[15])
+            if (extractData[15] != "") editOuva.setText(extractData[15]) else editOuva.setText(vaDefault)
+
 
             if (extractData[16] != "") editLeftVa.setText(extractData[16]) else editLeftVa.setText(
                 vaDefault
             )
+
+            if (extractData[48] != "") editLeftVa2.setText(extractData[48]) else editLeftVa2.setText(
+                vaDefault
+            )
+
             for (i in 0 until spinnerLeftAdd.adapter.count) {
                 if (extractData[17].trim() != "" &&
                     extractData[17].trim().toDoubleOrNull() == spinnerLeftAdd.adapter.getItem(i)
@@ -1005,7 +1013,11 @@ class RefractionFragment : Fragment() {
             isEmpty = true
 
             editLeftAxis3.setText(extractData[27])
-            if (extractData[28] != "") ouVa.setText(extractData[28]) else ouVa.setText(vaDefault)
+
+            if (extractData[28] != "") editOuva2.setText(extractData[28]) else editOuva2.setText(vaDefault)
+
+            if (extractData[50] != "") editOuva3.setText(extractData[50]) else editOuva3.setText(vaDefault)
+
 
             for (i in 0 until spinnerAddMp.adapter.count) {
                 if (extractData[29].trim() != "" &&
@@ -1144,78 +1156,51 @@ class RefractionFragment : Fragment() {
     }
 
     private fun navigateToSelectedForm() {
-        val orderOfSections = listOf(*resources.getStringArray(R.array.forms_order))
-        // if same fragment - load new record
-        val navController = this.findNavController()
-
         when (navigateFormName) {
-
-            orderOfSections[0] -> navController.navigate(
-                RefractionFragmentDirections
-                    .actionRefractionFragmentToInfoFragment(navigateFormRecordID)
+            getString(R.string.info_form_caption) -> findNavController().navigate(
+                RefractionFragmentDirections.actionToInfoFragment(navigateFormRecordID)
             )
-
-            orderOfSections[1] -> navController.navigate(
-                RefractionFragmentDirections.actionRefractionFragmentToMemoFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.follow_up_form_caption) -> findNavController().navigate(
+                RefractionFragmentDirections.actionToFollowUpFragment(navigateFormRecordID)
             )
-
-            orderOfSections[2] -> navController.navigate(
-                RefractionFragmentDirections.actionRefractionFragmentToCurrentRxFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.memo_form_caption) -> findNavController().navigate(
+                RefractionFragmentDirections.actionToMemoFragment(navigateFormRecordID)
             )
-
-            orderOfSections[3] -> {
-                Log.d(Constants.TAG, "Navigating to another RF form:")
-                Log.d(Constants.TAG, "Old Record ID = $recordID")
-                Log.d(Constants.TAG, "New Record ID = $navigateFormRecordID")
+            getString(R.string.current_rx_caption) -> findNavController().navigate(
+                RefractionFragmentDirections.actionToCurrentRxFragment(navigateFormRecordID)
+            )
+            getString(R.string.refraction_caption) -> {
                 if (recordID != navigateFormRecordID) {
                     recordID = navigateFormRecordID
-                    createRefAssignPhFile()
                     patientViewModel.getPatientForm(navigateFormRecordID)
                 }
-
             }
-            orderOfSections[4] -> navController.navigate(
-                RefractionFragmentDirections.actionRefractionFragmentToOcularHealthFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.ocular_health_caption) -> findNavController().navigate(
+                RefractionFragmentDirections.actionToOcularHealthFragment(navigateFormRecordID)
             )
-
-            orderOfSections[5] -> navController.navigate(
-                RefractionFragmentDirections.actionRefractionFragmentToSupplementaryFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.supplementary_test_caption) -> findNavController().navigate(
+                RefractionFragmentDirections.actionToSupplementaryFragment(navigateFormRecordID)
             )
-
-            orderOfSections[6] -> navController.navigate(
-                RefractionFragmentDirections.actionRefractionFragmentToContactLensFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.contact_lens_exam_caption) -> findNavController().navigate(
+                RefractionFragmentDirections.actionToContactLensFragment(navigateFormRecordID)
             )
-
-            orderOfSections[7] -> navController.navigate(
-                RefractionFragmentDirections.actionRefractionFragmentToOrthokFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.orthox_caption) -> findNavController().navigate(
+                RefractionFragmentDirections.actionToOrthokFragment(navigateFormRecordID)
             )
-
-            orderOfSections[8] -> {
-                navController.navigate(
-                    RefractionFragmentDirections
-                        .actionRefractionFragmentToCashOrderFragment(navigateFormRecordID)
-                )
+            getString(R.string.cash_order) -> findNavController().navigate(
+                RefractionFragmentDirections.actionToCashOrderFragment(navigateFormRecordID)
+            )
+            getString(R.string.sales_order_caption) -> findNavController().navigate(
+                RefractionFragmentDirections.actionToSalesOrderFragment(navigateFormRecordID)
+            )
+            getString(R.string.final_prescription_caption) -> findNavController().navigate(
+                RefractionFragmentDirections.actionToSalesOrderFragment(navigateFormRecordID)
+            )
+            else -> {
+                Toast.makeText(
+                    context, "$navigateFormName not implemented yet", Toast.LENGTH_SHORT
+                ).show()
             }
-
-            orderOfSections[9] -> navController.navigate(
-                RefractionFragmentDirections.actionRefractionFragmentToFinalPrescriptionFragment(
-                    navigateFormRecordID
-                )
-            )
-            else -> Toast.makeText(context, getString(R.string.navigation_else), Toast.LENGTH_SHORT)
-                .show()
         }
     }
 
@@ -1233,53 +1218,57 @@ class RefractionFragment : Fragment() {
 
             currentForm.remarks = remarkInput.text.toString().uppercase()
 
-            val extractData = spinnerRightSph1.selectedItem.toString() + "|" +
-                    spinnerRightCyl1.selectedItem.toString() + "|" +
-                    editRightAxis1.text.toString() + "|" +
-                    spinnerLeftSph1.selectedItem.toString() + "|" +
-                    spinnerLeftCyl1.selectedItem.toString() + "|" +
-                    editLeftAxis1.text.toString() + "|" +
-                    spinnerChart.selectedItem.toString() + "|" +
-                    spinnerRightSph2.selectedItem.toString() + "|" +
-                    spinnerRightCyl2.selectedItem.toString() + "|" +
-                    editRightAxis2.text.toString() + "|" +
-                    spinnerLeftSph2.selectedItem.toString() + "|" +
-                    spinnerLeftCyl2.selectedItem.toString() + "|" +
-                    editLeftAxis2.text.toString() + "|" +
-                    editRightVa.text.toString() + "|" +
-                    spinnerRightAdd.selectedItem.toString() + "|" +
-                    editRightPd.text.toString() + "|" +
-                    editLeftVa.text.toString() + "|" +
-                    spinnerLeftAdd.selectedItem.toString() + "|" +
-                    "|" +
-                    nearVa.text.toString() + "|" +
-                    nearVa2.text.toString() + "|" +
-                    spinnerAdd2.selectedItem.toString() + "|" +
-                    spinnerRightSph3.selectedItem.toString() + "|" +
-                    spinnerRightCyl3.selectedItem.toString() + "|" +
-                    editRightAxis3.text.toString() + "|" +
-                    spinnerLeftSph3.selectedItem.toString() + "|" +
-                    spinnerLeftCyl3.selectedItem.toString() + "|" +
-                    editLeftAxis3.text.toString() + "|" +
-                    ouVa.text.toString() + "|" +
-                    spinnerAddMp.selectedItem.toString() + "|" +
-                    currentStatusInput.text.toString() + "|" +
-                    "|" +  // history Input [OLD]
-                    "|" +  // main complaint [OLD]
-                    spinnerRightSph4.selectedItem.toString() + "|" +
-                    spinnerRightCyl4.selectedItem.toString() + "|" +
-                    editRightAxis4.text.toString() + "|" +
-                    spinnerLeftSph4.selectedItem.toString() + "|" +
-                    spinnerLeftCyl4.selectedItem.toString() + "|" +
-                    editLeftAxis4.text.toString() + "|" +
-                    "|" +
-                    "|" +
-                    editManagementRefraction.text.toString() + "|" + // 41
-                    vaRight4.text.toString() + "|" + //42
-                    vaLeft4.text.toString() + "|" + //43
-                    spinnerAddRight4.selectedItem.toString() + "|" + //44
-                    spinnerAddLeft4.selectedItem.toString() //45
-
+            val extractData = spinnerRightSph1.selectedItem.toString() + "|" +  //0
+                spinnerRightCyl1.selectedItem.toString() + "|" +
+                editRightAxis1.text.toString() + "|" +
+                spinnerLeftSph1.selectedItem.toString() + "|" +
+                spinnerLeftCyl1.selectedItem.toString() + "|" +
+                editLeftAxis1.text.toString() + "|" +
+                spinnerChart.selectedItem.toString() + "|" +
+                spinnerRightSph2.selectedItem.toString() + "|" +
+                spinnerRightCyl2.selectedItem.toString() + "|" +
+                editRightAxis2.text.toString() + "|" +
+                spinnerLeftSph2.selectedItem.toString() + "|" +  //10
+                spinnerLeftCyl2.selectedItem.toString() + "|" +
+                editLeftAxis2.text.toString() + "|" +
+                editRightVa.text.toString() + "|" +
+                spinnerRightAdd.selectedItem.toString() + "|" +
+                editOuva.text.toString() + "|" +
+                editLeftVa.text.toString() + "|" +
+                spinnerLeftAdd.selectedItem.toString() + "|" +
+                "|" +
+                nearVa.text.toString() + "|" +
+                nearVa2.text.toString() + "|" +  //20
+                spinnerAdd2.selectedItem.toString() + "|" +
+                spinnerRightSph3.selectedItem.toString() + "|" +
+                spinnerRightCyl3.selectedItem.toString() + "|" +
+                editRightAxis3.text.toString() + "|" +
+                spinnerLeftSph3.selectedItem.toString() + "|" +
+                spinnerLeftCyl3.selectedItem.toString() + "|" +
+                editLeftAxis3.text.toString() + "|" +
+                editOuva2.text.toString() + "|" +
+                spinnerAddMp.selectedItem.toString() + "|" +
+                currentStatusInput.text.toString() + "|" +  //30
+                "|" +  // history Input [OLD]
+                "|" +  // main complaint [OLD]
+                spinnerRightSph4.selectedItem.toString() + "|" +
+                spinnerRightCyl4.selectedItem.toString() + "|" +
+                editRightAxis4.text.toString() + "|" +
+                spinnerLeftSph4.selectedItem.toString() + "|" +
+                spinnerLeftCyl4.selectedItem.toString() + "|" +
+                editLeftAxis4.text.toString() + "|" +
+                "|" +
+                "|" +  //40
+                editManagementRefraction.text.toString() + "|" + // 41
+                vaRight4.text.toString() + "|" + //42
+                vaLeft4.text.toString() + "|" + //43
+                spinnerAddRight4.selectedItem.toString() + "|" + //44
+                spinnerAddLeft4.selectedItem.toString() + "|" + //45
+                spinnerRetCurrentrxUnaided.selectedItem.toString() + "|" + //46
+                editRightVa2.text.toString() + "|" + //47
+                editLeftVa2.text.toString() + "|" +//48
+                spinnerDominance.selectedItem.toString() + "|" + //49
+                editOuva3.text.toString() //50
             currentForm.sectionData = extractData.uppercase()
 
             currentForm.practitioner = (binding.practitionerName.selectedItem as String).uppercase()

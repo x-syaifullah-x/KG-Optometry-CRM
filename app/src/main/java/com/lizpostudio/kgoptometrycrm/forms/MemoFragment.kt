@@ -1,19 +1,13 @@
 package com.lizpostudio.kgoptometrycrm.forms
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.DatePickerDialog
 import android.content.Context
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.content.pm.ResolveInfo
 import android.content.res.Resources
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -26,6 +20,7 @@ import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -34,15 +29,16 @@ import com.google.firebase.storage.FileDownloadTask
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.StorageTask
 import com.lizpostudio.kgoptometrycrm.PatientsViewModel
-import com.lizpostudio.kgoptometrycrm.PatientsViewModelFactory
 import com.lizpostudio.kgoptometrycrm.R
+import com.lizpostudio.kgoptometrycrm.ViewModelProviderFactory
+import com.lizpostudio.kgoptometrycrm.camera.CameraActivity
 import com.lizpostudio.kgoptometrycrm.constant.Constants
-import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
+import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientEntity
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentMemoBinding
 import com.lizpostudio.kgoptometrycrm.utils.*
 import id.xxx.module.view.binding.ktx.viewBinding
+import java.io.ByteArrayOutputStream
 import java.io.File
-import java.io.FileOutputStream
 
 class MemoFragment : Fragment() {
 
@@ -50,14 +46,14 @@ class MemoFragment : Fragment() {
         private lateinit var storageRef: StorageReference
         private lateinit var storageFile: Uri
 
-        private const val REQUEST_PHOTO = 2
+        //        private const val REQUEST_PHOTO = 2
         private const val PHOTO_W = 600
         private const val PHOTO_H = 800
     }
 
     private var downloadPhotoTask: StorageTask<FileDownloadTask.TaskSnapshot>? = null
     private val patientViewModel: PatientsViewModel by viewModels {
-        PatientsViewModelFactory(requireContext())
+        ViewModelProviderFactory.getInstance(context)
     }
 
     private var photoUri: Uri? = null
@@ -67,16 +63,51 @@ class MemoFragment : Fragment() {
     private var isAdmin = false
     private var viewOnlyMode = false
 
-    private val binding by viewBinding<FragmentMemoBinding>()
+    private val bindingRoot by viewBinding<FragmentMemoBinding>()
+
+    private val binding by lazy { bindingRoot.content }
 
     private var recordID = 0L
     private var patientID = ""
 
     private var sectionEditDate = -1L
 
-    private var currentForm = PatientsEntity()
+    private var currentForm = PatientEntity()
     private var navigateFormName = ""
     private var navigateFormRecordID = -1L
+
+    private val takePicture = registerForActivityResult(CameraActivity.ResultContract()) { result ->
+        if (result != null) {
+
+            val parcelFileDescriptor =
+                requireContext().contentResolver.openFileDescriptor(result, "rw")
+                    ?: return@registerForActivityResult
+            takePhoto = true
+            val bitmap = getScaledBitmap(
+                parcelFileDescriptor.fileDescriptor,
+                PHOTO_W,
+                PHOTO_H
+            )
+            parcelFileDescriptor.close()
+            requireContext().contentResolver.delete(result, null, null)
+            binding.refPhoto.setImageBitmap(bitmap)
+            currentForm.reservedField = storageRef.toString()
+            binding.rotatePhoto.visibility = View.VISIBLE
+            val bos = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos)
+
+            storageRef.putBytes(bos.toByteArray())
+                .addOnCompleteListener {
+                    bos.close()
+                }
+                .addOnFailureListener {
+                    bos.close()
+                    Toast.makeText(
+                        requireContext(), it.localizedMessage, Toast.LENGTH_LONG
+                    ).show()
+                }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -110,14 +141,14 @@ class MemoFragment : Fragment() {
         val sharedPref = app.getSharedPreferences(
             Constants.PREF_NAME, Context.MODE_PRIVATE
         )
-        isAdmin = sharedPref?.getString("admin", "") ?: "" == "admin"
+        isAdmin = (sharedPref?.getString("admin", "") ?: "") == "admin"
 
         viewOnlyMode = sharedPref?.getBoolean("viewOnly", false) ?: false
         if (viewOnlyMode) {
             binding.mainLayout.setBackgroundColor(
                 ContextCompat.getColor(requireContext(), R.color.viewOnlyMode)
             )
-            binding.saveFormButton.visibility = View.GONE
+            bindingRoot.saveFormButton.visibility = View.GONE
         } else binding.mainLayout.setBackgroundColor(
             ContextCompat.getColor(requireContext(), R.color.lightBackground)
         )
@@ -138,7 +169,7 @@ class MemoFragment : Fragment() {
                 fillTheForm(patient)
                 patientViewModel.getAllFormsForPatient(patientID)
                 //      Log.d(Constants.TAG, "Loading photo")
-                updatePhotoView(photoFile)
+//                updatePhotoView(photoFile)
             }
         }
 
@@ -154,6 +185,9 @@ class MemoFragment : Fragment() {
                             R.string.number_of_years_patient,
                             age, dob
                         )
+                        if (currentForm.patientIC != ic) {
+                            currentForm.patientIC = ic
+                        }
                     }
                 }
                 binding.patientName.text = pAge
@@ -161,7 +195,7 @@ class MemoFragment : Fragment() {
                 val screenDst = Resources.getSystem().displayMetrics.density
 
                 val sortedList = it.sortedBy { patientsForms -> patientsForms.dateOfSection }
-                val newList = mutableListOf<PatientsEntity>()
+                val newList = mutableListOf<PatientEntity>()
 
                 for (section in orderOfSections) {
                     for (forms in sortedList) {
@@ -180,7 +214,7 @@ class MemoFragment : Fragment() {
                     .toSet()
 
                 /* FOR BOTTOM NAVIGATION */
-                val mapSectionName = mutableMapOf<String, MutableList<PatientsEntity>>()
+                val mapSectionName = mutableMapOf<String, MutableList<PatientEntity>>()
                 newList.forEach { patient ->
                     val key = mapSectionName[patient.sectionName]
                     if (key == null) {
@@ -190,8 +224,8 @@ class MemoFragment : Fragment() {
                 }
 
                 var sectionName = ""
-                val navChipGroup = binding.navigationLayout
-                val navChipGroup2 = binding.navigationLayout2
+                val navChipGroup = bindingRoot.navigationLayout
+                val navChipGroup2 = bindingRoot.navigationLayout2
 //                val children = newList.map { patientForm ->
                 val children = newSectionName.map { patientForm ->
                     val chip = TextView(app.applicationContext)
@@ -227,7 +261,7 @@ class MemoFragment : Fragment() {
                     }
 
 //                    val sectionShortName = makeShortSectionName(patientForm.sectionName)
-                    val sectionShortName = makeShortSectionName(patientForm)
+                    val sectionShortName = makeShortSectionName(requireContext(), patientForm)
 //                    chip.text = "$sectionShortName\n${convertLongToDDMMYY(patientForm.dateOfSection)}"
                     chip.text = sectionShortName
 
@@ -266,13 +300,18 @@ class MemoFragment : Fragment() {
                             (4 * screenDst).toInt()
                         )
 
-                        if (patientForm.recordID == recordID)
+                        if (patientForm.recordID == recordID) {
+//                            if (!photoFile.path.contains("${patientForm.recordID}")) {
+//                                createRefAssignPhFile()
+//                            }
+                            createRefAssignPhFile()
+                            updatePhotoView(photoFile)
                             chip.setBackgroundColor(
                                 ContextCompat.getColor(
                                     app.applicationContext, R.color.lightBackground
                                 )
                             )
-                        else
+                        } else
                             chip.setBackgroundColor(
                                 ContextCompat.getColor(
                                     app.applicationContext,
@@ -280,7 +319,8 @@ class MemoFragment : Fragment() {
                                 )
                             )
 
-                        val sectionShortName = makeShortSectionName(patientForm.sectionName)
+                        val sectionShortName =
+                            makeShortSectionName(requireContext(), patientForm.sectionName)
                         chip.text =
                             "$sectionShortName\n${convertLongToDDMMYY(patientForm.dateOfSection)}"
 
@@ -316,11 +356,11 @@ class MemoFragment : Fragment() {
 
                 val hPos = newSectionName.indexOf("MEMO")
                 if (hPos > 3) {
-                    val scrollWidth = binding.chipsScroll.width
+                    val scrollWidth = bindingRoot.chipsScroll.width
                     val scrollX = ((hPos - 2) * (scrollWidth / 6.25)).toInt()
-                    binding.chipsScroll.postDelayed({
+                    bindingRoot.chipsScroll.postDelayed({
                         if (context != null)
-                            binding.chipsScroll.smoothScrollTo(scrollX, 0)
+                            bindingRoot.chipsScroll.smoothScrollTo(scrollX, 0)
                     }, 100L)
                 }
 
@@ -328,11 +368,11 @@ class MemoFragment : Fragment() {
                     mapSectionName[sectionName]?.map { form -> form.recordID } ?: listOf()
                 val hPosBottomNav = hPosList.indexOf(recordID)
                 if (hPosBottomNav > 3) {
-                    val scrollWidth = binding.chipsScroll2.width
+                    val scrollWidth = bindingRoot.chipsScroll2.width
                     val scrollX = ((hPosBottomNav - 2) * (scrollWidth / 6.25)).toInt()
-                    binding.chipsScroll2.postDelayed({
+                    bindingRoot.chipsScroll2.postDelayed({
                         if (context != null)
-                            binding.chipsScroll2.smoothScrollTo(scrollX, 0)
+                            bindingRoot.chipsScroll2.smoothScrollTo(scrollX, 0)
                     }, 100L)
                 }
             }
@@ -348,12 +388,12 @@ class MemoFragment : Fragment() {
         patientViewModel.recordDeleted.observe(viewLifecycleOwner) { ifDeleted ->
             ifDeleted?.let {
                 if (ifDeleted) navController.navigate(
-                    MemoFragmentDirections.actionMemoFragmentToFormSelectionFragment(patientID)
+                    MemoFragmentDirections.actionToFormSelectionFragment(patientID)
                 )
             }
         }
 
-        binding.deleteForm.setOnClickListener {
+        bindingRoot.deleteForm.setOnClickListener {
             actionConfirmDeletion(
                 title = resources.getString(R.string.form_delete_title),
                 message = resources.getString(
@@ -365,7 +405,7 @@ class MemoFragment : Fragment() {
             ) { allowed ->
                 if (allowed) {
                     patientViewModel.deleteRecord(currentForm)
-                    patientViewModel.deletePatientFromFirebase(currentForm.recordID.toString())
+                    patientViewModel.deletePatientFromFirebase(currentForm)
                 }
             }
         }
@@ -381,7 +421,7 @@ class MemoFragment : Fragment() {
             }
         }
 
-        binding.saveFormButton.setOnClickListener {
+        bindingRoot.saveFormButton.setOnClickListener {
             saveAndNavigate("none")
         }
 
@@ -389,29 +429,7 @@ class MemoFragment : Fragment() {
             photoUri = FileProvider.getUriForFile(
                 requireActivity(), Constants.FILE_PROVIDER_AUTHORITY, photoFile
             )
-            val packageManager: PackageManager = requireActivity().packageManager
-
-            val captureImage = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-            val resolvedActivity: ResolveInfo? =
-                packageManager.resolveActivity(
-                    captureImage,
-                    PackageManager.MATCH_DEFAULT_ONLY
-                )
-            if (resolvedActivity != null && photoUri != null) {
-                captureImage.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
-                val cameraActivities: List<ResolveInfo> =
-                    packageManager.queryIntentActivities(
-                        captureImage, PackageManager.MATCH_DEFAULT_ONLY
-                    )
-                for (cameraActivity in cameraActivities) {
-                    requireActivity().grantUriPermission(
-                        cameraActivity.activityInfo.packageName,
-                        photoUri,
-                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-                    )
-                }
-                startActivityForResult(captureImage, REQUEST_PHOTO)
-            }
+            takePicture.launch(photoUri)
         }
 
         binding.deletePhoto.setOnClickListener {
@@ -434,11 +452,11 @@ class MemoFragment : Fragment() {
             }
         }
 
-        binding.backButton.setOnClickListener {
+        bindingRoot.backButton.setOnClickListener {
             saveAndNavigate("back")
         }
 
-        binding.homeButton.setOnClickListener {
+        bindingRoot.homeButton.setOnClickListener {
             saveAndNavigate("home")
         }
 
@@ -448,7 +466,6 @@ class MemoFragment : Fragment() {
             }
         }
 
-        var rotation = 0F
         binding.rotatePhoto.setOnClickListener {
             val bitmap =
                 BitmapUtils.rotate((binding.refPhoto.drawable as BitmapDrawable).bitmap, 90F)
@@ -468,42 +485,23 @@ class MemoFragment : Fragment() {
 //                e.printStackTrace()
 //            }
         }
-        return binding.root
+        return bindingRoot.root
     }
 
-
-    private fun scaleBitmap(photoFile: File) {
-        //take photoFile, compress it, delete original and replace with scaled
-        val bitmap = getScaledBitmap(
-            photoFile.path, PHOTO_W, PHOTO_H
-        )
-//    photoFile.delete()
-        if (bitmap != null) {
-            try {
-                val os = FileOutputStream(photoFile)
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os)
-                os.flush()
-                os.close()
-            } catch (e: Exception) {
-                //  Log.d(Constants.TAG, "Error writing bitmap", e)
-            }
-        }
-    }
 
     private fun updatePhotoView(photoFile: File) {
-        if (currentForm.reservedField.isNotBlank() && currentForm.reservedField != "deleted") {
-            downloadPhotoTask = storageRef.getFile(photoFile).addOnSuccessListener {
-                Log.d(Constants.TAG, "FB photo downloaded to Memo")
-                patientViewModel.readyToShowPhoto()
-                currentForm.reservedField = photoFile.toString()
-            }.addOnFailureListener {
-                // delete local file
-                Log.d(Constants.TAG, "No such file at Memo. Delete local file")
-                if (photoFile.exists()) photoFile.delete()
-                patientViewModel.readyToShowPhoto()
-                currentForm.reservedField = ""
-            }
-        } else {
+        binding.refPhoto.setImageDrawable(null)
+
+        downloadPhotoTask = storageRef.getFile(photoFile).addOnSuccessListener {
+            Log.d(Constants.TAG, "FB photo downloaded to Memo")
+            patientViewModel.readyToShowPhoto()
+            currentForm.reservedField = photoFile.toString()
+        }.addOnFailureListener {
+            // delete local file
+            Log.d(Constants.TAG, "No such file at Memo. Delete local file")
+            if (photoFile.exists())
+                photoFile.delete()
+            patientViewModel.readyToShowPhoto()
             binding.refPhoto.setImageDrawable(null)
         }
     }
@@ -519,36 +517,30 @@ class MemoFragment : Fragment() {
 
     private var takePhoto = false
 
-    @SuppressLint("SetTextI18n")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_PHOTO && resultCode == Activity.RESULT_OK) {
-            takePhoto = true
-            scaleBitmap(photoFile)
-            currentForm.reservedField = storageRef.toString()
-            val ois = requireContext().contentResolver.openInputStream(storageFile)
-            storageRef.putStream(ois ?: return)
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        binding.rotatePhoto.visibility = View.VISIBLE
-                        updatePhotoView(photoFile)
-                    }
-                    ois.close()
-                }
-            if (photoUri != null) {
-                requireActivity().revokeUriPermission(
-                    photoUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-                )
-            }
-
-        }
-    }
-
     private fun saveAndNavigate(navOption: String) {
         patientViewModel.removeRecordsChangesListener()
         if (viewOnlyMode) {
             launchNavigator(navOption)
         } else {
+            if (takePhoto) {
+                takePhoto = false
+                binding.rotatePhoto.visibility = View.INVISIBLE
+                currentForm.reservedField = storageRef.toString()
+                val bitmapDrawable = (binding.refPhoto.drawable as? BitmapDrawable)
+                val bitmap = bitmapDrawable?.bitmap
+                if (bitmap != null) {
+                    try {
+                        val os = ByteArrayOutputStream()
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os)
+                        storageRef.putBytes(os.toByteArray()).addOnCompleteListener {
+                            os.close()
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+            }
+
             if (formWasChanged()) {
                 Log.d(Constants.TAG, "Memo form CHANGED")
                 Log.d(Constants.TAG, "Submiting to FB a DB record ID ${currentForm.recordID}")
@@ -571,9 +563,7 @@ class MemoFragment : Fragment() {
                 fillTheForm(currentForm)
             }
             "back" -> findNavController().navigate(
-                MemoFragmentDirections.actionMemoFragmentToFormSelectionFragment(
-                    patientID
-                )
+                MemoFragmentDirections.actionToFormSelectionFragment(patientID)
             )
             "home" -> findNavController().navigate(
                 MemoFragmentDirections.actionToDatabaseSearchFragment()
@@ -589,68 +579,56 @@ class MemoFragment : Fragment() {
     }
 
     private fun navigateToSelectedForm() {
-        val navController = this.findNavController()
-        val orderOfSections = listOf(*resources.getStringArray(R.array.forms_order))
-        // if same fragment - load new record
-        // info section could be onlyUnique
         when (navigateFormName) {
-            orderOfSections[0] -> navController.navigate(
-                MemoFragmentDirections
-                    .actionMemoFragmentToInfoFragment(navigateFormRecordID)
+            getString(R.string.info_form_caption) -> findNavController().navigate(
+                MemoFragmentDirections.actionToInfoFragment(navigateFormRecordID)
             )
-
-            orderOfSections[1] -> {
+            getString(R.string.follow_up_form_caption) -> findNavController().navigate(
+                MemoFragmentDirections.actionToFollowUpFragment(navigateFormRecordID)
+            )
+            getString(R.string.memo_form_caption) -> {
                 if (recordID != navigateFormRecordID) {
                     recordID = navigateFormRecordID
-                    createRefAssignPhFile()
                     patientViewModel.getPatientForm(navigateFormRecordID)
                 }
             }
-
-            orderOfSections[2] -> navController.navigate(
-                MemoFragmentDirections
-                    .actionMemoFragmentToCurrentRxFragment(navigateFormRecordID)
+            getString(R.string.current_rx_caption) -> findNavController().navigate(
+                MemoFragmentDirections.actionToCurrentRxFragment(navigateFormRecordID)
             )
-
-            orderOfSections[3] -> navController.navigate(
-                MemoFragmentDirections
-                    .actionMemoFragmentToRefractionFragment(navigateFormRecordID)
+            getString(R.string.refraction_caption) -> findNavController().navigate(
+                MemoFragmentDirections.actionToRefractionFragment(navigateFormRecordID)
             )
-
-            orderOfSections[4] -> navController.navigate(
-                MemoFragmentDirections
-                    .actionMemoFragmentToOcularHealthFragment(navigateFormRecordID)
+            getString(R.string.ocular_health_caption) -> findNavController().navigate(
+                MemoFragmentDirections.actionToOcularHealthFragment(navigateFormRecordID)
             )
-
-            orderOfSections[5] -> navController.navigate(
-                MemoFragmentDirections
-                    .actionMemoFragmentToSupplementaryFragment(navigateFormRecordID)
+            getString(R.string.supplementary_test_caption) -> findNavController().navigate(
+                MemoFragmentDirections.actionToSupplementaryFragment(navigateFormRecordID)
             )
-
-            orderOfSections[6] -> navController.navigate(
-                MemoFragmentDirections
-                    .actionMemoFragmentToContactLensFragment(navigateFormRecordID)
+            getString(R.string.contact_lens_exam_caption) -> findNavController().navigate(
+                MemoFragmentDirections.actionToContactLensFragment(navigateFormRecordID)
             )
-
-            orderOfSections[7] -> navController.navigate(
-                MemoFragmentDirections
-                    .actionMemoFragmentToOrthokFragment(navigateFormRecordID)
+            getString(R.string.orthox_caption) -> findNavController().navigate(
+                MemoFragmentDirections.actionToOrthokFragment(navigateFormRecordID)
             )
-
-            orderOfSections[8] -> navController.navigate(
-                MemoFragmentDirections
-                    .actionMemoFragmentToCashOrderFragment(navigateFormRecordID)
+            getString(R.string.cash_order) -> findNavController().navigate(
+                MemoFragmentDirections.actionToCashOrderFragment(navigateFormRecordID)
             )
-
-            orderOfSections[9] -> navController.navigate(
-                MemoFragmentDirections
-                    .actionMemoFragmentToFinalPrescriptionFragment(navigateFormRecordID)
+            getString(R.string.sales_order_caption) -> findNavController().navigate(
+                MemoFragmentDirections.actionToSalesOrderFragment(navigateFormRecordID)
             )
+            getString(R.string.final_prescription_caption) -> findNavController().navigate(
+                MemoFragmentDirections.actionToSalesOrderFragment(navigateFormRecordID)
+            )
+            else -> {
+                Toast.makeText(
+                    context, "$navigateFormName not implemented yet", Toast.LENGTH_SHORT
+                ).show()
+            }
         }
     }
 
     @SuppressLint("SetTextI18n")
-    private fun fillTheForm(patientForm: PatientsEntity) {
+    private fun fillTheForm(patientForm: PatientEntity) {
 
         val extractData = patientForm.sectionData.split('|').toMutableList()
 //      Log.d(Constants.TAG, "extract data size before = ${extractData.size}")
@@ -699,33 +677,28 @@ class MemoFragment : Fragment() {
             val extractData = settledCheck.isChecked.toString() // + "|"
             currentForm.sectionData = extractData.uppercase()
             currentForm.practitioner = (binding.practitionerName.selectedItem as String).uppercase()
-
             currentForm.mm = "${binding.mmInput.text}".uppercase()
 
-            if (takePhoto) {
+            if (binding.rotatePhoto.isVisible) {
                 takePhoto = false
                 binding.rotatePhoto.visibility = View.GONE
-                currentForm.reservedField = storageRef.toString()
+
                 val bitmapDrawable = binding.refPhoto.drawable as? BitmapDrawable
                 val bitmap = bitmapDrawable?.bitmap
-                if (bitmap != null) {
-                    try {
-                        val os = FileOutputStream(photoFile)
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os)
-                        os.flush()
-                        os.close()
 
-                        val ois = requireContext().contentResolver.openInputStream(storageFile)
-                        ois?.apply {
-                            storageRef.putStream(ois)
-                                .addOnCompleteListener { _ ->
-                                    ois.close()
-                                }
-                        }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
+                val bos = ByteArrayOutputStream()
+                bitmap?.compress(Bitmap.CompressFormat.JPEG, 100, bos)
+
+                storageRef.putBytes(bos.toByteArray())
+                    .addOnCompleteListener {
+                        bos.close()
                     }
-                }
+                    .addOnFailureListener {
+                        bos.close()
+                        Toast.makeText(
+                            requireContext(), it.localizedMessage, Toast.LENGTH_LONG
+                        ).show()
+                    }
             }
         }
         return !currentForm.assertEqual(priorPatient)

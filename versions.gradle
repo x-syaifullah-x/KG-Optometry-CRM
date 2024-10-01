@@ -1,31 +1,40 @@
 def build_versions = [:]
-build_versions.min_sdk = 21 // android 5.0
-build_versions.target_sdk = 31 // android 12
+build_versions.min_sdk = 23 // android lollipop ( 5.0 )
+build_versions.target_sdk = 35 // android latest
 build_versions.compile_sdk = build_versions.target_sdk
-build_versions.build_tools = "32.0.0"
-build_versions.code = 5
-build_versions.name = "1.6"
+build_versions.build_tools = "35.0.0"
+def major = 20
+def minor = 1
+def patch = 9
+build_versions.code = (major + minor + patch)
+build_versions.name = "$major.$minor.$patch"
 ext.build_versions = build_versions
 
 ext {
-    vGradle = "7.1.3"
-    vKotlin = "1.6.21"
+    vGradle = "8.6.0"
+    vKotlin = "1.9.20"
 
-    vAppCompat = "1.4.1"
-    vConstraintLayout = "2.1.3"
-    vCoroutines = "1.6.0"
-    vFirebaseBom = "29.0.3"
-    vFragmentKtx = "1.4.1"
-    vLifecycle = "2.4.1"
-    vMaterial = "1.6.0"
-    vNavigation = "2.4.2"
-    vPreferenceKtx = "1.2.0"
-    vRoom = "2.4.2"
+    vAndroidxAnnotation = "1.2.0"
+    vAndroidxAppCompat = "1.7.0"
+    vAndroidxCamera = "1.2.1"
+    vAndroidxCore = "1.8.0" /* more than 1.8.0 must use build_versions.target_sdk = 33 */
+    vAndroidxFragment = "1.8.3"
+    vAndroidxLifecycle = "2.5.1"
+    vConstraintLayout = "2.1.4"
+    vCoroutines = "1.8.1"
+    vFirebaseBom = "33.2.0"
+    vFragmentKtx = "1.8.3"
+    vMaterial = "1.12.0"
+    vNavigation = "2.5.3"
+    vPreference = "1.2.0"
+    vRoom = "2.6.1"
 
-    vAndroidJunit = "1.1.3"
-    vEspresso = "3.4.0"
+    vAndroidJunit = "1.2.1"
+    vEspresso = "3.6.1"
     vJunit = "4.13.2"
-    vTestRules = "1.0.2"
+    vTestRules = "1.6.1"
+    vOrgGson = "20240303"
+    vSquareupOkhttp3 = "4.12.0"
 }
 
 def addRepos(RepositoryHandler handler) {

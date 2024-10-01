@@ -24,13 +24,13 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.lizpostudio.kgoptometrycrm.PatientsViewModel
-import com.lizpostudio.kgoptometrycrm.PatientsViewModelFactory
 import com.lizpostudio.kgoptometrycrm.R
+import com.lizpostudio.kgoptometrycrm.ViewModelProviderFactory
 import com.lizpostudio.kgoptometrycrm.constant.Constants
-import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
+import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientEntity
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentTargetCopyBinding
 import com.lizpostudio.kgoptometrycrm.forms.InfoFragment
-import com.lizpostudio.kgoptometrycrm.search.SearchSave
+import com.lizpostudio.kgoptometrycrm.data.SearchModel
 import com.lizpostudio.kgoptometrycrm.utils.*
 import id.xxx.module.view.binding.ktx.viewBinding
 import kotlinx.coroutines.Dispatchers
@@ -41,7 +41,6 @@ import java.util.*
 class TargetCopyFragment : Fragment() {
 
     companion object {
-        private const val INFO_SECTION = "INFO"
         private const val PATIENT_NAME = "NAME"
         private const val DATE_SELECTED = "DATE"
         private const val ID_SELECTED = "ID"
@@ -65,23 +64,22 @@ class TargetCopyFragment : Fragment() {
     private var allowSync = true
 
     private val patientViewModel: PatientsViewModel by viewModels {
-        PatientsViewModelFactory(requireContext())
+        ViewModelProviderFactory.getInstance(context)
     }
 
     private val historyUpdateList = mutableListOf<Long>()
-    private val recordsToBeInserted = mutableListOf<PatientsEntity>()
+    private val recordsToBeInserted = mutableListOf<PatientEntity>()
 
     private var isAdmin = false
 
-    private var searchValues = SearchSave()
-    private var filterByFamily = false
+    private var searchValues = SearchModel()
 
     private val binding by viewBinding<FragmentTargetCopyBinding>()
 
-    private val allInfoForms = mutableListOf<PatientsEntity>()
+    private val allInfoForms = mutableListOf<PatientEntity>()
 
     // recycler adapter reference list
-    private val recyclerList = mutableListOf<PatientsEntity>()
+    private val recyclerList = mutableListOf<PatientEntity>()
     private val recyclerAdapter = PatientsListAdapter(recyclerList)
 
     private var shareText = ""
@@ -120,7 +118,7 @@ class TargetCopyFragment : Fragment() {
 
         context?.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE)
             ?.edit()
-            ?.putString(Constants.PREF_KEY_SEARCH_STATE, TargetCopyFragment::class.java.name)
+            ?.putString(Constants.SEARCH_STATE_KEY, TargetCopyFragment::class.java.name)
             ?.apply()
         requireActivity().onBackPressedDispatcher
             .addCallback(this) { navigateBack(args.patientID) }
@@ -138,21 +136,6 @@ class TargetCopyFragment : Fragment() {
         }
     }
 
-    private fun persistDataToStore() {
-        val sharedPref = activity?.getSharedPreferences(
-            Constants.PREF_NAME, Context.MODE_PRIVATE
-        )
-
-        if (sharedPref != null) {
-            val editor = sharedPref.edit()
-            editor.putString("searchByTargetCopy", searchValues.search)
-            editor.putString("searchValueTargetCopy", searchValues.value)
-            editor.putLong(Constants.PREF_KEY_LAST_SYNC, latestDataSynched)
-            // editor.putLong("lastDeletedSynch", latestDeletedHistorySynched)
-            editor.apply()
-        }
-    }
-
     @SuppressLint("SetTextI18n")
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -161,7 +144,6 @@ class TargetCopyFragment : Fragment() {
     ): View {
 
         binding.lifecycleOwner = this
-        val navController = this.findNavController()
 
         binding.backButton.setOnClickListener { navigateBack(args.patientID) }
 
@@ -177,7 +159,7 @@ class TargetCopyFragment : Fragment() {
 
         lifecycleScope.launchWhenCreated {
             binding.searchInputText.asFlow().collectLatest {
-                if (searchValues.search != DATE_SELECTED) {
+                if (searchValues.type != DATE_SELECTED) {
                     searchValues.value = it
                     filterRecyclerList()
                 }
@@ -191,67 +173,15 @@ class TargetCopyFragment : Fragment() {
 
         Toast.makeText(
             context,
-            "Last sync: ${convertLongToDDMMYYHRSMIN(latestDataSynched)}",
+            "Last sync: ${convertTo_dd_MM_yy_hh_mm_a(latestDataSynched)}",
             Toast.LENGTH_SHORT
         ).show()
 
         patientViewModel.getAllFormsBySectionName(getString(R.string.info_form_caption))
 
-//        binding.toggleFamily.setOnClickListener {
-//            filterByFamily = !filterByFamily
-//            if (filterByFamily) {
-//                binding.toggleFamily.setColorFilter(
-//                    ContextCompat.getColor(
-//                        requireContext(),
-//                        R.color.greenCircle
-//                    ), android.graphics.PorterDuff.Mode.SRC_IN
-//                )
-//            } else {
-//                binding.toggleFamily.setColorFilter(
-//                    ContextCompat.getColor(
-//                        requireContext(),
-//                        R.color.iconTopStandard
-//                    ), android.graphics.PorterDuff.Mode.SRC_IN
-//                )
-//            }
-//        }
-
-//        binding.home.setOnClickListener {
-////            if ("${binding.searchInputText.text}".isNotBlank()) {
-////                binding.searchInputText.setText("")
-////            } else {
-////                navController.navigate(DatabaseSearchFragmentDirections.actionToLoginFragment())
-////            }
-//            navController.navigate(DatabaseSearchFragmentDirections.actionToLoginFragment())
-//        }
-
-//        binding.uploadDb.setOnClickListener {
-//            if (allowSync) {
-//                actionConfirm(
-//                    "This operation will delete your local database and upload data from Firebase. It could take 1 or more minutes to complete.\n" +
-//                            "Are you sure you want to update your database?"
-//                )
-//            }
-//        }
-
-//        binding.synchDbButton.setOnClickListener {
-//            if (allowSync) {
-//                syncHistoryStart = System.currentTimeMillis()
-//                patientViewModel.updateLocalDBFromFirebase(latestDataSynched, TWO_WEEKS)
-//                allowSync = false
-//            } else {
-//                Toast.makeText(
-//                    context,
-//                    "Previous Sync was not completed!\nHold on ...",
-//                    Toast.LENGTH_SHORT
-//                ).show()
-//            }
-//        }
-// COPY FIREBASE DATA
         patientViewModel.deletedDatabase.observe(viewLifecycleOwner) { isLocalDeleted ->
             isLocalDeleted?.let {
                 if (it) {
-                    //         Log.d(TAG2, "Local database cleaned!")
                     binding.progressText.text = "Fetching data from Firebase ..."
                     patientViewModel.getAllRecordsFromFirebase()
                 }
@@ -394,7 +324,7 @@ class TargetCopyFragment : Fragment() {
             allInfoForms.clear()
             allInfoForms.addAll(recordsDB)
 
-            if (searchValues.search == DATE_SELECTED && searchValues.value.isNotBlank()) {
+            if (searchValues.type == DATE_SELECTED && searchValues.value.isNotBlank()) {
                 val (startDate, endDate) = getDateStartAEndMillis(searchValues.value)
                 patientViewModel.getFormsForSelectedDate(startDate, endDate)
             } else {
@@ -418,7 +348,7 @@ class TargetCopyFragment : Fragment() {
 
         binding.searchIcon.setOnClickListener {
             hideKeyboard(requireContext())
-            if (searchValues.search == DATE_SELECTED) filterByDate()
+            if (searchValues.type == DATE_SELECTED) filterByDate()
         }
 
         recyclerAdapter.patientSelected.observe(viewLifecycleOwner) { patient ->
@@ -558,7 +488,7 @@ class TargetCopyFragment : Fragment() {
             val inputText = searchValues.value
             val newList =
                 if (inputText.isNotBlank()) {
-                    when (searchValues.search) {
+                    when (searchValues.type) {
                         PATIENT_NAME -> allInfoForms
                             .filter {
                                 if (args.patientID == it.patientID) return@filter false
@@ -676,7 +606,7 @@ class TargetCopyFragment : Fragment() {
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    private fun updateRecyclerView(newList: List<PatientsEntity>) {
+    private fun updateRecyclerView(newList: List<PatientEntity>) {
         binding.foundItemsText.text = resources
             .getString(R.string.entries_found_in_database, newList.size.toString())
         recyclerList.clear()
@@ -701,7 +631,7 @@ class TargetCopyFragment : Fragment() {
                 position: Int,
                 id: Long
             ) {
-                searchValues.search = when (position) {
+                searchValues.type = when (position) {
                     0 -> PATIENT_NAME
                     1 -> DATE_SELECTED
                     2 -> ID_SELECTED
@@ -716,7 +646,7 @@ class TargetCopyFragment : Fragment() {
                     11 -> OTHER_ID
                     else -> throw Throwable("NOT SELECTED")
                 }
-                Log.d(TAG, "onItem Spinner selected: ${searchValues.search} ")
+                Log.d(TAG, "onItem Spinner selected: ${searchValues.type} ")
 
                 if (position == 1) {
 //                if (searchValues.search == DATE_SELECTED) {
@@ -782,7 +712,7 @@ class TargetCopyFragment : Fragment() {
 
         dialogBuilder.setMessage(message)
         dialogBuilder.setPositiveButton(getString(R.string.yes_answer)) { _, _ ->
-            binding.foundItemsText.text = "Synching ..."
+            binding.foundItemsText.text = "Syncing ..."
             recyclerList.clear()
             recyclerAdapter.notifyDataSetChanged()
             binding.progressText.visibility = View.VISIBLE
@@ -802,15 +732,15 @@ class TargetCopyFragment : Fragment() {
             Constants.PREF_NAME, Context.MODE_PRIVATE
         )
 
-        searchValues.search =
+        searchValues.type =
             sharedPref?.getString("searchByTargetCopy", PATIENT_NAME) ?: PATIENT_NAME
         searchValues.value = sharedPref?.getString("searchValueTargetCopy", "") ?: ""
 
         for (i in 0 until binding.searchBySpinner.adapter.count) {
             val item = binding.searchBySpinner.adapter.getItem(i).toString()
-            if (searchValues.search.isNotBlank() && searchValues.search == item) {
+            if (searchValues.type.isNotBlank() && searchValues.type == item) {
                 binding.searchBySpinner.setSelection(i)
-                Log.d(TAG, "Setting search spinner to ${searchValues.search}")
+                Log.d(TAG, "Setting search spinner to ${searchValues.type}")
             }
         }
 

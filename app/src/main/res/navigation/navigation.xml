@@ -8,22 +8,51 @@
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.lizpostudio.kgoptometrycrm.LoginFragment"
-        android:label="LoginFragment"
+        android:label="@string/label_login_fragment"
         tools:layout="@layout/fragment_login">
         <action
             android:id="@+id/action_loginFragment_to_databaseSearchFragment"
-            app:destination="@id/databaseSearchFragment" />
+            app:destination="@id/searchCostumerFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/searchRecycleBinFragment"
+        android:name="com.lizpostudio.kgoptometrycrm.search.recycle_bin.SearchRecycleBinFragment"
+        android:label="Search Recycle Bin Fragment"
+        tools:layout="@layout/fragment_search_recycle_bin">
+        <action
+            android:id="@+id/action_to_form_selection"
+            app:destination="@id/formSelectionFragment" />
+        <action
+            android:id="@+id/action_to_info"
+            app:destination="@id/infoFragment"
+            app:popUpToInclusive="false" />
+        <action
+            android:id="@+id/action_to_login"
+            app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_to_search_sales_screen"
+            app:destination="@id/databaseSearchSalesFragment" />
+        <action
+            android:id="@+id/action_to_search_follow_up_screen"
+            app:destination="@id/searchFollowUpFragment" />
+        <action
+            android:id="@+id/action_to_search_costumer"
+            app:destination="@id/searchCostumerFragment" />
     </fragment>
     <fragment
-        android:id="@+id/databaseSearchFragment"
-        android:name="com.lizpostudio.kgoptometrycrm.search.SearchCostumerFragment"
+        android:id="@+id/searchCostumerFragment"
+        android:name="com.lizpostudio.kgoptometrycrm.search.costumer.SearchCostumerFragment"
         android:label="DatabaseSearchFragment"
         tools:layout="@layout/fragment_search_costumer">
         <action
-            android:id="@+id/action_databaseSearchFragment_to_formSelectionFragment"
+            android:id="@+id/action_to_search_recycle_bin_fragment"
+            app:destination="@id/searchRecycleBinFragment" />
+        <action
+            android:id="@+id/action_to_formSelectionFragment"
             app:destination="@id/formSelectionFragment" />
         <action
-            android:id="@+id/action_databaseSearchFragment_to_infoFragment"
+            android:id="@+id/action_to_infoFragment"
             app:destination="@id/infoFragment"
             app:popUpToInclusive="false" />
         <action
@@ -32,15 +61,24 @@
         <action
             android:id="@+id/action_to_database_sales_screen"
             app:destination="@id/databaseSearchSalesFragment" />
+        <action
+            android:id="@+id/action_to_search_follow_up_screen"
+            app:destination="@id/searchFollowUpFragment" />
     </fragment>
     <fragment
-        android:id="@+id/databaseSearchSalesFragment"
-        android:name="com.lizpostudio.kgoptometrycrm.search.SearchSalesFragment"
-        android:label="DatabaseSearchSalesScreenFragment"
+        android:id="@+id/searchFollowUpFragment"
+        android:name="com.lizpostudio.kgoptometrycrm.search.follow_up.SearchFollowUpFragment"
+        android:label="DatabaseSearchFollowUpScreenFragment"
         tools:layout="@layout/fragment_search_sales">
         <action
-            android:id="@+id/action_to_database_search"
-            app:destination="@id/databaseSearchFragment" />
+            android:id="@+id/action_to_search_recycle_bin_fragment"
+            app:destination="@id/searchRecycleBinFragment" />
+        <action
+            android:id="@+id/action_to_search_costumer_fragment"
+            app:destination="@id/searchCostumerFragment" />
+        <action
+            android:id="@+id/action_to_search_sales_fragment"
+            app:destination="@id/databaseSearchSalesFragment" />
         <action
             android:id="@+id/action_to_login"
             app:destination="@id/loginFragment" />
@@ -56,6 +94,34 @@
             app:destination="@id/loginFragment" />
     </fragment>
     <fragment
+        android:id="@+id/databaseSearchSalesFragment"
+        android:name="com.lizpostudio.kgoptometrycrm.search.sales.SearchSalesFragment"
+        android:label="DatabaseSearchSalesScreenFragment"
+        tools:layout="@layout/fragment_search_sales">
+        <action
+            android:id="@+id/action_to_search_recycle_bin_fragment"
+            app:destination="@id/searchRecycleBinFragment" />
+        <action
+            android:id="@+id/action_to_database_search"
+            app:destination="@id/searchCostumerFragment" />
+        <action
+            android:id="@+id/action_to_login"
+            app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_to_formSelectionFragment"
+            app:destination="@id/formSelectionFragment" />
+        <action
+            android:id="@+id/action_to_infoFragment"
+            app:destination="@id/infoFragment"
+            app:popUpToInclusive="false" />
+        <action
+            android:id="@+id/action_to_loginFragment"
+            app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_to_search_follow_up_screen"
+            app:destination="@id/searchFollowUpFragment" />
+    </fragment>
+    <fragment
         android:id="@+id/formSelectionFragment"
         android:name="com.lizpostudio.kgoptometrycrm.formselection.FormSelectionFragment"
         android:label="FormSelectionFragment"
@@ -64,52 +130,80 @@
             android:name="patientID"
             app:argType="string" />
         <action
+            android:id="@+id/action_to_searchFollowUpFragment"
+            app:destination="@id/searchFollowUpFragment" />
+        <action
             android:id="@+id/action_to_searchCostumerFragment"
-            app:destination="@id/databaseSearchFragment" />
+            app:destination="@id/searchCostumerFragment" />
         <action
             android:id="@+id/action_to_searchSalesFragment"
             app:destination="@id/databaseSearchSalesFragment" />
         <action
-            android:id="@+id/action_formSelectionFragment_to_infoFragment"
+            android:id="@+id/action_to_search_recycle_bin_fragment"
+            app:destination="@id/databaseSearchSalesFragment" />
+        <action
+            android:id="@+id/action_to_infoFragment"
             app:destination="@id/infoFragment"
             app:enterAnim="@android:anim/slide_in_left"
-            app:exitAnim="@android:anim/slide_out_right"
-            app:popUpToInclusive="false" />
+            app:exitAnim="@android:anim/slide_out_right" />
         <action
-            android:id="@+id/action_formSelectionFragment_to_currentRxFragment"
+            android:id="@+id/action_to_currentRxFragment"
             app:destination="@id/currentRxFragment"
-            app:popUpToInclusive="false" />
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right" />
         <action
-            android:id="@+id/action_formSelectionFragment_to_ocularHealthFragment"
+            android:id="@+id/action_to_ocularHealthFragment"
             app:destination="@id/ocularHealthFragment"
-            app:popUpToInclusive="false" />
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right" />
         <action
-            android:id="@+id/action_formSelectionFragment_to_supplementaryFragment"
+            android:id="@+id/action_to_supplementaryFragment"
             app:destination="@id/supplementaryFragment"
-            app:popUpToInclusive="false" />
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right" />
         <action
-            android:id="@+id/action_formSelectionFragment_to_contactLensFragment"
+            android:id="@+id/action_to_contactLensFragment"
             app:destination="@id/contactLensFragment"
-            app:popUpTo="@id/formSelectionFragment"
-            app:popUpToInclusive="true" />
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right"
+            app:popUpTo="@id/formSelectionFragment" />
         <action
-            android:id="@+id/action_formSelectionFragment_to_orthokFragment"
-            app:destination="@id/orthokFragment" />
+            android:id="@+id/action_to_orthokFragment"
+            app:destination="@id/orthokFragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right" />
         <action
-            android:id="@+id/action_formSelectionFragment_to_finalPrescriptionFragment"
-            app:destination="@id/finalPrescriptionFragment" />
+            android:id="@+id/action_to_sales_order"
+            app:destination="@id/salesOrderFragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right" />
         <action
-            android:id="@+id/action_formSelectionFragment_to_cashOrderFragment"
-            app:destination="@id/cashOrderFragment" />
+            android:id="@+id/action_to_cashOrderFragment"
+            app:destination="@id/cashOrderFragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right"
+
+            app:popEnterAnim="@android:anim/slide_in_left" />
         <action
-            android:id="@+id/action_formSelectionFragment_to_memoFragment"
-            app:destination="@id/memoFragment" />
+            android:id="@+id/action_to_followUpFragment"
+            app:destination="@id/followUpFragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right" />
         <action
-            android:id="@+id/action_formSelectionFragment_to_refractionFragment"
-            app:destination="@id/refractionFragment" />
+            android:id="@+id/action_to_memoFragment"
+            app:destination="@id/memoFragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right" />
+        <action
+            android:id="@+id/action_to_refractionFragment"
+            app:destination="@id/refractionFragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right" />
         <action
             android:id="@+id/action_to_targetCopyFragment"
-            app:destination="@id/targetCopyFragment" />
+            app:destination="@id/targetCopyFragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right" />
     </fragment>
     <fragment
         android:id="@+id/infoFragment"
@@ -121,44 +215,39 @@
             app:argType="long" />
         <action
             android:id="@+id/actionToDatabaseSearchFragment"
-            app:destination="@id/databaseSearchFragment" />
+            app:destination="@id/searchCostumerFragment" />
         <action
-            android:id="@+id/action_infoFragment_to_cashOrderFragment"
+            android:id="@+id/action_to_cashOrderFragment"
             app:destination="@id/cashOrderFragment" />
         <action
-            android:id="@+id/action_infoFragment_to_formSelectionFragment"
-            app:destination="@id/formSelectionFragment"
-            app:popUpTo="@id/formSelectionFragment"
-            app:popUpToInclusive="true" />
+            android:id="@+id/action_to_formSelectionFragment"
+            app:destination="@id/formSelectionFragment" />
         <action
-            android:id="@+id/action_infoFragment_to_currentRxFragment"
-            app:destination="@id/currentRxFragment"
-            app:popUpToInclusive="false" />
+            android:id="@+id/action_to_currentRxFragment"
+            app:destination="@id/currentRxFragment" />
         <action
-            android:id="@+id/action_infoFragment_to_ocularHealthFragment"
-            app:destination="@id/ocularHealthFragment"
-            app:popUpToInclusive="false" />
+            android:id="@+id/action_to_ocularHealthFragment"
+            app:destination="@id/ocularHealthFragment" />
         <action
-            android:id="@+id/action_infoFragment_to_supplementaryFragment"
-            app:destination="@id/supplementaryFragment"
-            app:popUpToInclusive="false" />
+            android:id="@+id/action_to_supplementaryFragment"
+            app:destination="@id/supplementaryFragment" />
         <action
-            android:id="@+id/action_infoFragment_to_contactLensFragment"
-            app:destination="@id/contactLensFragment"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:popUpTo="@id/formSelectionFragment"
-            app:popUpToInclusive="true" />
+            android:id="@+id/action_to_contactLensFragment"
+            app:destination="@id/contactLensFragment" />
         <action
-            android:id="@+id/action_infoFragment_to_orthokFragment"
+            android:id="@+id/action_to_orthokFragment"
             app:destination="@id/orthokFragment" />
         <action
-            android:id="@+id/action_infoFragment_to_finalPrescriptionFragment"
-            app:destination="@id/finalPrescriptionFragment" />
+            android:id="@+id/action_to_salesOrderFragment"
+            app:destination="@id/salesOrderFragment" />
         <action
-            android:id="@+id/action_infoFragment_to_memoFragment"
+            android:id="@+id/action_to_followUpFragment"
+            app:destination="@id/followUpFragment" />
+        <action
+            android:id="@+id/action_to_memoFragment"
             app:destination="@id/memoFragment" />
         <action
-            android:id="@+id/action_infoFragment_to_refractionFragment"
+            android:id="@+id/action_to_refractionFragment"
             app:destination="@id/refractionFragment" />
     </fragment>
     <fragment
@@ -171,41 +260,39 @@
             app:argType="long" />
         <action
             android:id="@+id/actionToDatabaseSearchFragment"
-            app:destination="@id/databaseSearchFragment" />
+            app:destination="@id/searchCostumerFragment" />
         <action
-            android:id="@+id/action_currentRxFragment_to_cashOrderFragment"
+            android:id="@+id/action_to_cashOrderFragment"
             app:destination="@id/cashOrderFragment" />
         <action
-            android:id="@+id/action_currentRxFragment_to_infoFragment"
-            app:destination="@id/infoFragment"
-            app:popUpToInclusive="false" />
+            android:id="@+id/action_to_infoFragment"
+            app:destination="@id/infoFragment" />
         <action
-            android:id="@+id/action_currentRxFragment_to_formSelectionFragment"
-            app:destination="@id/formSelectionFragment"
-            app:popUpToInclusive="false" />
+            android:id="@+id/action_to_followUpFragment"
+            app:destination="@id/followUpFragment" />
         <action
-            android:id="@+id/action_currentRxFragment_to_ocularHealthFragment"
-            app:destination="@id/ocularHealthFragment"
-            app:popUpToInclusive="false" />
+            android:id="@+id/action_to_formSelectionFragment"
+            app:destination="@id/formSelectionFragment" />
         <action
-            android:id="@+id/action_currentRxFragment_to_supplementaryFragment"
-            app:destination="@id/supplementaryFragment"
-            app:popUpToInclusive="false" />
+            android:id="@+id/action_to_ocularHealthFragment"
+            app:destination="@id/ocularHealthFragment" />
         <action
-            android:id="@+id/action_currentRxFragment_to_contactLensFragment"
-            app:destination="@id/contactLensFragment"
-            app:popUpToInclusive="false" />
+            android:id="@+id/action_to_supplementaryFragment"
+            app:destination="@id/supplementaryFragment" />
         <action
-            android:id="@+id/action_currentRxFragment_to_orthokFragment"
+            android:id="@+id/action_to_contactLensFragment"
+            app:destination="@id/contactLensFragment" />
+        <action
+            android:id="@+id/action_to_orthokFragment"
             app:destination="@id/orthokFragment" />
         <action
-            android:id="@+id/action_currentRxFragment_to_finalPrescriptionFragment"
-            app:destination="@id/finalPrescriptionFragment" />
+            android:id="@+id/action_to_salesOrderFragment"
+            app:destination="@id/salesOrderFragment" />
         <action
-            android:id="@+id/action_currentRxFragment_to_memoFragment"
+            android:id="@+id/action_to_memoFragment"
             app:destination="@id/memoFragment" />
         <action
-            android:id="@+id/action_currentRxFragment_to_refractionFragment"
+            android:id="@+id/action_to_refractionFragment"
             app:destination="@id/refractionFragment" />
     </fragment>
     <fragment
@@ -217,43 +304,41 @@
             android:name="recordID"
             app:argType="long" />
         <action
-            android:id="@+id/actionToDatabaseSearchFragment"
-            app:destination="@id/databaseSearchFragment" />
+            android:id="@+id/action_to_DatabaseSearchFragment"
+            app:destination="@id/searchCostumerFragment" />
         <action
-            android:id="@+id/action_ocularHealthFragment_to_cashOrderFragment"
+            android:id="@+id/action_to_cashOrderFragment"
             app:destination="@id/cashOrderFragment" />
         <action
-            android:id="@+id/action_ocularHealthFragment_to_formSelectionFragment"
-            app:destination="@id/formSelectionFragment"
-            app:popUpToInclusive="false" />
+            android:id="@+id/action_to_formSelectionFragment"
+            app:destination="@id/formSelectionFragment" />
         <action
-            android:id="@+id/action_ocularHealthFragment_to_infoFragment"
-            app:destination="@id/infoFragment"
-            app:popUpToInclusive="false" />
+            android:id="@+id/action_to_infoFragment"
+            app:destination="@id/infoFragment" />
         <action
-            android:id="@+id/action_ocularHealthFragment_to_currentRxFragment"
+            android:id="@+id/action_to_currentRxFragment"
             app:destination="@id/currentRxFragment"
-            app:popUpTo="@id/formSelectionFragment"
-            app:popUpToInclusive="true" />
+            app:popUpTo="@id/formSelectionFragment" />
         <action
-            android:id="@+id/action_ocularHealthFragment_to_supplementaryFragment"
-            app:destination="@id/supplementaryFragment"
-            app:popUpToInclusive="false" />
+            android:id="@+id/action_to_supplementaryFragment"
+            app:destination="@id/supplementaryFragment" />
         <action
-            android:id="@+id/action_ocularHealthFragment_to_contactLensFragment"
-            app:destination="@id/contactLensFragment"
-            app:popUpToInclusive="false" />
+            android:id="@+id/action_to_contactLensFragment"
+            app:destination="@id/contactLensFragment" />
         <action
-            android:id="@+id/action_ocularHealthFragment_to_orthokFragment"
+            android:id="@+id/action_to_orthokFragment"
             app:destination="@id/orthokFragment" />
         <action
-            android:id="@+id/action_ocularHealthFragment_to_finalPrescriptionFragment"
-            app:destination="@id/finalPrescriptionFragment" />
+            android:id="@+id/action_to_salesOrderFragment"
+            app:destination="@id/salesOrderFragment" />
         <action
-            android:id="@+id/action_ocularHealthFragment_to_memoFragment"
+            android:id="@+id/action_to_memoFragment"
             app:destination="@id/memoFragment" />
         <action
-            android:id="@+id/action_ocularHealthFragment_to_refractionFragment"
+            android:id="@+id/action_to_followUpFragment"
+            app:destination="@id/followUpFragment" />
+        <action
+            android:id="@+id/action_to_refractionFragment"
             app:destination="@id/refractionFragment" />
     </fragment>
     <fragment
@@ -266,45 +351,39 @@
             app:argType="long" />
         <action
             android:id="@+id/actionToDatabaseSearchFragment"
-            app:destination="@id/databaseSearchFragment" />
+            app:destination="@id/searchCostumerFragment" />
         <action
-            android:id="@+id/action_supplementaryFragment_to_cashOrderFragment"
+            android:id="@+id/action_to_cashOrderFragment"
             app:destination="@id/cashOrderFragment" />
         <action
-            android:id="@+id/action_supplementaryFragment_to_ocularHealthFragment"
-            app:destination="@id/ocularHealthFragment"
-            app:popUpTo="@id/formSelectionFragment"
-            app:popUpToInclusive="true" />
+            android:id="@+id/action_to_followUpFragment"
+            app:destination="@id/followUpFragment" />
         <action
-            android:id="@+id/action_supplementaryFragment_to_currentRxFragment"
-            app:destination="@id/currentRxFragment"
-            app:popUpTo="@id/formSelectionFragment"
-            app:popUpToInclusive="true" />
+            android:id="@+id/action_to_ocularHealthFragment"
+            app:destination="@id/ocularHealthFragment" />
         <action
-            android:id="@+id/action_supplementaryFragment_to_infoFragment"
-            app:destination="@id/infoFragment"
-            app:popUpTo="@id/formSelectionFragment"
-            app:popUpToInclusive="true" />
+            android:id="@+id/action_to_currentRxFragment"
+            app:destination="@id/currentRxFragment" />
         <action
-            android:id="@+id/action_supplementaryFragment_to_formSelectionFragment"
-            app:destination="@id/formSelectionFragment"
-            app:popUpTo="@id/formSelectionFragment"
-            app:popUpToInclusive="true" />
+            android:id="@+id/action_to_infoFragment"
+            app:destination="@id/infoFragment" />
         <action
-            android:id="@+id/action_supplementaryFragment_to_contactLensFragment"
-            app:destination="@id/contactLensFragment"
-            app:popUpToInclusive="false" />
+            android:id="@+id/action_to_formSelectionFragment"
+            app:destination="@id/formSelectionFragment" />
         <action
-            android:id="@+id/action_supplementaryFragment_to_orthokFragment"
+            android:id="@+id/action_to_contactLensFragment"
+            app:destination="@id/contactLensFragment" />
+        <action
+            android:id="@+id/action_to_orthokFragment"
             app:destination="@id/orthokFragment" />
         <action
-            android:id="@+id/action_supplementaryFragment_to_finalPrescriptionFragment"
-            app:destination="@id/finalPrescriptionFragment" />
+            android:id="@+id/action_to_salesOrderFragment"
+            app:destination="@id/salesOrderFragment" />
         <action
-            android:id="@+id/action_supplementaryFragment_to_memoFragment"
+            android:id="@+id/action_to_memoFragment"
             app:destination="@id/memoFragment" />
         <action
-            android:id="@+id/action_supplementaryFragment_to_refractionFragment"
+            android:id="@+id/action_to_refractionFragment"
             app:destination="@id/refractionFragment" />
     </fragment>
     <fragment
@@ -317,42 +396,39 @@
             app:argType="long" />
         <action
             android:id="@+id/actionToDatabaseSearchFragment"
-            app:destination="@id/databaseSearchFragment" />
+            app:destination="@id/searchCostumerFragment" />
         <action
-            android:id="@+id/action_contactLensFragment_to_cashOrderFragment"
+            android:id="@+id/action_to_cashOrderFragment"
             app:destination="@id/cashOrderFragment" />
         <action
-            android:id="@+id/action_contactLensFragment_to_formSelectionFragment"
-            app:destination="@id/formSelectionFragment"
-            app:popUpToInclusive="false" />
+            android:id="@+id/action_to_formSelectionFragment"
+            app:destination="@id/formSelectionFragment" />
         <action
-            android:id="@+id/action_contactLensFragment_to_infoFragment"
-            app:destination="@id/infoFragment"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:popUpToInclusive="false" />
+            android:id="@+id/action_to_infoFragment"
+            app:destination="@id/infoFragment" />
         <action
-            android:id="@+id/action_contactLensFragment_to_currentRxFragment"
-            app:destination="@id/currentRxFragment"
-            app:popUpToInclusive="false" />
+            android:id="@+id/action_to_followUpFragment"
+            app:destination="@id/followUpFragment" />
         <action
-            android:id="@+id/action_contactLensFragment_to_ocularHealthFragment"
-            app:destination="@id/ocularHealthFragment"
-            app:popUpToInclusive="false" />
+            android:id="@+id/action_to_currentRxFragment"
+            app:destination="@id/currentRxFragment" />
         <action
-            android:id="@+id/action_contactLensFragment_to_supplementaryFragment"
-            app:destination="@id/supplementaryFragment"
-            app:popUpToInclusive="false" />
+            android:id="@+id/action_to_ocularHealthFragment"
+            app:destination="@id/ocularHealthFragment" />
         <action
-            android:id="@+id/action_contactLensFragment_to_orthokFragment"
+            android:id="@+id/action_to_supplementaryFragment"
+            app:destination="@id/supplementaryFragment" />
+        <action
+            android:id="@+id/action_to_orthokFragment"
             app:destination="@id/orthokFragment" />
         <action
-            android:id="@+id/action_contactLensFragment_to_finalPrescriptionFragment"
-            app:destination="@id/finalPrescriptionFragment" />
+            android:id="@+id/action_to_salesOrderFragment"
+            app:destination="@id/salesOrderFragment" />
         <action
-            android:id="@+id/action_contactLensFragment_to_memoFragment"
+            android:id="@+id/action_to_memoFragment"
             app:destination="@id/memoFragment" />
         <action
-            android:id="@+id/action_contactLensFragment_to_refractionFragment"
+            android:id="@+id/action_to_refractionFragment"
             app:destination="@id/refractionFragment" />
     </fragment>
     <fragment
@@ -365,78 +441,84 @@
             app:argType="long" />
         <action
             android:id="@+id/actionToDatabaseSearchFragment"
-            app:destination="@id/databaseSearchFragment" />
+            app:destination="@id/searchCostumerFragment" />
         <action
-            android:id="@+id/action_orthokFragment_to_cashOrderFragment"
+            android:id="@+id/action_to_cashOrderFragment"
             app:destination="@id/cashOrderFragment" />
         <action
-            android:id="@+id/action_orthokFragment_to_contactLensFragment"
+            android:id="@+id/action_to_contactLensFragment"
             app:destination="@id/contactLensFragment" />
         <action
-            android:id="@+id/action_orthokFragment_to_currentRxFragment"
+            android:id="@+id/action_to_currentRxFragment"
             app:destination="@id/currentRxFragment" />
         <action
-            android:id="@+id/action_orthokFragment_to_ocularHealthFragment"
+            android:id="@+id/action_to_ocularHealthFragment"
             app:destination="@id/ocularHealthFragment" />
         <action
-            android:id="@+id/action_orthokFragment_to_supplementaryFragment"
+            android:id="@+id/action_to_supplementaryFragment"
             app:destination="@id/supplementaryFragment" />
         <action
-            android:id="@+id/action_orthokFragment_to_infoFragment"
+            android:id="@+id/action_to_infoFragment"
             app:destination="@id/infoFragment" />
         <action
-            android:id="@+id/action_orthokFragment_to_formSelectionFragment"
+            android:id="@+id/action_to_formSelectionFragment"
             app:destination="@id/formSelectionFragment" />
         <action
-            android:id="@+id/action_orthokFragment_to_finalPrescriptionFragment"
-            app:destination="@id/finalPrescriptionFragment" />
+            android:id="@+id/action_to_salesOrderFragment"
+            app:destination="@id/salesOrderFragment" />
         <action
-            android:id="@+id/action_orthokFragment_to_memoFragment"
+            android:id="@+id/action_to_memoFragment"
             app:destination="@id/memoFragment" />
         <action
-            android:id="@+id/action_orthokFragment_to_refractionFragment"
+            android:id="@+id/action_to_refractionFragment"
             app:destination="@id/refractionFragment" />
+        <action
+            android:id="@+id/action_to_followUpFragment"
+            app:destination="@id/followUpFragment" />
     </fragment>
     <fragment
-        android:id="@+id/finalPrescriptionFragment"
+        android:id="@+id/salesOrderFragment"
         android:name="com.lizpostudio.kgoptometrycrm.forms.SalesOrderFragment"
-        android:label="FinalPrescriptionFragment"
+        android:label="Sales Order"
         tools:layout="@layout/fragment_final_prescription">
         <argument
             android:name="recordID"
             app:argType="long" />
         <action
             android:id="@+id/actionToDatabaseSearchFragment"
-            app:destination="@id/databaseSearchFragment" />
+            app:destination="@id/searchCostumerFragment" />
         <action
-            android:id="@+id/action_finalPrescriptionFragment_to_orthokFragment"
+            android:id="@+id/action_to_orthokFragment"
             app:destination="@id/orthokFragment" />
         <action
-            android:id="@+id/action_finalPrescriptionFragment_to_contactLensFragment"
+            android:id="@+id/action_to_followUpFragment"
+            app:destination="@id/followUpFragment" />
+        <action
+            android:id="@+id/action_to_contactLensFragment"
             app:destination="@id/contactLensFragment" />
         <action
-            android:id="@+id/action_finalPrescriptionFragment_to_formSelectionFragment"
+            android:id="@+id/action_to_formSelectionFragment"
             app:destination="@id/formSelectionFragment" />
         <action
-            android:id="@+id/action_finalPrescriptionFragment_to_currentRxFragment"
+            android:id="@+id/action_to_currentRxFragment"
             app:destination="@id/currentRxFragment" />
         <action
-            android:id="@+id/action_finalPrescriptionFragment_to_ocularHealthFragment"
+            android:id="@+id/action_to_ocularHealthFragment"
             app:destination="@id/ocularHealthFragment" />
         <action
-            android:id="@+id/action_finalPrescriptionFragment_to_infoFragment"
+            android:id="@+id/action_to_infoFragment"
             app:destination="@id/infoFragment" />
         <action
-            android:id="@+id/action_finalPrescriptionFragment_to_supplementaryFragment"
+            android:id="@+id/action_to_supplementaryFragment"
             app:destination="@id/supplementaryFragment" />
         <action
-            android:id="@+id/action_finalPrescriptionFragment_to_memoFragment"
+            android:id="@+id/action_to_memoFragment"
             app:destination="@id/memoFragment" />
         <action
-            android:id="@+id/action_finalPrescriptionFragment_to_refractionFragment"
+            android:id="@+id/action_to_refractionFragment"
             app:destination="@id/refractionFragment" />
         <action
-            android:id="@+id/action_finalPrescriptionFragment_to_cashOrderFragment"
+            android:id="@+id/action_to_cashOrderFragment"
             app:destination="@id/cashOrderFragment" />
         <action
             android:id="@+id/action_to_preview_with_name_fragment"
@@ -455,36 +537,39 @@
             app:argType="long" />
         <action
             android:id="@+id/actionToDatabaseSearchFragment"
-            app:destination="@id/databaseSearchFragment" />
+            app:destination="@id/searchCostumerFragment" />
         <action
-            android:id="@+id/action_memoFragment_to_cashOrderFragment"
+            android:id="@+id/action_to_cashOrderFragment"
             app:destination="@id/cashOrderFragment" />
         <action
-            android:id="@+id/action_memoFragment_to_formSelectionFragment"
+            android:id="@+id/action_to_formSelectionFragment"
             app:destination="@id/formSelectionFragment" />
         <action
-            android:id="@+id/action_memoFragment_to_supplementaryFragment"
+            android:id="@+id/action_to_supplementaryFragment"
             app:destination="@id/supplementaryFragment" />
         <action
-            android:id="@+id/action_memoFragment_to_infoFragment"
+            android:id="@+id/action_to_infoFragment"
             app:destination="@id/infoFragment" />
         <action
-            android:id="@+id/action_memoFragment_to_finalPrescriptionFragment"
-            app:destination="@id/finalPrescriptionFragment" />
+            android:id="@+id/action_to_salesOrderFragment"
+            app:destination="@id/salesOrderFragment" />
         <action
-            android:id="@+id/action_memoFragment_to_orthokFragment"
+            android:id="@+id/action_to_followUpFragment"
+            app:destination="@id/followUpFragment" />
+        <action
+            android:id="@+id/action_to_orthokFragment"
             app:destination="@id/orthokFragment" />
         <action
-            android:id="@+id/action_memoFragment_to_contactLensFragment"
+            android:id="@+id/action_to_contactLensFragment"
             app:destination="@id/contactLensFragment" />
         <action
-            android:id="@+id/action_memoFragment_to_currentRxFragment"
+            android:id="@+id/action_to_currentRxFragment"
             app:destination="@id/currentRxFragment" />
         <action
-            android:id="@+id/action_memoFragment_to_ocularHealthFragment"
+            android:id="@+id/action_to_ocularHealthFragment"
             app:destination="@id/ocularHealthFragment" />
         <action
-            android:id="@+id/action_memoFragment_to_refractionFragment"
+            android:id="@+id/action_to_refractionFragment"
             app:destination="@id/refractionFragment" />
     </fragment>
     <fragment
@@ -497,38 +582,86 @@
             android:name="recordID"
             app:argType="long" />
         <action
-            android:id="@+id/actionToDatabaseSearchFragment"
-            app:destination="@+id/databaseSearchFragment" />
+            android:id="@+id/action_to_followUpFragment"
+            app:destination="@+id/followUpFragment" />
         <action
-            android:id="@+id/action_refractionFragment_to_cashOrderFragment"
+            android:id="@+id/actionToDatabaseSearchFragment"
+            app:destination="@+id/searchCostumerFragment" />
+        <action
+            android:id="@+id/action_to_cashOrderFragment"
             app:destination="@id/cashOrderFragment" />
         <action
-            android:id="@+id/action_refractionFragment_to_formSelectionFragment"
+            android:id="@+id/action_to_formSelectionFragment"
             app:destination="@id/formSelectionFragment" />
         <action
-            android:id="@+id/action_refractionFragment_to_currentRxFragment"
+            android:id="@+id/action_to_currentRxFragment"
             app:destination="@id/currentRxFragment" />
         <action
-            android:id="@+id/action_refractionFragment_to_ocularHealthFragment"
+            android:id="@+id/action_to_ocularHealthFragment"
             app:destination="@id/ocularHealthFragment" />
         <action
-            android:id="@+id/action_refractionFragment_to_memoFragment"
+            android:id="@+id/action_to_memoFragment"
             app:destination="@id/memoFragment" />
         <action
-            android:id="@+id/action_refractionFragment_to_supplementaryFragment"
+            android:id="@+id/action_to_supplementaryFragment"
             app:destination="@id/supplementaryFragment" />
         <action
-            android:id="@+id/action_refractionFragment_to_infoFragment"
+            android:id="@+id/action_to_infoFragment"
             app:destination="@id/infoFragment" />
         <action
-            android:id="@+id/action_refractionFragment_to_finalPrescriptionFragment"
-            app:destination="@id/finalPrescriptionFragment" />
+            android:id="@+id/action_to_salesOrderFragment"
+            app:destination="@id/salesOrderFragment" />
         <action
-            android:id="@+id/action_refractionFragment_to_orthokFragment"
+            android:id="@+id/action_to_orthokFragment"
             app:destination="@id/orthokFragment" />
         <action
-            android:id="@+id/action_refractionFragment_to_contactLensFragment"
+            android:id="@+id/action_to_contactLensFragment"
             app:destination="@id/contactLensFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/followUpFragment"
+        android:name="com.lizpostudio.kgoptometrycrm.forms.FollowUpFragment"
+        android:label="FollowUpFragment"
+        tools:layout="@layout/fragment_follow_up">
+        <argument
+            android:name="recordID"
+            app:argType="long" />
+        <action
+            android:id="@+id/actionToCashOrderFragment"
+            app:destination="@id/cashOrderFragment" />
+        <action
+            android:id="@+id/actionToDatabaseSearchFragment"
+            app:destination="@id/searchCostumerFragment" />
+        <action
+            android:id="@+id/action_to_salesOrderFragment"
+            app:destination="@id/salesOrderFragment" />
+        <action
+            android:id="@+id/action_to_orthokFragment"
+            app:destination="@id/orthokFragment" />
+        <action
+            android:id="@+id/action_to_contactLensFragment"
+            app:destination="@id/contactLensFragment" />
+        <action
+            android:id="@+id/action_to_formSelectionFragment"
+            app:destination="@id/formSelectionFragment" />
+        <action
+            android:id="@+id/action_to_currentRxFragment"
+            app:destination="@id/currentRxFragment" />
+        <action
+            android:id="@+id/action_to_ocularHealthFragment"
+            app:destination="@id/ocularHealthFragment" />
+        <action
+            android:id="@+id/action_to_infoFragment"
+            app:destination="@id/infoFragment" />
+        <action
+            android:id="@+id/action_to_supplementaryFragment"
+            app:destination="@id/supplementaryFragment" />
+        <action
+            android:id="@+id/action_to_memoFragment"
+            app:destination="@id/memoFragment" />
+        <action
+            android:id="@+id/action_to_refractionFragment"
+            app:destination="@id/refractionFragment" />
     </fragment>
     <fragment
         android:id="@+id/cashOrderFragment"
@@ -541,36 +674,39 @@
 
         <action
             android:id="@+id/actionToDatabaseSearchFragment"
-            app:destination="@id/databaseSearchFragment" />
+            app:destination="@id/searchCostumerFragment" />
         <action
-            android:id="@+id/action_finalPrescriptionFragment_to_finalPrescriptionFragment"
-            app:destination="@id/finalPrescriptionFragment" />
+            android:id="@+id/action_to_salesOrderFragment"
+            app:destination="@id/salesOrderFragment" />
         <action
-            android:id="@+id/action_finalPrescriptionFragment_to_orthokFragment"
+            android:id="@+id/action_to_orthokFragment"
             app:destination="@id/orthokFragment" />
         <action
-            android:id="@+id/action_finalPrescriptionFragment_to_contactLensFragment"
+            android:id="@+id/action_to_contactLensFragment"
             app:destination="@id/contactLensFragment" />
         <action
-            android:id="@+id/action_finalPrescriptionFragment_to_formSelectionFragment"
+            android:id="@+id/action_to_formSelectionFragment"
             app:destination="@id/formSelectionFragment" />
         <action
-            android:id="@+id/action_finalPrescriptionFragment_to_currentRxFragment"
+            android:id="@+id/action_to_currentRxFragment"
             app:destination="@id/currentRxFragment" />
         <action
-            android:id="@+id/action_finalPrescriptionFragment_to_ocularHealthFragment"
+            android:id="@+id/action_to_ocularHealthFragment"
             app:destination="@id/ocularHealthFragment" />
         <action
-            android:id="@+id/action_finalPrescriptionFragment_to_infoFragment"
+            android:id="@+id/action_to_infoFragment"
             app:destination="@id/infoFragment" />
         <action
-            android:id="@+id/action_finalPrescriptionFragment_to_supplementaryFragment"
+            android:id="@+id/action_to_followUpFragment"
+            app:destination="@id/followUpFragment" />
+        <action
+            android:id="@+id/action_to_supplementaryFragment"
             app:destination="@id/supplementaryFragment" />
         <action
-            android:id="@+id/action_finalPrescriptionFragment_to_memoFragment"
+            android:id="@+id/action_to_memoFragment"
             app:destination="@id/memoFragment" />
         <action
-            android:id="@+id/action_finalPrescriptionFragment_to_refractionFragment"
+            android:id="@+id/action_to_refractionFragment"
             app:destination="@id/refractionFragment" />
     </fragment>
     <fragment
@@ -585,7 +721,7 @@
 
         <action
             android:id="@+id/actionToSalesOrder"
-            app:destination="@id/finalPrescriptionFragment" />
+            app:destination="@id/salesOrderFragment" />
     </fragment>
     <fragment
         android:id="@+id/previewWithOutNameFragment"
@@ -599,9 +735,8 @@
 
         <action
             android:id="@+id/actionToSalesOrder"
-            app:destination="@id/finalPrescriptionFragment" />
+            app:destination="@id/salesOrderFragment" />
     </fragment>
-
     <fragment
         android:id="@+id/targetCopyFragment"
         android:name="com.lizpostudio.kgoptometrycrm.copy.TargetCopyFragment"
@@ -614,10 +749,9 @@
             android:id="@+id/action_to_form_selection"
             app:destination="@id/formSelectionFragment" />
     </fragment>
-
     <fragment
         android:id="@+id/settingLoginFragment"
-        android:name="com.lizpostudio.kgoptometrycrm.SettingLoginFragment"
+        android:name="com.lizpostudio.kgoptometrycrm.preferences.SettingLoginFragment"
         android:label="SettingLoginFragment"
         tools:layout="@layout/fragment_settings_login">
 

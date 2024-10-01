@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -17,13 +18,16 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.lizpostudio.kgoptometrycrm.PatientsViewModel
-import com.lizpostudio.kgoptometrycrm.PatientsViewModelFactory
 import com.lizpostudio.kgoptometrycrm.R
+import com.lizpostudio.kgoptometrycrm.ViewModelProviderFactory
 import com.lizpostudio.kgoptometrycrm.constant.Constants
-import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
+import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientEntity
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentFormSelectionBinding
-import com.lizpostudio.kgoptometrycrm.search.SearchSalesFragment
-import com.lizpostudio.kgoptometrycrm.utils.FormsListAdapter
+import com.lizpostudio.kgoptometrycrm.formselection.adapter.SectionNameAdapter
+import com.lizpostudio.kgoptometrycrm.search.costumer.SearchCostumerFragment
+import com.lizpostudio.kgoptometrycrm.search.follow_up.SearchFollowUpFragment
+import com.lizpostudio.kgoptometrycrm.search.recycle_bin.SearchRecycleBinFragment
+import com.lizpostudio.kgoptometrycrm.search.sales.SearchSalesFragment
 import com.lizpostudio.kgoptometrycrm.utils.actionConfirmDeletion
 import com.lizpostudio.kgoptometrycrm.utils.computeAgeAndDOB
 import id.xxx.module.view.binding.ktx.viewBinding
@@ -36,45 +40,57 @@ class FormSelectionFragment : Fragment() {
     }
 
     private var isAdmin = false
-    private val patientInfoForm = PatientsEntity()
+    private val patientInfoForm = PatientEntity()
 
     private var allowSync = true
     private var syncHistoryStart = 0L
     private var latestDataSynched = 0L
 
     private val historyUpdateList = mutableListOf<Long>()
-    private val recordsToBeInserted = mutableListOf<PatientsEntity>()
+    private val recordsToBeInserted = mutableListOf<PatientEntity>()
 
-    private val recyclerAdapter = FormsListAdapter()
+    private val recyclerAdapter = SectionNameAdapter()
     private val binding by viewBinding<FragmentFormSelectionBinding>()
 
     private val patientViewModel: PatientsViewModel by viewModels {
-        PatientsViewModelFactory(requireContext())
+        ViewModelProviderFactory.getInstance(context)
     }
 
-    private val allPatientForms = mutableListOf<PatientsEntity>()
+    private val allPatientForms = mutableListOf<PatientEntity>()
     private var viewOnlyMode = false
 
     private val args by navArgs<FormSelectionFragmentArgs>()
 
-    private fun navigateBack() {
-        val pref = context?.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE)
-        val dest = pref?.getString(Constants.PREF_KEY_SEARCH_STATE, "")
-//        pref
+    private fun onBackPressed() {
+        if (binding.selectFormToAddLayout.isVisible) {
+            binding.selectFormToAddLayout.visibility = View.GONE
+        } else {
+            val pref = context?.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE)
+            //        pref
 //            ?.edit()
 //            ?.putBoolean("viewOnly", false)
 //            ?.apply()
-        if (dest == SearchSalesFragment::class.java.name) {
-            findNavController().navigate(FormSelectionFragmentDirections.actionToSearchSalesFragment())
-        } else {
-            findNavController().navigate(FormSelectionFragmentDirections.actionToSearchCostumerFragment())
+            val navDirections = when (pref?.getString(Constants.SEARCH_STATE_KEY, "")) {
+                SearchCostumerFragment::class.java.name ->
+                    FormSelectionFragmentDirections.actionToSearchCostumerFragment()
+                SearchRecycleBinFragment::class.java.name ->
+                    FormSelectionFragmentDirections.actionToSearchRecycleBinFragment()
+                SearchSalesFragment::class.java.name ->
+                    FormSelectionFragmentDirections.actionToSearchSalesFragment()
+                SearchFollowUpFragment::class.java.name ->
+                    FormSelectionFragmentDirections.actionToSearchFollowUpFragment()
+                else ->
+                    FormSelectionFragmentDirections.actionToSearchCostumerFragment()
+            }
+            findNavController().navigate(navDirections)
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         requireActivity().onBackPressedDispatcher
-            .addCallback(this) { navigateBack() }
+            .addCallback(this) { onBackPressed() }
     }
 
     @SuppressLint("SetTextI18n")
@@ -85,14 +101,12 @@ class FormSelectionFragment : Fragment() {
     ): View {
         val app = requireNotNull(this.activity).application
 
-        var addFormVisibility = false
-
         binding.lifecycleOwner = this
         val navController = this.findNavController()
 
         // get if user is Admin
         val sharedPref = app.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE)
-        isAdmin = sharedPref?.getString("admin", "") ?: "" == "admin"
+        isAdmin = (sharedPref?.getString("admin", "") ?: "") == "admin"
         latestDataSynched = sharedPref?.getLong(Constants.PREF_KEY_LAST_SYNC, 0L) ?: 0L
 
         val safeArgs: FormSelectionFragmentArgs by navArgs()
@@ -150,7 +164,9 @@ class FormSelectionFragment : Fragment() {
                     val (dob, age) = computeAgeAndDOB(patientInfoForm.patientIC)
                     val pCaption = "${patientInfoForm.patientName} ${
                         resources.getString(
-                            R.string.number_of_years_patient, age, dob
+                            R.string.number_of_years_patient,
+                            age,
+                            dob
                         )
                     }"
 
@@ -161,7 +177,7 @@ class FormSelectionFragment : Fragment() {
                     val sortedForms = patientForms.sortedBy { forms -> forms.dateOfSection }
 
                     val orderOfSections = listOf(*resources.getStringArray(R.array.forms_order))
-                    val newList = mutableListOf<PatientsEntity>()
+                    val newList = mutableListOf<PatientEntity>()
 
                     for (section in orderOfSections) {
                         for (forms in sortedForms) {
@@ -170,10 +186,27 @@ class FormSelectionFragment : Fragment() {
                                 sectionName = getString(R.string.sales_order_from_selection)
                                 forms.sectionName = getString(R.string.sales_order_from_selection)
                             }
-                            if (section == sectionName) newList.add(forms)
+                            if (section == sectionName)
+                                newList.add(forms)
                         }
                     }
-                    recyclerAdapter.submitList(newList)
+
+                    val sectionNames = newList.map { data -> data.sectionName }
+                        .toSet()
+                    val data = mutableListOf<Map<String, MutableList<PatientEntity>>>()
+                    sectionNames.forEach { sectionName ->
+                        val tmp = mutableMapOf<String, MutableList<PatientEntity>>()
+                        tmp[sectionName] = mutableListOf()
+                        newList.forEach { patientEntity ->
+                            if (sectionName == patientEntity.sectionName) {
+                                tmp[sectionName]?.add(patientEntity)
+                            }
+                        }
+                        data.add(tmp)
+                    }
+
+//                    recyclerAdapter.submitList(newList)
+                    recyclerAdapter.submitList(data)
 
                 } else {
                     Toast.makeText(context, "No Forms for $patientID found", Toast.LENGTH_LONG)
@@ -184,7 +217,7 @@ class FormSelectionFragment : Fragment() {
         }
 
         binding.backButton.setOnClickListener {
-            navigateBack()
+            onBackPressed()
         }
 
         binding.deleteForm.setOnClickListener {
@@ -196,19 +229,9 @@ class FormSelectionFragment : Fragment() {
                     "all Forms",
                     patientInfoForm.patientName
                 ),
-                isAdmin, requireContext()
-            ) { allowed ->
-                if (allowed) {
-                    patientViewModel.deleteListOfRecords(allPatientForms)
-                    Log.d(
-                        Constants.TAG,
-                        "These list of records will be eliminated from Firebase: ${allPatientForms.map { forms -> forms.recordID.toString() }}"
-                    )
-
-                    patientViewModel.deleteListOfRecordsFromFirebase(
-                        allPatientForms.map { forms -> forms.recordID.toString() })
-                }
-            }
+                isAdmin, requireContext(),
+                onDeleted = ::onDeleted
+            )
         }
 
         // UPDATE RECORDS BASED on FIREBASE History
@@ -220,10 +243,12 @@ class FormSelectionFragment : Fragment() {
                 val historyList = historyOriginalList.filter { it.first > backTime }
 
                 if (historyList.size != historyOriginalList.size) {
-                    Log.d(Constants.TAG, "We are going to reduce  history list to ${historyList.size}")
+                    Log.d(
+                        Constants.TAG,
+                        "We are going to reduce  history list to ${historyList.size}"
+                    )
                     val newHistory =
-                        historyList.map { item -> item.first.toString() to item.second.toString() }
-                            .toMap()
+                        historyList.associate { item -> item.first.toString() to item.second.toString() }
                     patientViewModel.updateHistoryFBReference(newHistory)
                 }
 
@@ -315,12 +340,20 @@ class FormSelectionFragment : Fragment() {
 
                         val dest =
                             context?.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE)
-                                ?.getString(Constants.PREF_KEY_SEARCH_STATE, "")
-                        if (dest == SearchSalesFragment::class.java.name) {
-                            navController.navigate(FormSelectionFragmentDirections.actionToSearchSalesFragment())
-                        } else {
-                            navController.navigate(FormSelectionFragmentDirections.actionToSearchCostumerFragment())
+                                ?.getString(Constants.SEARCH_STATE_KEY, "")
+                        val navDirections = when (dest) {
+                            SearchCostumerFragment::class.java.name ->
+                                FormSelectionFragmentDirections.actionToSearchCostumerFragment()
+                            SearchRecycleBinFragment::class.java.name ->
+                                FormSelectionFragmentDirections.actionToSearchRecycleBinFragment()
+                            SearchSalesFragment::class.java.name ->
+                                FormSelectionFragmentDirections.actionToSearchSalesFragment()
+                            SearchFollowUpFragment::class.java.name ->
+                                FormSelectionFragmentDirections.actionToSearchFollowUpFragment()
+                            else ->
+                                FormSelectionFragmentDirections.actionToSearchCostumerFragment()
                         }
+                        findNavController().navigate(navDirections)
                     }
                 }
             } else {
@@ -330,12 +363,7 @@ class FormSelectionFragment : Fragment() {
         }
 
         binding.addNewForm.setOnClickListener {
-            addFormVisibility = !addFormVisibility
-            if (addFormVisibility) {
-                binding.selectFormToAddLayout.visibility = View.VISIBLE
-            } else {
-                binding.selectFormToAddLayout.visibility = View.GONE
-            }
+            binding.selectFormToAddLayout.isVisible = !binding.selectFormToAddLayout.isVisible
         }
 
         binding.refractionButton.setOnClickListener {
@@ -367,7 +395,7 @@ class FormSelectionFragment : Fragment() {
 
         binding.contactLensButton.setOnClickListener {
             patientViewModel.createNewRecord(
-                patientInfoForm, resources.getString(R.string.contact_lens_caption)
+                patientInfoForm, resources.getString(R.string.contact_lens_exam_caption)
             )
         }
 
@@ -380,6 +408,12 @@ class FormSelectionFragment : Fragment() {
         binding.finalPrescriptionButton.setOnClickListener {
             patientViewModel.createNewRecord(
                 patientInfoForm, resources.getString(R.string.final_prescription_caption)
+            )
+        }
+
+        binding.followUp.setOnClickListener {
+            patientViewModel.createNewRecord(
+                patientInfoForm, resources.getString(R.string.follow_up_form_caption)
             )
         }
 
@@ -442,62 +476,55 @@ class FormSelectionFragment : Fragment() {
         return binding.root
     }
 
-    private fun navigateToSelectedForm(p: PatientsEntity) {
+    private fun navigateToSelectedForm(p: PatientEntity) {
         when (p.sectionName) {
-            resources.getString(R.string.info_form_caption) ->
+            getString(R.string.info_form_caption) ->
                 findNavController().navigate(
-                    FormSelectionFragmentDirections
-                        .actionFormSelectionFragmentToInfoFragment(p.recordID)
+                    FormSelectionFragmentDirections.actionToInfoFragment(p.recordID)
                 )
-            resources.getString(R.string.memo_form_caption) ->
+            getString(R.string.follow_up_form_caption) ->
                 findNavController().navigate(
-                    FormSelectionFragmentDirections
-                        .actionFormSelectionFragmentToMemoFragment(p.recordID)
+                    FormSelectionFragmentDirections.actionToFollowUpFragment(p.recordID)
                 )
-            resources.getString(R.string.refraction_caption) ->
+            getString(R.string.memo_form_caption) ->
                 findNavController().navigate(
-                    FormSelectionFragmentDirections
-                        .actionFormSelectionFragmentToRefractionFragment(p.recordID)
+                    FormSelectionFragmentDirections.actionToMemoFragment(p.recordID)
                 )
-            resources.getString(R.string.current_rx_caption) ->
+            getString(R.string.current_rx_caption) ->
                 findNavController().navigate(
-                    FormSelectionFragmentDirections
-                        .actionFormSelectionFragmentToCurrentRxFragment(p.recordID)
+                    FormSelectionFragmentDirections.actionToCurrentRxFragment(p.recordID)
                 )
-            resources.getString(R.string.ocular_health_caption) ->
+            getString(R.string.refraction_caption) ->
                 findNavController().navigate(
-                    FormSelectionFragmentDirections
-                        .actionFormSelectionFragmentToOcularHealthFragment(p.recordID)
+                    FormSelectionFragmentDirections.actionToRefractionFragment(p.recordID)
                 )
-            resources.getString(R.string.supplementary_test_caption) ->
+            getString(R.string.ocular_health_caption) ->
                 findNavController().navigate(
-                    FormSelectionFragmentDirections
-                        .actionFormSelectionFragmentToSupplementaryFragment(p.recordID)
+                    FormSelectionFragmentDirections.actionToOcularHealthFragment(p.recordID)
                 )
-            resources.getString(R.string.contact_lens_caption) ->
+            getString(R.string.supplementary_test_caption) ->
                 findNavController().navigate(
-                    FormSelectionFragmentDirections
-                        .actionFormSelectionFragmentToContactLensFragment(p.recordID)
+                    FormSelectionFragmentDirections.actionToSupplementaryFragment(p.recordID)
                 )
-            resources.getString(R.string.orthox_caption) ->
+            getString(R.string.contact_lens_exam_caption) ->
                 findNavController().navigate(
-                    FormSelectionFragmentDirections
-                        .actionFormSelectionFragmentToOrthokFragment(p.recordID)
+                    FormSelectionFragmentDirections.actionToContactLensFragment(p.recordID)
                 )
-            resources.getString(R.string.sales_order_from_selection) ->
+            getString(R.string.orthox_caption) ->
                 findNavController().navigate(
-                    FormSelectionFragmentDirections
-                        .actionFormSelectionFragmentToFinalPrescriptionFragment(p.recordID)
+                    FormSelectionFragmentDirections.actionToOrthokFragment(p.recordID)
                 )
-            resources.getString(R.string.final_prescription_caption) ->
+            getString(R.string.cash_order_caption) ->
                 findNavController().navigate(
-                    FormSelectionFragmentDirections
-                        .actionFormSelectionFragmentToFinalPrescriptionFragment(p.recordID)
+                    FormSelectionFragmentDirections.actionToCashOrderFragment(p.recordID)
                 )
-            resources.getString(R.string.cash_order) ->
+            getString(R.string.sales_order_caption) ->
                 findNavController().navigate(
-                    FormSelectionFragmentDirections
-                        .actionFormSelectionFragmentToCashOrderFragment(p.recordID)
+                    FormSelectionFragmentDirections.actionToSalesOrder(p.recordID)
+                )
+            getString(R.string.final_prescription_caption) ->
+                findNavController().navigate(
+                    FormSelectionFragmentDirections.actionToSalesOrder(p.recordID)
                 )
             else -> {
                 Toast.makeText(
@@ -506,6 +533,20 @@ class FormSelectionFragment : Fragment() {
                     Toast.LENGTH_SHORT
                 ).show()
             }
+        }
+    }
+
+    private fun onDeleted(isConfirm: Boolean) {
+        if (isConfirm) {
+            patientViewModel.deleteListOfRecords(allPatientForms)
+            val logMessage =
+                "These list of records will be eliminated from Firebase: ${allPatientForms.map { forms -> forms.recordID }}"
+            Log.d(Constants.TAG, logMessage)
+
+            patientViewModel.deleteListOfRecordsFromFirebase(allPatientForms)
+//            patientViewModel.deleteListOfRecordsFromFirebase(
+////                allPatientForms.map { forms -> forms.recordID.toString() }
+//            )
         }
     }
 }

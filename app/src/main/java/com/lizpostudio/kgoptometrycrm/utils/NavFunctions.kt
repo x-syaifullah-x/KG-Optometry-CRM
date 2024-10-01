@@ -1,26 +1,28 @@
 package com.lizpostudio.kgoptometrycrm.utils
 
-import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
+import android.content.Context
+import com.lizpostudio.kgoptometrycrm.R
+import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientEntity
 
-fun makeShortSectionName(sectionName: String): String {
-
+fun makeShortSectionName(context: Context, sectionName: String): String {
     return when (sectionName) {
-        "INFO" -> "INFO"
-        "MEMO" -> "MEMO"
-        "CURRENT / OLD Rx" -> "CUR Rx"
-        "REFRACTION" -> "REFRACT"
-        "OCULAR HEALTH" -> "OCU HLT"
-        "SUPPLEMENTARY TESTS" -> "SUP TST"
-        "CONTACT LENS EXAM" -> "CON LENS"
-        "ORTHOK" -> "ORTHOK"
-        "CASH ORDER" -> "CASH"
-        "SALES ORDER" -> "SALES"
-        "FINAL PRESCRIPTION" -> "SALES ORDER"
+        context.getString(R.string.follow_up_form_caption) -> "FL-UP"
+        context.getString(R.string.info_form_caption) -> "INFO"
+        context.getString(R.string.memo_form_caption) -> "MEMO"
+        context.getString(R.string.current_rx_caption) -> "CUR Rx"
+        context.getString(R.string.refraction_caption) -> "REFRACT"
+        context.getString(R.string.ocular_health_caption) -> "OCU HLT"
+        context.getString(R.string.supplementary_test_caption) -> "SUP TST"
+        context.getString(R.string.contact_lens_exam_caption) -> "CON LENS"
+        context.getString(R.string.orthox_caption) -> "ORTHOK"
+        context.getString(R.string.cash_order_caption) -> "CASH"
+        context.getString(R.string.sales_order_caption) -> "SALES"
+        context.getString(R.string.final_prescription_caption) -> "SALES"
         else -> "--"
     }
 }
 
-fun getNavigationRecordIDs(forms: List<PatientsEntity>, recordID: Long, orderOfSections: List<String>):
+fun getNavigationRecordIDs(forms: List<PatientEntity>, recordID: Long, orderOfSections: List<String>):
         Pair<Pair<String, Long>, Pair<String, Long>> {
     val sortedList = forms.sortedBy { it.dateOfSection }
     var nextRec = 0L

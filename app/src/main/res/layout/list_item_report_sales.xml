@@ -6,8 +6,8 @@
     <data>
 
         <variable
-            name="patient"
-            type="com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity" />
+            name="patients"
+            type="com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientEntity" />
 
         <import type="com.lizpostudio.kgoptometrycrm.utils.FormatFunctionsKt" />
 
@@ -24,36 +24,42 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.2" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline_cs"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.35" />
+            app:layout_constraintGuide_percent="0.16" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline_or"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.50" />
+            app:layout_constraintGuide_percent="0.3" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_or2"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.58" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_or3"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.44" />
 
         <TextView
             android:id="@+id/section_date"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
             android:fontFamily="@font/didact_gothic"
-            android:text="@{FormatFunctionsKt.convertLongToDDMMYY(patient.dateOfSection)}"
+            android:text="@{FormatFunctionsKt.convertLongToDDMMYY(patients.dateOfSection)}"
             android:textAlignment="viewStart"
             android:textColor="@color/colorPrimaryDark"
-            android:textSize="18sp"
+            android:textSize="10sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/guideline_date"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -63,189 +69,132 @@
             android:id="@+id/section_cs"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
             android:fontFamily="@font/didact_gothic"
-            android:text="@{patient.cs}"
+            android:text="@{patients.cs != null &amp;&amp; !patients.cs.isEmpty() ? `CS ` + patients.cs : ``}"
             android:textAlignment="viewStart"
             android:textColor="@color/colorPrimaryDark"
-            android:textSize="18sp"
+            android:textSize="10sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/guideline_cs"
             app:layout_constraintStart_toEndOf="@id/guideline_date"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0"
             tools:text="1234" />
 
         <TextView
             android:id="@+id/section_or"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
             android:fontFamily="@font/didact_gothic"
-            android:text="@{patient.or}"
+            android:text="@{patients.or != null &amp;&amp; !patients.or.isEmpty() ? `OR ` + patients.or : ``}"
             android:textAlignment="viewStart"
             android:textColor="@color/colorPrimaryDark"
-            android:textSize="18sp"
+            android:textSize="10sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/guideline_or"
-            app:layout_constraintStart_toEndOf="@+id/guideline_cs"
+            app:layout_constraintStart_toStartOf="@+id/guideline_date"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0"
             tools:text="1234" />
+
+        <TextView
+            android:id="@+id/section_cstotal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/didact_gothic"
+            android:text="@{patients.cstotal != null &amp;&amp; !patients.cstotal.isEmpty() ? `RM ` + patients.cstotal : ``}"
+            android:textAlignment="viewStart"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/guideline_or"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="RM12" />
+
+        <TextView
+            android:id="@+id/section_ortotal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/didact_gothic"
+            android:text="@{patients.ortotal != null &amp;&amp; !patients.ortotal.isEmpty() ? `RM ` + patients.ortotal : ``}"
+            android:textAlignment="viewStart"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/guideline_or"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="RM12" />
+
+        <TextView
+            android:id="@+id/section_cspractitionername"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/didact_gothic"
+            android:text="@{patients.cspractitioner}"
+            android:textAlignment="viewStart"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/guideline_or3"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="KEITH" />
+
+        <TextView
+            android:id="@+id/section_orpractitionername"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/didact_gothic"
+            android:text="@{patients.orpractitioner}"
+            android:textAlignment="viewStart"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/guideline_or3"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="KEITH" />
 
         <TextView
             android:id="@+id/section_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
+            android:layout_marginBottom="8dp"
             android:fontFamily="@font/didact_gothic"
+            android:text='@{patients.patientName.split(" - ")[0]}'
             android:textAlignment="viewStart"
             android:textColor="@color/colorPrimaryDark"
-            android:textSize="18sp"
+            android:textSize="10sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/guideline_or"
+            app:layout_constraintStart_toStartOf="@+id/guideline_or2"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0"
             tools:text="name" />
 
-        <!--        <TextView-->
-        <!--            android:id="@+id/section_patient_name"-->
-        <!--            android:layout_width="0dp"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:layout_marginStart="16dp"-->
-        <!--            android:layout_marginTop="16dp"-->
-        <!--            android:layout_marginEnd="16dp"-->
-        <!--            android:fontFamily="@font/didact_gothic"-->
-        <!--            android:textAlignment="viewStart"-->
-        <!--            android:textColor="@color/colorPrimaryDark"-->
-        <!--            android:textSize="18sp"-->
-        <!--            android:textStyle="bold"-->
-        <!--            app:layout_constraintEnd_toEndOf="parent"-->
-        <!--            app:layout_constraintStart_toEndOf="@+id/section_patient_id"-->
-        <!--            app:layout_constraintTop_toTopOf="parent"-->
-        <!--            app:patientName="@{patients}"-->
-        <!--            tools:text="GAURI THILAGAVATHI A/P AYASAMY KANAPATHY" />-->
-
-        <!--        <TextView-->
-        <!--            android:id="@+id/section_patient_id"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:layout_marginStart="16dp"-->
-        <!--            android:layout_marginTop="16dp"-->
-        <!--            android:fontFamily="@font/didact_gothic"-->
-        <!--            android:textColor="@color/blackFont"-->
-        <!--            android:textSize="18sp"-->
-        <!--            android:textStyle="bold"-->
-        <!--            app:layout_constraintStart_toStartOf="parent"-->
-        <!--            app:layout_constraintTop_toTopOf="parent"-->
-        <!--            app:patientID="@{patients}"-->
-        <!--            tools:text="K00005" />-->
-
-        <!--        <TextView-->
-        <!--            android:id="@+id/hint_phone"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:layout_marginStart="16dp"-->
-        <!--            android:layout_marginTop="8dp"-->
-        <!--            android:fontFamily="@font/didact_gothic"-->
-        <!--            android:text="@string/hint_phone"-->
-        <!--            android:textColor="@color/blackFont"-->
-
-        <!--            android:textSize="18sp"-->
-        <!--            app:layout_constraintStart_toStartOf="parent"-->
-        <!--            app:layout_constraintTop_toBottomOf="@+id/section_patient_name" />-->
-
-        <!--        <TextView-->
-        <!--            android:id="@+id/text_phone"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:layout_marginStart="8dp"-->
-        <!--            android:fontFamily="@font/didact_gothic"-->
-        <!--            android:textColor="@color/colorPrimaryDark"-->
-        <!--            android:textSize="18sp"-->
-        <!--            android:textStyle="bold"-->
-        <!--            app:layout_constraintBottom_toBottomOf="@+id/hint_phone"-->
-        <!--            app:layout_constraintStart_toEndOf="@+id/hint_phone"-->
-        <!--            app:phone="@{patients}"-->
-        <!--            tools:text="218-3658457" />-->
-
-        <!--        <TextView-->
-        <!--            android:id="@+id/hint_family_code"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:layout_marginStart="16dp"-->
-        <!--            android:fontFamily="@font/didact_gothic"-->
-        <!--            android:text="@string/hint_family_code"-->
-        <!--            android:textColor="@color/blackFont"-->
-        <!--            android:textSize="18sp"-->
-        <!--            app:layout_constraintBottom_toBottomOf="@+id/hint_phone"-->
-        <!--            app:layout_constraintStart_toEndOf="@+id/text_phone" />-->
-
-        <!--        <TextView-->
-        <!--            android:id="@+id/text_family_code"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:layout_marginStart="8dp"-->
-        <!--            android:fontFamily="@font/didact_gothic"-->
-        <!--            android:textColor="@color/colorPrimaryDark"-->
-        <!--            android:textSize="18sp"-->
-        <!--            android:textStyle="bold"-->
-        <!--            app:familyCode="@{patients}"-->
-        <!--            app:layout_constraintBottom_toBottomOf="@+id/hint_family_code"-->
-        <!--            app:layout_constraintStart_toEndOf="@+id/hint_family_code"-->
-        <!--            tools:text="Family Code" />-->
-
-        <!--        <TextView-->
-        <!--            android:id="@+id/hint_ic"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:layout_marginStart="16dp"-->
-        <!--            android:layout_marginTop="8dp"-->
-        <!--            android:fontFamily="@font/didact_gothic"-->
-        <!--            android:text="@string/hint_ic_input"-->
-        <!--            android:textColor="@color/blackFont"-->
-        <!--            android:textSize="18sp"-->
-        <!--            app:layout_constraintStart_toStartOf="parent"-->
-        <!--            app:layout_constraintTop_toBottomOf="@+id/hint_phone" />-->
-
-        <!--        <TextView-->
-        <!--            android:id="@+id/text_ic"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:layout_marginStart="8dp"-->
-        <!--            android:fontFamily="@font/didact_gothic"-->
-        <!--            android:textColor="@color/colorPrimaryDark"-->
-        <!--            android:textSize="18sp"-->
-        <!--            android:textStyle="bold"-->
-        <!--            app:layout_constraintBottom_toBottomOf="@+id/hint_ic"-->
-        <!--            app:layout_constraintStart_toEndOf="@+id/hint_ic"-->
-        <!--            app:patientIC="@{patients}"-->
-        <!--            tools:text="256895-25-5847" />-->
-
-        <!--        <TextView-->
-        <!--            android:id="@+id/section_address"-->
-        <!--            android:layout_width="0dp"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:layout_marginStart="16dp"-->
-        <!--            android:layout_marginTop="8dp"-->
-        <!--            android:layout_marginEnd="16dp"-->
-        <!--            android:layout_marginBottom="8dp"-->
-        <!--            android:fontFamily="@font/didact_gothic"-->
-        <!--            android:textColor="@color/colorPrimaryDark"-->
-        <!--            android:textSize="14sp"-->
-        <!--            app:address="@{patients}"-->
-        <!--            app:layout_constraintBottom_toBottomOf="parent"-->
-        <!--            app:layout_constraintEnd_toEndOf="parent"-->
-        <!--            app:layout_constraintStart_toStartOf="parent"-->
-        <!--            app:layout_constraintTop_toBottomOf="@+id/text_ic"-->
-        <!--            tools:text="NO 2900 LORONG 24, TAMAN RIA " />-->
+        <TextView
+            android:id="@+id/section_familycode"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/didact_gothic"
+            android:text="@{patients.phone}"
+            android:textAlignment="viewStart"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/section_cspractitionername"
+            app:layout_constraintStart_toEndOf="@+id/section_cspractitionername"
+            app:layout_constraintTop_toTopOf="@+id/section_cspractitionername"
+            tools:text="family" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -17,8 +17,6 @@
 #-keepattributes SourceFile,LineNumberTable
 
 # If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
 
 # Add this global rule
 #-keepattributes Signature
@@ -36,8 +34,14 @@
 	public static void throw*(...);
 }
 
+# hide the original source file name.
+-renamesourcefileattribute SourceFile
+
+-keepclassmembers class * implements androidx.viewbinding.ViewBinding {
+    public static * bind(android.view.View);
+    public static * inflate(android.view.LayoutInflater, android.view.ViewGroup, boolean);
+}
+
 # Excessive obfuscation
 -repackageclasses "com"
 -allowaccessmodification
-
--keepclassmembers class com.lizpostudio.kgoptometrycrm.databinding.** {*;}

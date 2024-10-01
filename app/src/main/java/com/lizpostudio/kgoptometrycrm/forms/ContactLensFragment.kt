@@ -23,23 +23,26 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.lizpostudio.kgoptometrycrm.PatientsViewModel
-import com.lizpostudio.kgoptometrycrm.PatientsViewModelFactory
 import com.lizpostudio.kgoptometrycrm.R
+import com.lizpostudio.kgoptometrycrm.ViewModelProviderFactory
 import com.lizpostudio.kgoptometrycrm.constant.Constants
-import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
+import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientEntity
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentContactLensBinding
 import com.lizpostudio.kgoptometrycrm.utils.*
 import id.xxx.module.view.binding.ktx.viewBinding
+import java.util.*
 
 class ContactLensFragment : Fragment() {
 
     private val patientViewModel: PatientsViewModel by viewModels {
-        PatientsViewModelFactory(requireContext())
+        ViewModelProviderFactory.getInstance(context)
     }
 
     private var isAdmin = false
 
-    private val binding by viewBinding<FragmentContactLensBinding>()
+    private val bindingRoot by viewBinding<FragmentContactLensBinding>()
+
+    private val binding by lazy { bindingRoot.content }
 
     private var recordID = 0L
     private var patientID = ""
@@ -61,7 +64,7 @@ class ContactLensFragment : Fragment() {
     private var fillIndexRight = mutableListOf(-1, -1, -1, -1)
     private var fillIndexLeft = mutableListOf(-1, -1, -1, -1)
 
-    private var currentForm = PatientsEntity()
+    private var currentForm = PatientEntity()
     private var navigateFormName = ""
     private var navigateFormRecordID = -1L
     private var viewOnlyMode = false
@@ -104,7 +107,7 @@ class ContactLensFragment : Fragment() {
         val sharedPref = app.getSharedPreferences(
             Constants.PREF_NAME, Context.MODE_PRIVATE
         )
-        isAdmin = sharedPref?.getString("admin", "") ?: "" == "admin"
+        isAdmin = (sharedPref?.getString("admin", "") ?: "") == "admin"
         viewOnlyMode = sharedPref?.getBoolean("viewOnly", false) ?: false
         if (viewOnlyMode) {
             binding.mainLayout.setBackgroundColor(
@@ -113,7 +116,7 @@ class ContactLensFragment : Fragment() {
                     R.color.viewOnlyMode
                 )
             )
-            binding.saveFormButton.visibility = View.GONE
+            bindingRoot.saveFormButton.visibility = View.GONE
         } else binding.mainLayout.setBackgroundColor(
             ContextCompat.getColor(requireContext(), R.color.lightBackground)
         )
@@ -754,6 +757,10 @@ class ContactLensFragment : Fragment() {
                             R.string.number_of_years_patient,
                             age, dob
                         )
+
+                        if (currentForm.patientIC != ic){
+                            currentForm.patientIC = ic
+                        }
                     }
                 }
                 binding.patientName.text = pAge
@@ -761,7 +768,7 @@ class ContactLensFragment : Fragment() {
                 val screenDst = Resources.getSystem().displayMetrics.density
 
                 val sortedList = it.sortedBy { patientsForms -> patientsForms.dateOfSection }
-                val newList = mutableListOf<PatientsEntity>()
+                val newList = mutableListOf<PatientEntity>()
 
                 for (section in orderOfSections) {
                     for (forms in sortedList) {
@@ -780,7 +787,7 @@ class ContactLensFragment : Fragment() {
                     .toSet()
 
                 /* FOR BOTTOM NAVIGATION */
-                val mapSectionName = mutableMapOf<String, MutableList<PatientsEntity>>()
+                val mapSectionName = mutableMapOf<String, MutableList<PatientEntity>>()
                 newList.forEach { patient ->
                     val key = mapSectionName[patient.sectionName]
                     if (key == null) {
@@ -790,8 +797,8 @@ class ContactLensFragment : Fragment() {
                 }
 
                 var sectionName = ""
-                val navChipGroup = binding.navigationLayout
-                val navChipGroup2 = binding.navigationLayout2
+                val navChipGroup = bindingRoot.navigationLayout
+                val navChipGroup2 = bindingRoot.navigationLayout2
 //                val children = newList.map { patientForm ->
                 val children = newSectionName.map { patientForm ->
                     val chip = TextView(app.applicationContext)
@@ -827,7 +834,7 @@ class ContactLensFragment : Fragment() {
                     }
 
 //                    val sectionShortName = makeShortSectionName(patientForm.sectionName)
-                    val sectionShortName = makeShortSectionName(patientForm)
+                    val sectionShortName = makeShortSectionName(requireContext(), patientForm)
 //                    chip.text = "$sectionShortName\n${convertLongToDDMMYY(patientForm.dateOfSection)}"
                     chip.text = sectionShortName
 
@@ -880,7 +887,8 @@ class ContactLensFragment : Fragment() {
                                 )
                             )
 
-                        val sectionShortName = makeShortSectionName(patientForm.sectionName)
+                        val sectionShortName =
+                            makeShortSectionName(requireContext(), patientForm.sectionName)
                         chip.text =
                             "$sectionShortName\n${convertLongToDDMMYY(patientForm.dateOfSection)}"
 
@@ -916,11 +924,11 @@ class ContactLensFragment : Fragment() {
 
                 val hPos = newSectionName.indexOf("CONTACT LENS EXAM")
                 if (hPos > 3) {
-                    val scrollWidth = binding.chipsScroll.width
+                    val scrollWidth = bindingRoot.chipsScroll.width
                     val scrollX = ((hPos - 2) * (scrollWidth / 6.25)).toInt()
-                    binding.chipsScroll.postDelayed({
+                    bindingRoot.chipsScroll.postDelayed({
                         if (context != null)
-                            binding.chipsScroll.smoothScrollTo(scrollX, 0)
+                            bindingRoot.chipsScroll.smoothScrollTo(scrollX, 0)
                     }, 100L)
                 }
 
@@ -928,11 +936,11 @@ class ContactLensFragment : Fragment() {
                     mapSectionName[sectionName]?.map { form -> form.recordID } ?: listOf()
                 val hPosBottomNav = hPosList.indexOf(recordID)
                 if (hPosBottomNav > 3) {
-                    val scrollWidth = binding.chipsScroll2.width
+                    val scrollWidth = bindingRoot.chipsScroll2.width
                     val scrollX = ((hPosBottomNav - 2) * (scrollWidth / 6.25)).toInt()
-                    binding.chipsScroll2.postDelayed({
+                    bindingRoot.chipsScroll2.postDelayed({
                         if (context != null)
-                            binding.chipsScroll2.smoothScrollTo(scrollX, 0)
+                            bindingRoot.chipsScroll2.smoothScrollTo(scrollX, 0)
                     }, 100L)
                 }
             }
@@ -949,14 +957,12 @@ class ContactLensFragment : Fragment() {
         patientViewModel.recordDeleted.observe(viewLifecycleOwner) { ifDeleted ->
             ifDeleted?.let {
                 if (ifDeleted) this.findNavController().navigate(
-                    ContactLensFragmentDirections.actionContactLensFragmentToFormSelectionFragment(
-                        patientID
-                    )
+                    ContactLensFragmentDirections.actionToFormSelectionFragment(patientID)
                 )
             }
         }
 
-        binding.deleteForm.setOnClickListener {
+        bindingRoot.deleteForm.setOnClickListener {
             if (context != null)
                 actionConfirmDeletion(
                     title = resources.getString(R.string.form_delete_title),
@@ -969,7 +975,7 @@ class ContactLensFragment : Fragment() {
                 ) { allowed ->
                     if (allowed) {
                         patientViewModel.deleteRecord(currentForm)
-                        patientViewModel.deletePatientFromFirebase(currentForm.recordID.toString())
+                        patientViewModel.deletePatientFromFirebase(currentForm)
                     }
                 }
         }
@@ -987,19 +993,19 @@ class ContactLensFragment : Fragment() {
             }
         }
 
-        binding.saveFormButton.setOnClickListener {
+        bindingRoot.saveFormButton.setOnClickListener {
             saveAndNavigate("none")
         }
 
-        binding.backButton.setOnClickListener {
+        bindingRoot.backButton.setOnClickListener {
             saveAndNavigate("back")
         }
 
-        binding.homeButton.setOnClickListener {
+        bindingRoot.homeButton.setOnClickListener {
             saveAndNavigate("home")
         }
 
-        return binding.root
+        return bindingRoot.root
     }
 
     private fun saveAndNavigate(navOption: String) {
@@ -1029,8 +1035,7 @@ class ContactLensFragment : Fragment() {
                 fillTheForm(currentForm)
             }
             "back" -> this.findNavController().navigate(
-                ContactLensFragmentDirections
-                    .actionContactLensFragmentToFormSelectionFragment(patientID)
+                ContactLensFragmentDirections.actionToFormSelectionFragment(patientID)
             )
             "home" -> findNavController().navigate(
                 ContactLensFragmentDirections.actionToDatabaseSearchFragment()
@@ -1150,65 +1155,51 @@ class ContactLensFragment : Fragment() {
     }
 
     private fun navigateToSelectedForm() {
-
-        val orderOfSections = listOf(*resources.getStringArray(R.array.forms_order))
         when (navigateFormName) {
-            orderOfSections[0] -> this.findNavController().navigate(
-                ContactLensFragmentDirections
-                    .actionContactLensFragmentToInfoFragment(navigateFormRecordID)
+            getString(R.string.info_form_caption) -> findNavController().navigate(
+                ContactLensFragmentDirections.actionToInfoFragment(navigateFormRecordID)
             )
-
-            orderOfSections[1] -> this.findNavController().navigate(
-                ContactLensFragmentDirections.actionContactLensFragmentToMemoFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.follow_up_form_caption) -> findNavController().navigate(
+                ContactLensFragmentDirections.actionToFollowUpFragment(navigateFormRecordID)
             )
-
-            orderOfSections[2] -> this.findNavController().navigate(
-                ContactLensFragmentDirections.actionContactLensFragmentToCurrentRxFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.memo_form_caption) -> findNavController().navigate(
+                ContactLensFragmentDirections.actionToMemoFragment(navigateFormRecordID)
             )
-
-            orderOfSections[3] -> this.findNavController().navigate(
-                ContactLensFragmentDirections.actionContactLensFragmentToRefractionFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.current_rx_caption) -> findNavController().navigate(
+                ContactLensFragmentDirections.actionToCurrentRxFragment(navigateFormRecordID)
             )
-
-            orderOfSections[4] -> this.findNavController().navigate(
-                ContactLensFragmentDirections.actionContactLensFragmentToOcularHealthFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.refraction_caption) -> findNavController().navigate(
+                ContactLensFragmentDirections.actionToRefractionFragment(navigateFormRecordID)
             )
-
-            orderOfSections[5] -> this.findNavController().navigate(
-                ContactLensFragmentDirections.actionContactLensFragmentToSupplementaryFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.ocular_health_caption) -> findNavController().navigate(
+                ContactLensFragmentDirections.actionToOcularHealthFragment(navigateFormRecordID)
             )
-            orderOfSections[6] -> {
+            getString(R.string.supplementary_test_caption) -> findNavController().navigate(
+                ContactLensFragmentDirections.actionToSupplementaryFragment(navigateFormRecordID)
+            )
+            getString(R.string.contact_lens_exam_caption) -> {
                 if (recordID != navigateFormRecordID) {
                     recordID = navigateFormRecordID
                     patientViewModel.getPatientForm(navigateFormRecordID)
                 }
             }
-            orderOfSections[7] -> this.findNavController().navigate(
-                ContactLensFragmentDirections
-                    .actionContactLensFragmentToOrthokFragment(navigateFormRecordID)
+            getString(R.string.orthox_caption) -> findNavController().navigate(
+                ContactLensFragmentDirections.actionToOrthokFragment(navigateFormRecordID)
             )
-            orderOfSections[8] -> {
-                this.findNavController().navigate(
-                    ContactLensFragmentDirections
-                        .actionContactLensFragmentToCashOrderFragment(navigateFormRecordID)
-                )
+            getString(R.string.cash_order) -> findNavController().navigate(
+                ContactLensFragmentDirections.actionToCashOrderFragment(navigateFormRecordID)
+            )
+            getString(R.string.sales_order_caption) -> findNavController().navigate(
+                ContactLensFragmentDirections.actionToSalesOrderFragment(navigateFormRecordID)
+            )
+            getString(R.string.final_prescription_caption) -> findNavController().navigate(
+                ContactLensFragmentDirections.actionToSalesOrderFragment(navigateFormRecordID)
+            )
+            else -> {
+                Toast.makeText(
+                    context, "$navigateFormName not implemented yet", Toast.LENGTH_SHORT
+                ).show()
             }
-            orderOfSections[9] -> this.findNavController().navigate(
-                ContactLensFragmentDirections
-                    .actionContactLensFragmentToFinalPrescriptionFragment(navigateFormRecordID)
-            )
-            else -> Toast.makeText(context, getString(R.string.ok_hint), Toast.LENGTH_SHORT).show()
-
         }
     }
 
@@ -1219,7 +1210,7 @@ class ContactLensFragment : Fragment() {
     }
 
     @SuppressLint("SetTextI18n")
-    private fun fillTheForm(patientForm: PatientsEntity) {
+    private fun fillTheForm(patientForm: PatientEntity) {
 
         val extractData = patientForm.sectionData.split('|').toMutableList()
 //      Log.d(Constants.TAG, "extract data size before = ${extractData.size}")
@@ -1710,7 +1701,7 @@ class ContactLensFragment : Fragment() {
             currentForm.graphicsLeft = graphicsLeft
             currentForm.reservedField = graphicsTop
 
-            currentForm.remarks = editRemark.text.toString().toUpperCase()
+            currentForm.remarks = editRemark.text.toString().uppercase(Locale.getDefault())
 
             if (sectionEditDate != -1L) currentForm.dateOfSection = sectionEditDate
 

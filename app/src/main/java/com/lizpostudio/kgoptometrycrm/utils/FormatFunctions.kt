@@ -1,23 +1,39 @@
 package com.lizpostudio.kgoptometrycrm.utils
 
+import android.R
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.PointF
+import android.os.Bundle
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import com.lizpostudio.kgoptometrycrm.constant.Constants
 import com.lizpostudio.kgoptometrycrm.data.repository.PatientRepository
-import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
-import com.lizpostudio.kgoptometrycrm.data.source.remote.FBRecords
+import com.lizpostudio.kgoptometrycrm.data.source.local.AppDatabase
+import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientEntity
+import com.lizpostudio.kgoptometrycrm.data.source.remote.firebase.FBRecords
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.random.Random
 
+// Import View class
+
+
+class MyActivity : AppCompatActivity() {
+    // ... your Activity code ...
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_list_item) // Inflating the layout
+    }
+}
+
 private const val ONE_DAY = 24 * 3600 * 1000L
 
-fun convertFBRecordToPatients(f: FBRecords, key: Long): PatientsEntity {
+fun convertFBRecordToPatients(f: FBRecords, key: Long): PatientEntity {
     val sectionData = f.sectionData.split("|")
 
-    return PatientsEntity(
+    return PatientEntity(
         key,
         patientID = f.patientID,
         patientIC = f.patientIC,
@@ -42,38 +58,46 @@ fun convertFBRecordToPatients(f: FBRecords, key: Long): PatientsEntity {
         solutionMisc = f.solutionMisc,
         solutionMiscRm = f.solutionMiscRm,
         frame = try {
-            if (f.sectionName == "FINAL PRESCRIPTION" || f.sectionName == "CASH ORDER") {
-                sectionData[15]
-            } else {
-                ""
+            when (f.sectionName) {
+                "FINAL PRESCRIPTION", "CASH ORDER" -> sectionData?.getOrNull(15) ?: ""
+                else -> ""
             }
-        } catch (t: Throwable) {
+        } catch (e: IndexOutOfBoundsException) {
+            // Handle specific exception if needed
             ""
-        },
+        } ?: "",
         lens = try {
-            if (f.sectionName == "FINAL PRESCRIPTION" || f.sectionName == "CASH ORDER") {
-                sectionData[17]
-            } else {
-                ""
+            when (f.sectionName) {
+                "FINAL PRESCRIPTION", "CASH ORDER" -> sectionData?.getOrNull(17) ?: ""
+                else -> ""
             }
-        } catch (t: Throwable) {
+        } catch (e: IndexOutOfBoundsException) {
+            // Handle specific exception if needed
             ""
-        },
+        } ?: "",
         contactLensSunglasses = try {
-            if (f.sectionName == "FINAL PRESCRIPTION" || f.sectionName == "CASH ORDER") {
-                sectionData[19]
-            } else {
-                ""
+            when (f.sectionName) {
+                "FINAL PRESCRIPTION", "CASH ORDER" -> sectionData?.getOrNull(19) ?: ""
+                else -> ""
             }
-        } catch (t: Throwable) {
+        } catch (e: IndexOutOfBoundsException) {
+            // Handle specific exception if needed
             ""
-        },
+        } ?: "",
         practitionerNameOptometrist = f.practitionerNameOptometrist,
-        remarkPrint = f.remarkPrint
+        remarkPrint = f.remarkPrint,
+        followUpText = f.followUpText,
+        deleteAt = f.deleteAt,
+        axialLengthRight = f.axialLengthRight,
+        axialLengthLeft = f.axialLengthLeft,
+        cstotal = f.cstotal,
+        ortotal = f.ortotal,
+        cspractitioner = f.cspractitioner,
+        orpractitioner = f.orpractitioner,
     )
 }
 
-fun convertFormToFBRecord(p: PatientsEntity): FBRecords {
+fun convertFormToFBRecord(p: PatientEntity): FBRecords {
     return FBRecords(
         address = p.address,
         dateOfSection = p.dateOfSection.toString(),
@@ -98,7 +122,15 @@ fun convertFormToFBRecord(p: PatientsEntity): FBRecords {
         solutionMisc = p.solutionMisc,
         solutionMiscRm = p.solutionMiscRm,
         practitionerNameOptometrist = p.practitionerNameOptometrist,
-        remarkPrint = p.remarkPrint
+        remarkPrint = p.remarkPrint,
+        followUpText = p.followUpText,
+        deleteAt = p.deleteAt,
+        axialLengthLeft = p.axialLengthLeft,
+        axialLengthRight = p.axialLengthRight,
+        cstotal = p.cstotal,
+        ortotal = p.ortotal,
+        cspractitioner = p.cspractitioner,
+        orpractitioner = p.orpractitioner,
     )
 }
 
@@ -135,13 +167,11 @@ fun convertStringToFillMask(
                         element[points].toFloatOrNull() ?: 0.0f,
                         element[points + 1].toFloatOrNull() ?: 0.0f
                     )
-                    //     Log.d("Orthok_Fragment", "x before = ${ pointPosition.x}, y before = ${ pointPosition.y}")
                     if (points != 0) {
                         pointPosition.x *= widthRatio
                         pointPosition.y *= heightRatio
                     }
 
-                    //        Log.d("Orthok_Fragment", "x after = ${ pointPosition.x}, y after = ${ pointPosition.y}")
                     fillMask[firstIndex].add(pointPosition)
                 }
             }
@@ -186,28 +216,6 @@ fun convertFillMask(fillMask: List<List<PointF>>, width: Int = 0, height: Int = 
                Log.d(TAG, "${vectorDrawingAr[index]} \n")
            }*/
     return vectorDrawingAr
-}
-
-/**
- * Construct string of sph / cyl x axis (va)
- * first comma _/_
- * second comma _x_
- * third comma _(6/
- */
-
-fun constructSphCyl(entryString: String): String {
-
-    var newString = entryString
-
-    val replacementList = listOf(" / ", " x ", " (6/")
-
-    for (loop in 0..replacementList.lastIndex) {
-        val comIndex = newString.indexOf(",")
-        if (comIndex != -1) newString =
-            newString.replaceRange(comIndex, comIndex + 1, replacementList[loop])
-    }
-
-    return newString
 }
 
 /**
@@ -280,7 +288,7 @@ fun cylList(): MutableList<String> {
     val list = mutableListOf<String>()
     list.add("")
     var cyl = -0.25
-    while (cyl > -6.25) {
+    while (cyl > -10.25) {
         list.add(df.format(cyl))
         cyl -= 0.25
     }
@@ -289,7 +297,7 @@ fun cylList(): MutableList<String> {
 
 fun sphList(): MutableList<String> {
     val df = DecimalFormat("#0.00")
-    var sph = 8.00
+    var sph = 15.00
     val list = mutableListOf<String>()
     while (sph > 0) {
         list.add("+${df.format(sph)}")
@@ -397,10 +405,6 @@ fun getAge(year: Int, month: Int, day: Int): String {
     return ageInt.toString()
 }
 
-fun convertYYMMDDToDDMMYY(year: String, month: String, day: String): String {
-    return "$day/$month/$year"
-}
-
 private val charPool: List<Char> = ('A'..'Z') + ('0'..'9')
 
 fun generateID(repository: PatientRepository): String {
@@ -412,12 +416,23 @@ fun generateID(repository: PatientRepository): String {
     }
 }
 
+fun generateID(context: Context): String {
+    val id = generateID()
+    val isExist = AppDatabase.getInstance(context).patientsDao.idIsExist(id)
+    return if (isExist) {
+        generateID(context)
+    } else {
+        id
+    }
+}
+
 fun generateID(): String {
     return (1..10)
         .map { i -> Random.nextInt(i, charPool.size) }
         .map(charPool::get)
         .joinToString("")
 }
+
 // used format dd/mm/yy
 @SuppressLint("SimpleDateFormat")
 fun getDateStartAEndMillis(date: String): Pair<Long, Long> {
@@ -437,8 +452,7 @@ fun getDateStartAEndMillis(date: String): Pair<Long, Long> {
 
 @SuppressLint("SimpleDateFormat")
 fun convertLongToDDMMYY(timeMillis: Long): String {
-    return SimpleDateFormat("dd/MM/yy")
-        .format(timeMillis).toString()
+    return SimpleDateFormat("dd/MM/yy").format(timeMillis).toString()
 }
 
 @SuppressLint("SimpleDateFormat")
@@ -453,51 +467,22 @@ fun convertLongToDDKey(timeMillis: Long): String {
         .format(timeMillis).toString()
 }
 
+@Suppress("FunctionName")
 @SuppressLint("SimpleDateFormat")
 fun convertLongTodd_MM_yy_hh_mm_ss(timeMillis: Long): String {
     return SimpleDateFormat("dd_MM_yy_hh_mm_ss")
         .format(timeMillis).toString()
 }
 
+@Suppress("FunctionName")
 @SuppressLint("SimpleDateFormat")
-fun convertLongToDDMMYYHRSMIN(timeMillis: Long): String {
+fun convertTo_dd_MM_yy_hh_mm_a(timeMillis: Long): String {
     return SimpleDateFormat("dd/MM/yy hh:mm a")
         .format(timeMillis).toString()
 }
 
 @SuppressLint("SimpleDateFormat")
-fun minutesAfterMidnight(timeOfDay: Long): Int {
-    var minutesAfter = (SimpleDateFormat("mm").format(timeOfDay).toString()).toIntOrNull()
-    val hoursAfter = (SimpleDateFormat("HH").format(timeOfDay).toString()).toIntOrNull()
-    minutesAfter =
-        if (hoursAfter != null && minutesAfter != null) (hoursAfter * 60 + minutesAfter) else 0
-
-    return minutesAfter
-}
-
-@SuppressLint("SimpleDateFormat")
-fun convertYYMMDDtoTimemillis(inputDate: String): Long {
+fun convertDDMMYYtoTimeMillis(inputDate: String): Long {
     val parser = SimpleDateFormat("dd/MM/yy")
-    return if (inputDate.length > 6) parser.parse(inputDate.trim())?.time ?: 0L else 0L
-}
-
-fun convertYYMMDDFROMRAWtoTimemillis(inputDate: String): Long {
-
-    val currentTime = System.currentTimeMillis()
-    val parser = SimpleDateFormat("yyyy-MM-dd")
-//    val output = if (inputDate.length>6) parser.parse(inputDate.trim())
-    //   val savedMinutes = minutesAfterMidnight(currentTime)
-
-    return if (inputDate.length > 6) parser.parse(inputDate.trim())?.time ?: 0L else 0L
-}
-
-@SuppressLint("SimpleDateFormat")
-fun convertDateFromRAWToTimemillis(inputDate: String): Long {
-
-    val currentTime = System.currentTimeMillis()
-    val parser = SimpleDateFormat("yy-MM-dd")
-//    val output = if (inputDate.length>6) parser.parse(inputDate.trim())
-    //   val savedMinutes = minutesAfterMidnight(currentTime)
-
     return if (inputDate.length > 6) parser.parse(inputDate.trim())?.time ?: 0L else 0L
 }

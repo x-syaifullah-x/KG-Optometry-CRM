@@ -40,13 +40,13 @@ jobs:
           echo release_key_password="${{ secrets.DEBUG_KEY_PASSWORD }}" >> local.properties
           echo release_store_file=~/release.keystore >> local.properties
 
-#      - name: generate key store
-#        run: |
-#          echo "${{ secrets.DEBUG_STORE_FILE_ASC_BASE64 }}" | base64 --decode > ~/debug.keystore.jks.asc
-#          gpg -d --passphrase "${{ secrets.DEBUG_STORE_FILE_ASC_BASE64_PASSPHRASE }}" --batch ~/debug.keystore.jks.asc > ~/debug.keystore
-#
-#          echo "${{ secrets.RELEASE_STORE_FILE_ASC_BASE64 }}" | base64 --decode > ~/release.keystore.jks.asc
-#          gpg -d --passphrase "${{ secrets.RELEASE_STORE_FILE_ASC_BASE64_PASSPHRASE }}" --batch ~/release.keystore.jks.asc > ~/release.keystore
+      #      - name: generate key store
+      #        run: |
+      #          echo "${{ secrets.DEBUG_STORE_FILE_ASC_BASE64 }}" | base64 --decode > ~/debug.keystore.jks.asc
+      #          gpg -d --passphrase "${{ secrets.DEBUG_STORE_FILE_ASC_BASE64_PASSPHRASE }}" --batch ~/debug.keystore.jks.asc > ~/debug.keystore
+      #
+      #          echo "${{ secrets.RELEASE_STORE_FILE_ASC_BASE64 }}" | base64 --decode > ~/release.keystore.jks.asc
+      #          gpg -d --passphrase "${{ secrets.RELEASE_STORE_FILE_ASC_BASE64_PASSPHRASE }}" --batch ~/release.keystore.jks.asc > ~/release.keystore
 
       - name: generate key store debug
         run: |

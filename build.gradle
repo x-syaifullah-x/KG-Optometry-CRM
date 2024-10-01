@@ -9,10 +9,40 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$vKotlin"
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$vNavigation"
     }
+
+    subprojects {
+        project.configurations.all {
+            resolutionStrategy.eachDependency { details ->
+                if (details.requested.group == "androidx.appcompat") {
+                    details.useVersion "$vAndroidxAppCompat"
+                }
+                if (details.requested.group == "androidx.annotation") {
+                    details.useVersion "$vAndroidxAnnotation"
+                }
+                if (details.requested.group == "androidx.core") {
+                    details.useVersion "$vAndroidxCore"
+                }
+                if (details.requested.group == "androidx.fragment") {
+                    details.useVersion "$vAndroidxFragment"
+                }
+                if (details.requested.group == "androidx.lifecycle") {
+                    details.useVersion "$vAndroidxLifecycle"
+                }
+                if (details.requested.group == "junit") {
+                    details.useVersion "$vJunit"
+                }
+            }
+        }
+    }
 }
 
 allprojects {
     addRepos(repositories)
+
+//    String user = System.getProperty("user.name")
+//    if (user == "xxx") {
+//        buildDir = "/tmp/android/studio/build/${rootProject.name}/${project.name}/build"
+//    }
 }
 
 task clean(type: Delete) {

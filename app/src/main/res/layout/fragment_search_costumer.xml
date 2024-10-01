@@ -7,137 +7,9 @@
     android:layout_height="match_parent"
     android:background="@color/lightBackground">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <include
         android:id="@+id/top_navigation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/blueBasicLight"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:id="@+id/data_process"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/sales_button"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/history_32"
-            tools:ignore="ContentDescription"
-            tools:visibility="visible" />
-
-        <ImageView
-            android:id="@+id/upload_db"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
-            android:visibility="visible"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/share_report"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_baseline_cloud_upload_24"
-            tools:ignore="ContentDescription" />
-
-        <ImageView
-            android:id="@+id/toggle_family"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
-            android:visibility="visible"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/upload_db"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/family_clip"
-            tools:ignore="ContentDescription" />
-
-        <ImageView
-            android:id="@+id/home"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/home_36"
-            tools:ignore="ContentDescription" />
-
-        <ImageView
-            android:id="@+id/create_new_patient"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/home"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/person_add_36"
-            tools:ignore="ContentDescription" />
-
-        <ImageView
-            android:id="@+id/refraction_report"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/create_new_patient"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/assessment_refraction"
-            tools:ignore="ContentDescription" />
-
-        <ImageView
-            android:id="@+id/synch_db_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/refraction_report"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_baseline_sync_24"
-            tools:ignore="ContentDescription" />
-
-        <ImageView
-            android:id="@+id/sales_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/synch_db_button"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_monetization_36"
-            tools:ignore="ContentDescription" />
-
-        <ImageView
-            android:id="@+id/share_report"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/send_report"
-            tools:ignore="ContentDescription" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        layout="@layout/app_bar_search" />
 
     <TextView
         android:id="@+id/hint_search_by"
@@ -146,17 +18,19 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:text="@string/hint_search_by"
+        android:textSize="12sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/foundItemsText" />
 
     <Spinner
         android:id="@+id/search_by_spinner"
         style="@style/Widget.AppCompat.Spinner.Underlined"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="100dp"
+        android:layout_height="0dp"
         android:layout_marginStart="16dp"
         android:popupBackground="@color/blueBasicLight"
         android:spinnerMode="dropdown"
+        android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="@+id/search_input_text"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -169,17 +43,20 @@
         android:ems="10"
         android:fontFamily="@font/didact_gothic"
         android:hint="@string/hint_start_typing"
+        android:imeOptions="flagNoFullscreen"
+        android:importantForAutofill="no"
         android:inputType="date|textPersonName|text|phone"
         android:textColor="@color/blackFont"
+        android:textSize="12sp"
         app:layout_constraintEnd_toStartOf="@+id/clean_search"
         app:layout_constraintStart_toEndOf="@+id/search_by_spinner"
-        app:layout_constraintTop_toBottomOf="@+id/foundItemsText"
-        tools:ignore="Autofill" />
+        app:layout_constraintTop_toBottomOf="@+id/foundItemsText" />
 
     <ImageView
         android:id="@+id/clean_search"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         app:layout_constraintEnd_toStartOf="@+id/search_icon"
         app:layout_constraintTop_toTopOf="@+id/search_input_text"
@@ -189,8 +66,8 @@
 
     <ImageView
         android:id="@+id/search_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
         android:layout_marginEnd="16dp"
         app:layout_constraintBottom_toBottomOf="@id/clean_search"
         app:layout_constraintEnd_toEndOf="parent"
@@ -206,23 +83,66 @@
         android:fontFamily="@font/didact_gothic"
         android:textAlignment="viewEnd"
         android:textColor="@color/blackFont"
-        android:textSize="18sp"
+        android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="@+id/search_input_text"
         app:layout_constraintStart_toEndOf="@+id/hint_search_by"
         app:layout_constraintTop_toBottomOf="@+id/top_navigation"
         tools:text="Found 253 records" />
 
+    <FrameLayout
+        android:id="@+id/header_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/search_input_text" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/select_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@+id/header_recycler_view"
+        tools:visibility="visible">
+
+        <CheckBox
+            android:id="@+id/select_all"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/text_select_all"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Select All"
+            app:layout_constraintBottom_toBottomOf="@id/select_all"
+            app:layout_constraintStart_toEndOf="@id/select_all"
+            app:layout_constraintTop_toTopOf="@id/select_all" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/ic_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_item_recycle_bin_delete"
+            app:layout_constraintTop_toTopOf="@id/select_all"
+            app:layout_constraintBottom_toBottomOf="@id/select_all"
+            app:layout_constraintEnd_toEndOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/patients_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="16dp"
         android:background="@color/blueVeryLight"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/search_input_text" />
+        app:layout_constraintTop_toBottomOf="@+id/select_view" />
 
     <TextView
         android:id="@+id/progressText"
@@ -234,6 +154,7 @@
         android:layout_marginBottom="8dp"
         android:background="@color/blueBasicLight"
         android:fontFamily="@font/didact_gothic"
+        android:padding="10dp"
         android:textAlignment="center"
         android:textColor="@color/lightBackground"
         android:textSize="24sp"
@@ -244,5 +165,35 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/search_input_text"
         tools:text="16065 Records Received!"
+        tools:visibility="visible" />
+
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/linearProgressIndicator"
+        android:layout_width="0dp"
+        android:layout_height="6dp"
+        android:layout_marginTop="4dp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="@id/progressText"
+        app:layout_constraintStart_toStartOf="@id/progressText"
+        app:layout_constraintTop_toBottomOf="@id/progressText"
+        app:layout_constraintWidth_percent=".70"
+        tools:progress="50"
+        tools:visibility="visible" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/progressTextCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:fontFamily="@font/didact_gothic"
+        android:text="-- / -- --"
+        android:textColor="@color/blueBasicLight"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="@id/linearProgressIndicator"
+        app:layout_constraintStart_toStartOf="@id/linearProgressIndicator"
+        app:layout_constraintTop_toBottomOf="@id/linearProgressIndicator"
+        tools:text="--/-- MB"
         tools:visibility="visible" />
 </androidx.constraintlayout.widget.ConstraintLayout>

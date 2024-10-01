@@ -92,7 +92,7 @@
         <item name="android:fontFamily">@font/didact_gothic</item>
         <item name="android:textColor">@color/blackFont</item>
         <item name="android:digits">abcdefghijklmnopqrstuvwxyz
-            ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890,.\/!=_?:;"'@#$&amp;%^*()-+\n
+            ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890,.\/!=_?:;"'&amp;@#$%^*()-+\n>
         </item>
         <item name="android:textSize">18sp</item>
     </style>
@@ -105,10 +105,11 @@
         <item name="android:fontFamily">@font/didact_gothic</item>
         <item name="android:textColor">@color/blackFont</item>
         <item name="android:digits">abcdefghijklmnopqrstuvwxyz
-            ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890,.\/!=_?:;"'&amp;@#$%^*()-+\n
+            ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890,.\/!=_?:;"'&amp;@#$%^*()-+\n>
         </item>
         <item name="android:textSize">18sp</item>
     </style>
+
 
 
     <style name="fixedConstraint8_16_SingleLineInputTextBox_MS_8ME_8_18sp">
@@ -120,7 +121,7 @@
         <item name="android:textColor">@color/blackFont</item>
         <item name="android:singleLine">true</item>
         <item name="android:digits">abcdefghijklmnopqrstuvwxyz
-            ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890,.\/!=_?:;"'&amp;@#$%^*()-+\n
+            ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890,.\/!=_?:;"'&amp;@#$%^*()-+\n>
         </item>
         <item name="android:textSize">18sp</item>
     </style>
@@ -131,7 +132,7 @@
         <item name="android:fontFamily">@font/didact_gothic</item>
         <item name="android:textColor">@color/blackFont</item>
         <item name="android:digits">abcdefghijklmnopqrstuvwxyz
-            ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890,.\/!=_?:;"'&amp;@#$%^*()-+\n
+            ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890,.\/!=_?:;"'&amp;@#$%^*()-+\n>
         </item>
         <item name="android:textSize">18sp</item>
     </style>

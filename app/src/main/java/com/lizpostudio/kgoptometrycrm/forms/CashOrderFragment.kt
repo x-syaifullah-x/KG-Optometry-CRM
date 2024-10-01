@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -20,36 +21,39 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.lizpostudio.kgoptometrycrm.PatientsViewModel
-import com.lizpostudio.kgoptometrycrm.PatientsViewModelFactory
 import com.lizpostudio.kgoptometrycrm.R
+import com.lizpostudio.kgoptometrycrm.ViewModelProviderFactory
 import com.lizpostudio.kgoptometrycrm.constant.Constants
-import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
+import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientEntity
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentCashOrderBinding
 import com.lizpostudio.kgoptometrycrm.utils.*
 import id.xxx.module.view.binding.ktx.viewBinding
 
+
+
+
 class CashOrderFragment : Fragment() {
 
     private val patientViewModel: PatientsViewModel by viewModels {
-        PatientsViewModelFactory(requireContext())
+        ViewModelProviderFactory.getInstance(context)
     }
 
     private var isAdmin = false
 
-    private val binding by viewBinding<FragmentCashOrderBinding>()
+    private val bindingRoot by viewBinding<FragmentCashOrderBinding>()
+
+    private val binding by lazy { bindingRoot.content }
 
     private var recordID = 0L
     private var patientID = ""
 
     private var sectionEditDate = -1L
 
-    private var currentForm = PatientsEntity()
+    private var currentForm = PatientEntity()
     private var navigateFormName = ""
     private var navigateFormRecordID = -1L
-    private var navigateBack = false
-    private var cashOrderForms = listOf<PatientsEntity>()
+    private var cashOrderForms = listOf<PatientEntity>()
 
-    private var recordSaved = false
     private var viewOnlyMode = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -78,11 +82,10 @@ class CashOrderFragment : Fragment() {
 
         val navController = this.findNavController()
 
-        // get if user is Admin
-        val sharedPref = app.getSharedPreferences(
+        val sharedPref = requireContext().getSharedPreferences(
             Constants.PREF_NAME, Context.MODE_PRIVATE
         )
-        isAdmin = sharedPref?.getString("admin", "") ?: "" == "admin"
+        isAdmin = (sharedPref?.getString("admin", "") ?: "") == "admin"
 
         viewOnlyMode = sharedPref?.getBoolean("viewOnly", false) ?: false
         if (viewOnlyMode) {
@@ -92,7 +95,7 @@ class CashOrderFragment : Fragment() {
                     R.color.viewOnlyMode
                 )
             )
-            binding.saveFormButton.visibility = View.GONE
+            bindingRoot.saveFormButton.visibility = View.GONE
         } else binding.mainLayout.setBackgroundColor(
             ContextCompat.getColor(
                 requireContext(),
@@ -123,20 +126,23 @@ class CashOrderFragment : Fragment() {
         patientViewModel.cashOrder.observe(viewLifecycleOwner) { refForms ->
             refForms?.let { forms ->
                 if (forms.isNotEmpty()) {
-
-                    // fill in spinner
                     val reversedForms = forms.sortedByDescending { it.dateOfSection }
                     cashOrderForms = reversedForms
 
-//                    val refListItems = reversedForms.map { convertLongToDDMMYY(it.dateOfSection) }
+                    val refListItems = reversedForms.map { convertLongToDDMMYY(it.dateOfSection) }
 
-//                    val refSpinnerAdapter: ArrayAdapter<String> =
-//                        ArrayAdapter<String>(
-//                            app.applicationContext,
-//                            android.R.layout.simple_spinner_item,
-//                            refListItems
-//                        )
-//                    binding.spinnerFromRefraction.adapter = refSpinnerAdapter
+                    val refSpinnerAdapter: ArrayAdapter<String> =
+                        ArrayAdapter<String>(
+                            app.applicationContext,
+                            android.R.layout.simple_spinner_item,
+                            refListItems
+                        )
+                    binding.spinnerFromCashorder.adapter = refSpinnerAdapter
+
+                    // Check if there's more than one item before setting selection
+                    if (refListItems.size > 1) {
+                    binding.spinnerFromCashorder.setSelection(1)
+                    }
                 }
             }
         }
@@ -153,6 +159,10 @@ class CashOrderFragment : Fragment() {
                             R.string.number_of_years_patient,
                             age, dob
                         )
+
+                        if (currentForm.patientIC != ic) {
+                            currentForm.patientIC = ic
+                        }
                     }
                 }
                 binding.patientName.text = pAge
@@ -160,7 +170,7 @@ class CashOrderFragment : Fragment() {
                 val screenDst = Resources.getSystem().displayMetrics.density
 
                 val sortedList = it.sortedBy { patientsForms -> patientsForms.dateOfSection }
-                val newList = mutableListOf<PatientsEntity>()
+                val newList = mutableListOf<PatientEntity>()
 
                 for (section in orderOfSections) {
                     for (forms in sortedList) {
@@ -179,7 +189,7 @@ class CashOrderFragment : Fragment() {
                     .toSet()
 
                 /* FOR BOTTOM NAVIGATION */
-                val mapSectionName = mutableMapOf<String, MutableList<PatientsEntity>>()
+                val mapSectionName = mutableMapOf<String, MutableList<PatientEntity>>()
                 newList.forEach { patient ->
                     val key = mapSectionName[patient.sectionName]
                     if (key == null) {
@@ -189,11 +199,10 @@ class CashOrderFragment : Fragment() {
                 }
 
                 var sectionName = ""
-                val navChipGroup = binding.navigationLayout
-                val navChipGroup2 = binding.navigationLayout2
-//                val children = newList.map { patientForm ->
+                val navChipGroup = bindingRoot.navigationLayout
+                val navChipGroup2 = bindingRoot.navigationLayout2
                 val children = newSectionName.map { patientForm ->
-                    val chip = TextView(app.applicationContext)
+                    val chip = TextView(requireContext())
 
                     val params = LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -212,21 +221,16 @@ class CashOrderFragment : Fragment() {
                     if (patientForm == "CASH ORDER") {
                         sectionName = patientForm
                         chip.setBackgroundColor(
-                            ContextCompat.getColor(
-                                app.applicationContext, R.color.lightBackground
-                            )
+                            ContextCompat.getColor(requireContext(), R.color.lightBackground)
                         )
                     } else {
                         chip.setBackgroundColor(
-                            ContextCompat.getColor(
-                                app.applicationContext,
-                                R.color.cardBackgroundDarker
-                            )
+                            ContextCompat.getColor(requireContext(), R.color.cardBackgroundDarker)
                         )
                     }
 
 //                    val sectionShortName = makeShortSectionName(patientForm.sectionName)
-                    val sectionShortName = makeShortSectionName(patientForm)
+                    val sectionShortName = makeShortSectionName(requireContext(), patientForm)
 //                    chip.text = "$sectionShortName\n${convertLongToDDMMYY(patientForm.dateOfSection)}"
                     chip.text = sectionShortName
 
@@ -249,7 +253,7 @@ class CashOrderFragment : Fragment() {
                 val children2 = mapSectionName[sectionName]
                     ?.sortedBy { p -> p.dateOfSection }
                     ?.map { patientForm ->
-                        val chip = TextView(app.applicationContext)
+                        val chip = TextView(requireContext())
 
                         val params = LinearLayout.LayoutParams(
                             LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -267,19 +271,18 @@ class CashOrderFragment : Fragment() {
 
                         if (patientForm.recordID == recordID)
                             chip.setBackgroundColor(
-                                ContextCompat.getColor(
-                                    app.applicationContext, R.color.lightBackground
-                                )
+                                ContextCompat.getColor(requireContext(), R.color.lightBackground)
                             )
                         else
                             chip.setBackgroundColor(
                                 ContextCompat.getColor(
-                                    app.applicationContext,
+                                    requireContext(),
                                     R.color.cardBackgroundDarker
                                 )
                             )
 
-                        val sectionShortName = makeShortSectionName(patientForm.sectionName)
+                        val sectionShortName =
+                            makeShortSectionName(requireContext(), patientForm.sectionName)
                         chip.text =
                             "$sectionShortName\n${convertLongToDDMMYY(patientForm.dateOfSection)}"
 
@@ -299,7 +302,7 @@ class CashOrderFragment : Fragment() {
 
                 navChipGroup.removeAllViews()
                 for (chip in children) {
-                    val chipDivider = TextView(app.applicationContext)
+                    val chipDivider = TextView(requireContext())
                     chipDivider.text = "  "
                     navChipGroup.addView(chip)
                     navChipGroup.addView(chipDivider)
@@ -307,30 +310,31 @@ class CashOrderFragment : Fragment() {
 
                 navChipGroup2.removeAllViews()
                 children2?.forEach { chip ->
-                    val chipDivider = TextView(app.applicationContext)
+                    val chipDivider = TextView(requireContext())
                     chipDivider.text = "  "
                     navChipGroup2.addView(chip)
                     navChipGroup2.addView(chipDivider)
                 }
 
-                val hPos = newSectionName.indexOf("CASH ORDER")
+                val hPos = newSectionName.indexOf(getString(R.string.cash_order_caption))
                 if (hPos > 3) {
-                    val scrollWidth = binding.chipsScroll.width
+                    val scrollWidth = bindingRoot.chipsScroll.width
                     val scrollX = ((hPos - 2) * (scrollWidth / 6.25)).toInt()
-                    binding.chipsScroll.postDelayed({
+                    bindingRoot.chipsScroll.postDelayed({
                         if (context != null)
-                            binding.chipsScroll.smoothScrollTo(scrollX, 0)
+                            bindingRoot.chipsScroll.smoothScrollTo(scrollX, 0)
                     }, 100L)
                 }
 
-                val hPosList = mapSectionName[sectionName]?.map { form -> form.recordID }?: listOf()
+                val hPosList =
+                    mapSectionName[sectionName]?.map { form -> form.recordID } ?: listOf()
                 val hPosBottomNav = hPosList.indexOf(recordID)
                 if (hPosBottomNav > 3) {
-                    val scrollWidth = binding.chipsScroll2.width
+                    val scrollWidth = bindingRoot.chipsScroll2.width
                     val scrollX = ((hPosBottomNav - 2) * (scrollWidth / 6.25)).toInt()
-                    binding.chipsScroll2.postDelayed({
+                    bindingRoot.chipsScroll2.postDelayed({
                         if (context != null)
-                            binding.chipsScroll2.smoothScrollTo(scrollX, 0)
+                            bindingRoot.chipsScroll2.smoothScrollTo(scrollX, 0)
                     }, 100L)
                 }
             }
@@ -339,7 +343,7 @@ class CashOrderFragment : Fragment() {
         val sphListItems = sphList()
         val sphSpinnerAdapter: ArrayAdapter<String> =
             ArrayAdapter<String>(
-                app.applicationContext,
+                requireContext(),
                 android.R.layout.simple_spinner_item,
                 sphListItems
             )
@@ -349,45 +353,26 @@ class CashOrderFragment : Fragment() {
         val cylListItems = cylList()
         val cylSpinnerAdapter: ArrayAdapter<String> =
             ArrayAdapter<String>(
-                app.applicationContext,
+                requireContext(),
                 android.R.layout.simple_spinner_item,
                 cylListItems
             )
         binding.spinnerLeftCyl.adapter = cylSpinnerAdapter
         binding.spinnerRightCyl.adapter = cylSpinnerAdapter
 
-//        val addListItems = addList()
-//        val addSpinnerAdapter: ArrayAdapter<String> =
-//            ArrayAdapter<String>(app.applicationContext, android.R.layout.simple_spinner_item, addListItems)
-//        binding.spinnerLeftAdd.adapter = addSpinnerAdapter
-//        binding.spinnerRightAdd.adapter = addSpinnerAdapter
-
-//        ArrayAdapter.createFromResource(
-//            app.applicationContext,
-//            R.array.type_final_choices,
-//            android.R.layout.simple_spinner_item
-//        ).also { adapter ->
-//            adapter.setDropDownViewResource(R.layout.spinner_list_basic)
-//            binding.spinnerType.adapter = adapter
-//        }
-
         patientViewModel.navTrigger.observe(viewLifecycleOwner) { navOption ->
             navOption?.let {
                 launchNavigator(navOption)
             }
         }
-        // DELETE FORM FUNCTIONALITY
-
         patientViewModel.recordDeleted.observe(viewLifecycleOwner) { ifDeleted ->
             ifDeleted?.let {
                 if (ifDeleted) navController.navigate(
-                    CashOrderFragmentDirections
-                        .actionFinalPrescriptionFragmentToFormSelectionFragment(patientID)
+                    CashOrderFragmentDirections.actionToFormSelectionFragment(patientID)
                 )
             }
         }
-
-        binding.deleteForm.setOnClickListener {
+        bindingRoot.deleteForm.setOnClickListener {
             if (context != null)
                 actionConfirmDeletion(
                     title = resources.getString(R.string.form_delete_title),
@@ -400,122 +385,99 @@ class CashOrderFragment : Fragment() {
                 ) { allowed ->
                     if (allowed) {
                         patientViewModel.deleteRecord(currentForm)
-                        patientViewModel.deletePatientFromFirebase(currentForm.recordID.toString())
+                        patientViewModel.deletePatientFromFirebase(currentForm)
                     }
                 }
         }
-
-//        binding.copyFromRefraction.setOnClickListener {
-//            // take out data from the form selected in spinner
-//
-//           var  isEmpty = true
-//
-//            if (refractionForms.lastIndex >= binding.spinnerFromRefraction.selectedItemPosition) {
-//                val extractData = refractionForms[binding.spinnerFromRefraction.selectedItemPosition].sectionData.split("|")
-//                binding.apply {
-//                    for (i in 0 until spinnerRightSph.adapter.count) {
-//                        if (extractData[33].trim() != "" &&
-//                            extractData[33] == spinnerRightSph.adapter.getItem(i).toString()
-//                        ) {
-//                            spinnerRightSph.setSelection(i)
-//                            isEmpty = false
-//                        }
-//                    }
-//                    if (isEmpty) { // set " " as default value
-//                        for (i in 0 until spinnerRightSph.adapter.count) {
-//                            if (" " == spinnerRightSph.adapter.getItem(i).toString()) {
-//                                spinnerRightSph.setSelection(i)
-//                            }
-//                        }
-//                    }
-//
-//                    isEmpty = true
-//                    for (i in 0 until spinnerRightCyl.adapter.count) {
-//                        if (extractData[34].trim() != "" &&
-//                            extractData[34].trim().toDoubleOrNull() == spinnerRightCyl.adapter.getItem(i).toString().toDoubleOrNull()
-//                        ) {
-//                            spinnerRightCyl.setSelection(i)
-//                            isEmpty = false
-//                        }
-//                    }
-//                    if (isEmpty) spinnerRightCyl.setSelection(0)
-//
-//                    // 44 add
-//                    isEmpty = true
-//                    for (i in 0 until spinnerRightAdd.adapter.count) {
-//                        if (extractData[44].trim() != "" &&
-//                            extractData[44].trim().toDoubleOrNull() == spinnerRightAdd.adapter.getItem(i).toString().toDoubleOrNull()
-//                        ) {
-//                            spinnerRightAdd.setSelection(i)
-//                            isEmpty = false
-//                        }
-//                    }
-//                    if (isEmpty) spinnerRightAdd.setSelection(0)
-//
-//                    // 45 add
-//                    isEmpty = true
-//                    for (i in 0 until spinnerLeftAdd.adapter.count) {
-//                        if (extractData[45].trim() != "" &&
-//                            extractData[45].trim().toDoubleOrNull() == spinnerLeftAdd.adapter.getItem(i).toString().toDoubleOrNull()
-//                        ) {
-//                            spinnerLeftAdd.setSelection(i)
-//                            isEmpty = false
-//                        }
-//                    }
-//                    if (isEmpty) spinnerLeftAdd.setSelection(0)
-//
-//                    editRightVa.setText(extractData[42])
-//                    editLeftVa.setText(extractData[43])
-//
-//                    isEmpty = true
-//                    editRightAxis.setText(extractData[35])
-//
-//
-//                    for (i in 0 until spinnerLeftSph.adapter.count) {
-//                        if (extractData[36].trim() != "" &&
-//                            extractData[36] == spinnerLeftSph.adapter.getItem(i).toString()
-//                        ) {
-//                            spinnerLeftSph.setSelection(i)
-//                            isEmpty = false
-//                        }
-//                    }
-//                    if (isEmpty) { // set " " as default value
-//                        for (i in 0 until spinnerLeftSph.adapter.count) {
-//                            if (" " == spinnerLeftSph.adapter.getItem(i).toString()) {
-//                                spinnerLeftSph.setSelection(i)
-//                            }
-//                        }
-//                    }
-//                    isEmpty = true
-//
-//                    for (i in 0 until spinnerLeftCyl.adapter.count) {
-//                        if (extractData[37].trim() != "" &&
-//                            extractData[37].trim()
-//                                .toDoubleOrNull() == spinnerLeftCyl.adapter.getItem(i)
-//                                .toString().toDoubleOrNull()
-//                        ) {
-//                            spinnerLeftCyl.setSelection(i)
-//                            isEmpty = false
-//                        }
-//                    }
-//                    if (isEmpty) spinnerLeftCyl.setSelection(0)
-//                    isEmpty = true
-//
-//                    editLeftAxis.setText(extractData[38])
-//                }
-//            }
-//        }
-        // CHANGE DATA in THE FORM if record in FIREBASE was changed.
-
-        binding.saveFormButton.setOnClickListener {
+        bindingRoot.saveFormButton.setOnClickListener {
             saveAndNavigate("none")
         }
-        binding.backButton.setOnClickListener {
+        bindingRoot.backButton.setOnClickListener {
             saveAndNavigate("back")
         }
-
-        binding.homeButton.setOnClickListener {
+        bindingRoot.homeButton.setOnClickListener {
             saveAndNavigate("home")
+        }
+
+        binding.copyFromCashorder.setOnClickListener {
+            try {
+
+                // take out data from the form selected in spinner
+
+                var isEmpty = true
+
+                if (cashOrderForms.lastIndex >= binding.spinnerFromCashorder.selectedItemPosition) {
+                    val extractData =
+                        cashOrderForms[binding.spinnerFromCashorder.selectedItemPosition]
+                            .sectionData.split("|")
+                    binding.apply {
+                        for (i in 0 until spinnerRightSph.adapter.count) {
+                            if (extractData[1].trim() != "" &&
+                                extractData[1] == spinnerRightSph.adapter.getItem(i).toString()
+                            ) {
+                                spinnerRightSph.setSelection(i)
+                                isEmpty = false
+                            }
+                        }
+                        if (isEmpty) { // set " " as default value
+                            for (i in 0 until spinnerRightSph.adapter.count) {
+                                if (" " == spinnerRightSph.adapter.getItem(i).toString()) {
+                                    spinnerRightSph.setSelection(i)
+                                }
+                            }
+                        }
+
+                        isEmpty = true
+                        for (i in 0 until spinnerLeftSph.adapter.count) {
+                            if (extractData[2].trim() != "" &&
+                                extractData[2] == spinnerLeftSph.adapter.getItem(i).toString()
+                            ) {
+                                spinnerLeftSph.setSelection(i)
+                                isEmpty = false
+                            }
+                        }
+                        if (isEmpty) { // set " " as default value
+                            for (i in 0 until spinnerLeftSph.adapter.count) {
+                                if (" " == spinnerLeftSph.adapter.getItem(i).toString()) {
+                                    spinnerLeftSph.setSelection(i)
+                                }
+                            }
+                        }
+
+                        isEmpty = true
+                        for (i in 0 until spinnerRightCyl.adapter.count) {
+                            if (extractData[3].trim() != "" &&
+                                extractData[3].trim().toDoubleOrNull() == spinnerRightCyl.adapter.getItem(i)
+                                    .toString().toDoubleOrNull()
+                            ) {
+                                spinnerRightCyl.setSelection(i)
+                                isEmpty = false
+                            }
+                        }
+                        if (isEmpty) spinnerRightCyl.setSelection(0)
+
+                        isEmpty = true
+                        for (i in 0 until spinnerLeftCyl.adapter.count) {
+                            if (extractData[4].trim() != "" &&
+                                extractData[4].trim().toDoubleOrNull() == spinnerLeftCyl.adapter.getItem(i)
+                                    .toString().toDoubleOrNull()
+                            ) {
+                                spinnerLeftCyl.setSelection(i)
+                                isEmpty = false
+                            }
+                        }
+                        if (isEmpty) spinnerLeftCyl.setSelection(0)
+
+                        editRightAxis.setText(extractData[5])
+                        editLeftAxis.setText(extractData[6])
+                        editClSg.setText(extractData[17])
+                        editClRm.setText(extractData[20])
+                        editTotal.setText(extractData[21])
+                    }
+                }
+            } catch (t: Throwable) {
+                t.printStackTrace()
+            }
         }
 
         patientViewModel.patientFireForm.observe(viewLifecycleOwner) { patientNewRecord ->
@@ -529,7 +491,7 @@ class CashOrderFragment : Fragment() {
             }
         }
 
-        return binding.root
+        return bindingRoot.root
     }
 
     private fun saveAndNavigate(navOption: String) {
@@ -551,12 +513,9 @@ class CashOrderFragment : Fragment() {
 
     private fun launchNavigator(option: String) {
         when (option) {
-            "none" -> {
-                fillTheForm(currentForm)
-            }
+            "none" -> fillTheForm(currentForm)
             "back" -> findNavController().navigate(
-                CashOrderFragmentDirections
-                    .actionFinalPrescriptionFragmentToFormSelectionFragment(patientID)
+                CashOrderFragmentDirections.actionToFormSelectionFragment(patientID)
             )
             "home" -> findNavController().navigate(
                 CashOrderFragmentDirections.actionToDatabaseSearchFragment()
@@ -567,73 +526,64 @@ class CashOrderFragment : Fragment() {
 
     private fun navigateToSelectedForm() {
         val navController = this.findNavController()
-        val orderOfSections = listOf(*resources.getStringArray(R.array.forms_order))
-        // if same fragment - load new record
-        // info section could be onlyUnique
         when (navigateFormName) {
-
-            orderOfSections[0] -> navController.navigate(
-                CashOrderFragmentDirections
-                    .actionFinalPrescriptionFragmentToInfoFragment(navigateFormRecordID)
+            getString(R.string.info_form_caption) -> navController.navigate(
+                CashOrderFragmentDirections.actionToInfoFragment(navigateFormRecordID)
             )
 
-            orderOfSections[1] -> navController.navigate(
-                CashOrderFragmentDirections
-                    .actionFinalPrescriptionFragmentToMemoFragment(navigateFormRecordID)
+            getString(R.string.follow_up_form_caption) -> navController.navigate(
+                CashOrderFragmentDirections.actionToFollowUpFragment(navigateFormRecordID)
             )
 
-            orderOfSections[2] -> navController.navigate(
-                CashOrderFragmentDirections.actionFinalPrescriptionFragmentToCurrentRxFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.memo_form_caption) -> navController.navigate(
+                CashOrderFragmentDirections.actionToMemoFragment(navigateFormRecordID)
             )
 
-            orderOfSections[3] -> navController.navigate(
-                CashOrderFragmentDirections.actionFinalPrescriptionFragmentToRefractionFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.current_rx_caption) -> navController.navigate(
+                CashOrderFragmentDirections.actionToCurrentRxFragment(navigateFormRecordID)
             )
 
-            orderOfSections[4] -> navController.navigate(
-                CashOrderFragmentDirections.actionFinalPrescriptionFragmentToOcularHealthFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.refraction_caption) -> navController.navigate(
+                CashOrderFragmentDirections.actionToRefractionFragment(navigateFormRecordID)
             )
 
-            orderOfSections[5] -> navController.navigate(
-                CashOrderFragmentDirections.actionFinalPrescriptionFragmentToSupplementaryFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.ocular_health_caption) -> navController.navigate(
+                CashOrderFragmentDirections.actionToOcularHealthFragment(navigateFormRecordID)
             )
 
-            orderOfSections[6] -> navController.navigate(
-                CashOrderFragmentDirections.actionFinalPrescriptionFragmentToContactLensFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.supplementary_test_caption) -> navController.navigate(
+                CashOrderFragmentDirections.actionToSupplementaryFragment(navigateFormRecordID)
             )
 
-            orderOfSections[7] -> navController.navigate(
-                CashOrderFragmentDirections.actionFinalPrescriptionFragmentToOrthokFragment(
-                    navigateFormRecordID
-                )
+            getString(R.string.contact_lens_exam_caption) -> navController.navigate(
+                CashOrderFragmentDirections.actionToContactLensFragment(navigateFormRecordID)
             )
 
-            orderOfSections[8] -> {
+            getString(R.string.orthox_caption) -> navController.navigate(
+                CashOrderFragmentDirections.actionToOrthokFragment(navigateFormRecordID)
+            )
+            getString(R.string.cash_order) -> {
                 if (recordID != navigateFormRecordID) {
                     recordID = navigateFormRecordID
                     patientViewModel.getPatientForm(navigateFormRecordID)
                 }
             }
-
-            orderOfSections[9] -> navController.navigate(
-                CashOrderFragmentDirections
-                    .actionFinalPrescriptionFragmentToFinalPrescriptionFragment(navigateFormRecordID)
+            getString(R.string.sales_order_caption) -> findNavController().navigate(
+                CashOrderFragmentDirections.actionToSalesOrderFragment(navigateFormRecordID)
             )
+            getString(R.string.final_prescription_caption) -> navController.navigate(
+                CashOrderFragmentDirections.actionToSalesOrderFragment(navigateFormRecordID)
+            )
+            else -> {
+                Toast.makeText(
+                    context, "$navigateFormName not implemented yet", Toast.LENGTH_SHORT
+                ).show()
+            }
         }
     }
 
     @SuppressLint("SetTextI18n")
-    private fun fillTheForm(patientForm: PatientsEntity) {
+    private fun fillTheForm(patientForm: PatientEntity) {
 
         val extractData = patientForm.sectionData.split('|').toMutableList()
 //      Log.d(Constants.TAG, "extract data size before = ${extractData.size}")
@@ -650,17 +600,6 @@ class CashOrderFragment : Fragment() {
             sectionEditDate = patientForm.dateOfSection
 
             var isEmpty = true
-//            if (extractData[0].trim() != "") {
-//                for(i in 0 until spinnerType.adapter.count) {
-//                    if (extractData[0].trim() == spinnerType.adapter.getItem(i).toString()) {
-//                        spinnerType.setSelection(i)
-//                        isEmpty = false
-//                    }
-//                }
-//            }
-//            if (isEmpty) spinnerType.setSelection(0)
-
-            isEmpty = true
             for (i in 0 until spinnerRightSph.adapter.count) {
                 if (extractData[1].trim() != "" &&
                     extractData[1] == spinnerRightSph.adapter.getItem(i).toString()
@@ -720,54 +659,17 @@ class CashOrderFragment : Fragment() {
 
             editRightAxis.setText(extractData[5])
             editLeftAxis.setText(extractData[6])
-//            editRightPd.setText(extractData[7])
-//            editLeftPd.setText(extractData[8])
-
-//            editRightHt.setText(extractData[9])
-//            editLeftHt.setText(extractData[10])
-
-//            isEmpty = true
-//            for(i in 0 until spinnerRightAdd.adapter.count) {
-//                if (extractData[11].trim() != "" &&
-//                    extractData[11].trim() == spinnerRightAdd.adapter.getItem(i).toString()) {
-//                    spinnerRightAdd.setSelection(i)
-//                    isEmpty = false
-//                }
-//            }
-//            if (isEmpty) spinnerRightAdd.setSelection(0)
-
-//            isEmpty = true
-//            for(i in 0 until spinnerLeftAdd.adapter.count) {
-//                if (extractData[12].trim() != "" &&
-//                    extractData[12].trim() == spinnerLeftAdd.adapter.getItem(i).toString()) {
-//                    spinnerLeftAdd.setSelection(i)
-//                    isEmpty = false
-//                }
-//            }
-//            if (isEmpty) spinnerLeftAdd.setSelection(0)
-
-//            editFrameHt.setText(extractData[13])
-//            editEd.setText(extractData[14])
             editFrame.setText(extractData[15])
             editFrameRm.setText(extractData[16])
-
             editClSg.setText(extractData[17])
-//            editLensRm.setText(extractData[18])
-//            editClSg.setText(extractData[19])
             editClRm.setText(extractData[20])
-
             editTotal.setText(extractData[21])
-//            editOptometrist.setText(extractData[22])
-//            editSalesperson.setText(extractData[23])
-//            editRightVa.setText(extractData[24])
-//            editLeftVa.setText(extractData[25])
-
             remarkInput.setText(patientForm.remarks)
-
             editCs.setText(patientForm.cs)
             editSolutionMisc.setText(patientForm.solutionMisc)
             editSolutionMiscRm.setText(patientForm.solutionMiscRm)
-
+            editCstotal.setText(extractData[21])
+            sectionFamilycodecs.text = patientForm.familyCode
 
             patientViewModel.practitioner.observe(viewLifecycleOwner) {
                 val adapterPractitioner =
@@ -784,84 +686,43 @@ class CashOrderFragment : Fragment() {
                     }
                 }
             }
-
-//            val dataPractitionerOptometrist = arrayOf(patientForm.practitioner)
-//            val adapterPractitionerOptometrist =
-//                ArrayAdapter(requireContext(), R.layout.spinner_list_basic, dataPractitionerOptometrist)
-//            practitionerNameOptometrist.adapter = adapterPractitionerOptometrist
-// END of Binding
         }
     }
 
-
-    /**
-     * If UI was changed - returns true
-     */
     private fun formWasChanged(): Boolean {
-        // create new Record, fill it in with Form data and pass to ViewModel with recordID to update DB
         val priorPatient = currentForm.copy()
 
         binding.apply {
             currentForm.remarks = remarkInput.text.toString().uppercase()
             if (sectionEditDate != -1L) currentForm.dateOfSection = sectionEditDate
-
-//            val extractData =  spinnerType.selectedItem.toString() + "|" +
-//                                            spinnerRightSph.selectedItem.toString() + "|" +
-//                    spinnerLeftSph.selectedItem.toString() + "|" +
-//                    spinnerRightCyl.selectedItem.toString() + "|" +
-//                    spinnerLeftCyl.selectedItem.toString() + "|" +
-//                    editRightAxis.text.toString() + "|" +
-//                    editLeftAxis.text.toString() + "|" +
-//                    editRightPd.text.toString() + "|" +
-//                    editLeftPd.text.toString() + "|" +
-//                    editRightHt.text.toString() + "|" +
-//                    editLeftHt.text.toString() + "|" +
-//                    spinnerRightAdd.selectedItem.toString() + "|" +
-//                    spinnerLeftAdd.selectedItem.toString() + "|" +
-//                    editFrameHt.text.toString() + "|" +
-//                    editEd.text.toString() + "|" +
-//                    editFrame.text.toString() + "|" +
-//                    editFrameRm.text.toString() + "|" +
-//                    editLens.text.toString() + "|" +
-//                    editLensRm.text.toString() + "|" +
-//                    editClSg.text.toString() + "|" +
-//                    editClRm.text.toString() + "|" +
-//                    editTotal.text.toString() + "|" +
-////                    editOptometrist.text.toString() + "|" +
-////                    editSalesperson.text.toString() + "|" +
-//                    "" + "|" +
-//                    "" + "|" +
-//                    editRightVa.text.toString() + "|" +
-//                    editLeftVa.text.toString()
-
             val extractData = "" + "|" +
-                    spinnerRightSph.selectedItem.toString() + "|" +
-                    spinnerLeftSph.selectedItem.toString() + "|" +
-                    spinnerRightCyl.selectedItem.toString() + "|" +
-                    spinnerLeftCyl.selectedItem.toString() + "|" +
-                    editRightAxis.text.toString() + "|" +
-                    editLeftAxis.text.toString() + "|" +
-                    "" + "|" +
-                    "" + "|" +
-                    "" + "|" +
-                    "" + "|" +
-                    "" + "|" +
-                    "" + "|" +
-                    "" + "|" +
-                    "" + "|" +
-                    editFrame.text.toString() + "|" +
-                    editFrameRm.text.toString() + "|" +
-                    editClSg.text.toString() + "|" +
-                    "" + "|" +
-                    "" + "|" +
-                    editClRm.text.toString() + "|" +
-                    editTotal.text.toString() + "|" +
+                spinnerRightSph.selectedItem.toString() + "|" +
+                spinnerLeftSph.selectedItem.toString() + "|" +
+                spinnerRightCyl.selectedItem.toString() + "|" +
+                spinnerLeftCyl.selectedItem.toString() + "|" +
+                editRightAxis.text.toString() + "|" +
+                editLeftAxis.text.toString() + "|" +
+                "" + "|" +
+                "" + "|" +
+                "" + "|" +
+                "" + "|" +
+                "" + "|" +
+                "" + "|" +
+                "" + "|" +
+                "" + "|" +
+                editFrame.text.toString() + "|" +
+                editFrameRm.text.toString() + "|" +
+                editClSg.text.toString() + "|" +
+                "" + "|" +
+                "" + "|" +
+                editClRm.text.toString() + "|" +
+                editTotal.text.toString() + "|" +
 //                    editOptometrist.text.toString() + "|" +
 //                    editSalesperson.text.toString() + "|" +
-                    "" + "|" +
-                    "" + "|" +
-                    "" + "|" +
-                    ""
+                "" + "|" +
+                "" + "|" +
+                "" + "|" +
+                ""
 
             currentForm.sectionData = extractData.uppercase()
 
@@ -870,15 +731,8 @@ class CashOrderFragment : Fragment() {
             currentForm.solutionMiscRm = "${binding.editSolutionMiscRm.text}".uppercase()
             currentForm.frame = "${editFrame.text}".uppercase()
             currentForm.lens = "${editClSg.text}".uppercase()
-//            val dataSelected = binding.practitionerName.selectedItem as String
-//            val dataPractitioner = StringBuilder(dataSelected)
-//            val count = binding.practitionerName.adapter.count
-//            for (i in 0 until count) {
-//                val a = binding.practitionerName.adapter.getItem(i)
-//                if (a.toString() != dataSelected) {
-//                    dataPractitioner.append("|$a")
-//                }
-//            }
+            currentForm.cstotal = "${editTotal.text}".uppercase()
+            currentForm.cspractitioner = (binding.practitionerName.selectedItem as String).uppercase()
             currentForm.practitioner = (binding.practitionerName.selectedItem as String).uppercase()
         }
         return !currentForm.assertEqual(priorPatient)
@@ -886,12 +740,9 @@ class CashOrderFragment : Fragment() {
 
     private fun changeDate() {
         val (todayYear, todayMonth, todayDay) = dayMonthY()
-        val myActivity = activity
-
-        myActivity?.let {
+        activity?.let {
             val datePickerDialog = DatePickerDialog(
-                it,
-                { _, year, monthOfYear, dayOfMonth -> // set day of month , month and year value in the edit text
+                it, { _, year, monthOfYear, dayOfMonth ->
                     sectionEditDate = convertYMDtoTimeMillis(year, monthOfYear, dayOfMonth)
                     if (sectionEditDate != -1L)
                         binding.dateCaption.text = convertLongToDDMMYY(sectionEditDate)

@@ -2,47 +2,60 @@ package com.lizpostudio.kgoptometrycrm.utils
 
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
-import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientsEntity
+import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientEntity
 import com.lizpostudio.kgoptometrycrm.data.source.remote.firebase.KGMessage
 
-
 @BindingAdapter("patientName")
-fun TextView.setPatientName(item: PatientsEntity?) {
+fun TextView.setPatientName(item: PatientEntity?) {
     item?.let {
         text = item.patientName
     }
 }
 
 @BindingAdapter("patientID")
-fun TextView.setPatientID(item: PatientsEntity?) {
+fun TextView.setPatientID(item: PatientEntity?) {
     item?.let {
         text = item.patientID
     }
 }
 
 @BindingAdapter("address")
-fun TextView.setAddress(item: PatientsEntity?) {
-    item?.let {
-        text = item.address
-    }
+fun TextView.setAddress(item: PatientEntity?) {
+    text = item?.address?.ifEmpty { "-" } ?: "-"
 }
 
 @BindingAdapter("phone")
-fun TextView.setPhone(item: PatientsEntity?) {
-    item?.let {
-        text = item.phone
+fun TextView.setPhone(item: PatientEntity?) {
+    text = item?.phone
+    val sectionData = InfoSectionData.extract(item?.sectionData)
+    if (text.isEmpty()) {
+        text = sectionData.phone2
+    } else {
+        if (sectionData.phone2.isNotEmpty()) {
+            text = "$text\n${sectionData.phone2}"
+        }
+    }
+
+    if (text.isEmpty()) {
+        text = sectionData.phone3
+    } else {
+        if (sectionData.phone3.isNotEmpty()) {
+            text = "$text\n${sectionData.phone3}"
+        }
+    }
+
+    if (text.isNullOrEmpty()) {
+        text = "-"
     }
 }
 
 @BindingAdapter("familyCode")
-fun TextView.setFamilyCode(item: PatientsEntity?) {
-    item?.let {
-        text = item.familyCode
-    }
+fun TextView.setFamilyCode(item: PatientEntity?) {
+    text = item?.familyCode?.ifEmpty { "-" } ?: "-"
 }
 
 @BindingAdapter("sectionName")
-fun TextView.setSectionName(item: PatientsEntity?) {
+fun TextView.setSectionName(item: PatientEntity?) {
     item?.let {
         text = item.sectionName
     }
@@ -56,18 +69,16 @@ fun TextView.setSectionRemark(item: Patients?) {
 }*/
 
 @BindingAdapter("sectionDate")
-fun TextView.setSectionDate(item: PatientsEntity?) {
+fun TextView.setSectionDate(item: PatientEntity?) {
     item?.let {
         if (item.dateOfSection > 0L)
-        text = convertLongToDDMMYY(item.dateOfSection)
+            text = convertLongToDDMMYY(item.dateOfSection)
     }
 }
 
 @BindingAdapter("patientIC")
-fun TextView.setPatientIC(item: PatientsEntity?) {
-    item?.let {
-        text = item.patientIC
-    }
+fun TextView.setPatientIC(item: PatientEntity?) {
+    text = item?.patientIC?.ifEmpty { "-" } ?: "-"
 }
 
 @BindingAdapter("messageTimestamp")

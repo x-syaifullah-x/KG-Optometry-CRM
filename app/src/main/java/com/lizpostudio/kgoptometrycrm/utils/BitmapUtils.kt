@@ -42,9 +42,9 @@ object BitmapUtils {
                     cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME)
                 val displayName = cursor.getString(columnIndexDisplayName)
                 if (displayName.contains(filename)) {
-                    val columnIndexSize: Int =
-                        cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.SIZE)
-                    val size: Long = cursor.getLong(columnIndexSize)
+//                    val columnIndexSize: Int =
+//                        cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.SIZE)
+//                    val size: Long = cursor.getLong(columnIndexSize)
                     val columnIndexId: Int =
                         cursor.getColumnIndexOrThrow(MediaStore.MediaColumns._ID)
                     val id: Long = cursor.getLong(columnIndexId)

@@ -1,33 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="search_customer_choices">
-        <item>NAME</item>
-        <item>DATE</item>
-        <item>ID</item>
-        <item>IC</item>
-        <item>PHONE</item>
-        <item>FAMILY CODE</item>
-        <item>ADDRESS</item>
-        <item>OCCUPATION</item>
-        <item>CASH ORDER</item>
-        <item>SALES ORDER</item>
-        <item>PRODUCT</item>
-        <item>OTHER ID</item>
-    </string-array>
-
-    <string-array name="search_sales_choices">
-        <item>NAME</item>
-        <item>CS</item>
-        <item>OR</item>
-        <item>DATE</item>
-    </string-array>
-
     <string-array name="worth_four_dots">
         <item> </item>
         <item>4 DOTS</item>
         <item>RE SUPPRESSED</item>
         <item>LE SUPPRESSED</item>
         <item>5 DOTS</item>
+    </string-array>
+
+    <string-array name="ret_currentrx_unaided">
+        <item> </item>
+        <item>RETINOSCOPY</item>
+        <item>CURRENT RX</item>
+        <item>UNAIDED</item>
+    </string-array>
+
+    <string-array name="dominance">
+        <item> </item>
+        <item>RIGHT</item>
+        <item>LEFT</item>
     </string-array>
 
     <string-array name="range_movement">
@@ -49,27 +40,16 @@
         <item>NO</item>
     </string-array>
 
-    <string-array name="forms_order">
-        <item>INFO</item>
-        <item>MEMO</item>
-        <item>CURRENT / OLD Rx</item>
-        <item>REFRACTION</item>
-        <item>OCULAR HEALTH</item>
-        <item>SUPPLEMENTARY TESTS</item>
-        <item>CONTACT LENS EXAM</item>
-        <item>ORTHOK</item>
-        <item>CASH ORDER</item>
-        <item>SALES ORDER</item>
-    </string-array>
-
     <string-array name="chart_choices">
         <item> </item>
         <item>SHERIDAN GARDINER</item>
+        <item>SG SINGLE LETTER</item>
         <item>SLOAN</item>
         <item>ILLITERATE E</item>
         <item>LANDOLT C</item>
         <item>KAY PICTURE</item>
         <item>NUMBER</item>
+        <item>NUMBER SINGLE</item>
     </string-array>
 
     <string-array name="currently_using_choices">
@@ -111,10 +91,11 @@
     </string-array>
 
     <string-array name="race_choices">
-        <item>OTHER</item>
+        <item> </item>
         <item>CHINESE</item>
         <item>MALAY</item>
         <item>INDIAN</item>
+        <item>OTHER</item>
     </string-array>
 
     <string-array name="state_choices">
