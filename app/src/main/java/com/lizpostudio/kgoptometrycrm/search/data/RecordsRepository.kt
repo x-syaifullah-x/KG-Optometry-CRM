@@ -1,8 +1,6 @@
 package com.lizpostudio.kgoptometrycrm.search.data
 
 import android.util.JsonReader
-import com.google.gson.Gson
-import com.lizpostudio.kgoptometrycrm.R
 import com.lizpostudio.kgoptometrycrm.data.Resources
 import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientEntity
 import com.lizpostudio.kgoptometrycrm.data.source.remote.firebase.FirebasePath
@@ -25,9 +23,7 @@ import okhttp3.internal.headersContentLength
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
-import java.util.Arrays
 import javax.net.ssl.HttpsURLConnection
-import kotlin.system.measureTimeMillis
 
 class RecordsRepository private constructor(
     private val remote: RemoteDataSource,

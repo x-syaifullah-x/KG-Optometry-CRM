@@ -23,7 +23,7 @@ import com.lizpostudio.kgoptometrycrm.search.data.source.local.RecordDao
         PractitionerEntity::class,
         SalesEntity::class
     ],
-    version = BuildConfig.VERSION_CODE,
+    version = 1,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

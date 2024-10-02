@@ -12,7 +12,7 @@ ext.build_versions = build_versions
 
 ext {
     vGradle = "8.6.0"
-    vKotlin = "1.9.20"
+    vKotlin = "2.0.20"
 
     vAndroidxAnnotation = "1.2.0"
     vAndroidxAppCompat = "1.7.0"
@@ -28,6 +28,7 @@ ext {
     vNavigation = "2.5.3"
     vPreference = "1.2.0"
     vRoom = "2.6.1"
+    vKsp = "2.0.20-1.0.25"
 
     vAndroidJunit = "1.2.1"
     vEspresso = "3.6.1"
@@ -35,6 +36,7 @@ ext {
     vTestRules = "1.6.1"
     vOrgGson = "20240303"
     vSquareupOkhttp3 = "4.12.0"
+    vComGoogleGmsGoogleServices = "4.4.2"
 }
 
 def addRepos(RepositoryHandler handler) {

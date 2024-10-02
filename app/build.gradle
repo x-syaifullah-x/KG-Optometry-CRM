@@ -3,6 +3,7 @@ plugins {
     id "androidx.navigation.safeargs"
     id "kotlin-android"
     id "kotlin-kapt"
+    id "com.google.devtools.ksp"
 }
 
 android {
@@ -62,17 +63,17 @@ android {
 
     buildFeatures {
         dataBinding true
-        viewBinding true
-        buildConfig = true
+        viewBinding  true
+        buildConfig true
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = JavaVersion.VERSION_17.toString()
     }
 
     packagingOptions {
@@ -100,6 +101,7 @@ dependencies {
     implementation "com.google.firebase:firebase-auth-ktx"
     implementation "com.google.firebase:firebase-database-ktx"
     implementation "com.google.firebase:firebase-storage-ktx"
+    implementation "com.google.firebase:firebase-messaging-ktx"
 
     implementation "androidx.appcompat:appcompat:$vAndroidxAppCompat"
     implementation "androidx.appcompat:appcompat-resources:$vAndroidxAppCompat"
@@ -114,7 +116,6 @@ dependencies {
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$vCoroutines"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:$vCoroutines"
-    implementation 'com.google.firebase:firebase-messaging-ktx:23.1.1'
     testImplementation "junit:junit:$vJunit"
 
     androidTestImplementation "androidx.room:room-testing:$vRoom"
@@ -122,7 +123,7 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-core:$vEspresso"
     androidTestImplementation "com.android.support.test:rules:$vTestRules"
 
-    kapt "androidx.room:room-compiler:$vRoom"
+    ksp "androidx.room:room-compiler:$vRoom"
 
     implementation "androidx.camera:camera-core:$vAndroidxCamera"
     implementation "androidx.camera:camera-camera2:$vAndroidxCamera"
@@ -132,6 +133,4 @@ dependencies {
     testImplementation "org.json:json:$vOrgGson"
 
     implementation "com.squareup.okhttp3:okhttp:$vSquareupOkhttp3"
-
-    implementation 'com.google.code.gson:gson:2.11.0'
 }

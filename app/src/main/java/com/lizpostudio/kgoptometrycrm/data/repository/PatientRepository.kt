@@ -170,7 +170,7 @@ class PatientRepository private constructor(
                     ortotal = entity.ortotal,
                     cspractitioner = entity.cspractitioner,
                     orpractitioner = entity.orpractitioner,
-                    )
+                )
             }
         }
 

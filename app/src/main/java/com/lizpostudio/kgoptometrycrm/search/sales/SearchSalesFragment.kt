@@ -29,8 +29,6 @@ class SearchSalesFragment : BaseSearchFragment() {
 
     override fun keySearchBy() = KEY_SEARCH_BY
 
-    private var infoForms = PatientEntity()
-
     override fun keySearchValue() = KEY_SEARCH_VALUE
 
     override fun onResume() {
@@ -65,27 +63,48 @@ class SearchSalesFragment : BaseSearchFragment() {
                         listOf()
                     }
                 }
+
                 PATIENT_NAME -> items
-                    .filter { it.patientName.contains(input, true) || it.familyCode.contains(input, true) }
+                    .filter {
+                        it.patientName.contains(input, true) || it.familyCode.contains(
+                            input,
+                            true
+                        )
+                    }
                     .sortedByDescending { it.dateOfSection }
+
                 CASH_ORDER -> items
                     .filter { it.cs.contains(input, true) }
                     .sortedByDescending { it.dateOfSection }
+
                 SALES_ORDER -> items
                     .filter { it.or.contains(input, true) }
                     .sortedByDescending { it.dateOfSection }
+
                 PRACTITIONER -> items
-                    .filter { (it.orpractitioner.contains(input, true) || it.cspractitioner.contains(input, true)) }
+                    .filter {
+                        (it.orpractitioner.contains(
+                            input,
+                            true
+                        ) || it.cspractitioner.contains(input, true))
+                    }
                     .sortedByDescending { it.dateOfSection }
+
                 SALES_AMOUNT -> items
-                    .filter { (it.ortotal.contains(input, true) || it.cstotal.contains(input, true)) }
+                    .filter {
+                        (it.ortotal.contains(input, true) || it.cstotal.contains(
+                            input,
+                            true
+                        ))
+                    }
                     .sortedByDescending { it.dateOfSection }
+
                 else -> items
                     .sortedBy { it.patientName }
             }
         } else {
             items
-            .sortedByDescending { it.dateOfSection }
+                .sortedByDescending { it.dateOfSection }
         }
 
     override fun headerRecycleView(parent: FrameLayout) {
@@ -135,24 +154,6 @@ class SearchSalesFragment : BaseSearchFragment() {
 
     override fun onClickIconSales(view: View) {
         findNavController().navigate(SearchSalesFragmentDirections.actionToDatabaseSearch())
-    }
-
-    override fun onItemClick(view: View, item: PatientEntity) {
-        if (filterByFamily) {
-            if (item.familyCode!= "") {
-                val newList = items
-                    .filter { it.familyCode == item.familyCode }
-                    .sortedBy { it.patientName }
-                updateRecyclerView(newList)
-            } else {
-                Toast.makeText(view.context, "Empty Family Code!", Toast.LENGTH_SHORT).show()
-            }
-        } else {
-            hideKeyboard(binding.searchInputText) {
-                it.clearFocus()
-                onItemClick(item)
-            }
-        }
     }
 
     override fun onClickIconHome(view: View) {
