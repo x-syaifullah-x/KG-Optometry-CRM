@@ -158,4 +158,10 @@ class SearchViewModel(
     suspend fun getIdProducts(value: String) = patientRepo.getIdProducts(value)
 
     val csAndOr = patientRepo.getSales()
+
+    fun getFamilyCode(id: String) =
+        patientRepo.getFamilyCode(id)
+
+    fun getPatientWithFamilyCodee(familyCode: String) =
+        patientRepo.getPatientWithFamilyCodee(familyCode)
 }

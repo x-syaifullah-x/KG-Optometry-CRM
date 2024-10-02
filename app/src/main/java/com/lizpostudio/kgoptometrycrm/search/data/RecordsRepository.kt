@@ -1,6 +1,7 @@
 package com.lizpostudio.kgoptometrycrm.search.data
 
 import android.util.JsonReader
+import com.lizpostudio.kgoptometrycrm.R
 import com.lizpostudio.kgoptometrycrm.data.Resources
 import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientEntity
 import com.lizpostudio.kgoptometrycrm.data.source.remote.firebase.FirebasePath
@@ -9,17 +10,21 @@ import com.lizpostudio.kgoptometrycrm.search.data.source.local.RecordDataSourceL
 import com.lizpostudio.kgoptometrycrm.search.data.source.remote.service.Connection
 import com.lizpostudio.kgoptometrycrm.search.data.source.remote.service.DatabaseService
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.lastOrNull
+import kotlinx.coroutines.job
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.internal.headersContentLength
+import okio.source
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -79,18 +84,24 @@ class RecordsRepository private constructor(
 
         val response = client.newCall(request).execute()
         val contentLength = response.headersContentLength()
+
+//        val c = remote.getFirebaseDatabase().app.applicationContext
+//        val stream = c.resources.openRawResource(R.raw.a)
+//        val contentLength = stream.available().toLong()
+
         if (response.code == HttpsURLConnection.HTTP_OK) {
-            var count = 0
+            var totalRecord = 0
             val stream = response.body?.byteStream()
-//            val c = remote.getFirebaseDatabase().app.applicationContext
-//            val stream = c.resources.openRawResource(R.raw.a)
-            val size = 1024 * 1024 * 5 // 1 MB
+            val size = 1024 * 1024 * 10 // 1 MB
 //                165612 for 1
 //                158346 for 5
 //                281588 last
             val reader = BufferedReader(InputStreamReader(stream), size)
             val jsonReader = JsonReader(reader)
             var progress: Long = 0
+
+            var job: Job? = null
+
             try {
                 jsonReader.beginObject()
                 progress += 1
@@ -107,13 +118,16 @@ class RecordsRepository private constructor(
                         val value = jsonReader.nextString()
                         patientJSONObject.put(name, value)
                     }
+                    jsonReader.endObject()
                     temps.add(PatientEntity.fromJson(key, patientJSONObject))
                     progress += patientJSONObject.toString().length
                     if (temps.size == maxSizeTemps) {
-                        count += local.save(temps).size
+                        totalRecord += local.save(temps).size
                         temps.clear()
                     }
-                    withContext(Dispatchers.Main) {
+
+                    job?.cancel()
+                    job = launch(Dispatchers.Main) {
                         send(
                             Resources.Progress(
                                 count = progress,
@@ -121,24 +135,21 @@ class RecordsRepository private constructor(
                             )
                         )
                     }
-                    jsonReader.endObject()
-                    progress += 1
                 }
                 jsonReader.endObject()
-                progress += 1
-                withContext(Dispatchers.Main) {
-                    send(
-                        Resources.Progress(
-                            count = contentLength,
-                            length = contentLength
-                        )
-                    )
-                }
+//                launch(Dispatchers.Main) {
+//                    send(
+//                        Resources.Progress(
+//                            count = progress,
+//                            length = contentLength
+//                        )
+//                    )
+//                }
                 if (temps.size < maxSizeTemps) {
-                    count += local.save(temps).size
+                    totalRecord += local.save(temps).size
                     temps.clear()
                 }
-                send(Resources.Success(count))
+                send(Resources.Success(totalRecord))
             } catch (err: Throwable) {
                 err.printStackTrace()
                 send(Resources.Error(err))

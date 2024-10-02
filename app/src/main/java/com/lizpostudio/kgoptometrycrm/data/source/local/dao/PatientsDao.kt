@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientEntity
 import com.lizpostudio.kgoptometrycrm.data.source.local.entity.SalesEntity
-import kotlin.reflect.KClass
 
 @Dao
 interface PatientsDao {
@@ -27,14 +26,19 @@ interface PatientsDao {
     //suspend fun getRecordsByTimeFrameWithoutFollowup(dateStart: Long, dateEnd: Long, specificDate: Long): List<PatientEntity>
 
     //chatgpt
-    @Query("""
+    @Query(
+        """
     SELECT * FROM patients_table 
     WHERE date_of_section >= (:dateStart) 
     AND date_of_section < (:dateEnd) 
     AND delete_at='0' 
     AND (section_name != 'FOLLOW UP' OR (section_name = 'FOLLOW UP' AND date_of_section < :dateStart))
-""")
-    suspend fun getRecordsByTimeFrameWithoutFollowup(dateStart: Long, dateEnd: Long): List<PatientEntity>
+"""
+    )
+    suspend fun getRecordsByTimeFrameWithoutFollowup(
+        dateStart: Long,
+        dateEnd: Long
+    ): List<PatientEntity>
 
 
     //try set ignore section_name = follow up
@@ -100,6 +104,12 @@ interface PatientsDao {
 
     @Query("SELECT * FROM patients_table WHERE sales_id=:id")
     fun getInfoPatient(id: String): PatientEntity
+
+    @Query("SELECT family_code FROM patients_table WHERE sales_id=:id AND section_name='INFO' AND delete_at='0'")
+    fun getFamilyCode(id: String): String?
+
+    @Query("SELECT * FROM patients_table WHERE family_code=:familyCode AND delete_at='0'")
+    fun getPatientWithFamilyCodee(familyCode: String): List<PatientEntity>
 
     @Query("SELECT * FROM patients_table WHERE section_name = :nameOfSection")
     fun getRecordsBySectionNameAsLiveData(nameOfSection: String): LiveData<List<PatientEntity>>

@@ -148,6 +148,28 @@ class SearchSalesFragment : BaseSearchFragment() {
         findNavController().navigate(SearchSalesFragmentDirections.actionToSearchRecycleBinFragment())
     }
 
+    override fun onItemClick(view: View, item: PatientEntity) {
+        if (filterByFamily) {
+            val fc = searchViewModel.getFamilyCode(item.patientID)
+            if (!fc.isNullOrBlank()) {
+                val results = mutableListOf<PatientEntity>()
+                val res = searchViewModel.getPatientWithFamilyCodee(fc)
+                res.forEach { aa ->
+                    val a = items.filter { ab -> aa.patientID == ab.patientID }
+                    results.addAll(a)
+                }
+                updateRecyclerView(results)
+            } else {
+                Toast.makeText(view.context, "Empty Family Code!", Toast.LENGTH_SHORT).show()
+            }
+        } else {
+            hideKeyboard(binding.searchInputText) {
+                it.clearFocus()
+                onItemClick(item)
+            }
+        }
+    }
+
     override fun onClickIconFollowUp(view: View) {
         findNavController().navigate(SearchSalesFragmentDirections.actionToSearchFollowUpScreen())
     }

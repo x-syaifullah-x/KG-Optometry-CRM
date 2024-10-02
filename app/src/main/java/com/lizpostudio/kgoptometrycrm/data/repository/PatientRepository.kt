@@ -155,6 +155,11 @@ class PatientRepository private constructor(
     suspend fun getIdProducts(value: String) =
         dao.queryIdProduct(value)
 
+    fun getFamilyCode(id: String) = dao.getFamilyCode(id)
+
+    fun getPatientWithFamilyCodee(familyCode: String) =
+        dao.getPatientWithFamilyCodee(familyCode)
+
     fun getSales() = dao.getSales()
         .map { entities ->
             entities.map { entity ->

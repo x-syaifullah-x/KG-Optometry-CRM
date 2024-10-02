@@ -13,7 +13,7 @@ class SearchRecycleBinAdapter(
     private val onClickIconsRestore: (patientInfo: PatientEntity) -> Unit = {},
     private val onClickIconsDelete: (patientInfo: PatientEntity) -> Unit = {},
     private val onClickItem: (patientInfo: PatientEntity) -> Unit = {},
-    private val onLongClickItem: () -> Unit = {}
+    private val onLongClickItem: () -> Unit = {},
 ) : BaseSearchAdapter<ListItemRecycleBinBinding>() {
 
     init {

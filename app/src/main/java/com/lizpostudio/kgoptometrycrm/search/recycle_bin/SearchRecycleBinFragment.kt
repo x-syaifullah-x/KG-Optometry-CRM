@@ -146,7 +146,7 @@ class SearchRecycleBinFragment : BaseSearchFragment() {
             onLongClickItem = {
                 val isVisible = binding.selectView?.isVisible ?: false
                 binding.selectView?.isVisible = !isVisible
-            }
+            },
         )
     }
 
