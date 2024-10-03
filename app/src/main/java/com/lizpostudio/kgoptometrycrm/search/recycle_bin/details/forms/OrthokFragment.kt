@@ -282,7 +282,8 @@ class OrthokFragment : Fragment() {
 
         binding.undoTop.setOnClickListener {
             if (fillMask.isNotEmpty()) {
-                fillMask.removeLast()
+//                fillMask.removeLast()
+                fillMask.removeAt(fillMask.size - 1)
                 fillIndex--
 
                 binding.topOculus.fillMask = fillMask
@@ -302,7 +303,8 @@ class OrthokFragment : Fragment() {
 
         binding.undoBottom.setOnClickListener {
             if (fillMaskBottom.isNotEmpty()) {
-                fillMaskBottom.removeLast()
+//                fillMaskBottom.removeLast()
+                fillMaskBottom.removeAt(fillMaskBottom.size - 1)
                 fillIndexBottom--
 
                 binding.bottomOculus.fillMask = fillMaskBottom
@@ -531,8 +533,8 @@ class OrthokFragment : Fragment() {
         val heightRatio =
             if (wH.second != 0f && topOculusHeight != 0f) topOculusHeight / wH.second else 1f
 
-/*              Log.d(Constants.TAG, "saved w = ${wH.first} oculus width = ${topOculusWidth} widthRatio = $widthRatio")
-        Log.d(Constants.TAG, "saved h = ${wH.second} oculus height = ${topOculusHeight} heightRatio = $heightRatio")*/
+        /*              Log.d(Constants.TAG, "saved w = ${wH.first} oculus width = ${topOculusWidth} widthRatio = $widthRatio")
+                Log.d(Constants.TAG, "saved h = ${wH.second} oculus height = ${topOculusHeight} heightRatio = $heightRatio")*/
 
         fillMask = convertStringToFillMask(graphicsTop, widthRatio, heightRatio)
         fillIndex = if (fillMask.size > 0) fillMask.lastIndex else -1

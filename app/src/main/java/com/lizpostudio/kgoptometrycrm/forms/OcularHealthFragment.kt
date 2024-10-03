@@ -325,7 +325,9 @@ class OcularHealthFragment : Fragment() {
 
         binding.undoTop.setOnClickListener {
             if (fillMask.isNotEmpty()) {
-                fillMask.removeLast()
+////                fillMask.removeLast()
+                fillMaskBottom.removeAt(fillMaskBottom.size - 1)
+                fillMask.removeAt(fillMask.size - 1)
                 fillIndex--
 
                 binding.topOculus.fillMask = fillMask
@@ -345,7 +347,8 @@ class OcularHealthFragment : Fragment() {
 
         binding.undoBottom.setOnClickListener {
             if (fillMaskBottom.isNotEmpty()) {
-                fillMaskBottom.removeLast()
+//                fillMaskBottom.removeLast()
+                fillMaskBottom.removeAt(fillMaskBottom.size - 1)
                 fillIndexBottom--
 
                 binding.bottomOculus.fillMask = fillMaskBottom
@@ -853,12 +856,15 @@ class OcularHealthFragment : Fragment() {
             "none" -> {
                 fillTheForm(currentForm)
             }
+
             "back" -> findNavController().navigate(
                 OcularHealthFragmentDirections.actionToFormSelectionFragment(patientID)
             )
+
             "home" -> findNavController().navigate(
                 OcularHealthFragmentDirections.actionToDatabaseSearchFragment()
             )
+
             else -> navigateToSelectedForm()
         }
     }
@@ -868,42 +874,54 @@ class OcularHealthFragment : Fragment() {
             getString(R.string.info_form_caption) -> findNavController().navigate(
                 OcularHealthFragmentDirections.actionToInfoFragment(navigateFormRecordID)
             )
+
             getString(R.string.follow_up_form_caption) -> findNavController().navigate(
                 OcularHealthFragmentDirections.actionToFollowUpFragment(navigateFormRecordID)
             )
+
             getString(R.string.memo_form_caption) -> findNavController().navigate(
                 OcularHealthFragmentDirections.actionToMemoFragment(navigateFormRecordID)
             )
+
             getString(R.string.current_rx_caption) -> findNavController().navigate(
                 OcularHealthFragmentDirections.actionToCurrentRxFragment(navigateFormRecordID)
             )
+
             getString(R.string.refraction_caption) -> findNavController().navigate(
                 OcularHealthFragmentDirections.actionToRefractionFragment(navigateFormRecordID)
             )
+
             getString(R.string.ocular_health_caption) -> {
                 if (recordID != navigateFormRecordID) {
                     recordID = navigateFormRecordID
                     patientViewModel.getPatientForm(navigateFormRecordID)
                 }
             }
+
             getString(R.string.supplementary_test_caption) -> findNavController().navigate(
                 OcularHealthFragmentDirections.actionToSupplementaryFragment(navigateFormRecordID)
             )
+
             getString(R.string.contact_lens_exam_caption) -> findNavController().navigate(
                 OcularHealthFragmentDirections.actionToContactLensFragment(navigateFormRecordID)
             )
+
             getString(R.string.orthox_caption) -> findNavController().navigate(
                 OcularHealthFragmentDirections.actionToOrthokFragment(navigateFormRecordID)
             )
+
             getString(R.string.cash_order) -> findNavController().navigate(
                 OcularHealthFragmentDirections.actionToCashOrderFragment(navigateFormRecordID)
             )
+
             getString(R.string.sales_order_caption) -> findNavController().navigate(
                 OcularHealthFragmentDirections.actionToSalesOrderFragment(navigateFormRecordID)
             )
+
             getString(R.string.final_prescription_caption) -> findNavController().navigate(
                 OcularHealthFragmentDirections.actionToSalesOrderFragment(navigateFormRecordID)
             )
+
             else -> {
                 Toast.makeText(
                     context, "$navigateFormName not implemented yet", Toast.LENGTH_SHORT
@@ -1111,23 +1129,23 @@ class OcularHealthFragment : Fragment() {
             if (sectionEditDate != -1L)
                 currentForm.dateOfSection = sectionEditDate
             val extractData = editLensRight.text.toString() + "|" +
-                editLensLeft.text.toString() + "|" +
-                spinnerIopRight.selectedItem.toString() + "|" +
-                spinnerIopLeft.selectedItem.toString() + "|" +
-                editAvRatioRight.text.toString() + "|" +
-                editAvRatioLeft.text.toString() + "|" +
-                spinnerCdRatioRight.selectedItem.toString() + "|" +
-                spinnerCdRatioLeft.selectedItem.toString() + "|" +
-                spinnerTbutRight.selectedItem.toString() + "|" +
-                spinnerTbutLeft.selectedItem.toString() + "|" +
-                extraTextTop1.text.toString() + "|" +
-                extraTextTop2.text.toString() + "|" +
-                extraTextTop3.text.toString() + "|" +
-                extraTextTop4.text.toString() + "|" +
-                extraTextBottom1.text.toString() + "|" +
-                extraTextBottom2.text.toString() + "|" +
-                extraTextBottom3.text.toString() + "|" +
-                extraTextBottom4.text.toString()
+                    editLensLeft.text.toString() + "|" +
+                    spinnerIopRight.selectedItem.toString() + "|" +
+                    spinnerIopLeft.selectedItem.toString() + "|" +
+                    editAvRatioRight.text.toString() + "|" +
+                    editAvRatioLeft.text.toString() + "|" +
+                    spinnerCdRatioRight.selectedItem.toString() + "|" +
+                    spinnerCdRatioLeft.selectedItem.toString() + "|" +
+                    spinnerTbutRight.selectedItem.toString() + "|" +
+                    spinnerTbutLeft.selectedItem.toString() + "|" +
+                    extraTextTop1.text.toString() + "|" +
+                    extraTextTop2.text.toString() + "|" +
+                    extraTextTop3.text.toString() + "|" +
+                    extraTextTop4.text.toString() + "|" +
+                    extraTextBottom1.text.toString() + "|" +
+                    extraTextBottom2.text.toString() + "|" +
+                    extraTextBottom3.text.toString() + "|" +
+                    extraTextBottom4.text.toString()
             currentForm.sectionData = extractData.uppercase()
 
             currentForm.practitioner = (binding.practitionerName.selectedItem as String).uppercase()

@@ -455,7 +455,8 @@ class ContactLensFragment : Fragment() {
 
         binding.undoTop.setOnClickListener {
             if (fillMaskTop.isNotEmpty()) {
-                fillMaskTop.removeLast()
+//                fillMaskTop.removeLast()
+                fillMaskTop.removeAt(fillMaskTop.lastIndex)
                 fillIndexTop--
 
                 binding.oculoHealthCl.fillMask = fillMaskTop
@@ -616,7 +617,8 @@ class ContactLensFragment : Fragment() {
 
         binding.undoRight.setOnClickListener {
             if (fillMaskRight[fitIndex].isNotEmpty()) {
-                fillMaskRight[fitIndex].removeLast()
+//                fillMaskRight[fitIndex].removeLast()
+                fillMaskRight[fitIndex].removeAt(fillMaskRight[fitIndex].lastIndex)
                 fillIndexRight[fitIndex]--
 
                 binding.imageFittingRightCl.fillMask = fillMaskRight[fitIndex]
@@ -634,8 +636,10 @@ class ContactLensFragment : Fragment() {
         }
 
         binding.undoLeft.setOnClickListener {
+
             if (fillMaskLeft[fitIndex].isNotEmpty()) {
-                fillMaskLeft[fitIndex].removeLast()
+//                fillMaskLeft[fitIndex].removeLast()
+                fillMaskLeft[fitIndex].removeAt(fillMaskLeft[fitIndex].lastIndex)
                 fillIndexLeft[fitIndex]--
 
                 binding.imageFittingLeftCl.fillMask = fillMaskLeft[fitIndex]

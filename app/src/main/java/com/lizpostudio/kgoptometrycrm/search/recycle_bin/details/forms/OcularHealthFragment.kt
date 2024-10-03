@@ -258,7 +258,8 @@ class OcularHealthFragment : Fragment() {
 
         binding.undoTop.setOnClickListener {
             if (fillMask.isNotEmpty()) {
-                fillMask.removeLast()
+//                fillMask.removeLast()
+                fillMask.removeAt(fillMask.size -1)
                 fillIndex--
 
                 binding.topOculus.fillMask = fillMask
@@ -278,7 +279,8 @@ class OcularHealthFragment : Fragment() {
 
         binding.undoBottom.setOnClickListener {
             if (fillMaskBottom.isNotEmpty()) {
-                fillMaskBottom.removeLast()
+//                fillMaskBottom.removeLast()
+                fillMaskBottom.removeAt(fillMaskBottom.size -1)
                 fillIndexBottom--
 
                 binding.bottomOculus.fillMask = fillMaskBottom
