@@ -54,14 +54,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun addUsersEventListener() {
-        val remote = RemoteDataSource.getInstance(this);
+        val remote = RemoteDataSource.getInstance(this)
         remote.getFirebaseDatabase().reference.child("settings")
             .child("users_event")
             .addValueEventListener(userEvent)
     }
 
     fun removeUsersEventListener() {
-        val remote = RemoteDataSource.getInstance(this);
+        val remote = RemoteDataSource.getInstance(this)
         remote.getFirebaseDatabase().reference.child("settings")
             .child("users_event")
             .removeEventListener(userEvent)
@@ -86,7 +86,6 @@ class MainActivity : AppCompatActivity() {
                 val components =
                     fieldComponents.get(savedStateRegistry) as SafeIterableMap<String, SavedStateRegistry.SavedStateProvider>
 
-                @Suppress("INACCESSIBLE_TYPE")
                 val it: Iterator<Map.Entry<String, SavedStateRegistry.SavedStateProvider>> =
                     components.iteratorWithAdditions()
                 it.forEach {

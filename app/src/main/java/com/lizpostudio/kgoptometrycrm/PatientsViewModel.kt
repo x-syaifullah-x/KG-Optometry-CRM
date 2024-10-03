@@ -305,7 +305,7 @@ class PatientsViewModel(
     }
 
     private val _patientsLiveData = MutableLiveData<List<PatientEntity>>()
-    val patientsLiveData: LiveData<List<PatientEntity>> get() = _patientsLiveData
+    private val patientsLiveData: LiveData<List<PatientEntity>> get() = _patientsLiveData
 
     // Assuming this function sets the value of _patientsLiveData
     fun loadPatients() {

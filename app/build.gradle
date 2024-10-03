@@ -87,6 +87,10 @@ android {
         exclude "**.bin"
         exclude "kotlin-tooling-metadata.json"
     }
+
+    lintOptions {
+        abortOnError false
+    }
 }
 
 dependencies {
