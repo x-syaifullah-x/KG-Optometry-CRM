@@ -144,8 +144,11 @@ class SearchRecycleBinFragment : BaseSearchFragment() {
             onClickIconsDelete = ::onClickIconsDelete,
             onClickItem = ::onItemClick,
             onLongClickItem = {
-                val isVisible = binding.selectView?.isVisible ?: false
-                binding.selectView?.isVisible = !isVisible
+                val isVisible = binding.selectView.isVisible
+                binding.selectView.isVisible = !isVisible
+                if (!isVisible) {
+                    binding.selectAll.isChecked = false
+                }
             },
         )
     }
@@ -174,9 +177,10 @@ class SearchRecycleBinFragment : BaseSearchFragment() {
                 val passwordInput = "${passwordBox.text}"
                 if (passwordInput == PASSWORD_DELETE) {
                     if (itemSelects.size == adapter.itemCount) {
-                        binding.selectView?.isVisible = false
+                        binding.selectView.isVisible = false
                     }
                     searchRecycleBinViewModel.delete(itemSelects, ::handleRestoreAndDelete)
+                    adapter.clearSelected(itemSelects)
                 } else {
                     Toast.makeText(context, "Incorrect password", Toast.LENGTH_SHORT).show()
                 }

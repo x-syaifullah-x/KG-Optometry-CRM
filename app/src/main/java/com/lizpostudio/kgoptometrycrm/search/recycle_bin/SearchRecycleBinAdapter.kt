@@ -93,6 +93,13 @@ class SearchRecycleBinAdapter(
         }
     }
 
+    fun clearSelected(items: List<Long>) {
+        items.forEach {
+            selectState.remove(it)
+            checkBoxState.remove(it)
+        }
+    }
+
     fun selectAll(isSelect: Boolean) {
         items.forEach {
             if (isSelect) {

@@ -1,6 +1,7 @@
 package com.lizpostudio.kgoptometrycrm.search.data
 
 import android.util.JsonReader
+import com.lizpostudio.kgoptometrycrm.R
 import com.lizpostudio.kgoptometrycrm.data.Resources
 import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientEntity
 import com.lizpostudio.kgoptometrycrm.data.source.remote.firebase.FirebasePath
@@ -80,15 +81,15 @@ class RecordsRepository private constructor(
             .build()
 
         val response = client.newCall(request).execute()
-        val contentLength = response.headersContentLength()
+//        val contentLength = response.headersContentLength()
 
-//        val c = remote.getFirebaseDatabase().app.applicationContext
-//        val stream = c.resources.openRawResource(R.raw.a)
-//        val contentLength = stream.available().toLong()
+        val c = remote.getFirebaseDatabase().app.applicationContext
+        val stream = c.resources.openRawResource(R.raw.a)
+        val contentLength = stream.available().toLong()
 
         if (response.code == HttpsURLConnection.HTTP_OK) {
             var totalRecord = 0
-            val stream = response.body?.byteStream()
+//            val stream = response.body?.byteStream()
             val size = 1024 * 1024 * 10 // 1 MB
 //                165612 for 1
 //                158346 for 5
