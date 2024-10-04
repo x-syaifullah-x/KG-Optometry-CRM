@@ -1,7 +1,6 @@
 package com.lizpostudio.kgoptometrycrm.search.data
 
 import android.util.JsonReader
-import com.lizpostudio.kgoptometrycrm.R
 import com.lizpostudio.kgoptometrycrm.data.Resources
 import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientEntity
 import com.lizpostudio.kgoptometrycrm.data.source.remote.firebase.FirebasePath
@@ -17,14 +16,12 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.lastOrNull
-import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.internal.headersContentLength
-import okio.source
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -60,7 +57,7 @@ class RecordsRepository private constructor(
         local.getRecords(sectionName)
 
     fun saveFirebaseRecordToDatabase() = channelFlow {
-        send(Resources.Loading)
+        trySend(Resources.Loading)
 
         val databaseUrl = remote
             .getFirebaseApp()
@@ -100,9 +97,8 @@ class RecordsRepository private constructor(
             val jsonReader = JsonReader(reader)
             var progress: Long = 0
 
-            var job: Job? = null
+            var jobProgress: Job? = null
 
-            var isSuccess = false
             try {
                 jsonReader.beginObject()
                 val maxSizeTemps = 1000
@@ -126,18 +122,14 @@ class RecordsRepository private constructor(
                         temps.clear()
                     }
 
-                    try {
-                        job?.cancel()
-                        job = launch(Dispatchers.Main) {
-                            trySend(
-                                Resources.Progress(
-                                    count = progress,
-                                    length = contentLength
-                                )
+                    jobProgress?.cancel()
+                    jobProgress = launch(Dispatchers.Main) {
+                        trySend(
+                            Resources.Progress(
+                                count = progress,
+                                length = contentLength
                             )
-                        }
-                    } catch (t: Throwable) {
-                        t.printStackTrace()
+                        )
                     }
                 }
                 jsonReader.endObject()
@@ -145,25 +137,24 @@ class RecordsRepository private constructor(
                     totalRecord += local.save(temps).size
                     temps.clear()
                 }
-                isSuccess = true
+                jobProgress?.cancel()
+                trySend(Resources.Success(totalRecord))
             } catch (err: Throwable) {
                 err.printStackTrace()
-                send(Resources.Error(err))
+                jobProgress?.cancel()
+                trySend(Resources.Error(err))
             } finally {
                 try {
                     jsonReader.close()
                     reader.close()
                     stream?.close()
-                    if (isSuccess){
-                        trySend(Resources.Success(totalRecord))
-                    }
                 } catch (err: Throwable) {
                     err.printStackTrace()
                 }
             }
         } else {
             val message = response.body?.string()
-            send(Resources.Error(Throwable(message)))
+            trySend(Resources.Error(Throwable(message)))
         }
 
 //        WITH GOOGLE GSON
