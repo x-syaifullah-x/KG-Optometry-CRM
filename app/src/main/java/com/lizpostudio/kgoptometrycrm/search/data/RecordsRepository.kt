@@ -102,9 +102,9 @@ class RecordsRepository private constructor(
 
             var job: Job? = null
 
+            var isSuccess = false
             try {
                 jsonReader.beginObject()
-                progress += 1
                 val maxSizeTemps = 1000
                 val temps = ArrayList<PatientEntity>(maxSizeTemps + 1)
                 local.delete()
@@ -126,30 +126,26 @@ class RecordsRepository private constructor(
                         temps.clear()
                     }
 
-                    job?.cancel()
-                    job = launch(Dispatchers.Main) {
-                        send(
-                            Resources.Progress(
-                                count = progress,
-                                length = contentLength
+                    try {
+                        job?.cancel()
+                        job = launch(Dispatchers.Main) {
+                            trySend(
+                                Resources.Progress(
+                                    count = progress,
+                                    length = contentLength
+                                )
                             )
-                        )
+                        }
+                    } catch (t: Throwable) {
+                        t.printStackTrace()
                     }
                 }
                 jsonReader.endObject()
-//                launch(Dispatchers.Main) {
-//                    send(
-//                        Resources.Progress(
-//                            count = progress,
-//                            length = contentLength
-//                        )
-//                    )
-//                }
                 if (temps.size < maxSizeTemps) {
                     totalRecord += local.save(temps).size
                     temps.clear()
                 }
-                send(Resources.Success(totalRecord))
+                isSuccess = true
             } catch (err: Throwable) {
                 err.printStackTrace()
                 send(Resources.Error(err))
@@ -158,7 +154,9 @@ class RecordsRepository private constructor(
                     jsonReader.close()
                     reader.close()
                     stream?.close()
-                    close()
+                    if (isSuccess){
+                        trySend(Resources.Success(totalRecord))
+                    }
                 } catch (err: Throwable) {
                     err.printStackTrace()
                 }
