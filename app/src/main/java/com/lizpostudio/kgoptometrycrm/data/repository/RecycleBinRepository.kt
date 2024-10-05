@@ -20,7 +20,10 @@ class RecycleBinRepository private constructor(
         @Volatile
         private var INSTANCE: RecycleBinRepository? = null
 
-        fun getInstance(dao: RecycleBinDao, remote: RecycleBinRemoteDataSource): RecycleBinRepository {
+        fun getInstance(
+            dao: RecycleBinDao,
+            remote: RecycleBinRemoteDataSource
+        ): RecycleBinRepository {
             return synchronized(this) {
                 val isFirebaseConfigChange =
                     INSTANCE != null && INSTANCE?.getRemoteDataSource() != remote
@@ -56,6 +59,33 @@ class RecycleBinRepository private constructor(
         }
     }
 
+    fun deletee(recordsId: List<Long>, resultCallback: (Resources<Int>) -> Unit) {
+        resultCallback(Resources.Loading)
+        if (recordsId.isEmpty()) {
+            resultCallback(Resources.Error(Throwable("No found data")))
+        } else {
+            var count = 0
+            recordsId.forEach { recordId ->
+                delete(recordId) { resources, _ ->
+                    when (resources) {
+                        is Resources.Success -> {
+                            count += 1
+                            resultCallback.invoke(Resources.Success(count))
+                        }
+
+                        is Resources.Error -> {
+                            resultCallback.invoke(resources)
+                        }
+
+                        is Resources.Loading -> {
+                            resultCallback.invoke(resources)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     fun delete(recordsId: List<Long>, resultCallback: ResultCallback<Boolean>) {
         resultCallback(Resources.Loading, false)
         if (recordsId.isEmpty()) {
@@ -85,6 +115,7 @@ class RecycleBinRepository private constructor(
                         dao.updateDeleteAt(patient.recordID, patient.deleteAt)
                         resultCallback(Resources.Success(patient), true)
                     }
+
                     is Results.Error -> {
                         val error = RestoreThrowable(
                             recordId = patient.recordID,
@@ -107,6 +138,7 @@ class RecycleBinRepository private constructor(
                         val isDelete = dao.delete(recordID) != 0
                         resultCallback(Resources.Success(isDelete), true)
                     }
+
                     is Results.Error -> {
                         val error = RestoreThrowable(
                             recordId = recordID,

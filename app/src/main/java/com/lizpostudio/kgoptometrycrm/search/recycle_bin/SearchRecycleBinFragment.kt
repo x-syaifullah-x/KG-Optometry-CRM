@@ -179,8 +179,23 @@ class SearchRecycleBinFragment : BaseSearchFragment() {
                     if (itemSelects.size == adapter.itemCount) {
                         binding.selectView.isVisible = false
                     }
-                    searchRecycleBinViewModel.delete(itemSelects, ::handleRestoreAndDelete)
-                    adapter.clearSelected(itemSelects)
+                    searchRecycleBinViewModel.deletee(itemSelects, { r ->
+                        when (r) {
+                            is Resources.Loading -> {}
+                            is Resources.Success -> {
+                                if (itemSelects.size == r.result) {
+                                    adapter.clearSelected(itemSelects)
+                                    Toast.makeText(context, "Delete Successful", Toast.LENGTH_SHORT)
+                                        .show()
+                                }
+                            }
+
+                            is Resources.Error ->
+                                Toast.makeText(
+                                    context, "Error ${r.error.message}", Toast.LENGTH_SHORT
+                                ).show()
+                        }
+                    })
                 } else {
                     Toast.makeText(context, "Incorrect password", Toast.LENGTH_SHORT).show()
                 }
@@ -279,12 +294,6 @@ class SearchRecycleBinFragment : BaseSearchFragment() {
                     context, "Error ${resources.error.message}", Toast.LENGTH_SHORT
                 ).show()
         }
-
-        Log.i("", "$isComplete")
-
-//        if (isComplete) {
-        /**/
-//        }
     }
 
     override fun onBackPressed(onBackPressedCallback: OnBackPressedCallback) {

@@ -17,6 +17,9 @@ class App : Application() {
 
     private fun initialiseErrorHandling(context: Context?) {
         CrashHandler.getInstance().register(object : AbstractReceiveError() {
+            override fun onError(t: Throwable) {
+                t.printStackTrace()
+            }
             override fun onError(message: String) {
                 val intent = Intent(context, ErrorActivity::class.java)
                     .apply {

@@ -23,7 +23,7 @@ import com.lizpostudio.kgoptometrycrm.search.data.source.local.RecordDao
         PractitionerEntity::class,
         SalesEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -53,7 +53,8 @@ abstract class AppDatabase : RoomDatabase() {
                     .allowMainThreadQueries()
                     .build()
                     .also { INSTANCE = it }
-//                INSTANCE ?: setCursorSize(Int.MAX_VALUE / 10).run {
+
+//                INSTANCE ?: setCursorSize(1024 * 1024 * 10).run {
 //                    Room.databaseBuilder(
 //                        context.applicationContext, AppDatabase::class.java, "all_patients_database"
 //                    )
