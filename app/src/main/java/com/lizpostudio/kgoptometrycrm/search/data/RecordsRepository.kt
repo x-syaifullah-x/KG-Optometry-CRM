@@ -95,6 +95,12 @@ class RecordsRepository private constructor(
 //                158346 for 5
 //                281588 last
             val reader = BufferedReader(InputStreamReader(stream), size)
+            if (contentLength == 4L && reader.readText() == "null") {
+                reader.close()
+                stream?.close()
+                trySend(Resources.Success(totalRecord))
+                return@channelFlow
+            }
             val jsonReader = JsonReader(reader)
             var progress: Long = 0
 

@@ -288,6 +288,14 @@ class PatientsViewModel(
             .setValue(recordID)
     }
 
+    fun submitListOfPatientsToFB(patient: PatientEntity) {
+        //     removeFBListener()
+        patientRepo.recordsReference.child(patient.recordID.toString())
+            .setValue(convertFormToFBRecord(patient))
+        val timeKey = System.currentTimeMillis().toString()
+        patientRepo.historyReference.child(timeKey).setValue(patient.recordID.toString())
+    }
+
     fun submitListOfPatientsToFB(patients: List<PatientEntity>) {
         //     removeFBListener()
         patients.forEach {
@@ -295,12 +303,6 @@ class PatientsViewModel(
                 .setValue(convertFormToFBRecord(it))
             val timeKey = System.currentTimeMillis().toString()
             patientRepo.historyReference.child(timeKey).setValue(it.recordID.toString())
-        }
-    }
-
-    fun getFamilyCode(nameOfSection: String): LiveData<String> {
-        return Transformations.map(patientRepo.getRecordsBySectionNameAsLiveData(nameOfSection)) { patients ->
-            patients.firstOrNull()?.familyCode ?: "No family code found"
         }
     }
 
@@ -471,6 +473,8 @@ class PatientsViewModel(
             _recordsUpdated.value = patientRepo.updateListOfRecords(patientForms)
         }
     }
+
+    suspend fun insertRecord(patientForms: PatientEntity) = patientRepo.addPatient(patientForms)
 
     suspend fun insertRecords(patientForms: List<PatientEntity>): Boolean {
         return patientRepo.insertListOfForms(patientForms)

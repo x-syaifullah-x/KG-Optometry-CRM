@@ -16,6 +16,7 @@ import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -31,10 +32,16 @@ import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientEntity
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentTargetCopyBinding
 import com.lizpostudio.kgoptometrycrm.forms.InfoFragment
 import com.lizpostudio.kgoptometrycrm.data.SearchModel
+import com.lizpostudio.kgoptometrycrm.data.source.remote.firebase.RemoteDataSource
 import com.lizpostudio.kgoptometrycrm.utils.*
 import id.xxx.module.view.binding.ktx.viewBinding
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.util.*
 
@@ -78,18 +85,14 @@ class TargetCopyFragment : Fragment() {
 
     private val allInfoForms = mutableListOf<PatientEntity>()
 
-    // recycler adapter reference list
     private val recyclerList = mutableListOf<PatientEntity>()
     private val recyclerAdapter = PatientsListAdapter(recyclerList)
 
     private var shareText = ""
 
-    // temp vat to keep record of when sync was started
-    //  private var latestDeletedHistorySynched = 0L
-
     private var syncHistoryStart = 0L
     private var latestDataSynched = 0L
-    private var isfetchedFromFirebaseCompleted = false
+    private var isFetchedFromFirebaseCompleted = false
 
     private val args by navArgs<TargetCopyFragmentArgs>()
 
@@ -127,11 +130,11 @@ class TargetCopyFragment : Fragment() {
     private fun persistFBCompletedToStore() {
         val sharedPref = activity
             ?.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE)
-        Log.d(TAG, "Saving isFetched frin FB as === $isfetchedFromFirebaseCompleted")
+        Log.d(TAG, "Saving isFetched frin FB as === $isFetchedFromFirebaseCompleted")
         if (sharedPref != null) {
             val editor = sharedPref.edit()
             editor.putLong(Constants.PREF_KEY_LAST_SYNC, latestDataSynched)
-            editor.putBoolean("fireFetched", isfetchedFromFirebaseCompleted)
+            editor.putBoolean("fireFetched", isFetchedFromFirebaseCompleted)
             editor.apply()
         }
     }
@@ -189,7 +192,7 @@ class TargetCopyFragment : Fragment() {
         }
         patientViewModel.allFirebaseDB.observe(viewLifecycleOwner) { fireRecs ->
             fireRecs?.let { fireRecords ->
-                isfetchedFromFirebaseCompleted = true
+                isFetchedFromFirebaseCompleted = true
                 latestDataSynched = System.currentTimeMillis()
                 Log.d(
                     TAG,
@@ -275,7 +278,7 @@ class TargetCopyFragment : Fragment() {
             updateComplete?.let {
                 if (it) {
                     latestDataSynched = syncHistoryStart
-                    isfetchedFromFirebaseCompleted = true
+                    isFetchedFromFirebaseCompleted = true
                     persistFBCompletedToStore()
                     patientViewModel.getAllFormsBySectionName(getString(R.string.info_form_caption))
                     Toast.makeText(
@@ -353,40 +356,88 @@ class TargetCopyFragment : Fragment() {
 
         recyclerAdapter.patientSelected.observe(viewLifecycleOwner) { patient ->
             lifecycleScope.launchWhenCreated {
-                val from = patientViewModel.getPatients(args.patientID)
+                val forms = patientViewModel.getPatients(args.patientID)
                 val alertDialog = AlertDialog.Builder(requireContext())
                 alertDialog.setTitle("Confirm")
-                val nameFrom = "${from?.firstOrNull { it.sectionName != "INFO" }?.patientName}"
+                val nameFrom = "${forms?.firstOrNull { it.sectionName != "INFO" }?.patientName}"
                     .split(" -").firstOrNull()?.lowercase()
                 val nameTo = patient.patientName.lowercase()
                 alertDialog.setMessage("\nAre you sure want to copy all sections from patient $nameFrom to patient $nameTo?")
                 alertDialog.setPositiveButton("Yes") { _, _ ->
-                    val newFrom = from
-                        ?.filter { it.sectionName != "INFO" }
-                        ?.mapIndexed { index, it ->
-                            it.copy(
-                                recordID = (System.currentTimeMillis() - 100000000000L) + index,
-                                patientID = patient.patientID,
-                                patientName = patient.patientName
-                            )
-                        } ?: return@setPositiveButton
-                    lifecycleScope.launchWhenCreated {
-                        patientViewModel.submitListOfPatientsToFB(newFrom)
-                        if (patientViewModel.insertRecords(newFrom)) {
-                            withContext(Dispatchers.Main) {
-                                val dialogSuccess = AlertDialog.Builder(requireContext())
-                                dialogSuccess.setTitle("Copy Success")
-                                dialogSuccess.setMessage("\nOpen Patient $nameTo?")
-                                dialogSuccess.setCancelable(false)
-                                dialogSuccess.setPositiveButton("Yes") { _, _ ->
-                                    navigateBack(patient.patientID)
+                    binding.pbCopy.isVisible = true
+                    binding.tvMessageCopy.isVisible = true
+                    binding.patientsList.visibility = View.INVISIBLE
+                    CoroutineScope(Dispatchers.IO).launch {
+                        forms
+                            ?.filter { it.sectionName != "INFO" }
+                            ?.mapIndexed { index, it ->
+                                val res = it.copy(
+                                    recordID = (System.currentTimeMillis() - 100000000000L) + index,
+                                    patientID = patient.patientID,
+                                    patientName = patient.patientName
+                                )
+
+                                val a = async {
+                                    try {
+                                        val storage =
+                                            RemoteDataSource.getInstance(requireActivity().application)
+                                                .getFirebaseStorage()
+                                        val sources = storage
+                                            .reference.child("IMG_${it.recordID}.jpg")
+                                            .getBytes(Long.MAX_VALUE)
+                                            .await()
+
+                                        storage
+                                            .reference.child("IMG_${res.recordID}.jpg")
+                                            .putBytes(sources)
+                                            .await()
+                                    } catch (t: Throwable) {
+                                        t.printStackTrace()
+                                    }
                                 }
-                                dialogSuccess.setNegativeButton("No") { _, _ ->
-                                    navigateBack(args.patientID)
-                                }
-                                dialogSuccess.show()
+                                val b = async { patientViewModel.submitListOfPatientsToFB(res) }
+                                val c = async { patientViewModel.insertRecord(res) }
+                                awaitAll(a, b, c)
                             }
+
+                        withContext(Dispatchers.Main) {
+                            binding.pbCopy.isVisible = false
+                            binding.tvMessageCopy.isVisible = false
+                            binding.patientsList.visibility = View.VISIBLE
+
+                            val dialogSuccess = AlertDialog.Builder(requireContext())
+                            dialogSuccess.setTitle("Copy Success")
+                            dialogSuccess.setMessage("\nOpen Patient $nameTo?")
+                            dialogSuccess.setCancelable(false)
+                            dialogSuccess.setPositiveButton("Yes") { _, _ ->
+                                navigateBack(patient.patientID)
+                            }
+                            dialogSuccess.setNegativeButton("No") { _, _ ->
+                                navigateBack(args.patientID)
+                            }
+                            dialogSuccess.show()
                         }
+
+
+//                    lifecycleScope.launchWhenCreated {
+//
+//                        patientViewModel.submitListOfPatientsToFB(newForms)
+//                        if (patientViewModel.insertRecords(newForms)) {
+//                            withContext(Dispatchers.Main) {
+//                                val dialogSuccess = AlertDialog.Builder(requireContext())
+//                                dialogSuccess.setTitle("Copy Success")
+//                                dialogSuccess.setMessage("\nOpen Patient $nameTo?")
+//                                dialogSuccess.setCancelable(false)
+//                                dialogSuccess.setPositiveButton("Yes") { _, _ ->
+//                                    navigateBack(patient.patientID)
+//                                }
+//                                dialogSuccess.setNegativeButton("No") { _, _ ->
+//                                    navigateBack(args.patientID)
+//                                }
+//                                dialogSuccess.show()
+//                            }
+//                        }
+//                    }
                     }
                 }
                 alertDialog.setNegativeButton("No") { dialog, _ ->
@@ -700,7 +751,7 @@ class TargetCopyFragment : Fragment() {
     }
 
     private fun checkFirebaseSetup() {
-        if (latestDataSynched == 0L || !isfetchedFromFirebaseCompleted) {
+        if (latestDataSynched == 0L || !isFetchedFromFirebaseCompleted) {
             // prompt to delete current database and load from firestore
             actionConfirm("You have not completed FireBase database setup!\nWould you like to do it now?\nSelecting YES will delete all your local records and upload database from Firebase!")
         }
@@ -751,7 +802,7 @@ class TargetCopyFragment : Fragment() {
         }
 
         latestDataSynched = sharedPref?.getLong("lastSynch", 0L) ?: 0L
-        isfetchedFromFirebaseCompleted = sharedPref?.getBoolean("fireFetched", false) ?: false
+        isFetchedFromFirebaseCompleted = sharedPref?.getBoolean("fireFetched", false) ?: false
         isAdmin = sharedPref?.getString("admin", "") ?: "" == "admin"
 
 //        if (isAdmin) {
