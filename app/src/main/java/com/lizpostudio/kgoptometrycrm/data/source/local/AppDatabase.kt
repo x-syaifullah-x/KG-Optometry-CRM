@@ -45,25 +45,25 @@ abstract class AppDatabase : RoomDatabase() {
 
         fun getInstance(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
-                INSTANCE ?: Room.databaseBuilder(
-                    context.applicationContext, AppDatabase::class.java, "all_patients_database"
-                )
-                    .fallbackToDestructiveMigration()
-                    .addMigrations(MIGRATION_1_2)
-                    .allowMainThreadQueries()
-                    .build()
-                    .also { INSTANCE = it }
+//                INSTANCE ?: Room.databaseBuilder(
+//                    context.applicationContext, AppDatabase::class.java, "all_patients_database"
+//                )
+//                    .fallbackToDestructiveMigration()
+//                    .addMigrations(MIGRATION_1_2)
+//                    .allowMainThreadQueries()
+//                    .build()
+//                    .also { INSTANCE = it }
 
-//                INSTANCE ?: setCursorSize(1024 * 1024 * 10).run {
-//                    Room.databaseBuilder(
-//                        context.applicationContext, AppDatabase::class.java, "all_patients_database"
-//                    )
-//                        .fallbackToDestructiveMigration()
-//                        .addMigrations(MIGRATION_1_2)
-//                        .allowMainThreadQueries()
-//                        .build()
-//                        .also { INSTANCE = it }
-//                }
+                INSTANCE ?: setCursorSize(Int.MAX_VALUE).run {
+                    Room.databaseBuilder(
+                        context.applicationContext, AppDatabase::class.java, "all_patients_database"
+                    )
+                        .fallbackToDestructiveMigration()
+                        .addMigrations(MIGRATION_1_2)
+                        .allowMainThreadQueries()
+                        .build()
+                        .also { INSTANCE = it }
+                }
             }
         }
 

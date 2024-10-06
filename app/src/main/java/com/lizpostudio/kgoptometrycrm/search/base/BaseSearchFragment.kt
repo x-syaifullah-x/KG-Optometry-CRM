@@ -47,12 +47,13 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
 import java.util.*
 import com.lizpostudio.kgoptometrycrm.BuildConfig
+import com.lizpostudio.kgoptometrycrm.search.sync.SyncActivity
+import com.lizpostudio.kgoptometrycrm.search.sync.SyncReceiver
 
 abstract class BaseSearchFragment : Fragment() {
 
     companion object {
         private const val ONE_DAY = 24 * 3600 * 1000L
-        private const val TWO_WEEKS = 14 * ONE_DAY
 
         const val PATIENT_NAME = "NAME"
         const val DATE_SELECTED = "DATE"
@@ -154,9 +155,12 @@ abstract class BaseSearchFragment : Fragment() {
         binding.topNavigation.home.setOnClickListener(::onClickIconHome)
         binding.topNavigation.synchDbButton.setOnClickListener(::onClickIconSync)
         binding.topNavigation.uploadDb.setOnClickListener {
-            if (allowSync) showDialogConfirmLoadDataFirebase(
-                it.context, getString(R.string.upload_db_message)
-            )
+            if (allowSync) {
+                showDialogConfirmLoadDataFirebase(
+                    it.context,
+                    getString(R.string.upload_db_message)
+                )
+            }
         }
         binding.cleanSearch.setOnClickListener {
             binding.searchInputText.setText("")
@@ -233,10 +237,10 @@ abstract class BaseSearchFragment : Fragment() {
             binding.topNavigation.recycleBin.isVisible = true
         }
         binding.topNavigation.recycleBin.setOnClickListener(::onClickIconRecycleBin)
-        binding.selectAll?.setOnCheckedChangeListener { buttonView, isChecked ->
+        binding.selectAll.setOnCheckedChangeListener { buttonView, isChecked ->
             onSelectAll(buttonView, isChecked)
         }
-        binding.icDelete?.setOnClickListener {
+        binding.icDelete.setOnClickListener {
             onClickDeleteSelected()
         }
         return binding.root
@@ -320,23 +324,11 @@ abstract class BaseSearchFragment : Fragment() {
         }
     }
 
-    private fun isFetchedFromFirebase(context: Context?) =
-        isFetchedFromFirebase(Constants.getSharedPreferences(context))
-
     private fun isFetchedFromFirebase(sharedPreferences: SharedPreferences) =
         sharedPreferences.getBoolean(Constants.PREF_KEY_FIRE_FETCHED, false)
 
-    private fun getLatestDataSync(context: Context?) =
-        getLatestDataSync(Constants.getSharedPreferences(context))
-
     private fun getLatestDataSync(sharedPreferences: SharedPreferences) =
         sharedPreferences.getLong(Constants.PREF_KEY_LAST_SYNC, 0)
-
-    private fun setLatestDataSync(context: Context?, latestDataSync: Long) =
-        Constants.getSharedPreferences(context)
-            .edit()
-            .putLong(Constants.PREF_KEY_LAST_SYNC, latestDataSync)
-            .commit()
 
     protected open fun onClickIconToggleFamily(view: View) {
         filterByFamily = !filterByFamily
@@ -366,41 +358,9 @@ abstract class BaseSearchFragment : Fragment() {
     }
 
     private fun onClickIconSync(view: View) {
-        if (!isFetchedFromFirebase(view.context)) {
-            val message =
-                "You have not completed FireBase database setup!\nWould you like to do it now?\nSelecting YES will delete all your local records and upload database from Firebase!"
-            showDialogConfirmLoadDataFirebase(context, message)
-        } else {
-            if (allowSync) {
-                allowSync = false
-                val latestDataSync = System.currentTimeMillis()
-                searchViewModel.updateDatabaseFromFirebase(
-                    latestDataSync = getLatestDataSync(view.context),
-                    period = TWO_WEEKS,
-                    rc = { count ->
-                        val message =
-                            if (count > 0L) {
-                                "Updating/Inserting $count records from Firebase"
-                            } else {
-                                "You are well synced!\nNo new records in Firebase."
-                            }
-                        setLatestDataSync(view.context, latestDataSync)
-                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-                        allowSync = true
-                    },
-                    onError = {
-                        allowSync = true
-                        Toast.makeText(context, it.localizedMessage, Toast.LENGTH_SHORT).show()
-                    }
-                )
-            } else {
-                Toast.makeText(
-                    view.context,
-                    "Previous Sync was not completed!\nHold on ...",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
+        val i = Intent(view.context, SyncActivity::class.java)
+        startActivity(i)
+        return
     }
 
     private fun recordsInfo(patients: List<PatientEntity>) {
@@ -523,6 +483,20 @@ abstract class BaseSearchFragment : Fragment() {
                             "Received $size records from Firebase.\n Creating local database ..."
                         binding.foundItemsText.text = foundItemsText(size)
                         persistFBCompletedToStore(latestDataSync)
+                        val s = Constants.getSharedPreferences(context)
+                        val nextSync = s.getLong(Constants.PREF_KEY_NEXT_SYNC, 0)
+                        if (nextSync == 0L) {
+                            val calendar = Calendar.getInstance()
+                            calendar.set(Calendar.HOUR_OF_DAY, 0)
+                            calendar.set(Calendar.MINUTE, 0)
+                            calendar.set(Calendar.SECOND, 0)
+                            calendar.set(Calendar.MILLISECOND, 0)
+                            calendar.add(Calendar.DAY_OF_YEAR, 1)
+                            SyncReceiver.setAlarm(context, calendar.timeInMillis)
+                            s.edit()
+                                .putLong(Constants.PREF_KEY_NEXT_SYNC, calendar.timeInMillis)
+                                .apply()
+                        }
                         lifecycleScope.launch {
                             delay(200)
                             binding.progressText.visibility = View.GONE

@@ -16,7 +16,9 @@ object Constants {
     const val PREF_NAME = "kgoptometry"
     const val SEARCH_STATE_KEY = "search_state"
     const val PREF_KEY_LAST_SYNC = "lastSynch"
+    const val PREF_KEY_NEXT_SYNC = "nextSync"
     const val PREF_KEY_IS_CREATED = "is_created"
+    const val PREF_KEY_TIME_MILLIS_CLEAN_CACHE = "time_millis_clean_cache"
     const val PREF_KEY_FIRE_FETCHED = "fireFetched"
 
     val ROOT_DIR_PICTURES = File(Environment.DIRECTORY_PICTURES, "KG CRM")
@@ -33,7 +35,16 @@ object Constants {
         return result
     }
 
-    fun getSharedPreferences(context: Context?): SharedPreferences =
-        context?.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-            ?: throw NullPointerException()
+    private var sharedPreferences: SharedPreferences? = null
+
+    fun getSharedPreferences(context: Context?): SharedPreferences {
+        if (sharedPreferences != null) {
+            return sharedPreferences!!
+        } else {
+            sharedPreferences = context?.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+                ?: throw NullPointerException()
+            return sharedPreferences!!
+        }
+    }
+
 }
