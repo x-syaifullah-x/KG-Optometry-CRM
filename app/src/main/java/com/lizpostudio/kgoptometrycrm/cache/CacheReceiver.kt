@@ -36,6 +36,7 @@ class CacheReceiver : BroadcastReceiver() {
         val action = intent?.action
         val s = Constants.getSharedPreferences(context)
         val timeMillisCleanCache = s.getLong(Constants.PREF_KEY_TIME_MILLIS_CLEAN_CACHE, 0)
+        if (timeMillisCleanCache == 0L) return
         if (action == Intent.ACTION_BOOT_COMPLETED) {
             if (System.currentTimeMillis() >= timeMillisCleanCache) {
                 val cacheDir = context?.cacheDir
