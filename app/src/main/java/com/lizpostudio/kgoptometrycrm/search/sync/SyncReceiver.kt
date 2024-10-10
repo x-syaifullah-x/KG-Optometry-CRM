@@ -56,7 +56,7 @@ class SyncReceiver : BroadcastReceiver() {
                     .putLong(Constants.PREF_KEY_NEXT_SYNC, calendar.timeInMillis)
                     .apply()
             } else {
-                if (nextSyncTimeInMillis == 0 )
+                if (nextSyncTimeInMillis == 0L)
                     return
                 setAlarm(context, nextSyncTimeInMillis)
             }
