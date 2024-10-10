@@ -1,14 +1,18 @@
 package com.lizpostudio.kgoptometrycrm.search.sync
 
+import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -47,6 +51,12 @@ class SyncActivity : AppCompatActivity() {
             }
         }
 
+    @SuppressLint("NewApi")
+    private val a = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        val alarmManager = getSystemService(AlarmManager::class.java)
+        viewBinding.tvNextSyncValue.isEnabled = alarmManager.canScheduleExactAlarms()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -62,6 +72,18 @@ class SyncActivity : AppCompatActivity() {
         }
 
         val nextSyncTimeInMillis = sharedPref.getLong(Constants.PREF_KEY_NEXT_SYNC, 0)
+        val alarmManager = getSystemService(AlarmManager::class.java)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            viewBinding.tvNextSyncValue.isEnabled = alarmManager.canScheduleExactAlarms()
+            viewBinding.tvNextSync.setOnClickListener {
+                if (!alarmManager.canScheduleExactAlarms()) {
+                    val input =
+                        Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
+                    a.launch(input)
+                }
+            }
+        }
+
         if (nextSyncTimeInMillis > 0L) {
             viewBinding.tvNextSyncValue.text = formatDate(nextSyncTimeInMillis)
         } else {
@@ -98,11 +120,12 @@ class SyncActivity : AppCompatActivity() {
                     selectedCalendar.add(Calendar.DAY_OF_YEAR, 1)
                 }
                 val timeInMillis = selectedCalendar.timeInMillis
-                sharedPref
-                    .edit()
-                    .putLong(Constants.PREF_KEY_NEXT_SYNC, selectedCalendar.timeInMillis)
-                    .apply()
-                SyncReceiver.setAlarm(this, timeInMillis)
+                SyncReceiver.setAlarm(this, timeInMillis) { isSet ->
+                    sharedPref
+                        .edit()
+                        .putLong(Constants.PREF_KEY_NEXT_SYNC, isSet)
+                        .apply()
+                }
             }, hour, minute, true)
             timePickerDialog.show()
         }

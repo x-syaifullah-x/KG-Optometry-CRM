@@ -1,21 +1,25 @@
 package com.lizpostudio.kgoptometrycrm.search.base
 
 import android.annotation.SuppressLint
+import android.app.AlarmManager
 import android.app.DatePickerDialog
 import android.content.ActivityNotFoundException
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CompoundButton
 import android.widget.FrameLayout
 import android.widget.Spinner
 import android.widget.Toast
-import android.widget.CompoundButton
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
@@ -29,6 +33,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
+import com.lizpostudio.kgoptometrycrm.BuildConfig
 import com.lizpostudio.kgoptometrycrm.R
 import com.lizpostudio.kgoptometrycrm.ViewModelProviderFactory
 import com.lizpostudio.kgoptometrycrm.constant.Constants
@@ -37,18 +42,22 @@ import com.lizpostudio.kgoptometrycrm.data.SearchModel
 import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientEntity
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentSearchCostumerBinding
 import com.lizpostudio.kgoptometrycrm.ktx.hideKeyboard
+import com.lizpostudio.kgoptometrycrm.search.sync.SyncActivity
+import com.lizpostudio.kgoptometrycrm.search.sync.SyncReceiver
 import com.lizpostudio.kgoptometrycrm.search.viewmodel.SearchViewModel
 import com.lizpostudio.kgoptometrycrm.utils.asFlow
 import com.lizpostudio.kgoptometrycrm.utils.convertLongToDDMMYY
 import com.lizpostudio.kgoptometrycrm.utils.convertTo_dd_MM_yy_hh_mm_a
 import com.lizpostudio.kgoptometrycrm.utils.convertYMDtoTimeMillis
 import id.xxx.module.view.binding.ktx.viewBinding
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
-import java.util.*
-import com.lizpostudio.kgoptometrycrm.BuildConfig
-import com.lizpostudio.kgoptometrycrm.search.sync.SyncActivity
-import com.lizpostudio.kgoptometrycrm.search.sync.SyncReceiver
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.util.Calendar
+import java.util.Locale
 
 abstract class BaseSearchFragment : Fragment() {
 
@@ -81,6 +90,29 @@ abstract class BaseSearchFragment : Fragment() {
     protected open var filterByFamily = false
     private var shareText = ""
     private var updateRecycleViewJob: Job? = null
+
+    @SuppressLint("NewApi")
+    private val a = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        val alarmManager = requireContext().getSystemService(AlarmManager::class.java)
+        val s = Constants.getSharedPreferences(requireContext())
+        if (alarmManager.canScheduleExactAlarms()) {
+            val calendar = Calendar.getInstance()
+            calendar.set(Calendar.HOUR_OF_DAY, 0)
+            calendar.set(Calendar.MINUTE, 0)
+            calendar.set(Calendar.SECOND, 0)
+            calendar.set(Calendar.MILLISECOND, 0)
+            calendar.add(Calendar.DAY_OF_YEAR, 1)
+            SyncReceiver.setAlarm(requireContext(), calendar.timeInMillis) { res ->
+                s.edit().putLong(
+                    Constants.PREF_KEY_NEXT_SYNC, res
+                ).apply()
+            }
+        } else {
+            s.edit().putLong(
+                Constants.PREF_KEY_NEXT_SYNC, 0
+            ).apply()
+        }
+    }
 
     protected abstract fun keySearchBy(): String
 
@@ -483,24 +515,43 @@ abstract class BaseSearchFragment : Fragment() {
                             "Received $size records from Firebase.\n Creating local database ..."
                         binding.foundItemsText.text = foundItemsText(size)
                         persistFBCompletedToStore(latestDataSync)
-                        val s = Constants.getSharedPreferences(context)
-                        val nextSync = s.getLong(Constants.PREF_KEY_NEXT_SYNC, 0)
-                        if (nextSync == 0L) {
-                            val calendar = Calendar.getInstance()
-                            calendar.set(Calendar.HOUR_OF_DAY, 0)
-                            calendar.set(Calendar.MINUTE, 0)
-                            calendar.set(Calendar.SECOND, 0)
-                            calendar.set(Calendar.MILLISECOND, 0)
-                            calendar.add(Calendar.DAY_OF_YEAR, 1)
-                            SyncReceiver.setAlarm(context, calendar.timeInMillis)
-                            s.edit()
-                                .putLong(Constants.PREF_KEY_NEXT_SYNC, calendar.timeInMillis)
-                                .apply()
-                        }
                         lifecycleScope.launch {
                             delay(200)
                             binding.progressText.visibility = View.GONE
                             binding.linearProgressIndicator.hide()
+                        }
+                        val s = Constants.getSharedPreferences(requireContext())
+                        val nextSync = s.getLong(Constants.PREF_KEY_NEXT_SYNC, 0)
+                        if (nextSync == 0L) {
+                            AlertDialog.Builder(requireContext())
+                                .setTitle("Enable Auto Sync")
+                                .setNegativeButton("No") { dialog, which ->
+                                    dialog.dismiss()
+                                }
+                                .setPositiveButton("Yes") { dialog, which ->
+                                    val calendar = Calendar.getInstance()
+                                    calendar.set(Calendar.HOUR_OF_DAY, 0)
+                                    calendar.set(Calendar.MINUTE, 0)
+                                    calendar.set(Calendar.SECOND, 0)
+                                    calendar.set(Calendar.MILLISECOND, 0)
+                                    calendar.add(Calendar.DAY_OF_YEAR, 1)
+                                    SyncReceiver.setAlarm(
+                                        requireContext(),
+                                        calendar.timeInMillis
+                                    ) { res ->
+                                        if (res == 0L) {
+                                            val input =
+                                                Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
+                                            a.launch(input)
+                                            return@setAlarm
+                                        }
+                                        val editor = s.edit()
+                                        editor.putLong(Constants.PREF_KEY_NEXT_SYNC, res)
+                                        editor.apply()
+                                    }
+                                    dialog.dismiss()
+                                }
+                                .show()
                         }
                         allowSync = true
                     }
