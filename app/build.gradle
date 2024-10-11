@@ -16,7 +16,6 @@ android {
     buildToolsVersion build_versions.build_tools
 
     defaultConfig {
-        applicationId "com.lizpostudio.kgoptometrycrm"
         minSdkVersion build_versions.min_sdk
         targetSdkVersion build_versions.target_sdk
         versionCode build_versions.code
@@ -68,12 +67,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
+        jvmTarget = JavaVersion.VERSION_21.toString()
     }
 
     packagingOptions {
@@ -138,5 +137,5 @@ dependencies {
 
     implementation "com.squareup.okhttp3:okhttp:$vSquareupOkhttp3"
 
-    implementation "androidx.work:work-runtime-ktx:2.9.1"
+    implementation "androidx.work:work-runtime-ktx:$vWork"
 }

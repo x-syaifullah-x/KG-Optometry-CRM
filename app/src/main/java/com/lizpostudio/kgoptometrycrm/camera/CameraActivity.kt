@@ -16,8 +16,8 @@ import androidx.fragment.app.FragmentActivity
 class CameraActivity : FragmentActivity() {
 
     companion object {
-        private val permissions = arrayOf(Manifest.permission.CAMERA)
 
+        private val permissions = Array(1) { Manifest.permission.CAMERA }
         private const val REQUEST_CODE_PERMISSIONS = 121
     }
 

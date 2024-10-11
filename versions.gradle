@@ -29,6 +29,7 @@ ext {
     vPreference = "1.2.1"
     vRoom = "2.6.1"
     vKsp = "2.0.20-1.0.25"
+    vWork = "2.9.1"
 
     vAndroidJunit = "1.2.1"
     vEspresso = "3.6.1"

@@ -9,7 +9,6 @@ import android.os.Bundle
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
-import com.lizpostudio.kgoptometrycrm.cache.CacheReceiver
 import com.lizpostudio.kgoptometrycrm.cache.ClearCacheWorker
 import com.lizpostudio.kgoptometrycrm.constant.Constants
 import com.lizpostudio.kgoptometrycrm.error.ErrorActivity
@@ -53,30 +52,6 @@ class App : Application(), ActivityLifecycleCallbacks {
             ExistingPeriodicWorkPolicy.KEEP,
             workRequest
         )
-
-//        WorkManager.getInstance(this)
-//            .getWorkInfosForUniqueWorkLiveData("DailyCacheClean")
-//            .observeForever {
-//                println(it.firstOrNull()?.periodicityInfo)
-//            }
-
-//        val sharedPreferences = Constants.getSharedPreferences(this)
-//        val timeMillisCleanCache =
-//            sharedPreferences.getLong(Constants.PREF_KEY_TIME_MILLIS_CLEAN_CACHE, 0)
-//        if (timeMillisCleanCache == 0L) {
-//            val calendar = Calendar.getInstance()
-//            calendar.set(Calendar.HOUR_OF_DAY, 0)
-//            calendar.set(Calendar.MINUTE, 0)
-//            calendar.set(Calendar.SECOND, 0)
-//            calendar.set(Calendar.MILLISECOND, 0)
-//            calendar.add(Calendar.DAY_OF_YEAR, 1)
-//            val isPutTimeMillisCleanCache = sharedPreferences.edit()
-//                .putLong(Constants.PREF_KEY_TIME_MILLIS_CLEAN_CACHE, calendar.timeInMillis)
-//                .commit()
-//            if (isPutTimeMillisCleanCache) {
-//                CacheReceiver.setAlarm(this, calendar.timeInMillis)
-//            }
-//        }
     }
 
     private fun initialiseErrorHandling(context: Context?) {

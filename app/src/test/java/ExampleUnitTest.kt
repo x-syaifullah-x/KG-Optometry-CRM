@@ -1,4 +1,3 @@
-import org.json.JSONObject
 import org.junit.Assert
 import org.junit.Test
 
@@ -6,10 +5,8 @@ class ExampleUnitTest {
 
     @Test
     fun addition_isCorrect() {
-        Assert.assertEquals(0, 0)
+        val array = Array(1) { it }
 
-        Array(1){
-            println("dadad $it")
-        }
+        Assert.assertEquals(0, array[0])
     }
 }
