@@ -6,9 +6,11 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.inputmethodservice.InputMethodService
 import android.os.Build
 import android.os.PowerManager
 import android.provider.Settings
+import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import com.lizpostudio.kgoptometrycrm.App
 import com.lizpostudio.kgoptometrycrm.BuildConfig
@@ -81,6 +83,11 @@ class SyncReceiver : BroadcastReceiver() {
         val app = context?.applicationContext as? App
         val activity = app?.currentActivity
         val appCompatActivity = activity as? AppCompatActivity
+        val view = activity?.window?.decorView
+        if (view?.hasFocus() == true) {
+            val imm = context.getSystemService(InputMethodManager::class.java)
+            imm?.hideSoftInputFromWindow(activity.window?.decorView?.windowToken, 0)
+        }
         appCompatActivity?.onBackPressed()
 //        val a = appCompatActivity?.supportFragmentManager?.fragments?.firstOrNull() as? NavHostFragment
 //        val i = Intent(context, MainActivity::class.java)
@@ -90,7 +97,7 @@ class SyncReceiver : BroadcastReceiver() {
         val powerManager = context?.getSystemService(Context.POWER_SERVICE) as PowerManager
         val wakeLock =
             powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyApp::MyWakelockTag")
-        wakeLock.acquire(10 * 60 * 1000L /*10 minutes*/)
+        wakeLock.acquire(30 * 60 * 1000L /*30 minutes*/)
         sync(context, sharedPref)
         wakeLock.release()
     }
