@@ -137,4 +137,6 @@ dependencies {
     testImplementation "org.json:json:$vOrgGson"
 
     implementation "com.squareup.okhttp3:okhttp:$vSquareupOkhttp3"
+
+    implementation "androidx.work:work-runtime-ktx:2.9.1"
 }
