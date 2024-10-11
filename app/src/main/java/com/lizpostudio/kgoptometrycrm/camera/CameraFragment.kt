@@ -5,6 +5,8 @@ import android.content.Context
 import android.os.Bundle
 import android.view.*
 import androidx.camera.core.*
+import androidx.camera.core.resolutionselector.AspectRatioStrategy
+import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
@@ -74,7 +76,12 @@ class CameraFragment : Fragment() {
             val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
             val preview = Preview.Builder()
                 .setTargetRotation(Surface.ROTATION_180)
-                .setTargetAspectRatio(AspectRatio.RATIO_4_3)
+                .setResolutionSelector(
+                    ResolutionSelector.Builder().setAspectRatioStrategy(
+                        AspectRatioStrategy.RATIO_4_3_FALLBACK_AUTO_STRATEGY
+                    ).build()
+                )
+//                .setTargetAspectRatio(AspectRatio.RATIO_4_3)
 //                .setTargetResolution(Size(binding.viewFinder.width, binding.viewFinder.height))
                 .build()
             preview.setSurfaceProvider(binding.viewFinder.surfaceProvider)
@@ -129,6 +136,7 @@ class CameraFragment : Fragment() {
                                 }
                                 return@setOnTouchListener true
                             }
+
                             else -> return@setOnTouchListener false
                         }
 //                        val result = !view.performClick()

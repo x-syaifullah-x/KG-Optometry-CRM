@@ -16,17 +16,17 @@ ext {
 
     vAndroidxAnnotation = "1.2.0"
     vAndroidxAppCompat = "1.7.0"
-    vAndroidxCamera = "1.2.1"
-    vAndroidxCore = "1.8.0" /* more than 1.8.0 must use build_versions.target_sdk = 33 */
-    vAndroidxFragment = "1.8.3"
+    vAndroidxCamera = "1.3.4"
+    vAndroidxCore = "1.12.0"
+    vAndroidxFragment = "1.8.4"
     vAndroidxLifecycle = "2.5.1"
     vConstraintLayout = "2.1.4"
     vCoroutines = "1.8.1"
     vFirebaseBom = "33.2.0"
     vFragmentKtx = "1.8.3"
     vMaterial = "1.12.0"
-    vNavigation = "2.5.3"
-    vPreference = "1.2.0"
+    vNavigation = "2.8.2"
+    vPreference = "1.2.1"
     vRoom = "2.6.1"
     vKsp = "2.0.20-1.0.25"
 
