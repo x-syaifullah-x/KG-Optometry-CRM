@@ -24,6 +24,7 @@ import java.util.Calendar
 class MainActivity : AppCompatActivity() {
 
     private val userEvent = object : ValueEventListener {
+
         override fun onDataChange(snapshot: DataSnapshot) {
             val remote = RemoteDataSource.getInstance(this@MainActivity)
             val firebaseAuth = remote.getFirebaseAuth()

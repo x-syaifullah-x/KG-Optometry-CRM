@@ -310,14 +310,19 @@ class PatientsViewModel(
     private val patientsLiveData: LiveData<List<PatientEntity>> get() = _patientsLiveData
 
     // Assuming this function sets the value of _patientsLiveData
-    fun loadPatients() {
+//    fun loadPatients() {
         // Load your patients and set _patientsLiveData value
-    }
+//    }
 
-    val familyCode: LiveData<String> = Transformations.map(patientsLiveData) { patients ->
-        patients.firstOrNull { it.sectionName == "info_form_caption" }?.familyCode
-            ?: "No family code found"
-    }
+//    val familyCode: LiveData<String> = patientsLiveData.map { patients ->
+//        patients.firstOrNull { it.sectionName == "info_form_caption" }?.familyCode
+//            ?: "No family code found"
+//    }
+
+//    val familyCode: LiveData<String> = Transformations.map(patientsLiveData) { patients ->
+//        patients.firstOrNull { it.sectionName == "info_form_caption" }?.familyCode
+//            ?: "No family code found"
+//    }
 
     fun deletePatientFromFirebase(data: PatientEntity) {
 //        removeRecordsChangesListener()

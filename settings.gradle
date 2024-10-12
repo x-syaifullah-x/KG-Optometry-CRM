@@ -10,7 +10,7 @@ plugins {
     id "org.jetbrains.kotlin.android" version "$vKotlin" apply false
     id "com.google.devtools.ksp" version "$vKsp" apply false
     id "com.google.gms.google-services" version "$vComGoogleGmsGoogleServices" apply false
-    id "androidx.navigation.safeargs" version "$vNavigation" apply false
+    id "androidx.navigation.safeargs" version "$vAndroidxNavigation" apply false
 }
 
 rootProject.name = "KG Optometry CRM "
