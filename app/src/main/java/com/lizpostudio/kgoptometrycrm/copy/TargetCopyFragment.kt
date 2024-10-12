@@ -28,12 +28,16 @@ import com.lizpostudio.kgoptometrycrm.PatientsViewModel
 import com.lizpostudio.kgoptometrycrm.R
 import com.lizpostudio.kgoptometrycrm.ViewModelProviderFactory
 import com.lizpostudio.kgoptometrycrm.constant.Constants
+import com.lizpostudio.kgoptometrycrm.data.SearchModel
 import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientEntity
+import com.lizpostudio.kgoptometrycrm.data.source.remote.firebase.RemoteDataSource
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentTargetCopyBinding
 import com.lizpostudio.kgoptometrycrm.forms.InfoFragment
-import com.lizpostudio.kgoptometrycrm.data.SearchModel
-import com.lizpostudio.kgoptometrycrm.data.source.remote.firebase.RemoteDataSource
-import com.lizpostudio.kgoptometrycrm.utils.*
+import com.lizpostudio.kgoptometrycrm.utils.asFlow
+import com.lizpostudio.kgoptometrycrm.utils.convertLongToDDMMYY
+import com.lizpostudio.kgoptometrycrm.utils.convertTo_dd_MM_yy_hh_mm_a
+import com.lizpostudio.kgoptometrycrm.utils.convertYMDtoTimeMillis
+import com.lizpostudio.kgoptometrycrm.utils.getDateStartAEndMillis
 import id.xxx.module.view.binding.ktx.viewBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -43,7 +47,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
-import java.util.*
+import java.util.Calendar
 
 class TargetCopyFragment : Fragment() {
 

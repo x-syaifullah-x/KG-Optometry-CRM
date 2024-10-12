@@ -1,5 +1,6 @@
 package com.lizpostudio.kgoptometrycrm.search.recycle_bin.details.forms
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -46,8 +47,20 @@ class FollowUpFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val patient = requireActivity()
-            .intent.getSerializableExtra(DetailActivity.EXTRA_NAME_PATIENT) as PatientEntity
+        val intent = requireActivity().intent
+        val patient =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                intent.getSerializableExtra(
+                    DetailActivity.EXTRA_NAME_PATIENT,
+                    PatientEntity::class.java
+                )
+            } else {
+                @Suppress("DEPRECATION")
+                intent.getSerializableExtra(DetailActivity.EXTRA_NAME_PATIENT) as? PatientEntity
+            }
+        if (patient == null)
+            return
+
         setPatientName(patient)
         setPractitionerName(patient.practitioner)
         binding.dateCaption.text = convertLongToDDMMYY(patient.dateOfSection)

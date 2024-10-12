@@ -488,7 +488,6 @@ class LoginFragment : Fragment() {
             ?.child(TRUSTED_CHILD)
         if (trustedReference != null) {
             val trustedListener = object : ValueEventListener {
-                @SuppressLint("DefaultLocale")
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()) {
                         listOfTrustedDevices.value = snapshot.children.map { it.value.toString() }

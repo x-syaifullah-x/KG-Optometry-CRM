@@ -1,5 +1,6 @@
 package com.lizpostudio.kgoptometrycrm.search.recycle_bin.details
 
+import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.lizpostudio.kgoptometrycrm.R
@@ -25,8 +26,20 @@ class DetailActivity : AppCompatActivity() {
             .setOnClickListener { onBackPressed() }
 
         if (savedInstanceState == null) {
-            val patient = intent.getSerializableExtra(EXTRA_NAME_PATIENT) as PatientEntity
-            val fragment = when (patient.sectionName) {
+//            val patient = intent.getSerializableExtra(EXTRA_NAME_PATIENT) as PatientEntity
+            val intent = intent
+            val patient =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    intent.getSerializableExtra(
+                        EXTRA_NAME_PATIENT,
+                        PatientEntity::class.java
+                    )
+                } else {
+                    @Suppress("DEPRECATION")
+                    intent.getSerializableExtra(EXTRA_NAME_PATIENT) as? PatientEntity
+                }
+
+            val fragment = when (patient?.sectionName) {
                 getString(R.string.info_form_caption) -> InfoFragment()
                 getString(R.string.follow_up_form_caption) -> FollowUpFragment()
                 getString(R.string.memo_form_caption) -> MemoFragment()

@@ -5,6 +5,7 @@ import android.app.Application
 import android.app.DatePickerDialog
 import android.content.Context
 import android.graphics.PointF
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -259,7 +260,7 @@ class OcularHealthFragment : Fragment() {
         binding.undoTop.setOnClickListener {
             if (fillMask.isNotEmpty()) {
 //                fillMask.removeLast()
-                fillMask.removeAt(fillMask.size -1)
+                fillMask.removeAt(fillMask.size - 1)
                 fillIndex--
 
                 binding.topOculus.fillMask = fillMask
@@ -280,7 +281,7 @@ class OcularHealthFragment : Fragment() {
         binding.undoBottom.setOnClickListener {
             if (fillMaskBottom.isNotEmpty()) {
 //                fillMaskBottom.removeLast()
-                fillMaskBottom.removeAt(fillMaskBottom.size -1)
+                fillMaskBottom.removeAt(fillMaskBottom.size - 1)
                 fillIndexBottom--
 
                 binding.bottomOculus.fillMask = fillMaskBottom
@@ -487,8 +488,20 @@ class OcularHealthFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val patient = requireActivity()
-            .intent.getSerializableExtra(DetailActivity.EXTRA_NAME_PATIENT) as PatientEntity
+        val intent = requireActivity().intent
+        val patient =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                intent.getSerializableExtra(
+                    DetailActivity.EXTRA_NAME_PATIENT,
+                    PatientEntity::class.java
+                )
+            } else {
+                @Suppress("DEPRECATION")
+                intent.getSerializableExtra(DetailActivity.EXTRA_NAME_PATIENT) as? PatientEntity
+            }
+        if (patient == null)
+            return
+
         setPatientName(patient)
         setPractitionerName(patient.practitioner)
         fillTheForm(patient)
