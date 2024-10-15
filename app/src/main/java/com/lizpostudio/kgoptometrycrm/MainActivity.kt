@@ -58,33 +58,35 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val s = Constants.getSharedPreferences(this)
-        val nextSync = s.getLong(Constants.PREF_KEY_NEXT_SYNC, 0)
-        if (nextSync > 0) {
-            // HANDLE FORCE CLOSE APP
-            val isNotActiveSyncReceiver = PendingIntent.getBroadcast(
-                this,
-                SyncReceiver.REQUEST_CODE,
-                Intent(this, SyncReceiver::class.java),
-                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_NO_CREATE
-            ) == null
-            if (isNotActiveSyncReceiver) {
-                if (System.currentTimeMillis() >= nextSync) {
-                    val calendar = Calendar.getInstance()
-                    calendar.timeInMillis = nextSync
-                    val newCalender = Calendar.getInstance()
-                    newCalender.set(Calendar.HOUR_OF_DAY, calendar.get(Calendar.HOUR_OF_DAY))
-                    newCalender.set(Calendar.MINUTE, calendar.get(Calendar.MINUTE))
-                    newCalender.set(Calendar.SECOND, calendar.get(Calendar.SECOND))
-                    newCalender.set(Calendar.MILLISECOND, calendar.get(Calendar.MILLISECOND))
-                    newCalender.add(Calendar.DAY_OF_YEAR, 1)
+        if (s.getBoolean(Constants.PREF_KEY_AUTO_SYNC, true)) {
+            val nextSync = s.getLong(Constants.PREF_KEY_NEXT_SYNC, 0)
+            if (nextSync > 0) {
+                // HANDLE FORCE CLOSE APP
+                val isNotActiveSyncReceiver = PendingIntent.getBroadcast(
+                    this,
+                    SyncReceiver.REQUEST_CODE,
+                    Intent(this, SyncReceiver::class.java),
+                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_NO_CREATE
+                ) == null
+                if (isNotActiveSyncReceiver) {
+                    if (System.currentTimeMillis() >= nextSync) {
+                        val calendar = Calendar.getInstance()
+                        calendar.timeInMillis = nextSync
+                        val newCalender = Calendar.getInstance()
+                        newCalender.set(Calendar.HOUR_OF_DAY, calendar.get(Calendar.HOUR_OF_DAY))
+                        newCalender.set(Calendar.MINUTE, calendar.get(Calendar.MINUTE))
+                        newCalender.set(Calendar.SECOND, calendar.get(Calendar.SECOND))
+                        newCalender.set(Calendar.MILLISECOND, calendar.get(Calendar.MILLISECOND))
+                        newCalender.add(Calendar.DAY_OF_YEAR, 1)
 //                    if (newCalender.timeInMillis < System.currentTimeMillis()) {
 //                        newCalender.add(Calendar.DAY_OF_YEAR, 1)
 //                    }
-                    SyncReceiver.setAlarm(this, newCalender.timeInMillis) { res ->
-                        s.edit().putLong(Constants.PREF_KEY_NEXT_SYNC, res).apply()
+                        SyncReceiver.setAlarm(this, newCalender.timeInMillis) { res ->
+                            s.edit().putLong(Constants.PREF_KEY_NEXT_SYNC, res).apply()
+                        }
+                    } else {
+                        SyncReceiver.setAlarm(this, nextSync)
                     }
-                } else {
-                    SyncReceiver.setAlarm(this, nextSync)
                 }
             }
         }

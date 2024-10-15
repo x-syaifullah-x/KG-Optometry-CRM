@@ -2,9 +2,8 @@ package com.lizpostudio.kgoptometrycrm.search.sync
 
 import android.annotation.SuppressLint
 import android.app.AlarmManager
-import android.app.PendingIntent
+import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.os.Build
@@ -73,6 +72,38 @@ class SyncActivity : AppCompatActivity() {
 
         val nextSyncTimeInMillis = sharedPref.getLong(Constants.PREF_KEY_NEXT_SYNC, 0)
         val alarmManager = getSystemService(AlarmManager::class.java)
+
+        val isEnableAutoSync = sharedPref.getBoolean(Constants.PREF_KEY_AUTO_SYNC, false)
+        viewBinding.scOnOffNextSync.isChecked = isEnableAutoSync
+        viewBinding.tvNextSync.isEnabled = viewBinding.scOnOffNextSync.isChecked
+        viewBinding.tvNextSyncValue.isEnabled = viewBinding.tvNextSync.isEnabled
+        viewBinding.scOnOffNextSync.setOnCheckedChangeListener { v, isChecked ->
+            viewBinding.tvNextSync.isEnabled = isChecked
+            viewBinding.tvNextSyncValue.isEnabled = viewBinding.tvNextSync.isEnabled
+            if (isChecked) {
+                val nextSyncTimeInMillis = sharedPref.getLong(Constants.PREF_KEY_NEXT_SYNC, 0)
+                if (nextSyncTimeInMillis <= System.currentTimeMillis()) {
+                    val c = Calendar.getInstance()
+                    c.timeInMillis = nextSyncTimeInMillis
+                    val cNew = Calendar.getInstance()
+                    cNew.set(Calendar.HOUR_OF_DAY, c.get(Calendar.HOUR_OF_DAY))
+                    cNew.set(Calendar.MINUTE, c.get(Calendar.MINUTE))
+                    cNew.set(Calendar.SECOND, c.get(Calendar.SECOND))
+                    cNew.set(Calendar.MILLISECOND, c.get(Calendar.MILLISECOND))
+                    cNew.add(Calendar.DAY_OF_YEAR, 1)
+                    sharedPref
+                        .edit()
+                        .putLong(Constants.PREF_KEY_NEXT_SYNC, cNew.timeInMillis)
+                        .apply()
+                    SyncReceiver.setAlarm(v.context, cNew.timeInMillis)
+                } else {
+                    SyncReceiver.setAlarm(v.context, nextSyncTimeInMillis)
+                }
+            } else {
+                SyncReceiver.stopAlarm(v.context)
+            }
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             viewBinding.tvNextSyncValue.isEnabled = alarmManager.canScheduleExactAlarms()
             viewBinding.tvNextSync.setOnClickListener {
@@ -108,26 +139,41 @@ class SyncActivity : AppCompatActivity() {
             }
 
             val calendar = Calendar.getInstance()
+            val year = calendar.get(Calendar.YEAR)
+            val mount = calendar.get(Calendar.MONTH)
+            val day = calendar.get(Calendar.DAY_OF_MONTH)
             val hour = calendar.get(Calendar.HOUR_OF_DAY)
             val minute = calendar.get(Calendar.MINUTE)
-            val timePickerDialog = TimePickerDialog(this, { _, selectedHour, selectedMinute ->
+            val datePickerDialog = DatePickerDialog(this, { _, selectYear, selectMount, selectDay ->
                 val selectedCalendar = Calendar.getInstance()
-                selectedCalendar.set(Calendar.HOUR_OF_DAY, selectedHour)
-                selectedCalendar.set(Calendar.MINUTE, selectedMinute)
-                selectedCalendar.set(Calendar.SECOND, 0)
-                selectedCalendar.set(Calendar.MILLISECOND, 0)
-                if (selectedCalendar.timeInMillis < System.currentTimeMillis()) {
-                    selectedCalendar.add(Calendar.DAY_OF_YEAR, 1)
-                }
-                val timeInMillis = selectedCalendar.timeInMillis
-                SyncReceiver.setAlarm(this, timeInMillis) { isSet ->
-                    sharedPref
-                        .edit()
-                        .putLong(Constants.PREF_KEY_NEXT_SYNC, isSet)
-                        .apply()
-                }
-            }, hour, minute, true)
-            timePickerDialog.show()
+                selectedCalendar.set(Calendar.YEAR, selectYear)
+                selectedCalendar.set(Calendar.MONTH, selectMount)
+                selectedCalendar.set(Calendar.DAY_OF_MONTH, selectDay)
+                val timePickerDialog = TimePickerDialog(this, { _, selectHour, selectMinute ->
+                    selectedCalendar.set(Calendar.HOUR_OF_DAY, selectHour)
+                    selectedCalendar.set(Calendar.MINUTE, selectMinute)
+                    selectedCalendar.set(Calendar.SECOND, 0)
+                    selectedCalendar.set(Calendar.MILLISECOND, 0)
+                    if (selectedCalendar.timeInMillis < System.currentTimeMillis()) {
+                        Toast.makeText(
+                            it.context,
+                            "Invalid date selected. Please choose a valid date.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@TimePickerDialog
+//                        selectedCalendar.add(Calendar.DAY_OF_YEAR, 1)
+                    }
+                    val timeInMillis = selectedCalendar.timeInMillis
+                    SyncReceiver.setAlarm(this, timeInMillis) { isSet ->
+                        sharedPref
+                            .edit()
+                            .putLong(Constants.PREF_KEY_NEXT_SYNC, isSet)
+                            .apply()
+                    }
+                }, hour, minute, true)
+                timePickerDialog.show()
+            }, year, mount, day)
+            datePickerDialog.show()
         }
 
         viewBinding.btnSyncNow.setOnClickListener {

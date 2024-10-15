@@ -1,6 +1,7 @@
 package com.lizpostudio.kgoptometrycrm
 
 import android.app.Application
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.*
 import com.google.firebase.database.DataSnapshot
@@ -16,6 +17,7 @@ import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientEntity
 import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PractitionerEntity
 import com.lizpostudio.kgoptometrycrm.data.source.remote.firebase.FBRecords
 import com.lizpostudio.kgoptometrycrm.data.source.remote.firebase.RemoteDataSource
+import com.lizpostudio.kgoptometrycrm.utils.A
 import com.lizpostudio.kgoptometrycrm.utils.InfoSectionData
 import com.lizpostudio.kgoptometrycrm.utils.convertFBRecordToPatients
 import com.lizpostudio.kgoptometrycrm.utils.convertFormToFBRecord
@@ -311,7 +313,7 @@ class PatientsViewModel(
 
     // Assuming this function sets the value of _patientsLiveData
 //    fun loadPatients() {
-        // Load your patients and set _patientsLiveData value
+    // Load your patients and set _patientsLiveData value
 //    }
 
 //    val familyCode: LiveData<String> = patientsLiveData.map { patients ->
@@ -513,4 +515,13 @@ class PatientsViewModel(
     suspend fun getPatientBySalesOrder(or: String) = patientRepo.getPatientBySalesOrder(or)
 
     suspend fun getIdProducts(value: String) = patientRepo.getIdProducts(value)
+
+    fun updateDatabaseFromFirebase(
+        c: Context,
+        latestDataSync: Long,
+        rc: (Long) -> Unit,
+        onError: (Throwable) -> Unit = {}
+    ) {
+        A.updateDatabaseFromFirebase(viewModelScope, c, latestDataSync, rc, onError)
+    }
 }

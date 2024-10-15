@@ -6,22 +6,24 @@ import android.app.Application.ActivityLifecycleCallbacks
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.work.Configuration
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.lizpostudio.kgoptometrycrm.cache.ClearCacheWorker
-import com.lizpostudio.kgoptometrycrm.constant.Constants
 import com.lizpostudio.kgoptometrycrm.error.ErrorActivity
 import id.xxx.module.crash.AbstractReceiveError
 import id.xxx.module.crash.CrashHandler
-import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Locale
 import java.util.concurrent.TimeUnit
 
-class App : Application(), ActivityLifecycleCallbacks {
+class App : Application(), Configuration.Provider, ActivityLifecycleCallbacks {
 
     var currentActivity: Activity? = null
+
+    override val workManagerConfiguration = Configuration.Builder()
+        .setMinimumLoggingLevel(android.util.Log.ERROR)
+        .build()
 
     override fun attachBaseContext(base: Context?) {
         super.attachBaseContext(base)

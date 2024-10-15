@@ -2,6 +2,7 @@ package com.lizpostudio.kgoptometrycrm.formselection
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.addCallback
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -28,6 +30,7 @@ import com.lizpostudio.kgoptometrycrm.search.costumer.SearchCostumerFragment
 import com.lizpostudio.kgoptometrycrm.search.follow_up.SearchFollowUpFragment
 import com.lizpostudio.kgoptometrycrm.search.recycle_bin.SearchRecycleBinFragment
 import com.lizpostudio.kgoptometrycrm.search.sales.SearchSalesFragment
+import com.lizpostudio.kgoptometrycrm.search.sync.SyncActivity
 import com.lizpostudio.kgoptometrycrm.utils.actionConfirmDeletion
 import com.lizpostudio.kgoptometrycrm.utils.computeAgeAndDOB
 import id.xxx.module.view.binding.ktx.viewBinding
@@ -73,12 +76,16 @@ class FormSelectionFragment : Fragment() {
             val navDirections = when (pref?.getString(Constants.SEARCH_STATE_KEY, "")) {
                 SearchCostumerFragment::class.java.name ->
                     FormSelectionFragmentDirections.actionToSearchCostumerFragment()
+
                 SearchRecycleBinFragment::class.java.name ->
                     FormSelectionFragmentDirections.actionToSearchRecycleBinFragment()
+
                 SearchSalesFragment::class.java.name ->
                     FormSelectionFragmentDirections.actionToSearchSalesFragment()
+
                 SearchFollowUpFragment::class.java.name ->
                     FormSelectionFragmentDirections.actionToSearchFollowUpFragment()
+
                 else ->
                     FormSelectionFragmentDirections.actionToSearchCostumerFragment()
             }
@@ -118,19 +125,53 @@ class FormSelectionFragment : Fragment() {
         if (viewOnlyMode) binding.viewOnlyButton.setImageResource(R.drawable.visibility_32)
         else binding.viewOnlyButton.setImageResource(R.drawable.ic_baseline_edit_24)
 
-        binding.synchButton.setOnClickListener {
-
-            if (allowSync) {
-                syncHistoryStart = System.currentTimeMillis()
-                allowSync = false
-                patientViewModel.updateLocalDBFromFirebase(latestDataSynched, TWO_WEEKS)
-            } else {
-                Toast.makeText(
-                    context,
-                    "Previous Sync was not completed!\nHold on ...",
-                    Toast.LENGTH_SHORT
-                ).show()
+        binding.synchButton.setOnLongClickListener(object : View.OnLongClickListener {
+            override fun onLongClick(v: View): Boolean {
+                val i = Intent(v.context, SyncActivity::class.java)
+                startActivity(i)
+                return true
             }
+        })
+        binding.synchButton.setOnClickListener { v ->
+//            if (allowSync) {
+//                syncHistoryStart = System.currentTimeMillis()
+//                allowSync = false
+//                patientViewModel.updateLocalDBFromFirebase(latestDataSynched, TWO_WEEKS)
+//            } else {
+//                Toast.makeText(
+//                    context,
+//                    "Previous Sync was not completed!\nHold on ...",
+//                    Toast.LENGTH_SHORT
+//                ).show()
+//            }
+
+            val latestDataSync = System.currentTimeMillis()
+            val dialog = AlertDialog.Builder(v.context)
+                .setView(R.layout.sync_dialog)
+                .setCancelable(false)
+                .show()
+            patientViewModel.updateDatabaseFromFirebase(
+                v.context,
+                latestDataSync = sharedPref.getLong(Constants.PREF_KEY_LAST_SYNC, 0),
+                rc = { count ->
+                    val message =
+                        if (count > 0L) {
+                            "Updating/Inserting $count records from Firebase"
+                        } else {
+                            "You are well synced!\nNo new records in Firebase."
+                        }
+                    sharedPref
+                        .edit()
+                        .putLong(Constants.PREF_KEY_LAST_SYNC, latestDataSync)
+                        .apply()
+                    dialog.cancel()
+                    Toast.makeText(v.context, message, Toast.LENGTH_SHORT).show()
+                },
+                onError = {
+                    dialog.cancel()
+                    Toast.makeText(v.context, it.localizedMessage, Toast.LENGTH_SHORT).show()
+                }
+            )
         }
         // create Recycler View
 
@@ -344,12 +385,16 @@ class FormSelectionFragment : Fragment() {
                         val navDirections = when (dest) {
                             SearchCostumerFragment::class.java.name ->
                                 FormSelectionFragmentDirections.actionToSearchCostumerFragment()
+
                             SearchRecycleBinFragment::class.java.name ->
                                 FormSelectionFragmentDirections.actionToSearchRecycleBinFragment()
+
                             SearchSalesFragment::class.java.name ->
                                 FormSelectionFragmentDirections.actionToSearchSalesFragment()
+
                             SearchFollowUpFragment::class.java.name ->
                                 FormSelectionFragmentDirections.actionToSearchFollowUpFragment()
+
                             else ->
                                 FormSelectionFragmentDirections.actionToSearchCostumerFragment()
                         }
@@ -482,50 +527,62 @@ class FormSelectionFragment : Fragment() {
                 findNavController().navigate(
                     FormSelectionFragmentDirections.actionToInfoFragment(p.recordID)
                 )
+
             getString(R.string.follow_up_form_caption) ->
                 findNavController().navigate(
                     FormSelectionFragmentDirections.actionToFollowUpFragment(p.recordID)
                 )
+
             getString(R.string.memo_form_caption) ->
                 findNavController().navigate(
                     FormSelectionFragmentDirections.actionToMemoFragment(p.recordID)
                 )
+
             getString(R.string.current_rx_caption) ->
                 findNavController().navigate(
                     FormSelectionFragmentDirections.actionToCurrentRxFragment(p.recordID)
                 )
+
             getString(R.string.refraction_caption) ->
                 findNavController().navigate(
                     FormSelectionFragmentDirections.actionToRefractionFragment(p.recordID)
                 )
+
             getString(R.string.ocular_health_caption) ->
                 findNavController().navigate(
                     FormSelectionFragmentDirections.actionToOcularHealthFragment(p.recordID)
                 )
+
             getString(R.string.supplementary_test_caption) ->
                 findNavController().navigate(
                     FormSelectionFragmentDirections.actionToSupplementaryFragment(p.recordID)
                 )
+
             getString(R.string.contact_lens_exam_caption) ->
                 findNavController().navigate(
                     FormSelectionFragmentDirections.actionToContactLensFragment(p.recordID)
                 )
+
             getString(R.string.orthox_caption) ->
                 findNavController().navigate(
                     FormSelectionFragmentDirections.actionToOrthokFragment(p.recordID)
                 )
+
             getString(R.string.cash_order_caption) ->
                 findNavController().navigate(
                     FormSelectionFragmentDirections.actionToCashOrderFragment(p.recordID)
                 )
+
             getString(R.string.sales_order_caption) ->
                 findNavController().navigate(
                     FormSelectionFragmentDirections.actionToSalesOrder(p.recordID)
                 )
+
             getString(R.string.final_prescription_caption) ->
                 findNavController().navigate(
                     FormSelectionFragmentDirections.actionToSalesOrder(p.recordID)
                 )
+
             else -> {
                 Toast.makeText(
                     context,

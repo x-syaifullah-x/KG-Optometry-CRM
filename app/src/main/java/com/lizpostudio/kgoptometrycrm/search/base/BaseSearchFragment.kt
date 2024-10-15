@@ -5,7 +5,6 @@ import android.app.AlarmManager
 import android.app.DatePickerDialog
 import android.content.ActivityNotFoundException
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -13,6 +12,7 @@ import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.CompoundButton
 import android.widget.FrameLayout
 import android.widget.Spinner
@@ -185,7 +185,55 @@ abstract class BaseSearchFragment : Fragment() {
 
         binding.topNavigation.toggleFamily.setOnClickListener(::onClickIconToggleFamily)
         binding.topNavigation.home.setOnClickListener(::onClickIconHome)
-        binding.topNavigation.synchDbButton.setOnClickListener(::onClickIconSync)
+        binding.topNavigation.synchDbButton.setOnClickListener { v ->
+            val sharedPref = Constants.getSharedPreferences(v.context)
+            val isFetchedFromFirebase =
+                sharedPref.getBoolean(Constants.PREF_KEY_FIRE_FETCHED, false)
+            if (!isFetchedFromFirebase) {
+                val message =
+                    "You have not completed FireBase database setup!\nWould you like to do it now?\nSelecting YES will delete all your local records and upload database from Firebase!"
+                AlertDialog.Builder(v.context)
+                    .setMessage(message)
+                    .setPositiveButton(getString(R.string.yes_answer)) { _, _ ->
+                        loadDataFromFirebase()
+                    }
+                    .setNegativeButton(getString(R.string.no_answer)) { _, _ -> }
+                    .create()
+                    .show()
+            } else {
+                val latestDataSync = System.currentTimeMillis()
+                val dialog =  AlertDialog.Builder(v.context)
+                    .setView(R.layout.sync_dialog)
+                    .setCancelable(false)
+                    .show()
+                searchViewModel.updateDatabaseFromFirebase(
+                    v.context,
+                    latestDataSync = sharedPref.getLong(Constants.PREF_KEY_LAST_SYNC, 0),
+                    rc = { count ->
+                        val message =
+                            if (count > 0L) {
+                                "Updating/Inserting $count records from Firebase"
+                            } else {
+                                "You are well synced!\nNo new records in Firebase."
+                            }
+                        sharedPref
+                            .edit()
+                            .putLong(Constants.PREF_KEY_LAST_SYNC, latestDataSync)
+                            .apply()
+                        dialog.cancel()
+                        Toast.makeText(v.context, message, Toast.LENGTH_SHORT).show()
+                    },
+                    onError = {
+                        dialog.cancel()
+                        Toast.makeText(v.context, it.localizedMessage, Toast.LENGTH_SHORT).show()
+                    }
+                )
+            }
+        }
+        binding.topNavigation.synchDbButton.setOnLongClickListener(
+            object : View.OnLongClickListener {
+                override fun onLongClick(v: View) = onLongClickIconSync(v)
+            })
         binding.topNavigation.uploadDb.setOnClickListener {
             if (allowSync) {
                 showDialogConfirmLoadDataFirebase(
@@ -389,10 +437,10 @@ abstract class BaseSearchFragment : Fragment() {
         binding.searchInputText.setText("")
     }
 
-    private fun onClickIconSync(view: View) {
+    private fun onLongClickIconSync(view: View): Boolean {
         val i = Intent(view.context, SyncActivity::class.java)
         startActivity(i)
-        return
+        return true
     }
 
     private fun recordsInfo(patients: List<PatientEntity>) {

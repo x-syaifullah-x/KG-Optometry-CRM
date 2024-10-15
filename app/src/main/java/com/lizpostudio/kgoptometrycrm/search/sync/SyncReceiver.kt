@@ -6,10 +6,8 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.inputmethodservice.InputMethodService
 import android.os.Build
 import android.os.PowerManager
-import android.provider.Settings
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import com.lizpostudio.kgoptometrycrm.App
@@ -24,21 +22,31 @@ class SyncReceiver : BroadcastReceiver() {
 
     companion object {
 
-        const val REQUEST_CODE = 121211;
+        const val REQUEST_CODE = 121211
+
+        private fun getPendingIntent(c: Context): PendingIntent {
+            return PendingIntent.getBroadcast(
+                c,
+                REQUEST_CODE,
+                Intent(c, SyncReceiver::class.java),
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            )
+        }
+
+        fun stopAlarm(c: Context?) {
+            val alarmManager =
+                (c?.getSystemService(Context.ALARM_SERVICE) as? AlarmManager) ?: return
+            alarmManager.cancel(getPendingIntent(c))
+            val s = Constants.getSharedPreferences(c)
+            s.edit().putBoolean(Constants.PREF_KEY_AUTO_SYNC, true).apply()
+        }
 
         fun setAlarm(c: Context?, nextSyncTimeInMillis: Long, result: (Long) -> Unit = {}) {
             val alarmManager =
                 (c?.getSystemService(Context.ALARM_SERVICE) as? AlarmManager) ?: return
-            val i = Intent(c, SyncReceiver::class.java)
-            val pendingIntent =
-                PendingIntent.getBroadcast(
-                    c,
-                    REQUEST_CODE,
-                    i,
-                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-                )
+            val pendingIntent = getPendingIntent(c)
             alarmManager.cancel(pendingIntent)
-
+            val s = Constants.getSharedPreferences(c)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 if (alarmManager.canScheduleExactAlarms()) {
                     alarmManager.setExactAndAllowWhileIdle(
@@ -47,6 +55,7 @@ class SyncReceiver : BroadcastReceiver() {
                         pendingIntent
                     )
                     result.invoke(nextSyncTimeInMillis)
+                    s.edit().putBoolean(Constants.PREF_KEY_AUTO_SYNC, true).apply()
                     return
                 }
                 result.invoke(0)
@@ -59,6 +68,7 @@ class SyncReceiver : BroadcastReceiver() {
                 pendingIntent
             )
             result.invoke(nextSyncTimeInMillis)
+            s.edit().putBoolean(Constants.PREF_KEY_AUTO_SYNC, true).apply()
         }
     }
 
