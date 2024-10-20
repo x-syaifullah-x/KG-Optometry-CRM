@@ -19,7 +19,10 @@ class ClearCacheWorker(
             val cacheDir = context.cacheDir
             if (cacheDir.isDirectory) {
                 val dataBuilder = Data.Builder()
-                dataBuilder.putBoolean(KEY_RESULT_SUCCESS, cacheDir.deleteRecursively()).build()
+                val isDeleted = cacheDir.deleteRecursively()
+                dataBuilder.putBoolean(KEY_RESULT_SUCCESS, isDeleted).build()
+                if (isDeleted)
+                    cacheDir.mkdirs()
                 val data = dataBuilder.build()
                 return Result.success(data)
             }
