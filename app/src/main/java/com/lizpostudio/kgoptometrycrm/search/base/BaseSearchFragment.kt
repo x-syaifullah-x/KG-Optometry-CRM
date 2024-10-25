@@ -181,8 +181,6 @@ abstract class BaseSearchFragment : Fragment() {
         headerRecycleView(binding.headerRecyclerView)
         setUpRecycleView(binding.patientsList)
 
-        item().observe(viewLifecycleOwner, ::recordsInfo)
-
         binding.topNavigation.toggleFamily.setOnClickListener(::onClickIconToggleFamily)
         binding.topNavigation.home.setOnClickListener(::onClickIconHome)
         binding.topNavigation.synchDbButton.setOnClickListener { v ->
@@ -324,6 +322,11 @@ abstract class BaseSearchFragment : Fragment() {
             onClickDeleteSelected()
         }
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        item().observe(viewLifecycleOwner, ::recordsInfo)
     }
 
     protected open fun onClickDeleteSelected() {}

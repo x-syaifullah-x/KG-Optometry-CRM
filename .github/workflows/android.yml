@@ -16,29 +16,44 @@ jobs:
         with:
           java-version: "21"
           distribution: "oracle"
+          cache: gradle
 
-      - name: Grant execute permission for gradlew
+      - name: Setup gradle properties
+        run: |
+          ORG_GRADLE_JVM=`cat gradle.properties | grep org.gradle.jvmargs`
+          sed -i 's/'"${ORG_GRADLE_JVM}"'/org.gradle.jvmargs=-Xmx8192m -Dfile.encoding=UTF-8/g' gradle.properties
+
+      - name: Gradlew grant execute
         run: chmod +x gradlew
 
-      - name: Gradlew dependencies
-        run: ./gradlew dependencies
+#      - name: Gradlew dependencies
+#        run: ./gradlew dependencies
 
-      - name: Gradle clean build
-        run: ./gradlew clean build
+#      - name: Gradle clean build
+#        run: ./gradlew clean build
 
-      - name: Upload outputs
-        uses: actions/upload-artifact@v4
-        with:
-          name: outputs
-          path: app/build/outputs
+#      - name: Upload outputs
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: outputs
+#          path: app/build/outputs
 
-      - name: Upload apk debug
-        uses: actions/upload-artifact@v4
-        with:
-          name: KG-Optometry-CRM-debug
-          path: app/build/outputs/apk/debug/app-debug.apk
+#      - name: Upload apk debug
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: KG-Optometry-CRM-debug
+#          path: app/build/outputs/apk/debug/app-debug.apk
 
-      - name: Upload apk release
+#      - name: Upload apk release
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: KG-Optometry-CRM-release
+#          path: app/build/outputs/apk/release/app-release.apk
+
+      - name: assembleRelease
+        run: |
+          ./gradlew clean assembleRelease
+      - name: Uploading apk release
         uses: actions/upload-artifact@v4
         with:
           name: KG-Optometry-CRM-release

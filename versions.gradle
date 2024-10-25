@@ -17,9 +17,9 @@ ext {
     vKotlin = "2.0.20"
 
     // https://developer.android.com/jetpack/androidx/releases/activity
-    vAndroidxActivity = "1.9.2"
+    vAndroidxActivity = "1.9.3"
     // https://developer.android.com/jetpack/androidx/releases/annotation
-    vAndroidxAnnotation = "1.8.2"
+    vAndroidxAnnotation = "1.9.0"
     // https://developer.android.com/jetpack/androidx/releases/annotation
     vAndroidxAnnotationExperimental = "1.4.1"
     // https://developer.android.com/jetpack/androidx/releases/appcompat
@@ -103,7 +103,7 @@ ext {
     // https://developer.android.com/jetpack/androidx/releases/viewpager2
     vAndroidxViewPager2 = "1.1.0"
     // https://mvnrepository.com/artifact/com.google.android.datatransport/transport-api
-    vComGoogleAndroidDatatransportApi = "3.2.0"
+    vComGoogleAndroidDatatransportApi = "4.0.0"
     // https://developers.google.com/android/guides/google-services-plugin
     vComGoogleGmsGoogleServices = "4.4.2"
     // https://developers.google.com/android/guides/setup
@@ -115,11 +115,11 @@ ext {
     // https://mvnrepository.com/artifact/com.google.code.findbugs/jsr305
     vComGoogleCodeFindbugsJsr305 = "3.0.2"
     // https://github.com/google/error-prone
-    vComGoogleErrorProneAnnotations = "2.33.0"
+    vComGoogleErrorProneAnnotations = "2.34.0"
     // https://central.sonatype.com/artifact/com.google.protobuf/protobuf-javalite
-    vComGoogleProtobufJavaLite = "3.25.5"
+    vComGoogleProtobufJavaLite = "3.25.5" // Warning
     // https://firebase.google.com/support/release-notes/android
-    vFirebaseBom = "33.4.0"
+    vFirebaseBom = "33.5.0"
     // https://github.com/bumptech/glide/releases
     vGlide = "4.16.0"
     // https://www.eclemma.org/jacoco/#:~:text=JaCoCo%20is%20a%20free%20code,existing%20libraries%20for%20many%20years.
@@ -136,7 +136,7 @@ ext {
     // https://github.com/material-components/material-components-android/releases
     vMaterial = "1.12.0"
     // https://mvnrepository.com/artifact/org.mockito/mockito-core
-    vMockito = "5.14.1"
+    vMockito = "5.14.2"
     // https://mvnrepository.com/artifact/org.mockito/mockito-inline
     vMockitoInline = "5.2.0"
     // https://mvnrepository.com/artifact/org.json/json
