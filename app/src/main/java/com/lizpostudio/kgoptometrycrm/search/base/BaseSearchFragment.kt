@@ -322,11 +322,6 @@ abstract class BaseSearchFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         lifecycleScope.launch {
             binding.searchInputText.asFlow().collectLatest { input ->
-                Toast.makeText(
-                    context,
-                    input,
-                    Toast.LENGTH_SHORT
-                ).show()
                 searchValues.value = input
                 updateRecycleView(searchValues)
             }
