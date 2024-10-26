@@ -165,12 +165,6 @@ abstract class BaseSearchFragment : Fragment() {
 
         setupSpinner(binding.searchBySpinner)
 
-        lifecycleScope.launchWhenCreated {
-            binding.searchInputText.asFlow().collectLatest { input ->
-                searchValues.value = input
-                updateRecycleView(searchValues)
-            }
-        }
         restoreDataAndSearch(context)
         checkFirebaseSetup(context)
         val itemDecor = DividerItemDecoration(requireContext(), RecyclerView.VERTICAL)
@@ -326,6 +320,12 @@ abstract class BaseSearchFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        lifecycleScope.launch {
+            binding.searchInputText.asFlow().collectLatest { input ->
+                searchValues.value = input
+                updateRecycleView(searchValues)
+            }
+        }
         item().observe(viewLifecycleOwner, ::recordsInfo)
     }
 
