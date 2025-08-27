@@ -111,7 +111,7 @@ class FollowUpFragment : Fragment() {
 //            sectionEditDate = nextMountInMillis
         }
         binding.btn6Months.setOnClickListener {
-            val nextMountInMillis = getTimeInMillisNextMount(6)
+            val nextMountInMillis = getTimeInMillisNextMount(5)
             binding.dateCaption.text = convertLongToDDMMYY(nextMountInMillis)
 //            sectionEditDate = nextMountInMillis
         }

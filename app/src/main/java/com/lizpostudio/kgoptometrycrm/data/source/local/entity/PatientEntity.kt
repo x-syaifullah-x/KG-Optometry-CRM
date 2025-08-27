@@ -34,6 +34,9 @@ data class PatientEntity(
     @ColumnInfo(name = "address")
     var address: String = "",
 
+    @ColumnInfo(name = "tin")
+    var tin: String = "",
+
     @ColumnInfo(name = "family_code")
     var familyCode: String = "",
 
@@ -192,6 +195,7 @@ data class PatientEntity(
                 ortotal = jsonObject.getStringOrEmpty("ortotal"),
                 cspractitioner = jsonObject.getStringOrEmpty("cspractitioner"),
                 orpractitioner = jsonObject.getStringOrEmpty("orpractitioner"),
+                tin = jsonObject.getStringOrEmpty("tin"),
             )
 
         private fun JSONObject.getStringOrEmpty(key: String) =
@@ -242,6 +246,7 @@ data class PatientEntity(
             this.ortotal == toForm.ortotal &&
             this.cspractitioner == toForm.cspractitioner &&
             this.orpractitioner == toForm.orpractitioner &&
+            this.tin == toForm.tin &&
             this.diuTest == toForm.diuTest)
     }
 
@@ -282,6 +287,7 @@ data class PatientEntity(
         this.ortotal = from.ortotal
         this.cspractitioner = from.cspractitioner
         this.orpractitioner = from.orpractitioner
+        this.tin = from.tin
         this.diuTest = from.diuTest
     }
 

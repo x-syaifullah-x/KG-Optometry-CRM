@@ -36,4 +36,5 @@ data class FBRecords(
     var ortotal: String = "",
     var cspractitioner: String = "",
     var orpractitioner: String = "",
+    var tin: String = "",
 )

@@ -675,6 +675,8 @@ class InfoFragment : Fragment() {
                 extractData[7]
             )
 
+            tinInput.setText(patientForm.tin)
+
             itemFound = false
             for (i in 0 until binding.stateInput.adapter.count) {
                 if (extractData[8].trim().uppercase() == binding.stateInput.adapter.getItem(i)
@@ -808,6 +810,7 @@ class InfoFragment : Fragment() {
             currentForm.phone = phone1Input.text.toString()
             currentForm.address = addressInput.text.toString().uppercase()
             currentForm.remarks = remarkInput.text.toString().uppercase()
+            currentForm.tin = tinInput.text.toString().uppercase()
 
             val contactLensYN = when {
                 radioContactLensYes.isChecked -> YES

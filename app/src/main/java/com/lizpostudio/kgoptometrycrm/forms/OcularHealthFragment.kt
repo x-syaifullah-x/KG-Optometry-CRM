@@ -85,7 +85,7 @@ class OcularHealthFragment : Fragment() {
 
         val app = requireNotNull(this.activity).application
 
-        var selectedColor = ContextCompat.getColor(requireContext(), R.color.greenCircle)
+        var selectedColor = ContextCompat.getColor(requireContext(), R.color.redCircle)
         // change BINDING to Respective forms args!
         val safeArgs: OcularHealthFragmentArgs by navArgs()
         recordID = safeArgs.recordID

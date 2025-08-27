@@ -141,15 +141,34 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/name_input" />
 
+            <TextView
+                android:id="@+id/tin_input_hint"
+                style="@style/primaryDark18sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TIN"
+                app:layout_constraintStart_toStartOf="@+id/guideline_vertical_25"
+                app:layout_constraintTop_toBottomOf="@+id/name_input" />
+
             <EditText
                 android:id="@+id/id_input"
                 style="@style/fixedConstraintInputTextBox18sp"
                 android:inputType="text"
-                app:layout_constraintEnd_toEndOf="@id/guideline_vertical_50"
+                app:layout_constraintEnd_toStartOf="@+id/guideline_vertical_25"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/id_input_hint"
                 tools:ignore="Autofill,LabelFor"
                 tools:text="Testing" />
+
+            <EditText
+                android:id="@+id/tin_input"
+                style="@style/fixedConstraintInputTextBox18sp"
+                android:inputType="text"
+                app:layout_constraintEnd_toStartOf="@+id/guideline_vertical_50"
+                app:layout_constraintStart_toStartOf="@+id/guideline_vertical_25"
+                app:layout_constraintTop_toBottomOf="@+id/id_input_hint"
+                tools:ignore="Autofill,LabelFor"
+                tools:text="D123456789" />
 
             <TextView
                 android:id="@+id/ic_input_hint"

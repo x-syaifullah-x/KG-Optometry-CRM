@@ -1,9 +1,9 @@
 def build_versions = [:]
 build_versions.min_sdk = 23 // android lollipop ( 5.0 )
-build_versions.target_sdk = 35 // android latest
+build_versions.target_sdk = 36 // android latest
 build_versions.compile_sdk = build_versions.target_sdk
-build_versions.build_tools = "35.0.0"
-def major = 22
+build_versions.build_tools = "36.0.0"
+def major = 24
 def minor = 0
 def patch = 0
 build_versions.code = (major + minor + patch)
@@ -12,9 +12,9 @@ ext.build_versions = build_versions
 
 ext {
     // https://developer.android.com/reference/tools/gradle-api
-    vGradle = "8.7.0"
+    vGradle = "8.10.0"
     // https://github.com/JetBrains/kotlin/releases
-    vKotlin = "2.0.20"
+    vKotlin = "2.0.21"
 
     // https://developer.android.com/jetpack/androidx/releases/activity
     vAndroidxActivity = "1.9.3"
@@ -130,7 +130,7 @@ ext {
     vKotlinCoroutines = "1.9.0"
     // https://github.com/google/ksp/releases
     // same as kotlin version
-    vKsp = "${vKotlin}-1.0.25"
+    vKsp = "${vKotlin}-1.0.28"
     // https://github.com/square/leakcanary/releases
     vLeakcanaryAndroid = "2.14"
     // https://github.com/material-components/material-components-android/releases

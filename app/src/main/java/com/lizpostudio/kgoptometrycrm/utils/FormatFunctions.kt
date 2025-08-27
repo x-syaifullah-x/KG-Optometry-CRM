@@ -94,6 +94,7 @@ fun convertFBRecordToPatients(f: FBRecords, key: Long): PatientEntity {
         ortotal = f.ortotal,
         cspractitioner = f.cspractitioner,
         orpractitioner = f.orpractitioner,
+        tin = f.tin,
     )
 }
 
@@ -131,6 +132,7 @@ fun convertFormToFBRecord(p: PatientEntity): FBRecords {
         ortotal = p.ortotal,
         cspractitioner = p.cspractitioner,
         orpractitioner = p.orpractitioner,
+        tin = p.tin,
     )
 }
 
