@@ -10,20 +10,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Setup JDK
         uses: actions/setup-java@v4
         with:
           java-version: "21"
-          distribution: "oracle"
+          distribution: "jetbrains"
           cache: gradle
 
-      - name: Setup gradle properties
+      - name: Setup Gradle Properties
         run: |
           ORG_GRADLE_JVM=`cat gradle.properties | grep org.gradle.jvmargs`
           sed -i 's/'"${ORG_GRADLE_JVM}"'/org.gradle.jvmargs=-Xmx8192m -Dfile.encoding=UTF-8/g' gradle.properties
 
-      - name: Gradlew grant execute
+      - name: Chmod Gradlew
         run: chmod +x gradlew
 
 #      - name: Gradlew dependencies
@@ -50,10 +52,11 @@ jobs:
 #          name: KG-Optometry-CRM-release
 #          path: app/build/outputs/apk/release/app-release.apk
 
-      - name: assembleRelease
+      - name: Assemble Release
         run: |
           ./gradlew clean assembleRelease
-      - name: Uploading apk release
+
+      - name: Uploading APK Release
         uses: actions/upload-artifact@v4
         with:
           name: KG-Optometry-CRM-release

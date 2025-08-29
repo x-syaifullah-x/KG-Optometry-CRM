@@ -7,6 +7,7 @@ import com.lizpostudio.kgoptometrycrm.data.source.local.dao.PatientsDao
 import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientEntity
 import com.lizpostudio.kgoptometrycrm.data.source.remote.firebase.FirebasePath
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 
 
@@ -105,6 +106,10 @@ class PatientRepository private constructor(
 
     suspend fun getRecordsByPatientID(patientID: String): List<PatientEntity>? {
         return dao.getRecordsByID(patientID)
+    }
+
+    fun getRecordsByIDAsFlow(patientID: String): Flow<List<PatientEntity>> {
+        return dao.getRecordsByIDAsFlow(patientID)
     }
 
     suspend fun updateRecord(record: PatientEntity): Boolean {

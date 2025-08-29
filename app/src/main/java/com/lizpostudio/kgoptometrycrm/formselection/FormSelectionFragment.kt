@@ -34,6 +34,7 @@ import com.lizpostudio.kgoptometrycrm.search.sync.SyncActivity
 import com.lizpostudio.kgoptometrycrm.utils.actionConfirmDeletion
 import com.lizpostudio.kgoptometrycrm.utils.computeAgeAndDOB
 import id.xxx.module.view.binding.ktx.viewBinding
+import androidx.core.content.edit
 
 class FormSelectionFragment : Fragment() {
 
@@ -125,26 +126,12 @@ class FormSelectionFragment : Fragment() {
         if (viewOnlyMode) binding.viewOnlyButton.setImageResource(R.drawable.visibility_32)
         else binding.viewOnlyButton.setImageResource(R.drawable.ic_baseline_edit_24)
 
-        binding.synchButton.setOnLongClickListener(object : View.OnLongClickListener {
-            override fun onLongClick(v: View): Boolean {
-                val i = Intent(v.context, SyncActivity::class.java)
-                startActivity(i)
-                return true
-            }
-        })
+        binding.synchButton.setOnLongClickListener { v ->
+            val i = Intent(v.context, SyncActivity::class.java)
+            startActivity(i)
+            true
+        }
         binding.synchButton.setOnClickListener { v ->
-//            if (allowSync) {
-//                syncHistoryStart = System.currentTimeMillis()
-//                allowSync = false
-//                patientViewModel.updateLocalDBFromFirebase(latestDataSynched, TWO_WEEKS)
-//            } else {
-//                Toast.makeText(
-//                    context,
-//                    "Previous Sync was not completed!\nHold on ...",
-//                    Toast.LENGTH_SHORT
-//                ).show()
-//            }
-
             val latestDataSync = System.currentTimeMillis()
             val dialog = AlertDialog.Builder(v.context)
                 .setView(R.layout.sync_dialog)
@@ -160,10 +147,7 @@ class FormSelectionFragment : Fragment() {
                         } else {
                             "You are well synced!\nNo new records in Firebase."
                         }
-                    sharedPref
-                        .edit()
-                        .putLong(Constants.PREF_KEY_LAST_SYNC, latestDataSync)
-                        .apply()
+                    sharedPref.edit { putLong(Constants.PREF_KEY_LAST_SYNC, latestDataSync) }
                     dialog.cancel()
                     Toast.makeText(v.context, message, Toast.LENGTH_SHORT).show()
                 },
@@ -189,7 +173,8 @@ class FormSelectionFragment : Fragment() {
         binding.formsList.addItemDecoration(itemDecor)
         binding.formsList.adapter = recyclerAdapter
 
-        patientViewModel.patientInitForms.observe(viewLifecycleOwner) { patientForms ->
+        patientViewModel.getPatientByIdAsLiveData(patientID).observe(viewLifecycleOwner) { patientForms ->
+//        patientViewModel.patientInitForms.observe(viewLifecycleOwner) { patientForms ->
             patientForms?.let {
                 allPatientForms.clear()
                 if (patientForms.isNotEmpty()) {
@@ -246,12 +231,11 @@ class FormSelectionFragment : Fragment() {
                         data.add(tmp)
                     }
 
-//                    recyclerAdapter.submitList(newList)
                     recyclerAdapter.submitList(data)
-
                 } else {
-                    Toast.makeText(context, "No Forms for $patientID found", Toast.LENGTH_LONG)
-                        .show()
+                    Toast.makeText(
+                        context, "No Forms for $patientID found", Toast.LENGTH_LONG
+                    ).show()
                     navController.navigate(FormSelectionFragmentDirections.actionToSearchCostumerFragment())
                 }
             }

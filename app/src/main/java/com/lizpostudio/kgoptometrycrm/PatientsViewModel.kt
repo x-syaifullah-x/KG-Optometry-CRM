@@ -109,6 +109,9 @@ class PatientsViewModel(
     val patientInitForms: LiveData<List<PatientEntity>>
         get() = _patientInitForms
 
+    fun getPatientByIdAsLiveData(id: String) =
+        patientRepo.getRecordsByIDAsFlow(patientID = id).asLiveData()
+
     private val _navTrigger = MutableLiveData<String>()
     val navTrigger: LiveData<String>
         get() = _navTrigger

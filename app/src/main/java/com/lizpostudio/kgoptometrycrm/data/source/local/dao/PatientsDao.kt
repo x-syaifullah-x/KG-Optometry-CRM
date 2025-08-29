@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientEntity
 import com.lizpostudio.kgoptometrycrm.data.source.local.entity.SalesEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PatientsDao {
@@ -50,6 +51,9 @@ interface PatientsDao {
 
     @Query("SELECT * FROM patients_table WHERE sales_id =:patientID AND delete_at='0'")
     suspend fun getRecordsByID(patientID: String): List<PatientEntity>?
+
+    @Query("SELECT * FROM patients_table WHERE sales_id =:patientID AND delete_at='0'")
+    fun getRecordsByIDAsFlow(patientID: String): Flow<List<PatientEntity>>
 
     @Query("SELECT * FROM patients_table WHERE sales_id = (:patientID) AND section_name =(:nameOfSection)")
     suspend fun getRecordsByIDAndSection(
