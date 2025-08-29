@@ -557,12 +557,15 @@ class CurrentRxFragment : Fragment() {
             "none" -> {
                 fillTheForm(currentForm)
             }
+
             "back" -> this.findNavController().navigate(
                 CurrentRxFragmentDirections.actionToFormSelectionFragment(patientID)
             )
+
             "home" -> findNavController().navigate(
                 CurrentRxFragmentDirections.actionToDatabaseSearchFragment()
             )
+
             else -> navigateToSelectedForm()
         }
     }
@@ -578,42 +581,54 @@ class CurrentRxFragment : Fragment() {
             getString(R.string.info_form_caption) -> findNavController().navigate(
                 CurrentRxFragmentDirections.actionToInfoFragment(navigateFormRecordID)
             )
+
             getString(R.string.follow_up_form_caption) -> findNavController().navigate(
                 CurrentRxFragmentDirections.actionToFollowUpFragment(navigateFormRecordID)
             )
+
             getString(R.string.memo_form_caption) -> findNavController().navigate(
                 CurrentRxFragmentDirections.actionToMemoFragment(navigateFormRecordID)
             )
+
             getString(R.string.current_rx_caption) -> {
                 if (recordID != navigateFormRecordID) {
                     recordID = navigateFormRecordID
                     patientViewModel.getPatientForm(navigateFormRecordID)
                 }
             }
+
             getString(R.string.refraction_caption) -> findNavController().navigate(
                 CurrentRxFragmentDirections.actionToRefractionFragment(navigateFormRecordID)
             )
+
             getString(R.string.ocular_health_caption) -> findNavController().navigate(
                 CurrentRxFragmentDirections.actionToOcularHealthFragment(navigateFormRecordID)
             )
+
             getString(R.string.supplementary_test_caption) -> findNavController().navigate(
                 CurrentRxFragmentDirections.actionToSupplementaryFragment(navigateFormRecordID)
             )
+
             getString(R.string.contact_lens_exam_caption) -> findNavController().navigate(
                 CurrentRxFragmentDirections.actionToContactLensFragment(navigateFormRecordID)
             )
+
             getString(R.string.orthox_caption) -> findNavController().navigate(
                 CurrentRxFragmentDirections.actionToOrthokFragment(navigateFormRecordID)
             )
+
             getString(R.string.cash_order) -> findNavController().navigate(
                 ContactLensFragmentDirections.actionToCashOrderFragment(navigateFormRecordID)
             )
+
             getString(R.string.sales_order_caption) -> findNavController().navigate(
                 CurrentRxFragmentDirections.actionToSalesOrderFragment(navigateFormRecordID)
             )
+
             getString(R.string.final_prescription_caption) -> findNavController().navigate(
                 CurrentRxFragmentDirections.actionToSalesOrderFragment(navigateFormRecordID)
             )
+
             else -> {
                 Toast.makeText(
                     context, "$navigateFormName not implemented yet", Toast.LENGTH_SHORT
@@ -696,9 +711,9 @@ class CurrentRxFragment : Fragment() {
     }
 
     @SuppressLint("SetTextI18n")
-    private fun fillTheForm(patientForm: PatientEntity) {
+    private fun fillTheForm(p: PatientEntity) {
 
-        val extractData = patientForm.sectionData.split('|').toMutableList()
+        val extractData = p.sectionData.split('|').toMutableList()
 //      Log.d(Constants.TAG, "extract data size before = ${extractData.size}")
         if (extractData.size < 22) {
             for (index in extractData.size..22) {
@@ -708,9 +723,9 @@ class CurrentRxFragment : Fragment() {
 
         binding.apply {
 
-            sectionEditDate = patientForm.dateOfSection
+            sectionEditDate = p.dateOfSection
             //     patientName.text = patientForm.patientName
-            dateCaption.text = convertLongToDDMMYY(patientForm.dateOfSection)
+            dateCaption.text = convertLongToDDMMYY(p.dateOfSection)
             //  Log.d(Constants.TAG, " Extracted data: $extractData" )
 
             var isEmpty: Boolean
@@ -890,20 +905,27 @@ class CurrentRxFragment : Fragment() {
             lensYear.setText(extractData[12])
             currentContactLens.setText(extractData[13])
 
-            remarkInput.setText(patientForm.remarks)
+            remarkInput.setText(p.remarks)
 
             patientViewModel.practitioner.observe(viewLifecycleOwner) {
+                val data =
+                    if (it.contains(p.practitioner)) {
+                        it
+                    } else {
+                        it.toMutableList().apply { add(p.practitioner) }
+                    }
                 val adapterPractitioner =
-                    ArrayAdapter(requireContext(), R.layout.spinner_list_basic_, it)
+                    ArrayAdapter(requireContext(), R.layout.spinner_list_basic_, data)
                 practitionerName.adapter = adapterPractitioner
                 val isCreated = Constants.isCreatedForm(requireContext())
                 if (isCreated) {
                     practitionerName.setSelection(1)
                     saveAndNavigate("none")
                 } else {
-                    it.forEachIndexed { index, s ->
-                        if (s == patientForm.practitioner)
+                    data.forEachIndexed { index, s ->
+                        if (s == p.practitioner) {
                             practitionerName.setSelection(index)
+                        }
                     }
                 }
             }

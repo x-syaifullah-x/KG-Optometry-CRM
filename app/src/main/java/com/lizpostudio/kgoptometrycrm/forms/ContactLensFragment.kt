@@ -762,7 +762,7 @@ class ContactLensFragment : Fragment() {
                             age, dob
                         )
 
-                        if (currentForm.patientIC != ic){
+                        if (currentForm.patientIC != ic) {
                             currentForm.patientIC = ic
                         }
                     }
@@ -1038,12 +1038,15 @@ class ContactLensFragment : Fragment() {
             "none" -> {
                 fillTheForm(currentForm)
             }
+
             "back" -> this.findNavController().navigate(
                 ContactLensFragmentDirections.actionToFormSelectionFragment(patientID)
             )
+
             "home" -> findNavController().navigate(
                 ContactLensFragmentDirections.actionToDatabaseSearchFragment()
             )
+
             else -> navigateToSelectedForm()
         }
     }
@@ -1163,42 +1166,54 @@ class ContactLensFragment : Fragment() {
             getString(R.string.info_form_caption) -> findNavController().navigate(
                 ContactLensFragmentDirections.actionToInfoFragment(navigateFormRecordID)
             )
+
             getString(R.string.follow_up_form_caption) -> findNavController().navigate(
                 ContactLensFragmentDirections.actionToFollowUpFragment(navigateFormRecordID)
             )
+
             getString(R.string.memo_form_caption) -> findNavController().navigate(
                 ContactLensFragmentDirections.actionToMemoFragment(navigateFormRecordID)
             )
+
             getString(R.string.current_rx_caption) -> findNavController().navigate(
                 ContactLensFragmentDirections.actionToCurrentRxFragment(navigateFormRecordID)
             )
+
             getString(R.string.refraction_caption) -> findNavController().navigate(
                 ContactLensFragmentDirections.actionToRefractionFragment(navigateFormRecordID)
             )
+
             getString(R.string.ocular_health_caption) -> findNavController().navigate(
                 ContactLensFragmentDirections.actionToOcularHealthFragment(navigateFormRecordID)
             )
+
             getString(R.string.supplementary_test_caption) -> findNavController().navigate(
                 ContactLensFragmentDirections.actionToSupplementaryFragment(navigateFormRecordID)
             )
+
             getString(R.string.contact_lens_exam_caption) -> {
                 if (recordID != navigateFormRecordID) {
                     recordID = navigateFormRecordID
                     patientViewModel.getPatientForm(navigateFormRecordID)
                 }
             }
+
             getString(R.string.orthox_caption) -> findNavController().navigate(
                 ContactLensFragmentDirections.actionToOrthokFragment(navigateFormRecordID)
             )
+
             getString(R.string.cash_order) -> findNavController().navigate(
                 ContactLensFragmentDirections.actionToCashOrderFragment(navigateFormRecordID)
             )
+
             getString(R.string.sales_order_caption) -> findNavController().navigate(
                 ContactLensFragmentDirections.actionToSalesOrderFragment(navigateFormRecordID)
             )
+
             getString(R.string.final_prescription_caption) -> findNavController().navigate(
                 ContactLensFragmentDirections.actionToSalesOrderFragment(navigateFormRecordID)
             )
+
             else -> {
                 Toast.makeText(
                     context, "$navigateFormName not implemented yet", Toast.LENGTH_SHORT
@@ -1214,9 +1229,9 @@ class ContactLensFragment : Fragment() {
     }
 
     @SuppressLint("SetTextI18n")
-    private fun fillTheForm(patientForm: PatientEntity) {
+    private fun fillTheForm(p: PatientEntity) {
 
-        val extractData = patientForm.sectionData.split('|').toMutableList()
+        val extractData = p.sectionData.split('|').toMutableList()
 //      Log.d(Constants.TAG, "extract data size before = ${extractData.size}")
         if (extractData.size < 138) {
             for (index in extractData.size..138) {
@@ -1224,10 +1239,10 @@ class ContactLensFragment : Fragment() {
             }
         }
 
-        val graphicsTop = patientForm.reservedField.split('|')
+        val graphicsTop = p.reservedField.split('|')
 
-        val graphicsR = patientForm.graphicsRight.split(';')
-        val graphicsL = patientForm.graphicsLeft.split(';')
+        val graphicsR = p.graphicsRight.split(';')
+        val graphicsL = p.graphicsLeft.split(';')
 
         val screenPxDST = Resources.getSystem().displayMetrics.density
         val widthTop = screenWidthPx().toFloat()
@@ -1308,8 +1323,8 @@ class ContactLensFragment : Fragment() {
             imageFittingLeftCl.invalidate()
 
             //       patientName.text = patientForm.patientName
-            dateCaption.text = convertLongToDDMMYY(patientForm.dateOfSection)
-            sectionEditDate = patientForm.dateOfSection
+            dateCaption.text = convertLongToDDMMYY(p.dateOfSection)
+            sectionEditDate = p.dateOfSection
 
 
             editOccupation.setText(extractData[0])
@@ -1594,20 +1609,27 @@ class ContactLensFragment : Fragment() {
             editLensRight.setText(extractData[129])
             editLensLeft.setText(extractData[130])
 
-            editRemark.setText(patientForm.remarks)
+            editRemark.setText(p.remarks)
 
             patientViewModel.practitioner.observe(viewLifecycleOwner) {
+                val data =
+                    if (it.contains(p.practitioner)) {
+                        it
+                    } else {
+                        it.toMutableList().apply { add(p.practitioner) }
+                    }
                 val adapterPractitioner =
-                    ArrayAdapter(requireContext(), R.layout.spinner_list_basic_, it)
+                    ArrayAdapter(requireContext(), R.layout.spinner_list_basic_, data)
                 practitionerName.adapter = adapterPractitioner
                 val isCreated = Constants.isCreatedForm(requireContext())
                 if (isCreated) {
                     practitionerName.setSelection(1)
                     saveAndNavigate("none")
                 } else {
-                    it.forEachIndexed { index, s ->
-                        if (s == patientForm.practitioner)
+                    data.forEachIndexed { index, s ->
+                        if (s == p.practitioner) {
                             practitionerName.setSelection(index)
+                        }
                     }
                 }
             }
@@ -1679,8 +1701,8 @@ class ContactLensFragment : Fragment() {
             graphicsLeft += ";"
         }
 
-/*        Log.d("Orthok_Fragment", "on save: widthTop = $widthTop, heightTop = $heightTop")
-        Log.d("Orthok_Fragment", "on save: widthRL = $widthRL, heightRL = $heightRL")*/
+        /*        Log.d("Orthok_Fragment", "on save: widthTop = $widthTop, heightTop = $heightTop")
+                Log.d("Orthok_Fragment", "on save: widthRL = $widthRL, heightRL = $heightRL")*/
 
         binding.apply {
 

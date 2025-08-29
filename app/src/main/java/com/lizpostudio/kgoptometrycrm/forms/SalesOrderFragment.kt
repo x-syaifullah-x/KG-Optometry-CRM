@@ -595,12 +595,15 @@ class SalesOrderFragment : Fragment() {
             "none" -> {
                 fillTheForm(currentForm)
             }
+
             "back" -> this.findNavController().navigate(
                 SalesOrderFragmentDirections.actionToFormSelectionFragment(patientID)
             )
+
             "home" -> findNavController().navigate(
                 SalesOrderFragmentDirections.actionToDatabaseSearchFragment()
             )
+
             else -> navigateToSelectedForm()
         }
     }
@@ -610,45 +613,57 @@ class SalesOrderFragment : Fragment() {
             getString(R.string.info_form_caption) -> findNavController().navigate(
                 SalesOrderFragmentDirections.actionToInfoFragment(navigateFormRecordID)
             )
+
             getString(R.string.follow_up_form_caption) -> findNavController().navigate(
                 SalesOrderFragmentDirections.actionToFollowUpFragment(navigateFormRecordID)
             )
+
             getString(R.string.memo_form_caption) -> findNavController().navigate(
                 SalesOrderFragmentDirections.actionToMemoFragment(navigateFormRecordID)
             )
+
             getString(R.string.current_rx_caption) -> findNavController().navigate(
                 SalesOrderFragmentDirections.actionToCurrentRxFragment(navigateFormRecordID)
             )
+
             getString(R.string.refraction_caption) -> findNavController().navigate(
                 SalesOrderFragmentDirections.actionToRefractionFragment(navigateFormRecordID)
             )
+
             getString(R.string.ocular_health_caption) -> findNavController().navigate(
                 SalesOrderFragmentDirections.actionToOcularHealthFragment(navigateFormRecordID)
             )
+
             getString(R.string.supplementary_test_caption) -> findNavController().navigate(
                 SalesOrderFragmentDirections.actionToSupplementaryFragment(navigateFormRecordID)
             )
+
             getString(R.string.contact_lens_exam_caption) -> findNavController().navigate(
                 SalesOrderFragmentDirections.actionToContactLensFragment(navigateFormRecordID)
             )
+
             getString(R.string.orthox_caption) -> findNavController().navigate(
                 SalesOrderFragmentDirections.actionToOrthokFragment(navigateFormRecordID)
             )
+
             getString(R.string.cash_order) -> findNavController().navigate(
                 SalesOrderFragmentDirections.actionToCashOrderFragment(navigateFormRecordID)
             )
+
             getString(R.string.sales_order_caption) -> {
                 if (recordID != navigateFormRecordID) {
                     recordID = navigateFormRecordID
                     patientViewModel.getPatientForm(navigateFormRecordID)
                 }
             }
+
             getString(R.string.final_prescription_caption) -> {
                 if (recordID != navigateFormRecordID) {
                     recordID = navigateFormRecordID
                     patientViewModel.getPatientForm(navigateFormRecordID)
                 }
             }
+
             else -> {
                 Toast.makeText(
                     context, "$navigateFormName not implemented yet", Toast.LENGTH_SHORT
@@ -658,9 +673,9 @@ class SalesOrderFragment : Fragment() {
     }
 
     @SuppressLint("SetTextI18n")
-    private fun fillTheForm(patientForm: PatientEntity) {
+    private fun fillTheForm(p: PatientEntity) {
 
-        val extractData = patientForm.sectionData.split('|').toMutableList()
+        val extractData = p.sectionData.split('|').toMutableList()
 //      Log.d(Constants.TAG, "extract data size before = ${extractData.size}")
         if (extractData.size < 29) {
             for (index in extractData.size..29) {
@@ -671,8 +686,8 @@ class SalesOrderFragment : Fragment() {
         binding.apply {
 
             //       patientName.text = patientForm.patientName
-            dateCaption.text = convertLongToDDMMYY(patientForm.dateOfSection)
-            sectionEditDate = patientForm.dateOfSection
+            dateCaption.text = convertLongToDDMMYY(p.dateOfSection)
+            sectionEditDate = p.dateOfSection
 
             var isEmpty = true
             if (extractData[0].trim() != "") {
@@ -790,25 +805,38 @@ class SalesOrderFragment : Fragment() {
             editLeftVa.setText(extractData[25])
             editOrtotal.setText(extractData[21])
 
-            remarkInput.setText(patientForm.remarks)
+            remarkInput.setText(p.remarks)
 
             patientViewModel.practitioner.observe(viewLifecycleOwner) {
+                val data =
+                    if (it.contains(p.practitioner)) {
+                        it
+                    } else {
+                        it.toMutableList().apply { add(p.practitioner) }
+                    }
                 val adapterPractitioner =
-                    ArrayAdapter(requireContext(), R.layout.spinner_list_basic_, it)
+                    ArrayAdapter(requireContext(), R.layout.spinner_list_basic_, data)
                 practitionerName.adapter = adapterPractitioner
                 val isCreated = Constants.isCreatedForm(requireContext())
                 if (isCreated) {
                     practitionerName.setSelection(1)
                     saveAndNavigate("none")
                 } else {
-                    it.forEachIndexed { index, practitioner ->
-                        if (practitioner == patientForm.practitioner)
+                    data.forEachIndexed { index, s ->
+                        if (s == p.practitioner) {
                             practitionerName.setSelection(index)
+                        }
                     }
                 }
 
+                val data_ =
+                    if (it.contains(p.practitioner)) {
+                        it
+                    } else {
+                        it.toMutableList().apply { add(practitionerOptometrist) }
+                    }
                 val adapterPractitionerOptometrist =
-                    ArrayAdapter(requireContext(), R.layout.spinner_list_basic, it)
+                    ArrayAdapter(requireContext(), R.layout.spinner_list_basic, data_)
                 practitionerNameOptometrist.adapter = adapterPractitionerOptometrist
 
                 if (isCreated) {
@@ -822,10 +850,10 @@ class SalesOrderFragment : Fragment() {
                 }
             }
 
-            editOr.setText(patientForm.or)
-            editFrameSize.setText(patientForm.frameSize)
-            editFrameType.setText(patientForm.frameType)
-            remarkPrintInput.setText(patientForm.remarkPrint)
+            editOr.setText(p.or)
+            editFrameSize.setText(p.frameSize)
+            editFrameType.setText(p.frameType)
+            remarkPrintInput.setText(p.remarkPrint)
         }
     }
 
@@ -852,32 +880,32 @@ class SalesOrderFragment : Fragment() {
                 }
 
             val extractData = spinnerType.selectedItem.toString() + "|" +
-                spinnerRightSph.selectedItem.toString() + "|" +
-                spinnerLeftSph.selectedItem.toString() + "|" +
-                spinnerRightCyl.selectedItem.toString() + "|" +
-                spinnerLeftCyl.selectedItem.toString() + "|" +
-                editRightAxis.text.toString() + "|" +
-                editLeftAxis.text.toString() + "|" +
-                editRightPd.text.toString() + "|" +
-                editLeftPd.text.toString() + "|" +
-                editRightHt.text.toString() + "|" +  //10
-                editLeftHt.text.toString() + "|" +
-                spinnerRightAdd.selectedItem.toString() + "|" +
-                spinnerLeftAdd.selectedItem.toString() + "|" +
-                editFrameHt.text.toString() + "|" +
-                editEd.text.toString() + "|" +
-                editFrame.text.toString() + "|" +
-                editFrameRm.text.toString() + "|" +
-                editLens.text.toString() + "|" +
-                editLensRm.text.toString() + "|" +
-                editClSg.text.toString() + "|" +  //20
-                editClRm.text.toString() + "|" +
-                editTotal.text.toString() + "|" +
-                "${practitionerNameOptometrist.selectedItem}" + "|" +
-                editSalesperson + "|" +
-                editRightVa.text.toString() + "|" +
-                editLeftVa.text.toString() + "|" +
-                editOrtotal.text.toString()
+                    spinnerRightSph.selectedItem.toString() + "|" +
+                    spinnerLeftSph.selectedItem.toString() + "|" +
+                    spinnerRightCyl.selectedItem.toString() + "|" +
+                    spinnerLeftCyl.selectedItem.toString() + "|" +
+                    editRightAxis.text.toString() + "|" +
+                    editLeftAxis.text.toString() + "|" +
+                    editRightPd.text.toString() + "|" +
+                    editLeftPd.text.toString() + "|" +
+                    editRightHt.text.toString() + "|" +  //10
+                    editLeftHt.text.toString() + "|" +
+                    spinnerRightAdd.selectedItem.toString() + "|" +
+                    spinnerLeftAdd.selectedItem.toString() + "|" +
+                    editFrameHt.text.toString() + "|" +
+                    editEd.text.toString() + "|" +
+                    editFrame.text.toString() + "|" +
+                    editFrameRm.text.toString() + "|" +
+                    editLens.text.toString() + "|" +
+                    editLensRm.text.toString() + "|" +
+                    editClSg.text.toString() + "|" +  //20
+                    editClRm.text.toString() + "|" +
+                    editTotal.text.toString() + "|" +
+                    "${practitionerNameOptometrist.selectedItem}" + "|" +
+                    editSalesperson + "|" +
+                    editRightVa.text.toString() + "|" +
+                    editLeftVa.text.toString() + "|" +
+                    editOrtotal.text.toString()
 
             currentForm.sectionData = extractData.uppercase()
             currentForm.practitioner = "${binding.practitionerName.selectedItem}".uppercase()

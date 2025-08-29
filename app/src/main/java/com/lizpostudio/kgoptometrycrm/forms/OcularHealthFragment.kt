@@ -943,9 +943,9 @@ class OcularHealthFragment : Fragment() {
     }
 
     @SuppressLint("SetTextI18n")
-    private fun fillTheForm(patientForm: PatientEntity) {
+    private fun fillTheForm(p: PatientEntity) {
 
-        val extractData = patientForm.sectionData.split('|').toMutableList()
+        val extractData = p.sectionData.split('|').toMutableList()
 //      Log.d(Constants.TAG, "extract data size before = ${extractData.size}")
         if (extractData.size < 20) {
             for (index in extractData.size..20) {
@@ -953,8 +953,8 @@ class OcularHealthFragment : Fragment() {
             }
         }
 
-        val graphicsTop = patientForm.graphicsRight.split('|')
-        val graphicsBottom = patientForm.graphicsLeft.split('|')
+        val graphicsTop = p.graphicsRight.split('|')
+        val graphicsBottom = p.graphicsLeft.split('|')
 
         val widthHeightString =
             if (graphicsTop.isNotEmpty()) graphicsTop[0].split(',') else emptyList()
@@ -981,8 +981,8 @@ class OcularHealthFragment : Fragment() {
         fillIndexBottom = if (fillMaskBottom.size > 0) fillMaskBottom.lastIndex else -1
 
         binding.apply {
-            editAxialLengthRight.setText(patientForm.axialLengthRight)
-            editAxialLengthLeft.setText(patientForm.axialLengthLeft)
+            editAxialLengthRight.setText(p.axialLengthRight)
+            editAxialLengthLeft.setText(p.axialLengthLeft)
             bottomOculus.fillMask = fillMaskBottom
             bottomOculus.invalidate()
 
@@ -990,8 +990,8 @@ class OcularHealthFragment : Fragment() {
             topOculus.invalidate()
 
             //        patientName.text = patientForm.patientName
-            dateCaption.text = convertLongToDDMMYY(patientForm.dateOfSection)
-            sectionEditDate = patientForm.dateOfSection
+            dateCaption.text = convertLongToDDMMYY(p.dateOfSection)
+            sectionEditDate = p.dateOfSection
             //   Log.d(Constants.TAG, " Extracted data: ${convertLongToDDMMYY(patientForm.dateOfSection)}" )
 
             editLensRight.setText(extractData[0])
@@ -1078,20 +1078,27 @@ class OcularHealthFragment : Fragment() {
             extraTextBottom3.text = extractData[16]
             extraTextBottom4.text = extractData[17]
 
-            remarkInput.setText(patientForm.remarks)
+            remarkInput.setText(p.remarks)
 
             patientViewModel.practitioner.observe(viewLifecycleOwner) {
+                val data =
+                    if (it.contains(p.practitioner)) {
+                        it
+                    } else {
+                        it.toMutableList().apply { add(p.practitioner) }
+                    }
                 val adapterPractitioner =
-                    ArrayAdapter(requireContext(), R.layout.spinner_list_basic_, it)
+                    ArrayAdapter(requireContext(), R.layout.spinner_list_basic_, data)
                 practitionerName.adapter = adapterPractitioner
                 val isCreated = Constants.isCreatedForm(requireContext())
                 if (isCreated) {
                     practitionerName.setSelection(1)
                     saveAndNavigate("none")
                 } else {
-                    it.forEachIndexed { index, s ->
-                        if (s == patientForm.practitioner)
+                    data.forEachIndexed { index, s ->
+                        if (s == p.practitioner) {
                             practitionerName.setSelection(index)
+                        }
                     }
                 }
             }

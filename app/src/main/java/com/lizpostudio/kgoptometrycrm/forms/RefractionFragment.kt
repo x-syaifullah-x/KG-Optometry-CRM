@@ -666,12 +666,15 @@ class RefractionFragment : Fragment() {
             "none" -> {
                 fillTheForm(currentForm)
             }
+
             "back" -> this.findNavController().navigate(
                 RefractionFragmentDirections.actionToFormSelectionFragment(patientID)
             )
+
             "home" -> findNavController().navigate(
                 RefractionFragmentDirections.actionToDatabaseSearchFragment()
             )
+
             else -> navigateToSelectedForm()
         }
     }
@@ -720,8 +723,8 @@ class RefractionFragment : Fragment() {
         }
     }
 
-    private fun fillTheForm(patientForm: PatientEntity) {
-        val extractData = patientForm.sectionData.split('|').toMutableList()
+    private fun fillTheForm(p: PatientEntity) {
+        val extractData = p.sectionData.split('|').toMutableList()
         if (extractData.size < 51) {
             for (index in extractData.size..51) {
                 extractData.add("")
@@ -730,9 +733,9 @@ class RefractionFragment : Fragment() {
 
         binding.apply {
 
-            sectionEditDate = patientForm.dateOfSection
+            sectionEditDate = p.dateOfSection
             //    patientName.text = patientForm.patientName
-            dateCaption.text = convertLongToDDMMYY(patientForm.dateOfSection)
+            dateCaption.text = convertLongToDDMMYY(p.dateOfSection)
 
             var isEmpty = true
             for (i in 0 until spinnerRightSph1.adapter.count) {
@@ -810,7 +813,9 @@ class RefractionFragment : Fragment() {
             isEmpty = true
             if (extractData[46] != "") {
                 for (i in 0 until spinnerRetCurrentrxUnaided.adapter.count) {
-                    if (extractData[46] == spinnerRetCurrentrxUnaided.adapter.getItem(i).toString()) {
+                    if (extractData[46] == spinnerRetCurrentrxUnaided.adapter.getItem(i)
+                            .toString()
+                    ) {
                         spinnerRetCurrentrxUnaided.setSelection(i)
                         isEmpty = false
                     }
@@ -913,7 +918,9 @@ class RefractionFragment : Fragment() {
             if (isEmpty) spinnerRightAdd.setSelection(0)
             isEmpty = true
 
-            if (extractData[15] != "") editOuva.setText(extractData[15]) else editOuva.setText(vaDefault)
+            if (extractData[15] != "") editOuva.setText(extractData[15]) else editOuva.setText(
+                vaDefault
+            )
 
 
             if (extractData[16] != "") editLeftVa.setText(extractData[16]) else editLeftVa.setText(
@@ -1014,9 +1021,13 @@ class RefractionFragment : Fragment() {
 
             editLeftAxis3.setText(extractData[27])
 
-            if (extractData[28] != "") editOuva2.setText(extractData[28]) else editOuva2.setText(vaDefault)
+            if (extractData[28] != "") editOuva2.setText(extractData[28]) else editOuva2.setText(
+                vaDefault
+            )
 
-            if (extractData[50] != "") editOuva3.setText(extractData[50]) else editOuva3.setText(vaDefault)
+            if (extractData[50] != "") editOuva3.setText(extractData[50]) else editOuva3.setText(
+                vaDefault
+            )
 
 
             for (i in 0 until spinnerAddMp.adapter.count) {
@@ -1134,20 +1145,27 @@ class RefractionFragment : Fragment() {
             editManagementRefraction.setText(extractData[41])
 
 
-            remarkInput.setText(patientForm.remarks)
+            remarkInput.setText(p.remarks)
 
             patientViewModel.practitioner.observe(viewLifecycleOwner) {
+                val data =
+                    if (it.contains(p.practitioner)) {
+                        it
+                    } else {
+                        it.toMutableList().apply { add(p.practitioner) }
+                    }
                 val adapterPractitioner =
-                    ArrayAdapter(requireContext(), R.layout.spinner_list_basic_, it)
+                    ArrayAdapter(requireContext(), R.layout.spinner_list_basic_, data)
                 practitionerName.adapter = adapterPractitioner
                 val isCreated = Constants.isCreatedForm(requireContext())
                 if (isCreated) {
                     practitionerName.setSelection(1)
                     saveAndNavigate("none")
                 } else {
-                    it.forEachIndexed { index, s ->
-                        if (s == patientForm.practitioner)
+                    data.forEachIndexed { index, s ->
+                        if (s == p.practitioner) {
                             practitionerName.setSelection(index)
+                        }
                     }
                 }
             }
@@ -1160,42 +1178,54 @@ class RefractionFragment : Fragment() {
             getString(R.string.info_form_caption) -> findNavController().navigate(
                 RefractionFragmentDirections.actionToInfoFragment(navigateFormRecordID)
             )
+
             getString(R.string.follow_up_form_caption) -> findNavController().navigate(
                 RefractionFragmentDirections.actionToFollowUpFragment(navigateFormRecordID)
             )
+
             getString(R.string.memo_form_caption) -> findNavController().navigate(
                 RefractionFragmentDirections.actionToMemoFragment(navigateFormRecordID)
             )
+
             getString(R.string.current_rx_caption) -> findNavController().navigate(
                 RefractionFragmentDirections.actionToCurrentRxFragment(navigateFormRecordID)
             )
+
             getString(R.string.refraction_caption) -> {
                 if (recordID != navigateFormRecordID) {
                     recordID = navigateFormRecordID
                     patientViewModel.getPatientForm(navigateFormRecordID)
                 }
             }
+
             getString(R.string.ocular_health_caption) -> findNavController().navigate(
                 RefractionFragmentDirections.actionToOcularHealthFragment(navigateFormRecordID)
             )
+
             getString(R.string.supplementary_test_caption) -> findNavController().navigate(
                 RefractionFragmentDirections.actionToSupplementaryFragment(navigateFormRecordID)
             )
+
             getString(R.string.contact_lens_exam_caption) -> findNavController().navigate(
                 RefractionFragmentDirections.actionToContactLensFragment(navigateFormRecordID)
             )
+
             getString(R.string.orthox_caption) -> findNavController().navigate(
                 RefractionFragmentDirections.actionToOrthokFragment(navigateFormRecordID)
             )
+
             getString(R.string.cash_order) -> findNavController().navigate(
                 RefractionFragmentDirections.actionToCashOrderFragment(navigateFormRecordID)
             )
+
             getString(R.string.sales_order_caption) -> findNavController().navigate(
                 RefractionFragmentDirections.actionToSalesOrderFragment(navigateFormRecordID)
             )
+
             getString(R.string.final_prescription_caption) -> findNavController().navigate(
                 RefractionFragmentDirections.actionToSalesOrderFragment(navigateFormRecordID)
             )
+
             else -> {
                 Toast.makeText(
                     context, "$navigateFormName not implemented yet", Toast.LENGTH_SHORT
@@ -1219,56 +1249,56 @@ class RefractionFragment : Fragment() {
             currentForm.remarks = remarkInput.text.toString().uppercase()
 
             val extractData = spinnerRightSph1.selectedItem.toString() + "|" +  //0
-                spinnerRightCyl1.selectedItem.toString() + "|" +
-                editRightAxis1.text.toString() + "|" +
-                spinnerLeftSph1.selectedItem.toString() + "|" +
-                spinnerLeftCyl1.selectedItem.toString() + "|" +
-                editLeftAxis1.text.toString() + "|" +
-                spinnerChart.selectedItem.toString() + "|" +
-                spinnerRightSph2.selectedItem.toString() + "|" +
-                spinnerRightCyl2.selectedItem.toString() + "|" +
-                editRightAxis2.text.toString() + "|" +
-                spinnerLeftSph2.selectedItem.toString() + "|" +  //10
-                spinnerLeftCyl2.selectedItem.toString() + "|" +
-                editLeftAxis2.text.toString() + "|" +
-                editRightVa.text.toString() + "|" +
-                spinnerRightAdd.selectedItem.toString() + "|" +
-                editOuva.text.toString() + "|" +
-                editLeftVa.text.toString() + "|" +
-                spinnerLeftAdd.selectedItem.toString() + "|" +
-                "|" +
-                nearVa.text.toString() + "|" +
-                nearVa2.text.toString() + "|" +  //20
-                spinnerAdd2.selectedItem.toString() + "|" +
-                spinnerRightSph3.selectedItem.toString() + "|" +
-                spinnerRightCyl3.selectedItem.toString() + "|" +
-                editRightAxis3.text.toString() + "|" +
-                spinnerLeftSph3.selectedItem.toString() + "|" +
-                spinnerLeftCyl3.selectedItem.toString() + "|" +
-                editLeftAxis3.text.toString() + "|" +
-                editOuva2.text.toString() + "|" +
-                spinnerAddMp.selectedItem.toString() + "|" +
-                currentStatusInput.text.toString() + "|" +  //30
-                "|" +  // history Input [OLD]
-                "|" +  // main complaint [OLD]
-                spinnerRightSph4.selectedItem.toString() + "|" +
-                spinnerRightCyl4.selectedItem.toString() + "|" +
-                editRightAxis4.text.toString() + "|" +
-                spinnerLeftSph4.selectedItem.toString() + "|" +
-                spinnerLeftCyl4.selectedItem.toString() + "|" +
-                editLeftAxis4.text.toString() + "|" +
-                "|" +
-                "|" +  //40
-                editManagementRefraction.text.toString() + "|" + // 41
-                vaRight4.text.toString() + "|" + //42
-                vaLeft4.text.toString() + "|" + //43
-                spinnerAddRight4.selectedItem.toString() + "|" + //44
-                spinnerAddLeft4.selectedItem.toString() + "|" + //45
-                spinnerRetCurrentrxUnaided.selectedItem.toString() + "|" + //46
-                editRightVa2.text.toString() + "|" + //47
-                editLeftVa2.text.toString() + "|" +//48
-                spinnerDominance.selectedItem.toString() + "|" + //49
-                editOuva3.text.toString() //50
+                    spinnerRightCyl1.selectedItem.toString() + "|" +
+                    editRightAxis1.text.toString() + "|" +
+                    spinnerLeftSph1.selectedItem.toString() + "|" +
+                    spinnerLeftCyl1.selectedItem.toString() + "|" +
+                    editLeftAxis1.text.toString() + "|" +
+                    spinnerChart.selectedItem.toString() + "|" +
+                    spinnerRightSph2.selectedItem.toString() + "|" +
+                    spinnerRightCyl2.selectedItem.toString() + "|" +
+                    editRightAxis2.text.toString() + "|" +
+                    spinnerLeftSph2.selectedItem.toString() + "|" +  //10
+                    spinnerLeftCyl2.selectedItem.toString() + "|" +
+                    editLeftAxis2.text.toString() + "|" +
+                    editRightVa.text.toString() + "|" +
+                    spinnerRightAdd.selectedItem.toString() + "|" +
+                    editOuva.text.toString() + "|" +
+                    editLeftVa.text.toString() + "|" +
+                    spinnerLeftAdd.selectedItem.toString() + "|" +
+                    "|" +
+                    nearVa.text.toString() + "|" +
+                    nearVa2.text.toString() + "|" +  //20
+                    spinnerAdd2.selectedItem.toString() + "|" +
+                    spinnerRightSph3.selectedItem.toString() + "|" +
+                    spinnerRightCyl3.selectedItem.toString() + "|" +
+                    editRightAxis3.text.toString() + "|" +
+                    spinnerLeftSph3.selectedItem.toString() + "|" +
+                    spinnerLeftCyl3.selectedItem.toString() + "|" +
+                    editLeftAxis3.text.toString() + "|" +
+                    editOuva2.text.toString() + "|" +
+                    spinnerAddMp.selectedItem.toString() + "|" +
+                    currentStatusInput.text.toString() + "|" +  //30
+                    "|" +  // history Input [OLD]
+                    "|" +  // main complaint [OLD]
+                    spinnerRightSph4.selectedItem.toString() + "|" +
+                    spinnerRightCyl4.selectedItem.toString() + "|" +
+                    editRightAxis4.text.toString() + "|" +
+                    spinnerLeftSph4.selectedItem.toString() + "|" +
+                    spinnerLeftCyl4.selectedItem.toString() + "|" +
+                    editLeftAxis4.text.toString() + "|" +
+                    "|" +
+                    "|" +  //40
+                    editManagementRefraction.text.toString() + "|" + // 41
+                    vaRight4.text.toString() + "|" + //42
+                    vaLeft4.text.toString() + "|" + //43
+                    spinnerAddRight4.selectedItem.toString() + "|" + //44
+                    spinnerAddLeft4.selectedItem.toString() + "|" + //45
+                    spinnerRetCurrentrxUnaided.selectedItem.toString() + "|" + //46
+                    editRightVa2.text.toString() + "|" + //47
+                    editLeftVa2.text.toString() + "|" +//48
+                    spinnerDominance.selectedItem.toString() + "|" + //49
+                    editOuva3.text.toString() //50
             currentForm.sectionData = extractData.uppercase()
 
             currentForm.practitioner = (binding.practitionerName.selectedItem as String).uppercase()

@@ -30,8 +30,6 @@ import com.lizpostudio.kgoptometrycrm.utils.*
 import id.xxx.module.view.binding.ktx.viewBinding
 
 
-
-
 class CashOrderFragment : Fragment() {
 
     private val patientViewModel: PatientsViewModel by viewModels {
@@ -141,7 +139,7 @@ class CashOrderFragment : Fragment() {
 
                     // Check if there's more than one item before setting selection
                     if (refListItems.size > 1) {
-                    binding.spinnerFromCashorder.setSelection(1)
+                        binding.spinnerFromCashorder.setSelection(1)
                     }
                 }
             }
@@ -447,7 +445,8 @@ class CashOrderFragment : Fragment() {
                         isEmpty = true
                         for (i in 0 until spinnerRightCyl.adapter.count) {
                             if (extractData[3].trim() != "" &&
-                                extractData[3].trim().toDoubleOrNull() == spinnerRightCyl.adapter.getItem(i)
+                                extractData[3].trim()
+                                    .toDoubleOrNull() == spinnerRightCyl.adapter.getItem(i)
                                     .toString().toDoubleOrNull()
                             ) {
                                 spinnerRightCyl.setSelection(i)
@@ -459,7 +458,8 @@ class CashOrderFragment : Fragment() {
                         isEmpty = true
                         for (i in 0 until spinnerLeftCyl.adapter.count) {
                             if (extractData[4].trim() != "" &&
-                                extractData[4].trim().toDoubleOrNull() == spinnerLeftCyl.adapter.getItem(i)
+                                extractData[4].trim()
+                                    .toDoubleOrNull() == spinnerLeftCyl.adapter.getItem(i)
                                     .toString().toDoubleOrNull()
                             ) {
                                 spinnerLeftCyl.setSelection(i)
@@ -517,9 +517,11 @@ class CashOrderFragment : Fragment() {
             "back" -> findNavController().navigate(
                 CashOrderFragmentDirections.actionToFormSelectionFragment(patientID)
             )
+
             "home" -> findNavController().navigate(
                 CashOrderFragmentDirections.actionToDatabaseSearchFragment()
             )
+
             else -> navigateToSelectedForm()
         }
     }
@@ -562,18 +564,22 @@ class CashOrderFragment : Fragment() {
             getString(R.string.orthox_caption) -> navController.navigate(
                 CashOrderFragmentDirections.actionToOrthokFragment(navigateFormRecordID)
             )
+
             getString(R.string.cash_order) -> {
                 if (recordID != navigateFormRecordID) {
                     recordID = navigateFormRecordID
                     patientViewModel.getPatientForm(navigateFormRecordID)
                 }
             }
+
             getString(R.string.sales_order_caption) -> findNavController().navigate(
                 CashOrderFragmentDirections.actionToSalesOrderFragment(navigateFormRecordID)
             )
+
             getString(R.string.final_prescription_caption) -> navController.navigate(
                 CashOrderFragmentDirections.actionToSalesOrderFragment(navigateFormRecordID)
             )
+
             else -> {
                 Toast.makeText(
                     context, "$navigateFormName not implemented yet", Toast.LENGTH_SHORT
@@ -583,9 +589,9 @@ class CashOrderFragment : Fragment() {
     }
 
     @SuppressLint("SetTextI18n")
-    private fun fillTheForm(patientForm: PatientEntity) {
+    private fun fillTheForm(p: PatientEntity) {
 
-        val extractData = patientForm.sectionData.split('|').toMutableList()
+        val extractData = p.sectionData.split('|').toMutableList()
 //      Log.d(Constants.TAG, "extract data size before = ${extractData.size}")
         if (extractData.size < 28) {
             for (index in extractData.size..28) {
@@ -596,8 +602,8 @@ class CashOrderFragment : Fragment() {
         binding.apply {
 
             //       patientName.text = patientForm.patientName
-            dateCaption.text = convertLongToDDMMYY(patientForm.dateOfSection)
-            sectionEditDate = patientForm.dateOfSection
+            dateCaption.text = convertLongToDDMMYY(p.dateOfSection)
+            sectionEditDate = p.dateOfSection
 
             var isEmpty = true
             for (i in 0 until spinnerRightSph.adapter.count) {
@@ -664,25 +670,32 @@ class CashOrderFragment : Fragment() {
             editClSg.setText(extractData[17])
             editClRm.setText(extractData[20])
             editTotal.setText(extractData[21])
-            remarkInput.setText(patientForm.remarks)
-            editCs.setText(patientForm.cs)
-            editSolutionMisc.setText(patientForm.solutionMisc)
-            editSolutionMiscRm.setText(patientForm.solutionMiscRm)
+            remarkInput.setText(p.remarks)
+            editCs.setText(p.cs)
+            editSolutionMisc.setText(p.solutionMisc)
+            editSolutionMiscRm.setText(p.solutionMiscRm)
             editCstotal.setText(extractData[21])
-            sectionFamilycodecs.text = patientForm.familyCode
+            sectionFamilycodecs.text = p.familyCode
 
             patientViewModel.practitioner.observe(viewLifecycleOwner) {
+                val data =
+                    if (it.contains(p.practitioner)) {
+                        it
+                    } else {
+                        it.toMutableList().apply { add(p.practitioner) }
+                    }
                 val adapterPractitioner =
-                    ArrayAdapter(requireContext(), R.layout.spinner_list_basic_, it)
+                    ArrayAdapter(requireContext(), R.layout.spinner_list_basic_, data)
                 practitionerName.adapter = adapterPractitioner
                 val isCreated = Constants.isCreatedForm(requireContext())
                 if (isCreated) {
                     practitionerName.setSelection(1)
                     saveAndNavigate("none")
                 } else {
-                    it.forEachIndexed { index, s ->
-                        if (s == patientForm.practitioner)
+                    data.forEachIndexed { index, s ->
+                        if (s == p.practitioner) {
                             practitionerName.setSelection(index)
+                        }
                     }
                 }
             }
@@ -696,33 +709,33 @@ class CashOrderFragment : Fragment() {
             currentForm.remarks = remarkInput.text.toString().uppercase()
             if (sectionEditDate != -1L) currentForm.dateOfSection = sectionEditDate
             val extractData = "" + "|" +
-                spinnerRightSph.selectedItem.toString() + "|" +
-                spinnerLeftSph.selectedItem.toString() + "|" +
-                spinnerRightCyl.selectedItem.toString() + "|" +
-                spinnerLeftCyl.selectedItem.toString() + "|" +
-                editRightAxis.text.toString() + "|" +
-                editLeftAxis.text.toString() + "|" +
-                "" + "|" +
-                "" + "|" +
-                "" + "|" +
-                "" + "|" +
-                "" + "|" +
-                "" + "|" +
-                "" + "|" +
-                "" + "|" +
-                editFrame.text.toString() + "|" +
-                editFrameRm.text.toString() + "|" +
-                editClSg.text.toString() + "|" +
-                "" + "|" +
-                "" + "|" +
-                editClRm.text.toString() + "|" +
-                editTotal.text.toString() + "|" +
+                    spinnerRightSph.selectedItem.toString() + "|" +
+                    spinnerLeftSph.selectedItem.toString() + "|" +
+                    spinnerRightCyl.selectedItem.toString() + "|" +
+                    spinnerLeftCyl.selectedItem.toString() + "|" +
+                    editRightAxis.text.toString() + "|" +
+                    editLeftAxis.text.toString() + "|" +
+                    "" + "|" +
+                    "" + "|" +
+                    "" + "|" +
+                    "" + "|" +
+                    "" + "|" +
+                    "" + "|" +
+                    "" + "|" +
+                    "" + "|" +
+                    editFrame.text.toString() + "|" +
+                    editFrameRm.text.toString() + "|" +
+                    editClSg.text.toString() + "|" +
+                    "" + "|" +
+                    "" + "|" +
+                    editClRm.text.toString() + "|" +
+                    editTotal.text.toString() + "|" +
 //                    editOptometrist.text.toString() + "|" +
 //                    editSalesperson.text.toString() + "|" +
-                "" + "|" +
-                "" + "|" +
-                "" + "|" +
-                ""
+                    "" + "|" +
+                    "" + "|" +
+                    "" + "|" +
+                    ""
 
             currentForm.sectionData = extractData.uppercase()
 
@@ -732,7 +745,8 @@ class CashOrderFragment : Fragment() {
             currentForm.frame = "${editFrame.text}".uppercase()
             currentForm.lens = "${editClSg.text}".uppercase()
             currentForm.cstotal = "${editTotal.text}".uppercase()
-            currentForm.cspractitioner = (binding.practitionerName.selectedItem as String).uppercase()
+            currentForm.cspractitioner =
+                (binding.practitionerName.selectedItem as String).uppercase()
             currentForm.practitioner = (binding.practitionerName.selectedItem as String).uppercase()
         }
         return !currentForm.assertEqual(priorPatient)

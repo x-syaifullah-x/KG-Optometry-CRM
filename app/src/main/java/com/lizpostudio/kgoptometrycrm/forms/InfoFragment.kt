@@ -99,10 +99,7 @@ class InfoFragment : Fragment() {
             )
             bindingRoot.saveFormButton.visibility = View.GONE
         } else binding.mainLayout.setBackgroundColor(
-            ContextCompat.getColor(
-                requireContext(),
-                R.color.lightBackground
-            )
+            ContextCompat.getColor(requireContext(), R.color.lightBackground)
         )
 
         // ========  Get all INFO forms for ID / IC checks =========
@@ -503,12 +500,15 @@ class InfoFragment : Fragment() {
             "none" -> {
                 fillTheForm(currentForm)
             }
+
             "back" -> findNavController().navigate(
                 InfoFragmentDirections.actionToFormSelectionFragment(patientID)
             )
+
             "home" -> findNavController().navigate(
                 InfoFragmentDirections.actionToDatabaseSearchFragment()
             )
+
             else -> navigateToSelectedForm()
         }
     }
@@ -564,39 +564,51 @@ class InfoFragment : Fragment() {
                     patientViewModel.getPatientForm(navigateFormRecordID)
                 }
             }
+
             getString(R.string.follow_up_form_caption) -> findNavController().navigate(
                 InfoFragmentDirections.actionToFollowUpFragment(navigateFormRecordID)
             )
+
             getString(R.string.memo_form_caption) -> findNavController().navigate(
                 InfoFragmentDirections.actionToMemoFragment(navigateFormRecordID)
             )
+
             getString(R.string.current_rx_caption) -> findNavController().navigate(
                 InfoFragmentDirections.actionToCurrentRxFragment(navigateFormRecordID)
             )
+
             getString(R.string.refraction_caption) -> findNavController().navigate(
                 InfoFragmentDirections.actionToRefractionFragment(navigateFormRecordID)
             )
+
             getString(R.string.ocular_health_caption) -> findNavController().navigate(
                 InfoFragmentDirections.actionToOcularHealthFragment(navigateFormRecordID)
             )
+
             getString(R.string.supplementary_test_caption) -> findNavController().navigate(
                 InfoFragmentDirections.actionToSupplementaryFragment(navigateFormRecordID)
             )
+
             getString(R.string.contact_lens_exam_caption) -> findNavController().navigate(
                 InfoFragmentDirections.actionToContactLensFragment(navigateFormRecordID)
             )
+
             getString(R.string.orthox_caption) -> findNavController().navigate(
                 InfoFragmentDirections.actionToOrthokFragment(navigateFormRecordID)
             )
+
             getString(R.string.cash_order) -> findNavController().navigate(
                 InfoFragmentDirections.actionToCashOrderFragment(navigateFormRecordID)
             )
+
             getString(R.string.sales_order_caption) -> findNavController().navigate(
                 InfoFragmentDirections.actionToSalesOrderFragment(navigateFormRecordID)
             )
+
             getString(R.string.final_prescription_caption) -> findNavController().navigate(
                 InfoFragmentDirections.actionToSalesOrderFragment(navigateFormRecordID)
             )
+
             else -> {
                 Toast.makeText(
                     context, "$navigateFormName not implemented yet", Toast.LENGTH_SHORT
@@ -606,9 +618,9 @@ class InfoFragment : Fragment() {
     }
 
     @SuppressLint("SetTextI18n", "DefaultLocale")
-    private fun fillTheForm(patientForm: PatientEntity) {
+    private fun fillTheForm(p: PatientEntity) {
 
-        val extractData = patientForm.sectionData.split('|').toMutableList()
+        val extractData = p.sectionData.split('|').toMutableList()
         //    Log.d(Constants.TAG, "extract data size before = ${extractData.size}")
         if (extractData.size < 30) {
             for (index in 0..30) {
@@ -616,23 +628,23 @@ class InfoFragment : Fragment() {
             }
 
         }
-        val ic = patientForm.patientIC
+        val ic = p.patientIC
 
         val (dob, age) = computeAgeAndDOB(ic)
         //      Log.d(Constants.TAG, "loading data [7] =  ${extractData[7]}, [9] =  ${extractData[9]}")
 
         binding.apply {
 
-            dateCaption.text = convertLongToDDMMYY(patientForm.dateOfSection)
-            sectionEditDate = patientForm.dateOfSection
-            nameInput.setText(patientForm.patientName)
-            idInput.setText(patientForm.patientID)
-            familyCodeInput.setText(patientForm.familyCode)
+            dateCaption.text = convertLongToDDMMYY(p.dateOfSection)
+            sectionEditDate = p.dateOfSection
+            nameInput.setText(p.patientName)
+            idInput.setText(p.patientID)
+            familyCodeInput.setText(p.familyCode)
             icInput.setText(ic)
             otherIdInput.setText(extractData[OTHER_ID_INDEX])
             dobInput.text = dob
             ageInput.text = age
-            phone1Input.setText(patientForm.phone)
+            phone1Input.setText(p.phone)
             phone2Input.setText(extractData[2])
             phone3Input.setText(extractData[3])
 
@@ -666,7 +678,7 @@ class InfoFragment : Fragment() {
                     resources.getString(R.string.hint_sex) + " " + extractData[5].trim()
             }
 
-            addressInput.setText(patientForm.address)
+            addressInput.setText(p.address)
             if (extractData[6].isEmpty()) postCodeInput.setText(defaultpostCode) else postCodeInput.setText(
                 extractData[6]
             )
@@ -675,7 +687,7 @@ class InfoFragment : Fragment() {
                 extractData[7]
             )
 
-            tinInput.setText(patientForm.tin)
+            tinInput.setText(p.tin)
 
             itemFound = false
             for (i in 0 until binding.stateInput.adapter.count) {
@@ -736,7 +748,7 @@ class InfoFragment : Fragment() {
             if (extractData[27] == NO) radioEyeSurgeryNo.isChecked = true
             eyeSurgeryInfoInput.setText(extractData[28])
 
-            remarkInput.setText(patientForm.remarks)
+            remarkInput.setText(p.remarks)
 
 //            val dataPractitioner = patientForm.practitioner.split("|")
 //            val adapterPractitioner =
@@ -744,17 +756,24 @@ class InfoFragment : Fragment() {
 //            practitionerName.adapter = adapterPractitioner
 
             patientViewModel.practitioner.observe(viewLifecycleOwner) {
+                val data =
+                    if (it.contains(p.practitioner)) {
+                        it
+                    } else {
+                        it.toMutableList().apply { add(p.practitioner) }
+                    }
                 val adapterPractitioner =
-                    ArrayAdapter(requireContext(), R.layout.spinner_list_basic_, it)
+                    ArrayAdapter(requireContext(), R.layout.spinner_list_basic_, data)
                 practitionerName.adapter = adapterPractitioner
                 val isCreated = Constants.isCreatedForm(requireContext())
                 if (isCreated) {
                     practitionerName.setSelection(1)
                     saveAndNavigate("none")
                 } else {
-                    it.forEachIndexed { index, s ->
-                        if (s == patientForm.practitioner)
+                    data.forEachIndexed { index, s ->
+                        if (s == p.practitioner) {
                             practitionerName.setSelection(index)
+                        }
                     }
                 }
             }
@@ -878,17 +897,17 @@ class InfoFragment : Fragment() {
                 }
             val extractData =
                 icInput.text.toString() + "|" + otherIdInput.text.toString() + "|" +
-                    phone2Input.text.toString() + "|" + phone3Input.text.toString() + "|" +
-                    raceInput.selectedItem.toString() + "|" + sexInput.selectedItem.toString() + "|" +
-                    postCodeInput.text.toString() + "|" + cityInput.text.toString() + "|" +
-                    stateInput.selectedItem.toString() + "|" + countryInput.text.toString() + "|" +
-                    occupationInput.text.toString() + "|" + contactLensYN + "|" +
-                    contactLensInfoInput.text.toString() + "|" + vduInput + "|" +
-                    drivingYN + "|" + hypertensionYN + "|" + hypertensionInfoInput.text.toString() + "|" +
-                    diabetesYN + "|" + diabetesInfoInput.text.toString() + "|" + allergyYN + "|" +
-                    allergyInfoInput.text.toString() + "|" + medicationYN + "|" + medicationsInfoInput.text.toString() + "|" +
-                    cataractYN + "|" + cataractInfoInput.text.toString() + "|" + glaucomaYN + "|" +
-                    glaucomaInfoInput.text.toString() + "|" + eyeSurgeryYN + "|" + eyeSurgeryInfoInput.text.toString()
+                        phone2Input.text.toString() + "|" + phone3Input.text.toString() + "|" +
+                        raceInput.selectedItem.toString() + "|" + sexInput.selectedItem.toString() + "|" +
+                        postCodeInput.text.toString() + "|" + cityInput.text.toString() + "|" +
+                        stateInput.selectedItem.toString() + "|" + countryInput.text.toString() + "|" +
+                        occupationInput.text.toString() + "|" + contactLensYN + "|" +
+                        contactLensInfoInput.text.toString() + "|" + vduInput + "|" +
+                        drivingYN + "|" + hypertensionYN + "|" + hypertensionInfoInput.text.toString() + "|" +
+                        diabetesYN + "|" + diabetesInfoInput.text.toString() + "|" + allergyYN + "|" +
+                        allergyInfoInput.text.toString() + "|" + medicationYN + "|" + medicationsInfoInput.text.toString() + "|" +
+                        cataractYN + "|" + cataractInfoInput.text.toString() + "|" + glaucomaYN + "|" +
+                        glaucomaInfoInput.text.toString() + "|" + eyeSurgeryYN + "|" + eyeSurgeryInfoInput.text.toString()
 
             //       Log.d(Constants.TAG, "saving data [7] = ${extractData.split('|')[7]} and [9] = ${extractData.split('|')[9]}")
             currentForm.sectionData = extractData.uppercase()

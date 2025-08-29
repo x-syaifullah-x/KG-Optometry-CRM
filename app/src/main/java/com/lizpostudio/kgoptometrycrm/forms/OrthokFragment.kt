@@ -402,7 +402,7 @@ class OrthokFragment : Fragment() {
         binding.undoBottom.setOnClickListener {
             if (fillMaskBottom.isNotEmpty()) {
 //                fillMaskBottom.removeLast()
-                fillMaskBottom.removeAt(fillMaskBottom.size -1 )
+                fillMaskBottom.removeAt(fillMaskBottom.size - 1)
                 fillIndexBottom--
 
                 binding.bottomOculus.fillMask = fillMaskBottom
@@ -499,7 +499,7 @@ class OrthokFragment : Fragment() {
                             age, dob
                         )
 
-                        if (currentForm.patientIC != ic){
+                        if (currentForm.patientIC != ic) {
                             currentForm.patientIC = ic
                         }
                     }
@@ -967,14 +967,17 @@ class OrthokFragment : Fragment() {
             "none" -> {
                 fillTheForm(currentForm)
             }
+
             "back" -> this.findNavController().navigate(
                 OrthokFragmentDirections.actionToFormSelectionFragment(
                     patientID
                 )
             )
+
             "home" -> findNavController().navigate(
                 OrthokFragmentDirections.actionToDatabaseSearchFragment()
             )
+
             else -> navigateToSelectedForm()
         }
     }
@@ -985,42 +988,54 @@ class OrthokFragment : Fragment() {
             getString(R.string.info_form_caption) -> findNavController().navigate(
                 OrthokFragmentDirections.actionToInfoFragment(navigateFormRecordID)
             )
+
             getString(R.string.follow_up_form_caption) -> findNavController().navigate(
                 OrthokFragmentDirections.actionToFollowUpFragment(navigateFormRecordID)
             )
+
             getString(R.string.memo_form_caption) -> findNavController().navigate(
                 OrthokFragmentDirections.actionToMemoFragment(navigateFormRecordID)
             )
+
             getString(R.string.current_rx_caption) -> findNavController().navigate(
                 OrthokFragmentDirections.actionToCurrentRxFragment(navigateFormRecordID)
             )
+
             getString(R.string.refraction_caption) -> findNavController().navigate(
                 OrthokFragmentDirections.actionToRefractionFragment(navigateFormRecordID)
             )
+
             getString(R.string.ocular_health_caption) -> findNavController().navigate(
                 OrthokFragmentDirections.actionToOcularHealthFragment(navigateFormRecordID)
             )
+
             getString(R.string.supplementary_test_caption) -> findNavController().navigate(
                 OrthokFragmentDirections.actionToSupplementaryFragment(navigateFormRecordID)
             )
+
             getString(R.string.contact_lens_exam_caption) -> findNavController().navigate(
                 OrthokFragmentDirections.actionToContactLensFragment(navigateFormRecordID)
             )
+
             getString(R.string.orthox_caption) -> {
                 if (recordID != navigateFormRecordID) {
                     recordID = navigateFormRecordID
                     patientViewModel.getPatientForm(navigateFormRecordID)
                 }
             }
+
             getString(R.string.cash_order) -> findNavController().navigate(
                 OrthokFragmentDirections.actionToCashOrderFragment(navigateFormRecordID)
             )
+
             getString(R.string.sales_order_caption) -> findNavController().navigate(
                 OrthokFragmentDirections.actionToSalesOrderFragment(navigateFormRecordID)
             )
+
             getString(R.string.final_prescription_caption) -> findNavController().navigate(
                 OrthokFragmentDirections.actionToSalesOrderFragment(navigateFormRecordID)
             )
+
             else -> {
                 Toast.makeText(
                     context, "$navigateFormName not implemented yet", Toast.LENGTH_SHORT
@@ -1045,17 +1060,17 @@ class OrthokFragment : Fragment() {
 
 
     @SuppressLint("SetTextI18n")
-    private fun fillTheForm(patientForm: PatientEntity) {
+    private fun fillTheForm(p: PatientEntity) {
 
-        val extractData = patientForm.sectionData.split('|').toMutableList()
+        val extractData = p.sectionData.split('|').toMutableList()
         if (extractData.size < 44) {
             for (index in extractData.size..44) {
                 extractData.add("")
             }
         }
 
-        val graphicsTop = patientForm.graphicsRight.split('|')
-        val graphicsBottom = patientForm.graphicsLeft.split('|')
+        val graphicsTop = p.graphicsRight.split('|')
+        val graphicsBottom = p.graphicsLeft.split('|')
         val screenPxDST = Resources.getSystem().displayMetrics.density
         val widthHeightString =
             if (graphicsTop.isNotEmpty()) graphicsTop[0].split(',') else emptyList()
@@ -1075,8 +1090,8 @@ class OrthokFragment : Fragment() {
         val heightRatio =
             if (wH.second != 0f && topOculusHeight != 0f) topOculusHeight / wH.second else 1f
 
-/*              Log.d(Constants.TAG, "saved w = ${wH.first} oculus width = ${topOculusWidth} widthRatio = $widthRatio")
-        Log.d(Constants.TAG, "saved h = ${wH.second} oculus height = ${topOculusHeight} heightRatio = $heightRatio")*/
+        /*              Log.d(Constants.TAG, "saved w = ${wH.first} oculus width = ${topOculusWidth} widthRatio = $widthRatio")
+                Log.d(Constants.TAG, "saved h = ${wH.second} oculus height = ${topOculusHeight} heightRatio = $heightRatio")*/
 
         fillMask = convertStringToFillMask(graphicsTop, widthRatio, heightRatio)
         fillIndex = if (fillMask.size > 0) fillMask.lastIndex else -1
@@ -1092,8 +1107,8 @@ class OrthokFragment : Fragment() {
             topOculus.invalidate()
 
             //       patientName.text = patientForm.patientName
-            dateCaption.text = convertLongToDDMMYY(patientForm.dateOfSection)
-            sectionEditDate = patientForm.dateOfSection
+            dateCaption.text = convertLongToDDMMYY(p.dateOfSection)
+            sectionEditDate = p.dateOfSection
 
             editRightVaTop.setText(extractData[1])
             editLeftVaTop.setText(extractData[2])
@@ -1198,7 +1213,7 @@ class OrthokFragment : Fragment() {
             editThRight.setText(extractData[41])
             editThLeft.setText(extractData[42])
 
-            remarkInput.setText(patientForm.remarks)
+            remarkInput.setText(p.remarks)
 
 
             if (editLeftVaTop.text.toString() == "") editLeftVaTop.setText(vaDefault)
@@ -1219,17 +1234,24 @@ class OrthokFragment : Fragment() {
 //            practitionerName.adapter = adapterPractitioner
 
             patientViewModel.practitioner.observe(viewLifecycleOwner) {
+                val data =
+                    if (it.contains(p.practitioner)) {
+                        it
+                    } else {
+                        it.toMutableList().apply { add(p.practitioner) }
+                    }
                 val adapterPractitioner =
-                    ArrayAdapter(requireContext(), R.layout.spinner_list_basic_, it)
+                    ArrayAdapter(requireContext(), R.layout.spinner_list_basic_, data)
                 practitionerName.adapter = adapterPractitioner
                 val isCreated = Constants.isCreatedForm(requireContext())
                 if (isCreated) {
                     practitionerName.setSelection(1)
                     saveAndNavigate("none")
                 } else {
-                    it.forEachIndexed { index, s ->
-                        if (s == patientForm.practitioner)
+                    data.forEachIndexed { index, s ->
+                        if (s == p.practitioner) {
                             practitionerName.setSelection(index)
+                        }
                     }
                 }
             }
@@ -1262,47 +1284,47 @@ class OrthokFragment : Fragment() {
             //      Log.d(Constants.TAG, "on save: ${convertLongToDDMMYY(patientForm.dateOfSection)}")
 
             val extractData = "reserved |" +
-                editRightVaTop.text.toString() + "|" +
-                editLeftVaTop.text.toString() + "|" +
-                editOuVaTop.text.toString() + "|" +
-                spinnerRightSph.selectedItem.toString() + "|" +
-                spinnerLeftSph.selectedItem.toString() + "|" +
-                spinnerRightCyl.selectedItem.toString() + "|" +
-                spinnerLeftCyl.selectedItem.toString() + "|" +
-                editRightAxis.text.toString() + "|" +
-                editLeftAxis.text.toString() + "|" +
-                editRightVa.text.toString() + "|" +
-                editLeftVa.text.toString() + "|" +
-                editRightOuVa.text.toString() + "|" + "|" + // 13 number is missing :)
-                extraTextTop1.text.toString() + "|" +
-                extraTextTop2.text.toString() + "|" +
-                extraTextTop3.text.toString() + "|" +
-                extraTextTop4.text.toString() + "|" +
-                editRxRight.text.toString() + "|" +
-                editBcRight.text.toString() + "|" +
-                editDiaRight.text.toString() + "|" +
-                editTreatmentZoneRight.text.toString() + "|" +
-                editCentrationRight.text.toString() + "|" +
-                "|" +
-                "|" +
-                "|" +
-                "|" +
-                extraTextBottom1.text.toString() + "|" +
-                extraTextBottom2.text.toString() + "|" +
-                extraTextBottom3.text.toString() + "|" +
-                extraTextBottom4.text.toString() + "|" +
-                "|" +
-                "|" +
-                editLensRight.text.toString() + "|" +
-                editLensLeft.text.toString() + "|" +
-                editRxLeft.text.toString() + "|" +
-                editBcLeft.text.toString() + "|" +
-                editDiaLeft.text.toString() + "|" +
-                editTreatmentZoneLeft.text.toString() + "|" +
-                editCentrationLeft.text.toString() + "|" +
-                editManagement.text.toString() + "|" +
-                editThRight.text.toString() + "|" +
-                editThLeft.text.toString()
+                    editRightVaTop.text.toString() + "|" +
+                    editLeftVaTop.text.toString() + "|" +
+                    editOuVaTop.text.toString() + "|" +
+                    spinnerRightSph.selectedItem.toString() + "|" +
+                    spinnerLeftSph.selectedItem.toString() + "|" +
+                    spinnerRightCyl.selectedItem.toString() + "|" +
+                    spinnerLeftCyl.selectedItem.toString() + "|" +
+                    editRightAxis.text.toString() + "|" +
+                    editLeftAxis.text.toString() + "|" +
+                    editRightVa.text.toString() + "|" +
+                    editLeftVa.text.toString() + "|" +
+                    editRightOuVa.text.toString() + "|" + "|" + // 13 number is missing :)
+                    extraTextTop1.text.toString() + "|" +
+                    extraTextTop2.text.toString() + "|" +
+                    extraTextTop3.text.toString() + "|" +
+                    extraTextTop4.text.toString() + "|" +
+                    editRxRight.text.toString() + "|" +
+                    editBcRight.text.toString() + "|" +
+                    editDiaRight.text.toString() + "|" +
+                    editTreatmentZoneRight.text.toString() + "|" +
+                    editCentrationRight.text.toString() + "|" +
+                    "|" +
+                    "|" +
+                    "|" +
+                    "|" +
+                    extraTextBottom1.text.toString() + "|" +
+                    extraTextBottom2.text.toString() + "|" +
+                    extraTextBottom3.text.toString() + "|" +
+                    extraTextBottom4.text.toString() + "|" +
+                    "|" +
+                    "|" +
+                    editLensRight.text.toString() + "|" +
+                    editLensLeft.text.toString() + "|" +
+                    editRxLeft.text.toString() + "|" +
+                    editBcLeft.text.toString() + "|" +
+                    editDiaLeft.text.toString() + "|" +
+                    editTreatmentZoneLeft.text.toString() + "|" +
+                    editCentrationLeft.text.toString() + "|" +
+                    editManagement.text.toString() + "|" +
+                    editThRight.text.toString() + "|" +
+                    editThLeft.text.toString()
 
             currentForm.sectionData = extractData.uppercase()
             currentForm.practitioner = (binding.practitionerName.selectedItem as String).uppercase()

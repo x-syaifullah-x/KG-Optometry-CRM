@@ -70,9 +70,7 @@ class PatientsViewModel(
         }
     val practitioner = practitionerRepo.get().map {
         val default = linkedSetOf("", userName.uppercase())
-        it?.apply {
-            default.addAll(data.split(","))
-        }
+        it?.apply { default.addAll(data.split(",")) }
         default.toList()
     }
 
