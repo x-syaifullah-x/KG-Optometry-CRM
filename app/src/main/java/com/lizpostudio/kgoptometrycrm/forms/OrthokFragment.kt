@@ -22,6 +22,7 @@ import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.core.content.edit
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -133,21 +134,6 @@ class OrthokFragment : Fragment() {
             Context.MODE_PRIVATE
         )
         isAdmin = (sharedPref?.getString("admin", "") ?: "") == "admin"
-        viewOnlyMode = sharedPref?.getBoolean("viewOnly", false) ?: false
-        if (viewOnlyMode) {
-            binding.mainLayout.setBackgroundColor(
-                ContextCompat.getColor(
-                    requireContext(),
-                    R.color.viewOnlyMode
-                )
-            )
-            bindingRoot.saveFormButton.visibility = View.GONE
-        } else binding.mainLayout.setBackgroundColor(
-            ContextCompat.getColor(
-                requireContext(),
-                R.color.lightBackground
-            )
-        )
 
         // =========  INITIALIZE FIREBASE REFERENCE =============
 
@@ -1059,8 +1045,30 @@ class OrthokFragment : Fragment() {
     }
 
 
-    @SuppressLint("SetTextI18n")
     private fun fillTheForm(p: PatientEntity) {
+        val keyViewOnly = "viewOnly_${p.recordID}"
+        val sharedPref = Constants.getSharedPreferences(requireContext());
+        viewOnlyMode = sharedPref.getBoolean(keyViewOnly, false)
+        bindingRoot.viewOnlyButton.setOnClickListener {
+            viewOnlyMode = !viewOnlyMode
+            if (viewOnlyMode) {
+                bindingRoot.viewOnlyButton.setImageResource(R.drawable.visibility_32)
+                binding.mainLayout.setBackgroundColor(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        R.color.viewOnlyMode
+                    )
+                )
+                bindingRoot.saveFormButton.visibility = View.GONE
+            } else {
+                bindingRoot.viewOnlyButton.setImageResource(R.drawable.icon_write_able)
+                binding.mainLayout.setBackgroundColor(
+                    ContextCompat.getColor(requireContext(), R.color.lightBackground)
+                )
+                bindingRoot.saveFormButton.visibility = View.VISIBLE
+            }
+            sharedPref.edit { putBoolean(keyViewOnly, viewOnlyMode) }
+        }
 
         val extractData = p.sectionData.split('|').toMutableList()
         if (extractData.size < 44) {

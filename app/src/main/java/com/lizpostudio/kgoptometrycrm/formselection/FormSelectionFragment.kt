@@ -61,7 +61,7 @@ class FormSelectionFragment : Fragment() {
     }
 
     private val allPatientForms = mutableListOf<PatientEntity>()
-    private var viewOnlyMode = false
+//    private var viewOnlyMode = false
 
     private val args by navArgs<FormSelectionFragmentArgs>()
 
@@ -123,8 +123,11 @@ class FormSelectionFragment : Fragment() {
         Log.d(Constants.TAG, "Getting all forms for $patientID")
         patientViewModel.getAllFormsForPatient(patientID)
 
-        if (viewOnlyMode) binding.viewOnlyButton.setImageResource(R.drawable.visibility_32)
-        else binding.viewOnlyButton.setImageResource(R.drawable.ic_baseline_edit_24)
+//        if (viewOnlyMode) {
+//            binding.viewOnlyButton.setImageResource(R.drawable.visibility_32)
+//        } else {
+//            binding.viewOnlyButton.setImageResource(R.drawable.ic_baseline_edit_24)
+//        }
 
         binding.synchButton.setOnLongClickListener { v ->
             val i = Intent(v.context, SyncActivity::class.java)
@@ -173,73 +176,75 @@ class FormSelectionFragment : Fragment() {
         binding.formsList.addItemDecoration(itemDecor)
         binding.formsList.adapter = recyclerAdapter
 
-        patientViewModel.getPatientByIdAsLiveData(patientID).observe(viewLifecycleOwner) { patientForms ->
+        patientViewModel.getPatientByIdAsLiveData(patientID)
+            .observe(viewLifecycleOwner) { patientForms ->
 //        patientViewModel.patientInitForms.observe(viewLifecycleOwner) { patientForms ->
-            patientForms?.let {
-                allPatientForms.clear()
-                if (patientForms.isNotEmpty()) {
-                    allPatientForms.addAll(patientForms)
-                    try {
-                        patientInfoForm.copyFrom(
-                            patientForms.first { form -> form.sectionName == getString(R.string.info_form_caption) }
-                        )
-                    } catch (e: Throwable) {
-                        e.printStackTrace()
-                    }
-
-                    val (dob, age) = computeAgeAndDOB(patientInfoForm.patientIC)
-                    val pCaption = "${patientInfoForm.patientName} ${
-                        resources.getString(
-                            R.string.number_of_years_patient,
-                            age,
-                            dob
-                        )
-                    }"
-
-
-                    binding.patientId.text = it.first().patientID
-                    binding.patientName.text = pCaption
-
-                    val sortedForms = patientForms.sortedBy { forms -> forms.dateOfSection }
-
-                    val orderOfSections = listOf(*resources.getStringArray(R.array.forms_order))
-                    val newList = mutableListOf<PatientEntity>()
-
-                    for (section in orderOfSections) {
-                        for (forms in sortedForms) {
-                            var sectionName = forms.sectionName
-                            if (sectionName == getString(R.string.final_prescription_caption)) {
-                                sectionName = getString(R.string.sales_order_from_selection)
-                                forms.sectionName = getString(R.string.sales_order_from_selection)
-                            }
-                            if (section == sectionName)
-                                newList.add(forms)
+                patientForms?.let {
+                    allPatientForms.clear()
+                    if (patientForms.isNotEmpty()) {
+                        allPatientForms.addAll(patientForms)
+                        try {
+                            patientInfoForm.copyFrom(
+                                patientForms.first { form -> form.sectionName == getString(R.string.info_form_caption) }
+                            )
+                        } catch (e: Throwable) {
+                            e.printStackTrace()
                         }
-                    }
 
-                    val sectionNames = newList.map { data -> data.sectionName }
-                        .toSet()
-                    val data = mutableListOf<Map<String, MutableList<PatientEntity>>>()
-                    sectionNames.forEach { sectionName ->
-                        val tmp = mutableMapOf<String, MutableList<PatientEntity>>()
-                        tmp[sectionName] = mutableListOf()
-                        newList.forEach { patientEntity ->
-                            if (sectionName == patientEntity.sectionName) {
-                                tmp[sectionName]?.add(patientEntity)
+                        val (dob, age) = computeAgeAndDOB(patientInfoForm.patientIC)
+                        val pCaption = "${patientInfoForm.patientName} ${
+                            resources.getString(
+                                R.string.number_of_years_patient,
+                                age,
+                                dob
+                            )
+                        }"
+
+
+                        binding.patientId.text = it.first().patientID
+                        binding.patientName.text = pCaption
+
+                        val sortedForms = patientForms.sortedBy { forms -> forms.dateOfSection }
+
+                        val orderOfSections = listOf(*resources.getStringArray(R.array.forms_order))
+                        val newList = mutableListOf<PatientEntity>()
+
+                        for (section in orderOfSections) {
+                            for (forms in sortedForms) {
+                                var sectionName = forms.sectionName
+                                if (sectionName == getString(R.string.final_prescription_caption)) {
+                                    sectionName = getString(R.string.sales_order_from_selection)
+                                    forms.sectionName =
+                                        getString(R.string.sales_order_from_selection)
+                                }
+                                if (section == sectionName)
+                                    newList.add(forms)
                             }
                         }
-                        data.add(tmp)
-                    }
 
-                    recyclerAdapter.submitList(data)
-                } else {
-                    Toast.makeText(
-                        context, "No Forms for $patientID found", Toast.LENGTH_LONG
-                    ).show()
-                    navController.navigate(FormSelectionFragmentDirections.actionToSearchCostumerFragment())
+                        val sectionNames = newList.map { data -> data.sectionName }
+                            .toSet()
+                        val data = mutableListOf<Map<String, MutableList<PatientEntity>>>()
+                        sectionNames.forEach { sectionName ->
+                            val tmp = mutableMapOf<String, MutableList<PatientEntity>>()
+                            tmp[sectionName] = mutableListOf()
+                            newList.forEach { patientEntity ->
+                                if (sectionName == patientEntity.sectionName) {
+                                    tmp[sectionName]?.add(patientEntity)
+                                }
+                            }
+                            data.add(tmp)
+                        }
+
+                        recyclerAdapter.submitList(data)
+                    } else {
+                        Toast.makeText(
+                            context, "No Forms for $patientID found", Toast.LENGTH_LONG
+                        ).show()
+                        navController.navigate(FormSelectionFragmentDirections.actionToSearchCostumerFragment())
+                    }
                 }
             }
-        }
 
         binding.backButton.setOnClickListener {
             onBackPressed()
@@ -474,19 +479,19 @@ class FormSelectionFragment : Fragment() {
         val shared = activity
             ?.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE)
 
-        binding.viewOnlyButton.setOnClickListener {
-            viewOnlyMode = !viewOnlyMode
-            if (viewOnlyMode) {
-                binding.viewOnlyButton.setImageResource(R.drawable.visibility_32)
-            } else {
-                binding.viewOnlyButton.setImageResource(R.drawable.ic_baseline_edit_24)
-            }
-            if (shared != null) {
-                val editor = shared.edit()
-                editor.putBoolean("viewOnly", viewOnlyMode)
-                editor.apply()
-            }
-        }
+//        binding.viewOnlyButton.setOnClickListener {
+//            viewOnlyMode = !viewOnlyMode
+//            if (viewOnlyMode) {
+//                binding.viewOnlyButton.setImageResource(R.drawable.visibility_32)
+//            } else {
+//                binding.viewOnlyButton.setImageResource(R.drawable.ic_baseline_edit_24)
+//            }
+//            if (shared != null) {
+//                val editor = shared.edit()
+//                editor.putBoolean("viewOnly", viewOnlyMode)
+//                editor.apply()
+//            }
+//        }
 
         binding.copyForm.setOnClickListener {
             findNavController().navigate(
@@ -494,14 +499,14 @@ class FormSelectionFragment : Fragment() {
             )
         }
 
-        if (shared != null) {
-            viewOnlyMode = shared.getBoolean("viewOnly", false)
-            if (viewOnlyMode) {
-                binding.viewOnlyButton.setImageResource(R.drawable.visibility_32)
-            } else {
-                binding.viewOnlyButton.setImageResource(R.drawable.ic_baseline_edit_24)
-            }
-        }
+//        if (shared != null) {
+//            viewOnlyMode = shared.getBoolean("viewOnly", false)
+//            if (viewOnlyMode) {
+//                binding.viewOnlyButton.setImageResource(R.drawable.visibility_32)
+//            } else {
+//                binding.viewOnlyButton.setImageResource(R.drawable.ic_baseline_edit_24)
+//            }
+//        }
         return binding.root
     }
 

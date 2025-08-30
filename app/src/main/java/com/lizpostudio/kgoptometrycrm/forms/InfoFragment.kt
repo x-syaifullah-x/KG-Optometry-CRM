@@ -29,6 +29,7 @@ import com.lizpostudio.kgoptometrycrm.utils.*
 import id.xxx.module.view.binding.ktx.viewBinding
 import java.util.*
 import kotlin.collections.filter
+import androidx.core.content.edit
 
 
 class InfoFragment : Fragment() {
@@ -90,17 +91,42 @@ class InfoFragment : Fragment() {
             Constants.PREF_NAME, Context.MODE_PRIVATE
         )
         //     isAdmin= sharedPref?.getString("admin", "")?: "" == "admin"
-        viewOnlyMode = sharedPref?.getBoolean("viewOnly", false) ?: false
+        val keyViewOnly = "viewOnly_${recordID}"
+        viewOnlyMode = sharedPref?.getBoolean(keyViewOnly, false) ?: false
         if (viewOnlyMode) {
+            bindingRoot.viewOnlyButton.setImageResource(R.drawable.visibility_32)
             binding.mainLayout.setBackgroundColor(
-                ContextCompat.getColor(
-                    requireContext(), R.color.viewOnlyMode
-                )
+                ContextCompat.getColor(requireContext(), R.color.viewOnlyMode)
             )
             bindingRoot.saveFormButton.visibility = View.GONE
-        } else binding.mainLayout.setBackgroundColor(
-            ContextCompat.getColor(requireContext(), R.color.lightBackground)
-        )
+        } else {
+            bindingRoot.viewOnlyButton.setImageResource(R.drawable.icon_write_able)
+            binding.mainLayout.setBackgroundColor(
+                ContextCompat.getColor(requireContext(), R.color.lightBackground)
+            )
+            bindingRoot.saveFormButton.visibility = View.VISIBLE
+        }
+
+        bindingRoot.viewOnlyButton.setOnClickListener {
+            viewOnlyMode = !viewOnlyMode
+            if (viewOnlyMode) {
+                bindingRoot.viewOnlyButton.setImageResource(R.drawable.visibility_32)
+                binding.mainLayout.setBackgroundColor(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        R.color.viewOnlyMode
+                    )
+                )
+                bindingRoot.saveFormButton.visibility = View.GONE
+            } else {
+                bindingRoot.viewOnlyButton.setImageResource(R.drawable.icon_write_able)
+                binding.mainLayout.setBackgroundColor(
+                    ContextCompat.getColor(requireContext(), R.color.lightBackground)
+                )
+                bindingRoot.saveFormButton.visibility = View.VISIBLE
+            }
+            sharedPref?.edit { putBoolean(keyViewOnly, viewOnlyMode) }
+        }
 
         // ========  Get all INFO forms for ID / IC checks =========
         patientViewModel.getAllFormsBySectionName(getString(R.string.info_form_caption))
@@ -617,7 +643,6 @@ class InfoFragment : Fragment() {
         }
     }
 
-    @SuppressLint("SetTextI18n", "DefaultLocale")
     private fun fillTheForm(p: PatientEntity) {
 
         val extractData = p.sectionData.split('|').toMutableList()
@@ -947,7 +972,6 @@ class InfoFragment : Fragment() {
         }
     }
 
-    @SuppressLint("ClickableViewAccessibility")
     private fun showPopup(message: String) {
 
         // inflate the layout of the popup window
@@ -966,7 +990,8 @@ class InfoFragment : Fragment() {
         popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0)
 
         // dismiss the popup window when touched
-        popupView.setOnTouchListener { _, _ ->
+        popupView.setOnTouchListener { v, _ ->
+            v.performClick()
             popupWindow.dismiss()
             true
         }
