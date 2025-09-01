@@ -1,0 +1,766 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/lightBackground">
+
+    <TextView
+        android:id="@+id/patient_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:fontFamily="@font/didact_gothic"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/oculo_bottom_on_off"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="FATIN BT ABDUL RAZAK" />
+
+    <ImageView
+        android:id="@+id/oculo_top_on_off"
+        android:layout_width="@dimen/icon_32"
+        android:layout_height="@dimen/icon_32"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintBottom_toBottomOf="@+id/patient_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/patient_name"
+        app:srcCompat="@drawable/ic_oculo_icon"
+        tools:ignore="ContentDescription" />
+
+    <ImageView
+        android:id="@+id/oculo_bottom_on_off"
+        android:layout_width="@dimen/icon_32"
+        android:layout_height="@dimen/icon_32"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintBottom_toBottomOf="@+id/patient_name"
+        app:layout_constraintEnd_toStartOf="@+id/oculo_top_on_off"
+        app:layout_constraintTop_toTopOf="@+id/patient_name"
+        app:srcCompat="@drawable/ic_oculo_triple_icon"
+        tools:ignore="ContentDescription" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/aa"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@color/cardBackgroundDarker"
+        app:layout_constraintTop_toBottomOf="@+id/patient_name">
+
+        <TextView
+            android:id="@+id/form_caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:background="@color/cardBackgroundDarker"
+            android:fontFamily="@font/didact_gothic"
+            android:text="@string/ocular_health_caption"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Spinner
+            android:id="@+id/practitioner_name"
+            style="@style/Widget.AppCompat.Spinner.Underlined"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:minWidth="100dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/date_caption"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/date_caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:background="@color/cardBackgroundDarker"
+            android:fontFamily="@font/didact_gothic"
+            android:textAlignment="textEnd"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/view_"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="05/10/2020" />
+
+        <View
+            android:id="@+id/view_"
+            android:layout_width="1dp"
+            android:layout_height="20dp"
+            android:layout_marginEnd="4dp"
+            android:background="@color/colorPrimaryDark"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/undo_button_"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/undo_button_"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_undo_20_dark"
+            tools:ignore="ContentDescription" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <FrameLayout
+        android:id="@+id/frame_top_oculus"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/aa">
+
+        <ImageView
+            android:id="@+id/oculo_top"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:srcCompat="@drawable/oculo_top"
+            tools:ignore="ContentDescription" />
+
+        <com.lizpostudio.kgoptometrycrm.graphics.MaskView
+            android:id="@+id/top_oculus"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/frame_bottom_oculus"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/frame_top_oculus">
+
+        <ImageView
+            android:id="@+id/oculo_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:srcCompat="@drawable/oculo_bottom"
+            tools:ignore="ContentDescription" />
+
+        <com.lizpostudio.kgoptometrycrm.graphics.MaskView
+            android:id="@+id/bottom_oculus"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </FrameLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_view_layout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/frame_bottom_oculus">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/main_items"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+            <TextView
+                android:id="@+id/hint_right"
+                style="@style/primaryDark18sp"
+                android:layout_marginTop="8dp"
+                android:text="@string/right"
+                android:textSize="34sp"
+                app:layout_constraintEnd_toStartOf="@+id/guideline50"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/hint_left"
+                style="@style/primaryDark18sp"
+                android:text="@string/left"
+                android:textSize="34sp"
+                app:layout_constraintBottom_toBottomOf="@+id/hint_right"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline50" />
+
+            <TextView
+                android:id="@+id/hint_lens_right"
+                style="@style/primaryDark18sp"
+                android:text="@string/lens"
+                app:layout_constraintBottom_toBottomOf="@+id/edit_lens_right"
+                app:layout_constraintEnd_toEndOf="@+id/guideline25"
+                app:layout_constraintTop_toTopOf="@+id/edit_lens_right" />
+
+            <EditText
+                android:id="@+id/edit_lens_right"
+                style="@style/fixedConstraint8_16_InputTextBox18sp"
+                android:ems="5"
+                android:inputType="text"
+                android:textAlignment="textStart"
+                app:layout_constraintEnd_toStartOf="@+id/guideline50"
+                app:layout_constraintStart_toStartOf="@+id/guideline25"
+                app:layout_constraintTop_toTopOf="@+id/hint_right"
+                tools:ignore="Autofill,LabelFor" />
+
+            <TextView
+                android:id="@+id/hint_iop_right"
+                style="@style/primaryDark18sp"
+                android:text="@string/iop"
+                app:layout_constraintBottom_toBottomOf="@+id/spinner_iop_right"
+                app:layout_constraintEnd_toEndOf="@+id/guideline25"
+                app:layout_constraintTop_toTopOf="@+id/spinner_iop_right" />
+
+            <Spinner
+                android:id="@+id/spinner_iop_right"
+                style="@android:style/Widget.Holo.Light.Spinner"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintEnd_toStartOf="@+id/guideline50"
+                app:layout_constraintStart_toStartOf="@+id/guideline25"
+                app:layout_constraintTop_toBottomOf="@+id/edit_lens_right" />
+
+            <TextView
+                android:id="@+id/hint_av_ratio_right"
+                style="@style/primaryDark18sp"
+                android:text="@string/av_ratio"
+                app:layout_constraintBottom_toBottomOf="@+id/edit_av_ratio_right"
+                app:layout_constraintEnd_toEndOf="@+id/guideline25"
+                app:layout_constraintTop_toTopOf="@+id/edit_av_ratio_right" />
+
+            <EditText
+                android:id="@+id/edit_av_ratio_right"
+                style="@style/fixedConstraint8_16_InputTextBox18sp"
+                android:ems="5"
+                android:inputType="number"
+                android:textAlignment="textStart"
+                app:layout_constraintEnd_toStartOf="@+id/guideline50"
+                app:layout_constraintStart_toStartOf="@+id/guideline25"
+                app:layout_constraintTop_toBottomOf="@+id/spinner_iop_right"
+                tools:ignore="Autofill,LabelFor" />
+
+            <TextView
+                android:id="@+id/hint_cd_ratio_right"
+                style="@style/primaryDark18sp"
+                android:text="@string/cd_ratio"
+                app:layout_constraintBottom_toBottomOf="@+id/spinner_cd_ratio_right"
+                app:layout_constraintEnd_toEndOf="@+id/guideline25"
+                app:layout_constraintTop_toTopOf="@+id/spinner_cd_ratio_right" />
+
+            <Spinner
+                android:id="@+id/spinner_cd_ratio_right"
+                style="@android:style/Widget.Holo.Light.Spinner"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintEnd_toStartOf="@+id/guideline50"
+                app:layout_constraintStart_toStartOf="@+id/guideline25"
+                app:layout_constraintTop_toBottomOf="@+id/edit_av_ratio_right" />
+
+            <TextView
+                android:id="@+id/hint_tbut_right"
+                style="@style/primaryDark18sp"
+                android:text="@string/tbut"
+                app:layout_constraintBottom_toBottomOf="@+id/spinner_tbut_right"
+                app:layout_constraintEnd_toEndOf="@+id/guideline25"
+                app:layout_constraintTop_toTopOf="@+id/spinner_tbut_right" />
+
+            <Spinner
+                android:id="@+id/spinner_tbut_right"
+                style="@android:style/Widget.Holo.Light.Spinner"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintEnd_toStartOf="@+id/guideline50"
+                app:layout_constraintStart_toStartOf="@+id/guideline25"
+                app:layout_constraintTop_toBottomOf="@+id/spinner_cd_ratio_right" />
+
+            <TextView
+                android:id="@+id/hint_axial_length_right"
+                style="@style/primaryDark18sp"
+                android:text="Axial Length"
+                app:layout_constraintBottom_toBottomOf="@+id/edit_axial_length_right"
+                app:layout_constraintEnd_toEndOf="@+id/guideline25"
+                app:layout_constraintTop_toBottomOf="@+id/hint_tbut_right" />
+
+            <EditText
+                android:id="@+id/edit_axial_length_right"
+                style="@style/fixedConstraint8_16_InputTextBox18sp"
+                android:ems="5"
+                android:inputType="number"
+                android:textAlignment="textStart"
+                app:layout_constraintEnd_toStartOf="@+id/guideline50"
+                app:layout_constraintStart_toStartOf="@+id/guideline25"
+                app:layout_constraintTop_toBottomOf="@+id/spinner_tbut_right"
+                tools:ignore="Autofill,LabelFor" />
+
+            <TextView
+                android:id="@+id/hint_lens_left"
+                style="@style/primaryDark18sp"
+                android:text="@string/lens"
+                app:layout_constraintBottom_toBottomOf="@+id/edit_lens_left"
+                app:layout_constraintEnd_toEndOf="@+id/guideline75"
+                app:layout_constraintTop_toTopOf="@+id/edit_lens_left" />
+
+            <EditText
+                android:id="@+id/edit_lens_left"
+                style="@style/fixedConstraint8_16_InputTextBox18sp"
+                android:ems="5"
+                android:inputType="text"
+                android:textAlignment="textStart"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline75"
+                app:layout_constraintTop_toTopOf="@+id/hint_left"
+                tools:ignore="Autofill,LabelFor" />
+
+            <TextView
+                android:id="@+id/hint_iop_left"
+                style="@style/primaryDark18sp"
+                android:text="@string/iop"
+                app:layout_constraintBottom_toBottomOf="@+id/spinner_iop_left"
+                app:layout_constraintEnd_toEndOf="@+id/guideline75"
+                app:layout_constraintTop_toTopOf="@+id/spinner_iop_left" />
+
+            <Spinner
+                android:id="@+id/spinner_iop_left"
+                style="@android:style/Widget.Holo.Light.Spinner"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline75"
+                app:layout_constraintTop_toBottomOf="@+id/edit_lens_left" />
+
+            <TextView
+                android:id="@+id/hint_av_ratio_left"
+                style="@style/primaryDark18sp"
+                android:text="@string/av_ratio"
+                app:layout_constraintBottom_toBottomOf="@+id/edit_av_ratio_left"
+                app:layout_constraintEnd_toEndOf="@+id/guideline75"
+                app:layout_constraintTop_toTopOf="@+id/edit_av_ratio_left" />
+
+            <EditText
+                android:id="@+id/edit_av_ratio_left"
+                style="@style/fixedConstraint8_16_InputTextBox18sp"
+                android:ems="5"
+                android:inputType="number"
+                android:textAlignment="textStart"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline75"
+                app:layout_constraintTop_toBottomOf="@+id/spinner_iop_left"
+                tools:ignore="Autofill,LabelFor" />
+
+            <TextView
+                android:id="@+id/hint_cd_ratio_left"
+                style="@style/primaryDark18sp"
+                android:text="@string/cd_ratio"
+                app:layout_constraintBottom_toBottomOf="@+id/spinner_cd_ratio_left"
+                app:layout_constraintEnd_toEndOf="@+id/guideline75"
+                app:layout_constraintTop_toTopOf="@+id/spinner_cd_ratio_left" />
+
+            <Spinner
+                android:id="@+id/spinner_cd_ratio_left"
+                style="@android:style/Widget.Holo.Light.Spinner"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline75"
+                app:layout_constraintTop_toBottomOf="@+id/edit_av_ratio_left" />
+
+            <TextView
+                android:id="@+id/hint_tbut_left"
+                style="@style/primaryDark18sp"
+                android:text="@string/tbut"
+                app:layout_constraintBottom_toBottomOf="@+id/spinner_tbut_left"
+                app:layout_constraintEnd_toEndOf="@+id/guideline75"
+                app:layout_constraintTop_toTopOf="@+id/spinner_tbut_left" />
+
+            <Spinner
+                android:id="@+id/spinner_tbut_left"
+                style="@android:style/Widget.Holo.Light.Spinner"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline75"
+                app:layout_constraintTop_toBottomOf="@+id/spinner_cd_ratio_left" />
+
+            <TextView
+                android:id="@+id/hint_axial_length_left"
+                style="@style/primaryDark18sp"
+                android:text="Axial Length"
+                app:layout_constraintBottom_toBottomOf="@+id/edit_axial_length_left"
+                app:layout_constraintEnd_toEndOf="@+id/guideline75"
+                app:layout_constraintTop_toBottomOf="@+id/hint_tbut_left" />
+
+            <EditText
+                android:id="@+id/edit_axial_length_left"
+                style="@style/fixedConstraint8_16_InputTextBox18sp"
+                android:ems="5"
+                android:inputType="number"
+                android:textAlignment="textStart"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline75"
+                app:layout_constraintTop_toBottomOf="@+id/spinner_tbut_left"
+                tools:ignore="Autofill,LabelFor" />
+
+            <TextView
+                android:id="@+id/remark_hint"
+                style="@style/primaryDark18sp"
+                android:layout_marginTop="16dp"
+                android:text="@string/hint_remark"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/edit_axial_length_right" />
+
+            <EditText
+                android:id="@+id/remark_input"
+                style="@style/fixedConstraintInputTextBox18sp"
+                android:inputType="text"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/remark_hint"
+                tools:ignore="Autofill,LabelFor" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline50"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="invisible"
+                app:layout_constraintGuide_percent="0.50" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline25"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="invisible"
+                app:layout_constraintGuide_percent="0.23" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline75"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="invisible"
+                app:layout_constraintGuide_percent="0.72" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline50_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="invisible"
+        app:layout_constraintGuide_percent="0.50" />
+
+    <ImageView
+        android:id="@+id/undo_bottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="24dp"
+        android:padding="2dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/clear_bottom_picture"
+        app:srcCompat="@drawable/ic_undo_24"
+        app:tint="@color/blackFont"
+        tools:ignore="ContentDescription" />
+
+    <ImageView
+        android:id="@+id/clear_top_picture"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/img_edit_top1"
+        app:srcCompat="@drawable/ic_clear_24"
+        app:tint="@color/redCircle"
+        tools:ignore="ContentDescription" />
+
+    <ImageView
+        android:id="@+id/clear_bottom_picture"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/img_edit_bottom1"
+        app:srcCompat="@drawable/ic_clear_24"
+        app:tint="@color/redCircle"
+        tools:ignore="ContentDescription" />
+
+    <ImageView
+        android:id="@+id/undo_top"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="24dp"
+        android:padding="2dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/clear_top_picture"
+        app:srcCompat="@drawable/ic_undo_24"
+        app:tint="@color/cardview_dark_background"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/extra_text_top1"
+        style="@style/primaryDark18sp_no_margins"
+        app:layout_constraintStart_toEndOf="@+id/img_edit_top1"
+        app:layout_constraintTop_toBottomOf="@+id/aa"
+        tools:text="top text 1" />
+
+    <EditText
+        android:id="@+id/edit_add_text_top"
+        style="@style/fixedConstraint8_16_InputTextBox18sp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@color/blueVeryLight"
+        android:ems="8"
+        android:inputType="text"
+        android:padding="8dp"
+        android:textAlignment="textStart"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/frame_top_oculus"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/frame_top_oculus"
+        tools:ignore="Autofill,LabelFor" />
+
+    <ImageView
+        android:id="@+id/img_edit_top1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/aa"
+        app:srcCompat="@drawable/ic_baseline_edit_24"
+        app:tint="@color/colorPrimary"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/extra_text_top2"
+        style="@style/primaryDark18sp_no_margins"
+        app:layout_constraintStart_toEndOf="@+id/img_edit_top2"
+        app:layout_constraintTop_toBottomOf="@+id/aa"
+        tools:text="top text 2" />
+
+    <ImageView
+        android:id="@+id/img_edit_top2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="@+id/guideline50_1"
+        app:layout_constraintTop_toBottomOf="@+id/aa"
+        app:srcCompat="@drawable/ic_baseline_edit_24"
+        app:tint="@color/colorPrimary"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/extra_text_top3"
+        style="@style/primaryDark18sp_no_margins"
+        app:layout_constraintBottom_toBottomOf="@+id/img_edit_top3"
+        app:layout_constraintStart_toEndOf="@+id/img_edit_top3"
+        tools:text="top text 3" />
+
+    <ImageView
+        android:id="@+id/img_edit_top3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/frame_top_oculus"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/ic_baseline_edit_24"
+        app:tint="@color/colorPrimary"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/extra_text_top4"
+        style="@style/primaryDark18sp_no_margins"
+        app:layout_constraintBottom_toBottomOf="@+id/img_edit_top3"
+        app:layout_constraintStart_toEndOf="@+id/img_edit_top4"
+        tools:text="top text 4" />
+
+
+    <ImageView
+        android:id="@+id/img_edit_top4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/frame_top_oculus"
+        app:layout_constraintStart_toStartOf="@+id/guideline50_1"
+        app:srcCompat="@drawable/ic_baseline_edit_24"
+        app:tint="@color/colorPrimary"
+        tools:ignore="ContentDescription" />
+
+    <!-- BOTTOM IMAGE EDIT TEXT BOXES -->
+
+    <TextView
+        android:id="@+id/extra_text_bottom1"
+        style="@style/primaryDark18sp_no_margins"
+        app:layout_constraintStart_toEndOf="@+id/img_edit_bottom1"
+        app:layout_constraintTop_toBottomOf="@+id/frame_top_oculus"
+        tools:text="top text 1" />
+
+    <EditText
+        android:id="@+id/edit_add_text_bottom"
+        style="@style/fixedConstraint8_16_InputTextBox18sp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@color/blueVeryLight"
+        android:ems="8"
+        android:inputType="text"
+        android:padding="8dp"
+        android:textAlignment="textStart"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/frame_bottom_oculus"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/frame_bottom_oculus"
+        tools:ignore="Autofill,LabelFor" />
+
+    <ImageView
+        android:id="@+id/img_edit_bottom1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/frame_top_oculus"
+        app:srcCompat="@drawable/ic_baseline_edit_24"
+        app:tint="@color/colorPrimary"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/extra_text_bottom2"
+        style="@style/primaryDark18sp_no_margins"
+        app:layout_constraintStart_toEndOf="@+id/img_edit_bottom2"
+        app:layout_constraintTop_toBottomOf="@+id/frame_top_oculus"
+        tools:text="top text 2" />
+
+    <ImageView
+        android:id="@+id/img_edit_bottom2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="@+id/guideline50_1"
+        app:layout_constraintTop_toBottomOf="@+id/frame_top_oculus"
+        app:srcCompat="@drawable/ic_baseline_edit_24"
+        app:tint="@color/colorPrimary"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/extra_text_bottom3"
+        style="@style/primaryDark18sp_no_margins"
+        app:layout_constraintBottom_toBottomOf="@+id/img_edit_bottom3"
+        app:layout_constraintStart_toEndOf="@+id/img_edit_bottom3"
+        tools:text="top text 3" />
+
+    <ImageView
+        android:id="@+id/img_edit_bottom3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/frame_bottom_oculus"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/ic_baseline_edit_24"
+        app:tint="@color/colorPrimary"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/extra_text_bottom4"
+        style="@style/primaryDark18sp_no_margins"
+        app:layout_constraintBottom_toBottomOf="@+id/img_edit_bottom3"
+        app:layout_constraintStart_toEndOf="@+id/img_edit_bottom4"
+        tools:text="top text 4" />
+
+
+    <ImageView
+        android:id="@+id/img_edit_bottom4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/frame_bottom_oculus"
+        app:layout_constraintStart_toStartOf="@+id/guideline50_1"
+        app:srcCompat="@drawable/ic_baseline_edit_24"
+        app:tint="@color/colorPrimary"
+        tools:ignore="ContentDescription" />
+
+    <ImageView
+        android:id="@+id/img_color_selected"
+        android:layout_width="@dimen/icon_24"
+        android:layout_height="@dimen/icon_24"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/aa"
+        app:srcCompat="@drawable/red_circle"
+        tools:ignore="ContentDescription" />
+
+    <ImageView
+        android:id="@+id/img_color_red"
+        android:layout_width="@dimen/icon_24"
+        android:layout_height="@dimen/icon_24"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/img_color_selected"
+        app:srcCompat="@drawable/red_circle"
+        tools:ignore="ContentDescription" />
+
+    <ImageView
+        android:id="@+id/img_color_yellow"
+        android:layout_width="@dimen/icon_24"
+        android:layout_height="@dimen/icon_24"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/img_color_red"
+        app:srcCompat="@drawable/yellow_circle"
+        tools:ignore="ContentDescription" />
+
+    <ImageView
+        android:id="@+id/img_color_green"
+        android:layout_width="@dimen/icon_24"
+        android:layout_height="@dimen/icon_24"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/img_color_yellow"
+        app:srcCompat="@drawable/green_circle"
+        tools:ignore="ContentDescription" />
+</androidx.constraintlayout.widget.ConstraintLayout>

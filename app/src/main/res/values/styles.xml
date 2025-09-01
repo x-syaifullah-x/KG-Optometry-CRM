@@ -1,0 +1,166 @@
+<resources>
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:spinnerItemStyle">@style/spinnerItemStyle</item>
+    </style>
+
+    <style name="spinnerItemStyle">
+        <item name="android:padding">2dp</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">#000000</item>
+    </style>
+
+    <style name="login_input_text">
+        <item name="android:layout_width">@dimen/login_text_width</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">8dp</item>
+        <item name="android:layout_marginTop">128dp</item>
+        <item name="android:layout_marginEnd">8dp</item>
+        <item name="android:background">@drawable/login_shapes</item>
+        <item name="android:fontFamily">@font/didact_gothic</item>
+        <item name="android:padding">@dimen/padding_login_text</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:textColor">@color/blackFont</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="primaryDark18sp">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">12dp</item>
+        <item name="android:fontFamily">@font/didact_gothic</item>
+        <item name="android:textColor">@color/colorPrimaryDark</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="primaryDarkEndMargin18sp">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginEnd">16dp</item>
+        <item name="android:fontFamily">@font/didact_gothic</item>
+        <item name="android:textColor">@color/colorPrimaryDark</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="primaryDark18sp_no_margins">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:fontFamily">@font/didact_gothic</item>
+        <item name="android:textColor">@color/colorPrimaryDark</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="primaryDarkCenterCaption18sp">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:fontFamily">@font/didact_gothic</item>
+        <item name="android:textColor">@color/colorPrimaryDark</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="black_no_margins18sp">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:fontFamily">@font/didact_gothic</item>
+        <item name="android:textColor">@color/blackFont</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="blueBasicLight18sp">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:fontFamily">@font/didact_gothic</item>
+        <item name="android:textColor">@color/blueBasicLight</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+
+    <style name="fixedConstraintInputTextBox18sp">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:layout_marginEnd">8dp</item>
+        <item name="android:singleLine">false</item>
+        <item name="android:imeOptions">flagNoEnterAction</item>
+        <item name="android:inputType">textMultiLine|text</item>
+        <item name="android:fontFamily">@font/didact_gothic</item>
+        <item name="android:textColor">@color/blackFont</item>
+        <item name="android:digits">abcdefghijklmnopqrstuvwxyz
+            ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890,.\/!=_?:;"'&amp;@#$%^*()-+\n>
+        </item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="fixedConstraint8_16_InputTextBox18sp">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">8dp</item>
+        <item name="android:layout_marginEnd">16dp</item>
+        <item name="android:fontFamily">@font/didact_gothic</item>
+        <item name="android:textColor">@color/blackFont</item>
+        <item name="android:digits">abcdefghijklmnopqrstuvwxyz
+            ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890,.\/!=_?:;"'&amp;@#$%^*()-+\n>
+        </item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+
+    <style name="fixedConstraint8_16_SingleLineInputTextBox_MS_8ME_8_18sp">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">8dp</item>
+        <item name="android:layout_marginEnd">8dp</item>
+        <item name="android:fontFamily">@font/didact_gothic</item>
+        <item name="android:textColor">@color/blackFont</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:digits">abcdefghijklmnopqrstuvwxyz
+            ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890,.\/!=_?:;"'&amp;@#$%^*()-+\n>
+        </item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="fixedEditNoMarginTextBox18sp">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:fontFamily">@font/didact_gothic</item>
+        <item name="android:textColor">@color/blackFont</item>
+        <item name="android:digits">abcdefghijklmnopqrstuvwxyz
+            ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890,.\/!=_?:;"'&amp;@#$%^*()-+\n>
+        </item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="fixedConstraintNoInputTextBox18sp">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:layout_marginEnd">8dp</item>
+        <item name="android:fontFamily">@font/didact_gothic</item>
+        <item name="android:textColor">@color/blackFont</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="fixedInputNumbersNoMargins18sp">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:fontFamily">@font/didact_gothic</item>
+        <item name="android:textColor">@color/blackFont</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="SCBSwitch" parent="Theme.AppCompat.Light">
+        <!-- active thumb & track color (30% transparency) -->
+        <item name="colorControlActivated">#46bdbf</item>
+        <!-- inactive thumb color -->
+        <item name="colorSwitchThumbNormal">#f1f1f1</item>
+        <!-- inactive track color (30% transparency) -->
+        <item name="android:colorForeground">@android:color/holo_red_dark</item>
+    </style>
+
+</resources>

@@ -1,0 +1,1014 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="data"
+            type="com.lizpostudio.kgoptometrycrm.export.ExportModel" />
+
+        <import type="com.lizpostudio.kgoptometrycrm.utils.FormatFunctionsKt" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/root"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/top_navigation"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/blueBasicLight"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/back_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_arrow_back_36"
+                tools:ignore="ContentDescription" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/img_preview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scaleType="fitXY"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/top_navigation"
+            tools:visibility="invisible" />
+
+        <HorizontalScrollView
+            android:id="@+id/root_scroll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/top_navigation">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/root_card"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="2dp">
+
+                <androidx.constraintlayout.widget.Barrier
+                    android:id="@+id/barrier_1_vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:barrierDirection="right"
+                    app:constraint_referenced_ids="lens_hint,r_hint,l_hint" />
+
+                <androidx.constraintlayout.widget.Barrier
+                    android:id="@+id/barrier_2_vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:barrierDirection="right"
+                    app:constraint_referenced_ids="rx_value,r_value" />
+
+                <androidx.constraintlayout.widget.Barrier
+                    android:id="@+id/barrier_3_vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:barrierDirection="right"
+                    app:constraint_referenced_ids="add_value,add_r_value,add_l_value" />
+
+                <androidx.constraintlayout.widget.Barrier
+                    android:id="@+id/barrier_4_vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:barrierDirection="right"
+                    app:constraint_referenced_ids="pd_value,pd_r_value,pd_l_value" />
+
+                <androidx.constraintlayout.widget.Barrier
+                    android:id="@+id/barrier_5_vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:barrierDirection="right"
+                    app:constraint_referenced_ids="ht_value,ht_r_value,ht_l_value" />
+
+                <androidx.constraintlayout.widget.Barrier
+                    android:id="@+id/barrier_6_vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:barrierDirection="right"
+                    app:constraint_referenced_ids="date_value,frame_size_hint,frame_size_value,frame_type_hint,frame_type_r_value" />
+
+                <androidx.constraintlayout.widget.Barrier
+                    android:id="@+id/barrier_7_vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:barrierDirection="right"
+                    app:constraint_referenced_ids="frame_ht_hint,frame_ht_value,ed_hint,ed_r_value" />
+
+                <androidx.constraintlayout.widget.Barrier
+                    android:id="@+id/barrier_or_value_date_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:barrierDirection="bottom"
+                    app:constraint_referenced_ids="name_hint,or_value,date_value" />
+
+                <androidx.constraintlayout.widget.Barrier
+                    android:id="@+id/barrier_lens_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:barrierDirection="bottom"
+                    app:constraint_referenced_ids="lens_value" />
+
+                <androidx.constraintlayout.widget.Barrier
+                    android:id="@+id/barrier_rx_value_add_value_pd_value_ht_value_fz_value_fht_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:barrierDirection="bottom"
+                    app:constraint_referenced_ids="rx_value,add_value,pd_value,ht_value,frame_size_value,frame_ht_value" />
+
+                <androidx.constraintlayout.widget.Barrier
+                    android:id="@+id/barrier_r_value_frame_type_value_ed_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:barrierDirection="bottom"
+                    app:constraint_referenced_ids="r_value,add_r_value,pd_r_value,ht_r_value,frame_type_r_value,ed_r_value" />
+
+                <androidx.constraintlayout.widget.Barrier
+                    android:id="@+id/barrier_l_value_remark_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:barrierDirection="bottom"
+                    app:constraint_referenced_ids="l_value,add_l_value,pd_l_value,ht_l_value,remark_l_value" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/label"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginEnd="2dp"
+                    android:layout_marginBottom="2dp"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="KG Optometry (Keith Goh Optometry) Sungai Petani"
+                    android:textSize="25sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginEnd="2dp"
+                    android:layout_marginBottom="2dp"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="TEL: 04-4446589/018-2188589 \t FAX: 04-4446589"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/label" />
+
+                <View
+                    android:id="@+id/line_1"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="5dp"
+                    android:background="@android:color/black"
+                    app:layout_constraintEnd_toEndOf="@id/barrier_7_vertical"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tel" />
+
+                <View
+                    android:id="@+id/line_2"
+                    android:layout_width="1dp"
+                    android:layout_height="0dp"
+                    android:background="@android:color/black"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/line_1" />
+
+                <View
+                    android:id="@+id/line_3"
+                    android:layout_width="1dp"
+                    android:layout_height="0dp"
+                    android:background="@android:color/black"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@id/barrier_7_vertical"
+                    app:layout_constraintTop_toTopOf="@+id/line_1" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/name_hint"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="4dp"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="@{data.patientName}"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toTopOf="@id/barrier_or_value_date_value"
+                    app:layout_constraintEnd_toStartOf="@id/barrier_5_vertical"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toEndOf="@id/line_2"
+                    app:layout_constraintTop_toBottomOf="@+id/name_hint2"
+                    tools:text="NAME" />
+
+                <View
+                    android:id="@+id/line_17"
+                    android:layout_width="1dp"
+                    android:layout_height="0dp"
+                    android:background="@android:color/black"
+                    app:layout_constraintBottom_toTopOf="@id/line_5"
+                    app:layout_constraintStart_toEndOf="@id/barrier_6_vertical"
+                    app:layout_constraintTop_toBottomOf="@id/line_1" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/or_hint"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="25dp"
+                    android:layout_marginBottom="4dp"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="OR"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@id/barrier_7_vertical"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toEndOf="@id/barrier_6_vertical"
+                    app:layout_constraintTop_toBottomOf="@id/line_1" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/or_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="4dp"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="@{data.or}"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toTopOf="@id/barrier_or_value_date_value"
+                    app:layout_constraintEnd_toEndOf="@id/barrier_7_vertical"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toEndOf="@id/barrier_6_vertical"
+                    app:layout_constraintTop_toBottomOf="@id/or_hint"
+                    app:layout_constraintVertical_bias="0"
+                    tools:text="value" />
+
+                <View
+                    android:id="@+id/line_18"
+                    android:layout_width="1dp"
+                    android:layout_height="0dp"
+                    android:background="@android:color/black"
+                    app:layout_constraintBottom_toTopOf="@id/line_5"
+                    app:layout_constraintStart_toEndOf="@id/barrier_5_vertical"
+                    app:layout_constraintTop_toBottomOf="@id/line_1" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/date_hint"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="25dp"
+                    android:layout_marginBottom="4dp"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="Date"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@id/barrier_6_vertical"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toEndOf="@id/barrier_5_vertical"
+                    app:layout_constraintTop_toBottomOf="@id/line_1" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/name_hint2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="Customer Name"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/date_hint" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/date_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="4dp"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="@{FormatFunctionsKt.convertLongToDDMMYY(data.date)}"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toTopOf="@id/barrier_or_value_date_value"
+                    app:layout_constraintEnd_toEndOf="@id/barrier_6_vertical"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toEndOf="@id/barrier_5_vertical"
+                    app:layout_constraintTop_toBottomOf="@id/date_hint"
+                    app:layout_constraintVertical_bias="0"
+                    tools:text="00/00/00" />
+
+                <View
+                    android:id="@+id/line_5"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:background="@android:color/black"
+                    app:layout_constraintEnd_toEndOf="@id/barrier_7_vertical"
+                    app:layout_constraintStart_toEndOf="@id/line_2"
+                    app:layout_constraintTop_toBottomOf="@id/barrier_or_value_date_value" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/lens_hint"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="25dp"
+                    android:layout_marginBottom="4dp"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="LENS"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@id/barrier_1_vertical"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toEndOf="@id/line_2"
+                    app:layout_constraintTop_toBottomOf="@id/line_5" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/lens_value"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="25dp"
+                    android:layout_marginBottom="4dp"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="@{data.lens}"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toTopOf="@id/barrier_lens_value"
+                    app:layout_constraintEnd_toStartOf="@id/barrier_7_vertical"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toEndOf="@id/barrier_1_vertical"
+                    app:layout_constraintTop_toBottomOf="@id/lens_hint"
+                    app:layout_constraintVertical_bias="0"
+                    tools:text="value" />
+
+                <View
+                    android:id="@+id/line_6"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:background="@android:color/black"
+                    app:layout_constraintEnd_toStartOf="@id/barrier_7_vertical"
+                    app:layout_constraintStart_toEndOf="@id/line_2"
+                    app:layout_constraintTop_toBottomOf="@id/barrier_lens_value" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/rx_hint"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="25dp"
+                    android:layout_marginBottom="4dp"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="Rx"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@id/barrier_2_vertical"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toEndOf="@id/line_2"
+                    app:layout_constraintTop_toBottomOf="@id/line_6" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/rx_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="10dp"
+                    android:fontFamily="@font/didact_gothic"
+                    android:minWidth="100dp"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toTopOf="@id/barrier_rx_value_add_value_pd_value_ht_value_fz_value_fht_value"
+                    app:layout_constraintEnd_toStartOf="@id/barrier_2_vertical"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toEndOf="@id/barrier_1_vertical"
+                    app:layout_constraintTop_toBottomOf="@id/rx_hint"
+                    app:layout_constraintVertical_bias="0"
+                    app:layout_goneMarginStart="8dp"
+                    tools:text="-" />
+
+                <View
+                    android:id="@+id/line_7"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:background="@android:color/black"
+                    app:layout_constraintEnd_toStartOf="@id/barrier_7_vertical"
+                    app:layout_constraintStart_toEndOf="@id/line_2"
+                    app:layout_constraintTop_toBottomOf="@id/barrier_rx_value_add_value_pd_value_ht_value_fz_value_fht_value" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/r_hint"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="25dp"
+                    android:layout_marginBottom="4dp"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="R"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@id/barrier_1_vertical"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toEndOf="@id/line_2"
+                    app:layout_constraintTop_toBottomOf="@id/line_7" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/r_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="4dp"
+                    android:fontFamily="@font/didact_gothic"
+                    android:minWidth="100dp"
+                    android:text="@{data.axisR}"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toTopOf="@id/barrier_r_value_frame_type_value_ed_value"
+                    app:layout_constraintEnd_toStartOf="@id/barrier_2_vertical"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toEndOf="@id/barrier_1_vertical"
+                    app:layout_constraintTop_toBottomOf="@id/r_hint"
+                    app:layout_constraintVertical_bias="0"
+                    tools:text="value" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/add_r_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="4dp"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="@{data.addR}"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toTopOf="@id/barrier_r_value_frame_type_value_ed_value"
+                    app:layout_constraintEnd_toStartOf="@id/barrier_3_vertical"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toEndOf="@id/barrier_2_vertical"
+                    app:layout_constraintTop_toBottomOf="@id/r_hint"
+                    app:layout_constraintVertical_bias="0"
+                    tools:text="value" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/pd_r_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="4dp"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="@{data.pdR}"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toTopOf="@id/barrier_r_value_frame_type_value_ed_value"
+                    app:layout_constraintEnd_toStartOf="@id/barrier_4_vertical"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toEndOf="@id/barrier_3_vertical"
+                    app:layout_constraintTop_toBottomOf="@id/r_hint"
+                    app:layout_constraintVertical_bias="0"
+                    tools:text="value" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/ht_r_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="4dp"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="@{data.htR}"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toTopOf="@id/barrier_r_value_frame_type_value_ed_value"
+                    app:layout_constraintEnd_toStartOf="@id/barrier_5_vertical"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toEndOf="@id/barrier_4_vertical"
+                    app:layout_constraintTop_toBottomOf="@id/r_hint"
+                    app:layout_constraintVertical_bias="0"
+                    tools:text="value" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/frame_type_hint"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="25dp"
+                    android:layout_marginBottom="4dp"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="Frame type"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@id/barrier_6_vertical"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toEndOf="@id/line_15"
+                    app:layout_constraintTop_toBottomOf="@id/line_7"
+                    app:layout_constraintVertical_bias="0" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/frame_type_r_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="4dp"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="@{data.frameType}"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toTopOf="@id/barrier_r_value_frame_type_value_ed_value"
+                    app:layout_constraintEnd_toStartOf="@id/barrier_6_vertical"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toEndOf="@id/barrier_5_vertical"
+                    app:layout_constraintTop_toBottomOf="@id/r_hint"
+                    app:layout_constraintVertical_bias="0"
+                    tools:text="value" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/ed_hint"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="25dp"
+                    android:layout_marginBottom="4dp"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="ED"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@id/barrier_7_vertical"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toEndOf="@id/barrier_6_vertical"
+                    app:layout_constraintTop_toBottomOf="@id/line_7" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/ed_r_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="8sp"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="@{data.ed}"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toTopOf="@id/barrier_r_value_frame_type_value_ed_value"
+                    app:layout_constraintEnd_toStartOf="@id/barrier_7_vertical"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toEndOf="@id/barrier_6_vertical"
+                    app:layout_constraintTop_toBottomOf="@id/r_hint"
+                    app:layout_constraintVertical_bias="0"
+                    tools:text="value" />
+
+                <View
+                    android:id="@+id/line_8"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:background="@android:color/black"
+                    app:layout_constraintEnd_toStartOf="@id/barrier_7_vertical"
+                    app:layout_constraintStart_toEndOf="@id/line_2"
+                    app:layout_constraintTop_toBottomOf="@id/barrier_r_value_frame_type_value_ed_value" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/l_hint"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="25dp"
+                    android:layout_marginBottom="4dp"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="L"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@id/barrier_1_vertical"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toEndOf="@id/line_2"
+                    app:layout_constraintTop_toBottomOf="@id/line_8" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/l_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="4dp"
+                    android:fontFamily="@font/didact_gothic"
+                    android:minWidth="100dp"
+                    android:text="@{data.axisL}"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toTopOf="@id/barrier_l_value_remark_value"
+                    app:layout_constraintEnd_toStartOf="@id/barrier_2_vertical"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toEndOf="@id/barrier_1_vertical"
+                    app:layout_constraintTop_toBottomOf="@id/l_hint"
+                    app:layout_constraintVertical_bias="0"
+                    tools:text="value" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/add_l_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="4dp"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="@{data.addL}"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toTopOf="@id/barrier_l_value_remark_value"
+                    app:layout_constraintEnd_toStartOf="@id/barrier_2_vertical"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toEndOf="@id/barrier_2_vertical"
+                    app:layout_constraintTop_toBottomOf="@id/l_hint"
+                    app:layout_constraintVertical_bias="0"
+                    tools:text="value" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/pd_l_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="4dp"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="@{data.pdL}"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toTopOf="@id/barrier_l_value_remark_value"
+                    app:layout_constraintEnd_toStartOf="@id/barrier_4_vertical"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toEndOf="@id/barrier_3_vertical"
+                    app:layout_constraintTop_toBottomOf="@id/l_hint"
+                    app:layout_constraintVertical_bias="0"
+                    tools:text="value" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/ht_l_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="4dp"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="@{data.htL}"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toTopOf="@id/barrier_l_value_remark_value"
+                    app:layout_constraintEnd_toStartOf="@id/barrier_5_vertical"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toEndOf="@id/barrier_4_vertical"
+                    app:layout_constraintTop_toBottomOf="@id/l_hint"
+                    app:layout_constraintVertical_bias="0"
+                    tools:text="value" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/remark_hint"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="25dp"
+                    android:layout_marginBottom="4dp"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="Remark"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@id/barrier_7_vertical"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toEndOf="@id/line_15"
+                    app:layout_constraintTop_toBottomOf="@id/line_8" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/remark_l_value"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="4dp"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="@{data.remarksPrint}"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toTopOf="@id/barrier_l_value_remark_value"
+                    app:layout_constraintEnd_toStartOf="@id/barrier_7_vertical"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toEndOf="@id/barrier_5_vertical"
+                    app:layout_constraintTop_toBottomOf="@id/l_hint"
+                    tools:text="value" />
+
+                <View
+                    android:id="@+id/line_9"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:background="@android:color/black"
+                    app:layout_constraintEnd_toStartOf="@id/barrier_7_vertical"
+                    app:layout_constraintStart_toEndOf="@id/line_2"
+                    app:layout_constraintTop_toBottomOf="@id/barrier_l_value_remark_value" />
+
+                <View
+                    android:id="@+id/line_10"
+                    android:layout_width="1dp"
+                    android:layout_height="0dp"
+                    android:background="@android:color/black"
+                    app:layout_constraintBottom_toBottomOf="@id/line_6"
+                    app:layout_constraintEnd_toEndOf="@+id/barrier_1_vertical"
+                    app:layout_constraintStart_toStartOf="@+id/barrier_1_vertical"
+                    app:layout_constraintTop_toTopOf="@id/line_5" />
+
+                <View
+                    android:id="@+id/line_11"
+                    android:layout_width="1dp"
+                    android:layout_height="0dp"
+                    android:background="@android:color/black"
+                    app:layout_constraintBottom_toBottomOf="@id/line_9"
+                    app:layout_constraintEnd_toEndOf="@+id/barrier_1_vertical"
+                    app:layout_constraintStart_toStartOf="@+id/barrier_1_vertical"
+                    app:layout_constraintTop_toTopOf="@id/line_7" />
+
+                <View
+                    android:id="@+id/line_12"
+                    android:layout_width="1dp"
+                    android:layout_height="0dp"
+                    android:background="@android:color/black"
+                    app:layout_constraintBottom_toBottomOf="@id/line_9"
+                    app:layout_constraintEnd_toEndOf="@+id/barrier_2_vertical"
+                    app:layout_constraintStart_toStartOf="@+id/barrier_2_vertical"
+                    app:layout_constraintTop_toTopOf="@id/line_6" />
+
+                <View
+                    android:id="@+id/line_13"
+                    android:layout_width="1dp"
+                    android:layout_height="0dp"
+                    android:background="@android:color/black"
+                    app:layout_constraintBottom_toBottomOf="@id/line_9"
+                    app:layout_constraintEnd_toEndOf="@+id/barrier_3_vertical"
+                    app:layout_constraintStart_toStartOf="@+id/barrier_3_vertical"
+                    app:layout_constraintTop_toTopOf="@id/line_6" />
+
+                <View
+                    android:id="@+id/line_14"
+                    android:layout_width="1dp"
+                    android:layout_height="0dp"
+                    android:background="@android:color/black"
+                    app:layout_constraintBottom_toBottomOf="@id/line_9"
+                    app:layout_constraintEnd_toEndOf="@+id/barrier_4_vertical"
+                    app:layout_constraintStart_toStartOf="@+id/barrier_4_vertical"
+                    app:layout_constraintTop_toTopOf="@id/line_6" />
+
+                <View
+                    android:id="@+id/line_15"
+                    android:layout_width="1dp"
+                    android:layout_height="0dp"
+                    android:background="@android:color/black"
+                    app:layout_constraintBottom_toBottomOf="@id/line_9"
+                    app:layout_constraintEnd_toEndOf="@+id/barrier_5_vertical"
+                    app:layout_constraintStart_toStartOf="@+id/barrier_5_vertical"
+                    app:layout_constraintTop_toTopOf="@id/line_6" />
+
+                <View
+                    android:id="@+id/line_16"
+                    android:layout_width="1dp"
+                    android:layout_height="0dp"
+                    android:background="@android:color/black"
+                    app:layout_constraintBottom_toBottomOf="@id/line_8"
+                    app:layout_constraintEnd_toEndOf="@+id/barrier_6_vertical"
+                    app:layout_constraintStart_toStartOf="@+id/barrier_6_vertical"
+                    app:layout_constraintTop_toTopOf="@id/line_6" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/add_hint"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="25dp"
+                    android:layout_marginBottom="4dp"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="Add"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@id/barrier_3_vertical"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toEndOf="@id/barrier_2_vertical"
+                    app:layout_constraintTop_toBottomOf="@id/line_6" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/add_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="4dp"
+                    android:fontFamily="@font/didact_gothic"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toTopOf="@id/barrier_rx_value_add_value_pd_value_ht_value_fz_value_fht_value"
+                    app:layout_constraintEnd_toStartOf="@id/barrier_3_vertical"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toEndOf="@id/barrier_2_vertical"
+                    app:layout_constraintTop_toBottomOf="@id/add_hint"
+                    app:layout_constraintVertical_bias="0"
+                    tools:text="-" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/pd_hint"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="25dp"
+                    android:layout_marginBottom="4dp"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="PD"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@id/barrier_4_vertical"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toEndOf="@id/barrier_3_vertical"
+                    app:layout_constraintTop_toBottomOf="@id/line_6" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/pd_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="4dp"
+                    android:fontFamily="@font/didact_gothic"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toTopOf="@id/barrier_rx_value_add_value_pd_value_ht_value_fz_value_fht_value"
+                    app:layout_constraintEnd_toStartOf="@id/barrier_4_vertical"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toEndOf="@id/barrier_3_vertical"
+                    app:layout_constraintTop_toBottomOf="@id/add_hint"
+                    app:layout_constraintVertical_bias="0"
+                    tools:text="-" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/ht_hint"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="25dp"
+                    android:layout_marginBottom="4dp"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="HT"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@id/barrier_5_vertical"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toEndOf="@id/barrier_4_vertical"
+                    app:layout_constraintTop_toBottomOf="@id/line_6" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/ht_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="4dp"
+                    android:fontFamily="@font/didact_gothic"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toTopOf="@id/barrier_rx_value_add_value_pd_value_ht_value_fz_value_fht_value"
+                    app:layout_constraintEnd_toStartOf="@id/barrier_5_vertical"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toEndOf="@id/barrier_4_vertical"
+                    app:layout_constraintTop_toBottomOf="@id/add_hint"
+                    app:layout_constraintVertical_bias="0"
+                    tools:text="-" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/frame_size_hint"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="25dp"
+                    android:layout_marginBottom="4dp"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="Frame size"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@id/barrier_6_vertical"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toEndOf="@id/barrier_5_vertical"
+                    app:layout_constraintTop_toBottomOf="@id/line_6" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/frame_size_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="4dp"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="@{data.frameSize}"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toTopOf="@id/barrier_rx_value_add_value_pd_value_ht_value_fz_value_fht_value"
+                    app:layout_constraintEnd_toStartOf="@id/barrier_6_vertical"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toEndOf="@id/barrier_5_vertical"
+                    app:layout_constraintTop_toBottomOf="@id/add_hint"
+                    app:layout_constraintVertical_bias="0"
+                    tools:text="value" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/frame_ht_hint"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="25dp"
+                    android:layout_marginBottom="4dp"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="Frame Ht"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@id/barrier_7_vertical"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toEndOf="@id/barrier_6_vertical"
+                    app:layout_constraintTop_toBottomOf="@id/line_6" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/frame_ht_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="4dp"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="@{data.frameHt}"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toTopOf="@id/barrier_rx_value_add_value_pd_value_ht_value_fz_value_fht_value"
+                    app:layout_constraintEnd_toStartOf="@id/barrier_7_vertical"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toEndOf="@id/barrier_6_vertical"
+                    app:layout_constraintTop_toBottomOf="@id/add_hint"
+                    app:layout_constraintVertical_bias="0"
+                    tools:text="value" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </HorizontalScrollView>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_save_image"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@color/blueBasicLight"
+            android:fontFamily="@font/didact_gothic"
+            android:text="EXPORT AS JPEG"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@id/img_preview"
+            app:layout_constraintStart_toStartOf="@id/img_preview"
+            app:layout_constraintTop_toBottomOf="@id/img_preview"
+            app:layout_constraintWidth_percent=".75"
+            tools:layout_constraintEnd_toEndOf="@id/root_scroll"
+            tools:layout_constraintStart_toStartOf="@id/root_scroll"
+            tools:layout_constraintTop_toBottomOf="@id/root_scroll"
+            tools:visibility="visible" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

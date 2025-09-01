@@ -1,0 +1,17 @@
+pluginManagement {
+    apply from: "versions.gradle"
+
+    addRepos(repositories)
+}
+
+plugins {
+    //noinspection GradlePluginVersion
+    id "com.android.application" version "$vGradle" apply false
+    id "org.jetbrains.kotlin.android" version "$vKotlin" apply false
+    id "com.google.devtools.ksp" version "$vKsp" apply false
+    id "com.google.gms.google-services" version "$vComGoogleGmsGoogleServices" apply false
+    id "androidx.navigation.safeargs" version "$vAndroidxNavigation" apply false
+}
+
+rootProject.name = "KG Optometry CRM "
+include ":app"

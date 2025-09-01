@@ -1,0 +1,762 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation"
+    app:startDestination="@id/loginFragment">
+
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.lizpostudio.kgoptometrycrm.LoginFragment"
+        android:label="@string/label_login_fragment"
+        tools:layout="@layout/fragment_login">
+        <action
+            android:id="@+id/action_loginFragment_to_databaseSearchFragment"
+            app:destination="@id/searchCostumerFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/searchRecycleBinFragment"
+        android:name="com.lizpostudio.kgoptometrycrm.search.recycle_bin.SearchRecycleBinFragment"
+        android:label="Search Recycle Bin Fragment"
+        tools:layout="@layout/fragment_search_recycle_bin">
+        <action
+            android:id="@+id/action_to_form_selection"
+            app:destination="@id/formSelectionFragment" />
+        <action
+            android:id="@+id/action_to_info"
+            app:destination="@id/infoFragment"
+            app:popUpToInclusive="false" />
+        <action
+            android:id="@+id/action_to_login"
+            app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_to_search_sales_screen"
+            app:destination="@id/databaseSearchSalesFragment" />
+        <action
+            android:id="@+id/action_to_search_follow_up_screen"
+            app:destination="@id/searchFollowUpFragment" />
+        <action
+            android:id="@+id/action_to_search_costumer"
+            app:destination="@id/searchCostumerFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/searchCostumerFragment"
+        android:name="com.lizpostudio.kgoptometrycrm.search.costumer.SearchCostumerFragment"
+        android:label="DatabaseSearchFragment"
+        tools:layout="@layout/fragment_search_costumer">
+        <action
+            android:id="@+id/action_to_search_recycle_bin_fragment"
+            app:destination="@id/searchRecycleBinFragment" />
+        <action
+            android:id="@+id/action_to_formSelectionFragment"
+            app:destination="@id/formSelectionFragment" />
+        <action
+            android:id="@+id/action_to_infoFragment"
+            app:destination="@id/infoFragment"
+            app:popUpToInclusive="false" />
+        <action
+            android:id="@+id/action_to_loginFragment"
+            app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_to_database_sales_screen"
+            app:destination="@id/databaseSearchSalesFragment" />
+        <action
+            android:id="@+id/action_to_search_follow_up_screen"
+            app:destination="@id/searchFollowUpFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/searchFollowUpFragment"
+        android:name="com.lizpostudio.kgoptometrycrm.search.follow_up.SearchFollowUpFragment"
+        android:label="DatabaseSearchFollowUpScreenFragment"
+        tools:layout="@layout/fragment_search_sales">
+        <action
+            android:id="@+id/action_to_search_recycle_bin_fragment"
+            app:destination="@id/searchRecycleBinFragment" />
+        <action
+            android:id="@+id/action_to_search_costumer_fragment"
+            app:destination="@id/searchCostumerFragment" />
+        <action
+            android:id="@+id/action_to_search_sales_fragment"
+            app:destination="@id/databaseSearchSalesFragment" />
+        <action
+            android:id="@+id/action_to_login"
+            app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_to_formSelectionFragment"
+            app:destination="@id/formSelectionFragment" />
+        <action
+            android:id="@+id/action_to_infoFragment"
+            app:destination="@id/infoFragment"
+            app:popUpToInclusive="false" />
+        <action
+            android:id="@+id/action_to_loginFragment"
+            app:destination="@id/loginFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/databaseSearchSalesFragment"
+        android:name="com.lizpostudio.kgoptometrycrm.search.sales.SearchSalesFragment"
+        android:label="DatabaseSearchSalesScreenFragment"
+        tools:layout="@layout/fragment_search_sales">
+        <action
+            android:id="@+id/action_to_search_recycle_bin_fragment"
+            app:destination="@id/searchRecycleBinFragment" />
+        <action
+            android:id="@+id/action_to_database_search"
+            app:destination="@id/searchCostumerFragment" />
+        <action
+            android:id="@+id/action_to_login"
+            app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_to_formSelectionFragment"
+            app:destination="@id/formSelectionFragment" />
+        <action
+            android:id="@+id/action_to_infoFragment"
+            app:destination="@id/infoFragment"
+            app:popUpToInclusive="false" />
+        <action
+            android:id="@+id/action_to_loginFragment"
+            app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_to_search_follow_up_screen"
+            app:destination="@id/searchFollowUpFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/formSelectionFragment"
+        android:name="com.lizpostudio.kgoptometrycrm.formselection.FormSelectionFragment"
+        android:label="FormSelectionFragment"
+        tools:layout="@layout/fragment_form_selection">
+        <argument
+            android:name="patientID"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_to_searchFollowUpFragment"
+            app:destination="@id/searchFollowUpFragment" />
+        <action
+            android:id="@+id/action_to_searchCostumerFragment"
+            app:destination="@id/searchCostumerFragment" />
+        <action
+            android:id="@+id/action_to_searchSalesFragment"
+            app:destination="@id/databaseSearchSalesFragment" />
+        <action
+            android:id="@+id/action_to_search_recycle_bin_fragment"
+            app:destination="@id/databaseSearchSalesFragment" />
+        <action
+            android:id="@+id/action_to_infoFragment"
+            app:destination="@id/infoFragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right" />
+        <action
+            android:id="@+id/action_to_currentRxFragment"
+            app:destination="@id/currentRxFragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right" />
+        <action
+            android:id="@+id/action_to_ocularHealthFragment"
+            app:destination="@id/ocularHealthFragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right" />
+        <action
+            android:id="@+id/action_to_supplementaryFragment"
+            app:destination="@id/supplementaryFragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right" />
+        <action
+            android:id="@+id/action_to_contactLensFragment"
+            app:destination="@id/contactLensFragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right"
+            app:popUpTo="@id/formSelectionFragment" />
+        <action
+            android:id="@+id/action_to_orthokFragment"
+            app:destination="@id/orthokFragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right" />
+        <action
+            android:id="@+id/action_to_sales_order"
+            app:destination="@id/salesOrderFragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right" />
+        <action
+            android:id="@+id/action_to_cashOrderFragment"
+            app:destination="@id/cashOrderFragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right"
+
+            app:popEnterAnim="@android:anim/slide_in_left" />
+        <action
+            android:id="@+id/action_to_followUpFragment"
+            app:destination="@id/followUpFragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right" />
+        <action
+            android:id="@+id/action_to_memoFragment"
+            app:destination="@id/memoFragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right" />
+        <action
+            android:id="@+id/action_to_refractionFragment"
+            app:destination="@id/refractionFragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right" />
+        <action
+            android:id="@+id/action_to_targetCopyFragment"
+            app:destination="@id/targetCopyFragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right" />
+    </fragment>
+    <fragment
+        android:id="@+id/infoFragment"
+        android:name="com.lizpostudio.kgoptometrycrm.forms.InfoFragment"
+        android:label="InfoFragment"
+        tools:layout="@layout/fragment_info_form">
+        <argument
+            android:name="recordID"
+            app:argType="long" />
+        <action
+            android:id="@+id/actionToDatabaseSearchFragment"
+            app:destination="@id/searchCostumerFragment" />
+        <action
+            android:id="@+id/action_to_cashOrderFragment"
+            app:destination="@id/cashOrderFragment" />
+        <action
+            android:id="@+id/action_to_formSelectionFragment"
+            app:destination="@id/formSelectionFragment" />
+        <action
+            android:id="@+id/action_to_currentRxFragment"
+            app:destination="@id/currentRxFragment" />
+        <action
+            android:id="@+id/action_to_ocularHealthFragment"
+            app:destination="@id/ocularHealthFragment" />
+        <action
+            android:id="@+id/action_to_supplementaryFragment"
+            app:destination="@id/supplementaryFragment" />
+        <action
+            android:id="@+id/action_to_contactLensFragment"
+            app:destination="@id/contactLensFragment" />
+        <action
+            android:id="@+id/action_to_orthokFragment"
+            app:destination="@id/orthokFragment" />
+        <action
+            android:id="@+id/action_to_salesOrderFragment"
+            app:destination="@id/salesOrderFragment" />
+        <action
+            android:id="@+id/action_to_followUpFragment"
+            app:destination="@id/followUpFragment" />
+        <action
+            android:id="@+id/action_to_memoFragment"
+            app:destination="@id/memoFragment" />
+        <action
+            android:id="@+id/action_to_refractionFragment"
+            app:destination="@id/refractionFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/currentRxFragment"
+        android:name="com.lizpostudio.kgoptometrycrm.forms.CurrentRxFragment"
+        android:label="CurrentRxFragment"
+        tools:layout="@layout/fragment_current_rx_form">
+        <argument
+            android:name="recordID"
+            app:argType="long" />
+        <action
+            android:id="@+id/actionToDatabaseSearchFragment"
+            app:destination="@id/searchCostumerFragment" />
+        <action
+            android:id="@+id/action_to_cashOrderFragment"
+            app:destination="@id/cashOrderFragment" />
+        <action
+            android:id="@+id/action_to_infoFragment"
+            app:destination="@id/infoFragment" />
+        <action
+            android:id="@+id/action_to_followUpFragment"
+            app:destination="@id/followUpFragment" />
+        <action
+            android:id="@+id/action_to_formSelectionFragment"
+            app:destination="@id/formSelectionFragment" />
+        <action
+            android:id="@+id/action_to_ocularHealthFragment"
+            app:destination="@id/ocularHealthFragment" />
+        <action
+            android:id="@+id/action_to_supplementaryFragment"
+            app:destination="@id/supplementaryFragment" />
+        <action
+            android:id="@+id/action_to_contactLensFragment"
+            app:destination="@id/contactLensFragment" />
+        <action
+            android:id="@+id/action_to_orthokFragment"
+            app:destination="@id/orthokFragment" />
+        <action
+            android:id="@+id/action_to_salesOrderFragment"
+            app:destination="@id/salesOrderFragment" />
+        <action
+            android:id="@+id/action_to_memoFragment"
+            app:destination="@id/memoFragment" />
+        <action
+            android:id="@+id/action_to_refractionFragment"
+            app:destination="@id/refractionFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/ocularHealthFragment"
+        android:name="com.lizpostudio.kgoptometrycrm.forms.OcularHealthFragment"
+        android:label="OcularHealthFragment"
+        tools:layout="@layout/fragment_ocular_health">
+        <argument
+            android:name="recordID"
+            app:argType="long" />
+        <action
+            android:id="@+id/action_to_DatabaseSearchFragment"
+            app:destination="@id/searchCostumerFragment" />
+        <action
+            android:id="@+id/action_to_cashOrderFragment"
+            app:destination="@id/cashOrderFragment" />
+        <action
+            android:id="@+id/action_to_formSelectionFragment"
+            app:destination="@id/formSelectionFragment" />
+        <action
+            android:id="@+id/action_to_infoFragment"
+            app:destination="@id/infoFragment" />
+        <action
+            android:id="@+id/action_to_currentRxFragment"
+            app:destination="@id/currentRxFragment"
+            app:popUpTo="@id/formSelectionFragment" />
+        <action
+            android:id="@+id/action_to_supplementaryFragment"
+            app:destination="@id/supplementaryFragment" />
+        <action
+            android:id="@+id/action_to_contactLensFragment"
+            app:destination="@id/contactLensFragment" />
+        <action
+            android:id="@+id/action_to_orthokFragment"
+            app:destination="@id/orthokFragment" />
+        <action
+            android:id="@+id/action_to_salesOrderFragment"
+            app:destination="@id/salesOrderFragment" />
+        <action
+            android:id="@+id/action_to_memoFragment"
+            app:destination="@id/memoFragment" />
+        <action
+            android:id="@+id/action_to_followUpFragment"
+            app:destination="@id/followUpFragment" />
+        <action
+            android:id="@+id/action_to_refractionFragment"
+            app:destination="@id/refractionFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/supplementaryFragment"
+        android:name="com.lizpostudio.kgoptometrycrm.forms.SupplementaryFragment"
+        android:label="SupplementaryFragment"
+        tools:layout="@layout/fragment_supplementary_test">
+        <argument
+            android:name="recordID"
+            app:argType="long" />
+        <action
+            android:id="@+id/actionToDatabaseSearchFragment"
+            app:destination="@id/searchCostumerFragment" />
+        <action
+            android:id="@+id/action_to_cashOrderFragment"
+            app:destination="@id/cashOrderFragment" />
+        <action
+            android:id="@+id/action_to_followUpFragment"
+            app:destination="@id/followUpFragment" />
+        <action
+            android:id="@+id/action_to_ocularHealthFragment"
+            app:destination="@id/ocularHealthFragment" />
+        <action
+            android:id="@+id/action_to_currentRxFragment"
+            app:destination="@id/currentRxFragment" />
+        <action
+            android:id="@+id/action_to_infoFragment"
+            app:destination="@id/infoFragment" />
+        <action
+            android:id="@+id/action_to_formSelectionFragment"
+            app:destination="@id/formSelectionFragment" />
+        <action
+            android:id="@+id/action_to_contactLensFragment"
+            app:destination="@id/contactLensFragment" />
+        <action
+            android:id="@+id/action_to_orthokFragment"
+            app:destination="@id/orthokFragment" />
+        <action
+            android:id="@+id/action_to_salesOrderFragment"
+            app:destination="@id/salesOrderFragment" />
+        <action
+            android:id="@+id/action_to_memoFragment"
+            app:destination="@id/memoFragment" />
+        <action
+            android:id="@+id/action_to_refractionFragment"
+            app:destination="@id/refractionFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/contactLensFragment"
+        android:name="com.lizpostudio.kgoptometrycrm.forms.ContactLensFragment"
+        android:label="ContactLensFragment"
+        tools:layout="@layout/fragment_contact_lens">
+        <argument
+            android:name="recordID"
+            app:argType="long" />
+        <action
+            android:id="@+id/actionToDatabaseSearchFragment"
+            app:destination="@id/searchCostumerFragment" />
+        <action
+            android:id="@+id/action_to_cashOrderFragment"
+            app:destination="@id/cashOrderFragment" />
+        <action
+            android:id="@+id/action_to_formSelectionFragment"
+            app:destination="@id/formSelectionFragment" />
+        <action
+            android:id="@+id/action_to_infoFragment"
+            app:destination="@id/infoFragment" />
+        <action
+            android:id="@+id/action_to_followUpFragment"
+            app:destination="@id/followUpFragment" />
+        <action
+            android:id="@+id/action_to_currentRxFragment"
+            app:destination="@id/currentRxFragment" />
+        <action
+            android:id="@+id/action_to_ocularHealthFragment"
+            app:destination="@id/ocularHealthFragment" />
+        <action
+            android:id="@+id/action_to_supplementaryFragment"
+            app:destination="@id/supplementaryFragment" />
+        <action
+            android:id="@+id/action_to_orthokFragment"
+            app:destination="@id/orthokFragment" />
+        <action
+            android:id="@+id/action_to_salesOrderFragment"
+            app:destination="@id/salesOrderFragment" />
+        <action
+            android:id="@+id/action_to_memoFragment"
+            app:destination="@id/memoFragment" />
+        <action
+            android:id="@+id/action_to_refractionFragment"
+            app:destination="@id/refractionFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/orthokFragment"
+        android:name="com.lizpostudio.kgoptometrycrm.forms.OrthokFragment"
+        android:label="OrthokFragment"
+        tools:layout="@layout/fragment_orthok">
+        <argument
+            android:name="recordID"
+            app:argType="long" />
+        <action
+            android:id="@+id/actionToDatabaseSearchFragment"
+            app:destination="@id/searchCostumerFragment" />
+        <action
+            android:id="@+id/action_to_cashOrderFragment"
+            app:destination="@id/cashOrderFragment" />
+        <action
+            android:id="@+id/action_to_contactLensFragment"
+            app:destination="@id/contactLensFragment" />
+        <action
+            android:id="@+id/action_to_currentRxFragment"
+            app:destination="@id/currentRxFragment" />
+        <action
+            android:id="@+id/action_to_ocularHealthFragment"
+            app:destination="@id/ocularHealthFragment" />
+        <action
+            android:id="@+id/action_to_supplementaryFragment"
+            app:destination="@id/supplementaryFragment" />
+        <action
+            android:id="@+id/action_to_infoFragment"
+            app:destination="@id/infoFragment" />
+        <action
+            android:id="@+id/action_to_formSelectionFragment"
+            app:destination="@id/formSelectionFragment" />
+        <action
+            android:id="@+id/action_to_salesOrderFragment"
+            app:destination="@id/salesOrderFragment" />
+        <action
+            android:id="@+id/action_to_memoFragment"
+            app:destination="@id/memoFragment" />
+        <action
+            android:id="@+id/action_to_refractionFragment"
+            app:destination="@id/refractionFragment" />
+        <action
+            android:id="@+id/action_to_followUpFragment"
+            app:destination="@id/followUpFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/salesOrderFragment"
+        android:name="com.lizpostudio.kgoptometrycrm.forms.SalesOrderFragment"
+        android:label="Sales Order"
+        tools:layout="@layout/fragment_final_prescription">
+        <argument
+            android:name="recordID"
+            app:argType="long" />
+        <action
+            android:id="@+id/actionToDatabaseSearchFragment"
+            app:destination="@id/searchCostumerFragment" />
+        <action
+            android:id="@+id/action_to_orthokFragment"
+            app:destination="@id/orthokFragment" />
+        <action
+            android:id="@+id/action_to_followUpFragment"
+            app:destination="@id/followUpFragment" />
+        <action
+            android:id="@+id/action_to_contactLensFragment"
+            app:destination="@id/contactLensFragment" />
+        <action
+            android:id="@+id/action_to_formSelectionFragment"
+            app:destination="@id/formSelectionFragment" />
+        <action
+            android:id="@+id/action_to_currentRxFragment"
+            app:destination="@id/currentRxFragment" />
+        <action
+            android:id="@+id/action_to_ocularHealthFragment"
+            app:destination="@id/ocularHealthFragment" />
+        <action
+            android:id="@+id/action_to_infoFragment"
+            app:destination="@id/infoFragment" />
+        <action
+            android:id="@+id/action_to_supplementaryFragment"
+            app:destination="@id/supplementaryFragment" />
+        <action
+            android:id="@+id/action_to_memoFragment"
+            app:destination="@id/memoFragment" />
+        <action
+            android:id="@+id/action_to_refractionFragment"
+            app:destination="@id/refractionFragment" />
+        <action
+            android:id="@+id/action_to_cashOrderFragment"
+            app:destination="@id/cashOrderFragment" />
+        <action
+            android:id="@+id/action_to_preview_with_name_fragment"
+            app:destination="@id/previewWithNameFragment" />
+        <action
+            android:id="@+id/action_to_preview_with_out_name_fragment"
+            app:destination="@id/previewWithOutNameFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/memoFragment"
+        android:name="com.lizpostudio.kgoptometrycrm.forms.MemoFragment"
+        android:label="MemoFragment"
+        tools:layout="@layout/fragment_memo">
+        <argument
+            android:name="recordID"
+            app:argType="long" />
+        <action
+            android:id="@+id/actionToDatabaseSearchFragment"
+            app:destination="@id/searchCostumerFragment" />
+        <action
+            android:id="@+id/action_to_cashOrderFragment"
+            app:destination="@id/cashOrderFragment" />
+        <action
+            android:id="@+id/action_to_formSelectionFragment"
+            app:destination="@id/formSelectionFragment" />
+        <action
+            android:id="@+id/action_to_supplementaryFragment"
+            app:destination="@id/supplementaryFragment" />
+        <action
+            android:id="@+id/action_to_infoFragment"
+            app:destination="@id/infoFragment" />
+        <action
+            android:id="@+id/action_to_salesOrderFragment"
+            app:destination="@id/salesOrderFragment" />
+        <action
+            android:id="@+id/action_to_followUpFragment"
+            app:destination="@id/followUpFragment" />
+        <action
+            android:id="@+id/action_to_orthokFragment"
+            app:destination="@id/orthokFragment" />
+        <action
+            android:id="@+id/action_to_contactLensFragment"
+            app:destination="@id/contactLensFragment" />
+        <action
+            android:id="@+id/action_to_currentRxFragment"
+            app:destination="@id/currentRxFragment" />
+        <action
+            android:id="@+id/action_to_ocularHealthFragment"
+            app:destination="@id/ocularHealthFragment" />
+        <action
+            android:id="@+id/action_to_refractionFragment"
+            app:destination="@id/refractionFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/refractionFragment"
+        android:name="com.lizpostudio.kgoptometrycrm.forms.RefractionFragment"
+        android:label="RefractionFragment"
+        tools:layout="@layout/fragment_refraction">
+
+        <argument
+            android:name="recordID"
+            app:argType="long" />
+        <action
+            android:id="@+id/action_to_followUpFragment"
+            app:destination="@+id/followUpFragment" />
+        <action
+            android:id="@+id/actionToDatabaseSearchFragment"
+            app:destination="@+id/searchCostumerFragment" />
+        <action
+            android:id="@+id/action_to_cashOrderFragment"
+            app:destination="@id/cashOrderFragment" />
+        <action
+            android:id="@+id/action_to_formSelectionFragment"
+            app:destination="@id/formSelectionFragment" />
+        <action
+            android:id="@+id/action_to_currentRxFragment"
+            app:destination="@id/currentRxFragment" />
+        <action
+            android:id="@+id/action_to_ocularHealthFragment"
+            app:destination="@id/ocularHealthFragment" />
+        <action
+            android:id="@+id/action_to_memoFragment"
+            app:destination="@id/memoFragment" />
+        <action
+            android:id="@+id/action_to_supplementaryFragment"
+            app:destination="@id/supplementaryFragment" />
+        <action
+            android:id="@+id/action_to_infoFragment"
+            app:destination="@id/infoFragment" />
+        <action
+            android:id="@+id/action_to_salesOrderFragment"
+            app:destination="@id/salesOrderFragment" />
+        <action
+            android:id="@+id/action_to_orthokFragment"
+            app:destination="@id/orthokFragment" />
+        <action
+            android:id="@+id/action_to_contactLensFragment"
+            app:destination="@id/contactLensFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/followUpFragment"
+        android:name="com.lizpostudio.kgoptometrycrm.forms.FollowUpFragment"
+        android:label="FollowUpFragment"
+        tools:layout="@layout/fragment_follow_up">
+        <argument
+            android:name="recordID"
+            app:argType="long" />
+        <action
+            android:id="@+id/actionToCashOrderFragment"
+            app:destination="@id/cashOrderFragment" />
+        <action
+            android:id="@+id/actionToDatabaseSearchFragment"
+            app:destination="@id/searchCostumerFragment" />
+        <action
+            android:id="@+id/action_to_salesOrderFragment"
+            app:destination="@id/salesOrderFragment" />
+        <action
+            android:id="@+id/action_to_orthokFragment"
+            app:destination="@id/orthokFragment" />
+        <action
+            android:id="@+id/action_to_contactLensFragment"
+            app:destination="@id/contactLensFragment" />
+        <action
+            android:id="@+id/action_to_formSelectionFragment"
+            app:destination="@id/formSelectionFragment" />
+        <action
+            android:id="@+id/action_to_currentRxFragment"
+            app:destination="@id/currentRxFragment" />
+        <action
+            android:id="@+id/action_to_ocularHealthFragment"
+            app:destination="@id/ocularHealthFragment" />
+        <action
+            android:id="@+id/action_to_infoFragment"
+            app:destination="@id/infoFragment" />
+        <action
+            android:id="@+id/action_to_supplementaryFragment"
+            app:destination="@id/supplementaryFragment" />
+        <action
+            android:id="@+id/action_to_memoFragment"
+            app:destination="@id/memoFragment" />
+        <action
+            android:id="@+id/action_to_refractionFragment"
+            app:destination="@id/refractionFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/cashOrderFragment"
+        android:name="com.lizpostudio.kgoptometrycrm.forms.CashOrderFragment"
+        android:label="CashOrderFragment"
+        tools:layout="@layout/fragment_cash_order">
+        <argument
+            android:name="recordID"
+            app:argType="long" />
+
+        <action
+            android:id="@+id/actionToDatabaseSearchFragment"
+            app:destination="@id/searchCostumerFragment" />
+        <action
+            android:id="@+id/action_to_salesOrderFragment"
+            app:destination="@id/salesOrderFragment" />
+        <action
+            android:id="@+id/action_to_orthokFragment"
+            app:destination="@id/orthokFragment" />
+        <action
+            android:id="@+id/action_to_contactLensFragment"
+            app:destination="@id/contactLensFragment" />
+        <action
+            android:id="@+id/action_to_formSelectionFragment"
+            app:destination="@id/formSelectionFragment" />
+        <action
+            android:id="@+id/action_to_currentRxFragment"
+            app:destination="@id/currentRxFragment" />
+        <action
+            android:id="@+id/action_to_ocularHealthFragment"
+            app:destination="@id/ocularHealthFragment" />
+        <action
+            android:id="@+id/action_to_infoFragment"
+            app:destination="@id/infoFragment" />
+        <action
+            android:id="@+id/action_to_followUpFragment"
+            app:destination="@id/followUpFragment" />
+        <action
+            android:id="@+id/action_to_supplementaryFragment"
+            app:destination="@id/supplementaryFragment" />
+        <action
+            android:id="@+id/action_to_memoFragment"
+            app:destination="@id/memoFragment" />
+        <action
+            android:id="@+id/action_to_refractionFragment"
+            app:destination="@id/refractionFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/previewWithNameFragment"
+        android:name="com.lizpostudio.kgoptometrycrm.export.PreviewWithNameFragment"
+        android:label="PreviewWithNameFragment"
+        tools:layout="@layout/fragment_preview_with_name">
+
+        <argument
+            android:name="model"
+            app:argType="com.lizpostudio.kgoptometrycrm.export.ExportModel" />
+
+        <action
+            android:id="@+id/actionToSalesOrder"
+            app:destination="@id/salesOrderFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/previewWithOutNameFragment"
+        android:name="com.lizpostudio.kgoptometrycrm.export.PreviewWithOutNameFragment"
+        android:label="PreviewWithOutNameFragment"
+        tools:layout="@layout/fragment_preview_with_out_name">
+
+        <argument
+            android:name="model"
+            app:argType="com.lizpostudio.kgoptometrycrm.export.ExportModel" />
+
+        <action
+            android:id="@+id/actionToSalesOrder"
+            app:destination="@id/salesOrderFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/targetCopyFragment"
+        android:name="com.lizpostudio.kgoptometrycrm.copy.TargetCopyFragment"
+        android:label="TargetCopyFragment"
+        tools:layout="@layout/fragment_target_copy">
+        <argument
+            android:name="patientID"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_to_form_selection"
+            app:destination="@id/formSelectionFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/settingLoginFragment"
+        android:name="com.lizpostudio.kgoptometrycrm.preferences.SettingLoginFragment"
+        android:label="SettingLoginFragment"
+        tools:layout="@layout/fragment_settings_login">
+
+        <action
+            android:id="@+id/actionToLoginFragment"
+            app:destination="@id/loginFragment" />
+    </fragment>
+</navigation>

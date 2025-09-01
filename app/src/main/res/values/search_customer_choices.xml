@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="search_customer_choices">
+        <item>NAME</item>
+        <item>DATE</item>
+        <item>ID</item>
+        <item>IC</item>
+        <item>PHONE</item>
+        <item>FAMILY CODE</item>
+        <item>ADDRESS</item>
+        <item>OCCUPATION</item>
+        <item>CASH ORDER</item>
+        <item>SALES ORDER</item>
+        <item>PRODUCT</item>
+        <item>OTHER ID</item>
+    </string-array>
+</resources>

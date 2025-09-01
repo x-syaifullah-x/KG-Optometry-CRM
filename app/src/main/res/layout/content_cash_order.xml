@@ -1,0 +1,524 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/lightBackground">
+
+    <TextView
+        android:id="@+id/patient_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/didact_gothic"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="FATIN BT ABDUL RAZAK" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/aa"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@color/cardBackgroundDarker"
+        app:layout_constraintTop_toBottomOf="@+id/patient_name">
+
+        <TextView
+            android:id="@+id/form_caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:background="@color/cardBackgroundDarker"
+            android:fontFamily="@font/didact_gothic"
+            android:text="@string/cash_order"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Spinner
+            android:id="@+id/practitioner_name"
+            style="@style/Widget.AppCompat.Spinner.Underlined"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:minWidth="100dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/date_caption"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/date_caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:background="@color/cardBackgroundDarker"
+            android:fontFamily="@font/didact_gothic"
+            android:textAlignment="textEnd"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/view_"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="05/10/2020" />
+
+        <View
+            android:id="@+id/view_"
+            android:layout_width="1dp"
+            android:layout_height="20dp"
+            android:layout_marginEnd="4dp"
+            android:background="@color/colorPrimaryDark"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/undo_button_"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/undo_button_"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_undo_20_dark"
+            tools:ignore="ContentDescription" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_view_layout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/aa"
+        app:layout_constraintVertical_bias="1.0">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/main_items"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline_25"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="invisible"
+                app:layout_constraintGuide_percent="0.25" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline_75"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="invisible"
+                app:layout_constraintGuide_percent="0.75" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline66"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="invisible"
+                app:layout_constraintGuide_percent="0.66" />
+
+            <TextView
+                android:id="@+id/hint_or"
+                style="@style/primaryDark18sp"
+                android:layout_marginTop="8dp"
+                android:text="CS"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <EditText
+                android:id="@+id/edit_cs"
+                style="@style/fixedEditNoMarginTextBox18sp"
+                android:layout_width="0dp"
+                android:layout_marginEnd="8dp"
+                android:inputType="textShortMessage|number"
+                android:textAlignment="textStart"
+                app:layout_constraintEnd_toStartOf="@id/guideline_25"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="@id/hint_or"
+                app:layout_constraintTop_toBottomOf="@id/hint_or"
+                tools:ignore="Autofill,LabelFor" />
+
+            <TextView
+                android:id="@+id/hint_sph"
+                style="@style/primaryDark18sp"
+                android:layout_width="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/sph"
+                app:layout_constraintEnd_toEndOf="@+id/spinner_right_sph"
+                app:layout_constraintStart_toEndOf="@+id/hint_right"
+                app:layout_constraintStart_toStartOf="@+id/spinner_right_sph"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/hint_right"
+                style="@style/primaryDark18sp"
+                android:text="@string/right"
+                app:layout_constraintBottom_toBottomOf="@id/edit_cs"
+                app:layout_constraintStart_toEndOf="@id/guideline_25"
+                app:layout_constraintTop_toBottomOf="@id/hint_sph" />
+
+            <Spinner
+                android:id="@+id/spinner_right_sph"
+                style="@android:style/Widget.Holo.Light.Spinner"
+                android:layout_width="@dimen/sph_width"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="@id/edit_cs"
+                app:layout_constraintStart_toEndOf="@+id/hint_right"
+                app:layout_constraintTop_toBottomOf="@id/hint_sph" />
+
+            <TextView
+                android:id="@+id/hint_left"
+                style="@style/primaryDark18sp"
+                android:layout_marginTop="20dp"
+                android:text="@string/left"
+                app:layout_constraintStart_toEndOf="@id/guideline_25"
+                app:layout_constraintTop_toBottomOf="@id/edit_right_axis" />
+
+            <Spinner
+                android:id="@+id/spinner_left_sph"
+                style="@android:style/Widget.Holo.Light.Spinner"
+                android:layout_width="@dimen/sph_width"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="@id/hint_left"
+                app:layout_constraintStart_toEndOf="@id/hint_left"
+                app:layout_constraintTop_toTopOf="@id/hint_left" />
+
+            <TextView
+                android:id="@+id/hint_cyl"
+                style="@style/primaryDark18sp"
+                android:layout_width="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/cyl"
+                app:layout_constraintEnd_toEndOf="@+id/spinner_right_cyl"
+                app:layout_constraintStart_toStartOf="@+id/spinner_right_cyl"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Spinner
+                android:id="@+id/spinner_right_cyl"
+                style="@android:style/Widget.Holo.Light.Spinner"
+                android:layout_width="@dimen/cyl_width"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                app:layout_constraintBottom_toBottomOf="@id/edit_cs"
+                app:layout_constraintStart_toEndOf="@+id/spinner_right_sph"
+                app:layout_constraintTop_toBottomOf="@id/hint_sph" />
+
+            <Spinner
+                android:id="@+id/spinner_left_cyl"
+                style="@android:style/Widget.Holo.Light.Spinner"
+                android:layout_width="@dimen/cyl_width"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                app:layout_constraintStart_toEndOf="@+id/spinner_left_sph"
+                app:layout_constraintTop_toTopOf="@id/spinner_left_sph" />
+
+            <TextView
+                android:id="@+id/hint_axis"
+                style="@style/primaryDark18sp"
+                android:layout_marginTop="8dp"
+                android:text="@string/axis"
+                app:layout_constraintEnd_toEndOf="@+id/edit_right_axis"
+                app:layout_constraintStart_toStartOf="@+id/edit_right_axis"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/hint_x_right"
+                style="@style/black_no_margins18sp"
+                android:layout_marginStart="8dp"
+                android:text="@string/x_sign"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/spinner_right_sph"
+                app:layout_constraintStart_toEndOf="@+id/spinner_right_cyl"
+                app:layout_constraintTop_toTopOf="@+id/spinner_right_sph" />
+
+            <TextView
+                android:id="@+id/hint_x_left"
+                style="@style/black_no_margins18sp"
+                android:layout_marginStart="8dp"
+                android:text="@string/x_sign"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/spinner_left_sph"
+                app:layout_constraintStart_toEndOf="@+id/spinner_left_cyl"
+                app:layout_constraintTop_toTopOf="@+id/spinner_left_sph" />
+
+            <EditText
+                android:id="@+id/edit_right_axis"
+                style="@style/fixedEditNoMarginTextBox18sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="2"
+                android:inputType="phone"
+                android:textAlignment="textStart"
+                app:layout_constraintBottom_toBottomOf="@id/spinner_right_cyl"
+                app:layout_constraintStart_toEndOf="@+id/hint_x_right"
+                app:layout_constraintTop_toTopOf="@id/spinner_right_cyl"
+                tools:ignore="Autofill,LabelFor" />
+
+            <EditText
+                android:id="@+id/edit_left_axis"
+                style="@style/fixedEditNoMarginTextBox18sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="3dp"
+                android:layout_marginTop="8dp"
+                android:ems="2"
+                android:inputType="phone"
+                android:textAlignment="textStart"
+                app:layout_constraintBottom_toBottomOf="@id/spinner_left_cyl"
+                app:layout_constraintStart_toEndOf="@+id/hint_x_left"
+                app:layout_constraintTop_toTopOf="@id/spinner_left_cyl"
+                tools:ignore="Autofill,LabelFor" />
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrier_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="edit_cs,edit_left_axis"
+                tools:layout_editor_absoluteY="136dp" />
+
+            <TextView
+                android:id="@+id/hint_frame"
+                style="@style/primaryDark18sp"
+                android:layout_marginTop="8dp"
+                android:text="@string/frame"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/barrier_1" />
+
+            <EditText
+                android:id="@+id/edit_frame"
+                style="@style/fixedEditNoMarginTextBox18sp"
+                android:layout_width="0dp"
+                android:layout_marginEnd="8dp"
+                android:inputType="text"
+                android:textAlignment="textStart"
+                app:layout_constraintEnd_toStartOf="@id/guideline66"
+                app:layout_constraintStart_toStartOf="@id/hint_frame"
+                app:layout_constraintTop_toBottomOf="@id/hint_frame"
+                tools:ignore="Autofill,LabelFor" />
+
+            <TextView
+                android:id="@+id/hint_frame_rm"
+                style="@style/primaryDark18sp"
+                android:layout_marginTop="8dp"
+                android:text="@string/frameRM"
+                app:layout_constraintStart_toEndOf="@id/guideline66"
+                app:layout_constraintTop_toBottomOf="@+id/barrier_1" />
+
+            <EditText
+                android:id="@+id/edit_frame_rm"
+                style="@style/fixedEditNoMarginTextBox18sp"
+                android:layout_marginEnd="16dp"
+                android:inputType="text"
+                android:textAlignment="textStart"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/hint_frame_rm"
+                app:layout_constraintTop_toBottomOf="@id/hint_frame_rm"
+                tools:ignore="Autofill,LabelFor" />
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrier_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="edit_frame,edit_frame_rm"
+                tools:layout_editor_absoluteY="213dp" />
+
+            <TextView
+                android:id="@+id/hint_lens"
+                style="@style/primaryDark18sp"
+                android:layout_marginTop="8dp"
+                android:text="@string/contact_lens_sun_glass"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/barrier_2" />
+
+            <EditText
+                android:id="@+id/edit_cl_sg"
+                style="@style/fixedEditNoMarginTextBox18sp"
+                android:layout_marginEnd="8dp"
+                android:inputType="text"
+                android:textAlignment="textStart"
+                app:layout_constraintEnd_toStartOf="@+id/guideline66"
+                app:layout_constraintStart_toStartOf="@id/hint_lens"
+                app:layout_constraintTop_toBottomOf="@+id/hint_lens"
+                tools:ignore="Autofill,LabelFor" />
+
+            <TextView
+                android:id="@+id/hint_cl_rm"
+                style="@style/primaryDark18sp"
+                android:layout_marginTop="8dp"
+                android:text="@string/clsgrm"
+                app:layout_constraintStart_toStartOf="@id/guideline66"
+                app:layout_constraintTop_toBottomOf="@id/barrier_2" />
+
+            <EditText
+                android:id="@+id/edit_cl_rm"
+                style="@style/fixedEditNoMarginTextBox18sp"
+                android:layout_marginEnd="12dp"
+                android:inputType="text"
+                android:textAlignment="textStart"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@id/hint_cl_rm"
+                app:layout_constraintTop_toBottomOf="@id/hint_cl_rm"
+                tools:ignore="Autofill,LabelFor" />
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrier_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="edit_cl_sg,edit_cl_rm"
+                tools:layout_editor_absoluteY="290dp" />
+
+            <TextView
+                android:id="@+id/hint_solution_misc"
+                style="@style/primaryDark18sp"
+                android:layout_marginTop="8dp"
+                android:text="@string/solution_misc"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/barrier_3" />
+
+            <EditText
+                android:id="@+id/edit_solution_misc"
+                style="@style/fixedEditNoMarginTextBox18sp"
+                android:layout_width="0dp"
+                android:layout_marginEnd="8dp"
+                android:inputType="text"
+                android:textAlignment="textStart"
+                app:layout_constraintEnd_toStartOf="@id/guideline66"
+                app:layout_constraintStart_toStartOf="@id/hint_solution_misc"
+                app:layout_constraintTop_toBottomOf="@id/hint_solution_misc"
+                tools:ignore="Autofill,LabelFor" />
+
+            <TextView
+                android:id="@+id/hint_solution_misc_rm"
+                style="@style/primaryDark18sp"
+                android:layout_marginTop="8dp"
+                android:text="@string/solution_misc_rm"
+                app:layout_constraintStart_toEndOf="@id/guideline66"
+                app:layout_constraintTop_toBottomOf="@id/barrier_3" />
+
+            <EditText
+                android:id="@+id/edit_solution_misc_rm"
+                style="@style/fixedEditNoMarginTextBox18sp"
+                android:layout_width="0dp"
+                android:layout_marginEnd="12dp"
+                android:inputType="text"
+                android:textAlignment="textStart"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@id/hint_solution_misc_rm"
+                app:layout_constraintTop_toBottomOf="@id/hint_solution_misc_rm"
+                tools:ignore="Autofill,LabelFor" />
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrier_4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="edit_solution_misc,edit_solution_misc_rm"
+                tools:layout_editor_absoluteY="367dp" />
+
+            <TextView
+                android:id="@+id/remark_hint"
+                style="@style/primaryDark18sp"
+                android:layout_marginTop="8dp"
+                android:text="@string/hint_remark"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/barrier_4" />
+
+            <EditText
+                android:id="@+id/remark_input"
+                style="@style/fixedEditNoMarginTextBox18sp"
+                android:layout_marginEnd="8dp"
+                android:inputType="text"
+                app:layout_constraintEnd_toStartOf="@id/guideline66"
+                app:layout_constraintStart_toStartOf="@id/remark_hint"
+                app:layout_constraintTop_toBottomOf="@+id/remark_hint"
+                tools:ignore="Autofill,LabelFor" />
+
+            <TextView
+                android:id="@+id/hint_total_rm"
+                style="@style/primaryDark18sp"
+                android:layout_marginTop="8dp"
+                android:text="@string/total_rm"
+                app:layout_constraintStart_toEndOf="@id/guideline66"
+                app:layout_constraintTop_toBottomOf="@id/barrier_4" />
+
+            <EditText
+                android:id="@+id/edit_total"
+                style="@style/fixedEditNoMarginTextBox18sp"
+                android:layout_marginEnd="12dp"
+                android:inputType="text"
+                android:textAlignment="textStart"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@id/hint_total_rm"
+                app:layout_constraintTop_toBottomOf="@id/hint_total_rm"
+                tools:ignore="Autofill,LabelFor" />
+
+            <EditText
+                android:id="@+id/edit_cstotal"
+                style="@style/fixedEditNoMarginTextBox18sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:textAlignment="textStart"
+                android:visibility="invisible"
+                app:layout_constraintEnd_toStartOf="@+id/hint_total_rm"
+                app:layout_constraintStart_toEndOf="@+id/remark_hint"
+                app:layout_constraintTop_toBottomOf="@+id/edit_solution_misc_rm"
+                tools:ignore="Autofill,LabelFor" />
+
+            <TextView
+                android:id="@+id/text_cstotal"
+                style="@style/fixedEditNoMarginTextBox18sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAlignment="textStart"
+                app:layout_constraintStart_toEndOf="@+id/edit_cstotal"
+                app:layout_constraintTop_toBottomOf="@+id/edit_solution_misc_rm"
+                tools:ignore="Autofill,LabelFor" />
+
+            <ImageView
+                android:id="@+id/copy_from_cashorder"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                app:layout_constraintStart_toEndOf="@+id/hint_axis"
+                app:layout_constraintTop_toTopOf="@+id/hint_axis"
+                app:srcCompat="@drawable/content_copy_32" />
+
+            <Spinner
+                android:id="@+id/spinner_from_cashorder"
+                style="@android:style/Widget.Holo.Light.Spinner"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                app:layout_constraintStart_toEndOf="@+id/copy_from_cashorder"
+                app:layout_constraintTop_toTopOf="@+id/copy_from_cashorder" />
+
+            <TextView
+                android:id="@+id/section_familycodecs"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toEndOf="@+id/remark_hint"
+                app:layout_constraintTop_toTopOf="@+id/remark_hint"
+                tools:visibility="visible" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>
