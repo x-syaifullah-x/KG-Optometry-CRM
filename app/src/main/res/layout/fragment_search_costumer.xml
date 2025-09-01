@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/lightBackground">
+
+    <include
+        android:id="@+id/top_navigation"
+        layout="@layout/app_bar_search" />
+
+    <TextView
+        android:id="@+id/hint_search_by"
+        style="@style/primaryDark18sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="@string/hint_search_by"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/foundItemsText" />
+
+    <Spinner
+        android:id="@+id/search_by_spinner"
+        style="@style/Widget.AppCompat.Spinner.Underlined"
+        android:layout_width="100dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="16dp"
+        android:popupBackground="@color/blueBasicLight"
+        android:spinnerMode="dropdown"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/search_input_text"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/search_input_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="4dp"
+        android:ems="10"
+        android:fontFamily="@font/didact_gothic"
+        android:hint="@string/hint_start_typing"
+        android:imeOptions="flagNoFullscreen"
+        android:importantForAutofill="no"
+        android:inputType="date|textPersonName|text|phone"
+        android:textColor="@color/blackFont"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toStartOf="@+id/clean_search"
+        app:layout_constraintStart_toEndOf="@+id/search_by_spinner"
+        app:layout_constraintTop_toBottomOf="@+id/foundItemsText" />
+
+    <ImageView
+        android:id="@+id/clean_search"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toStartOf="@+id/search_icon"
+        app:layout_constraintTop_toTopOf="@+id/search_input_text"
+        app:srcCompat="@drawable/ic_clear_24"
+        app:tint="@color/colorPrimaryDark"
+        tools:ignore="ContentDescription" />
+
+    <ImageView
+        android:id="@+id/search_icon"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintBottom_toBottomOf="@id/clean_search"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/clean_search"
+        app:srcCompat="@drawable/ic_search_icon"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/foundItemsText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/didact_gothic"
+        android:textAlignment="viewEnd"
+        android:textColor="@color/blackFont"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="@+id/search_input_text"
+        app:layout_constraintStart_toEndOf="@+id/hint_search_by"
+        app:layout_constraintTop_toBottomOf="@+id/top_navigation"
+        tools:text="Found 253 records" />
+
+    <FrameLayout
+        android:id="@+id/header_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/search_input_text" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/select_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@+id/header_recycler_view"
+        tools:visibility="visible">
+
+        <CheckBox
+            android:id="@+id/select_all"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/text_select_all"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Select All"
+            app:layout_constraintBottom_toBottomOf="@id/select_all"
+            app:layout_constraintStart_toEndOf="@id/select_all"
+            app:layout_constraintTop_toTopOf="@id/select_all" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/ic_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_item_recycle_bin_delete"
+            app:layout_constraintTop_toTopOf="@id/select_all"
+            app:layout_constraintBottom_toBottomOf="@id/select_all"
+            app:layout_constraintEnd_toEndOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/patients_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/blueVeryLight"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/select_view" />
+
+    <TextView
+        android:id="@+id/progressText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        android:background="@color/blueBasicLight"
+        android:fontFamily="@font/didact_gothic"
+        android:padding="10dp"
+        android:textAlignment="center"
+        android:textColor="@color/lightBackground"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/search_input_text"
+        tools:text="16065 Records Received!"
+        tools:visibility="visible" />
+
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/linearProgressIndicator"
+        android:layout_width="0dp"
+        android:layout_height="6dp"
+        android:layout_marginTop="4dp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="@id/progressText"
+        app:layout_constraintStart_toStartOf="@id/progressText"
+        app:layout_constraintTop_toBottomOf="@id/progressText"
+        app:layout_constraintWidth_percent=".70"
+        tools:progress="50"
+        tools:visibility="visible" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/progressTextCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:fontFamily="@font/didact_gothic"
+        android:text="-- / -- --"
+        android:textColor="@color/blueBasicLight"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="@id/linearProgressIndicator"
+        app:layout_constraintStart_toStartOf="@id/linearProgressIndicator"
+        app:layout_constraintTop_toBottomOf="@id/linearProgressIndicator"
+        tools:text="--/-- MB"
+        tools:visibility="visible" />
+</androidx.constraintlayout.widget.ConstraintLayout>

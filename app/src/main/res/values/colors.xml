@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#42A5F5</color>
+    <color name="colorPrimaryDark">#072C4A</color>
+    <color name="colorAccent">#03CFDA</color>
+
+    <color name="blueBasicLight">#42A5F5</color>
+    <color name="blueVeryLight">#BBDEFB</color>
+    <color name="lightBackground">#E3F2FD</color>
+    <color name="greyTint">#DBDEE3</color>
+    <color name="viewOnlyMode">#BABABA</color>
+    <color name="blackFont">#070707</color>
+    <color name="cardBackgroundDarker">#90CAF9</color>
+
+    <color name="redCircle">#C62828</color>
+    <color name="yellowCircle">#C1B20F</color>
+    <color name="greenCircle">#2E7D32</color>
+    <color name = "iconTopStandard">#F2F7FB</color>
+
+
+</resources>

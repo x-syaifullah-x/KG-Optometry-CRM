@@ -1,0 +1,201 @@
+buildscript {
+    apply from: "versions.gradle"
+
+    addRepos(repositories)
+
+    subprojects {
+        project.configurations.configureEach {
+            resolutionStrategy.eachDependency { details ->
+                if (details.requested.group == "androidx.activity") {
+                    if ("${details.requested}".contains("androidx.activity:activity:")) {
+                        details.useVersion "$vAndroidxActivity"
+                    }
+                    if ("${details.requested}".contains("androidx.activity:activity-ktx:")) {
+                        details.useVersion "$vAndroidxActivity"
+                    }
+                }
+                if (details.requested.group == "androidx.annotation") {
+                    if ("${details.requested}".contains("androidx.annotation:annotation:")) {
+                        details.useVersion "$vAndroidxAnnotation"
+                    }
+                    if ("${details.requested}".contains("androidx.annotation:annotation-experimental:")) {
+                        details.useVersion "$vAndroidxAnnotationExperimental"
+                    }
+                }
+                if (details.requested.group == "androidx.appcompat") {
+                    details.useVersion "$vAndroidxAppCompat"
+                }
+                if (details.requested.group == "androidx.arch.core") {
+                    details.useVersion "$vAndroidxArchCore"
+                }
+                if (details.requested.group == "androidx.collection") {
+                    details.useVersion "$vAndroidxCollection"
+                }
+                if (details.requested.group == "androidx.concurrent") {
+                    details.useVersion "$vAndroidxConcurrent"
+                }
+                if (details.requested.group == "androidx.constraintlayout") {
+                    if ("${details.requested}".contains("androidx.constraintlayout:constraintlayout:")) {
+                        details.useVersion "$vAndroidxConstrainLayout"
+                    }
+                }
+                if (details.requested.group == "androidx.coordinatorlayout") {
+                    details.useVersion "$vAndroidxCoordinatorLayout"
+                }
+                if (details.requested.group == "androidx.core") {
+                    details.useVersion "$vAndroidxCore"
+                }
+                if (details.requested.group == "androidx.cursoradapter") {
+                    details.useVersion "$vAndroidxCursorAdapter"
+                }
+                if (details.requested.group == "androidx.customview") {
+                    if ("${details.requested}".contains("androidx.customview:customview:")) {
+                        details.useVersion "$vAndroidxCustomview"
+                    }
+                    if ("${details.requested}".contains("androidx.customview:customview-poolingcontainer:")) {
+                        details.useVersion "$vAndroidxCustomviewPoolingContainer"
+                    }
+                }
+                if (details.requested.group == "androidx.documentfile") {
+                    details.useVersion "$vAndroidxDocumentFile"
+                }
+                if (details.requested.group == "androidx.drawerlayout") {
+                    details.useVersion "$vAndroidxDrawerLayout"
+                }
+                if (details.requested.group == "androidx.dynamicanimation") {
+                    details.useVersion "$vAndroidxDynamicanimation"
+                }
+                if (details.requested.group == "androidx.fragment") {
+                    details.useVersion "$vAndroidxFragment"
+                }
+                if (details.requested.group == "androidx.interpolator") {
+                    details.useVersion "$vAndroidxInterpolator"
+                }
+                if (details.requested.group == "androidx.legacy") {
+                    details.useVersion "$vAndroidxLegacy"
+                }
+                if (details.requested.group == "androidx.lifecycle") {
+                    details.useVersion "$vAndroidxLifecycle"
+                }
+                if (details.requested.group == "androidx.loader") {
+                    details.useVersion "$vAndroidxLoader"
+                }
+                if (details.requested.group == "androidx.localbroadcastmanager") {
+                    details.useVersion "$vAndroidxLocalbroadcastmanager"
+                }
+                if (details.requested.group == "androidx.print") {
+                    details.useVersion "$vAndroidxPrint"
+                }
+                if (details.requested.group == "androidx.recyclerview") {
+                    if ("${details.requested}".contains("androidx.recyclerview:recyclerview:")) {
+                        details.useVersion "$vAndroidxRecyclerview"
+                    }
+                }
+                if (details.requested.group == "androidx.resourceinspection") {
+                    details.useVersion "$vAndroidxResourceinspection"
+                }
+                if (details.requested.group == "androidx.room") {
+                    details.useVersion "$vAndroidxRoom"
+                }
+                if (details.requested.group == "androidx.savedstate") {
+                    details.useVersion "$vAndroidxSavedstate"
+                }
+                if (details.requested.group == "androidx.sqlite") {
+                    details.useVersion "$vAndroidxSqlite"
+                }
+                if (details.requested.group == "androidx.test") {
+                    if ("${details.requested}".contains("androidx.test:annotation:")) {
+                        details.useVersion "$vAndroidxTestAnnotaion"
+                    }
+                    if ("${details.requested}".contains("androidx.test:core:")) {
+                        details.useVersion "$vAndroidxTestCore"
+                    }
+                    if ("${details.requested}".contains("androidx.test:monitor:")) {
+                        details.useVersion "$vAndroidxTestMonitor"
+                    }
+                    if ("${details.requested}".contains("androidx.test:rules:")) {
+                        details.useVersion "$vAndroidxTestRules"
+                    }
+                    if ("${details.requested}".contains("androidx.test:runner:")) {
+                        details.useVersion "$vAndroidxTestRunner"
+                    }
+                }
+                if (details.requested.group == "androidx.tracing") {
+                    details.useVersion "$vAndroidxTracing"
+                }
+                if (details.requested.group == "androidx.transition") {
+                    details.useVersion "$vAndroidxTransition"
+                }
+                if (details.requested.group == "androidx.vectordrawable") {
+                    details.useVersion "$vAndroidxVectorDrawable"
+                }
+                if (details.requested.group == "androidx.versionedparcelable") {
+                    details.useVersion "$vAndroidxVersionedparcelable"
+                }
+                if (details.requested.group == "androidx.viewpager") {
+                    details.useVersion "$vAndroidxViewPager"
+                }
+                if (details.requested.group == "androidx.viewpager2") {
+                    details.useVersion "$vAndroidxViewPager2"
+                }
+                if (details.requested.group == "junit") {
+                    details.useVersion "$vJunit"
+                }
+                if (details.requested.group == "org.jetbrains.kotlin") {
+                    if ("${details.requested}".contains("kotlin-stdlib")) {
+                        details.useVersion "$vKotlin"
+                    }
+                }
+                if (details.requested.group == "org.jetbrains.kotlinx") {
+                    if ("${details.requested}".contains("kotlinx-coroutines-")) {
+                        details.useVersion "$vKotlinCoroutines"
+                    }
+                }
+                if (details.requested.group == "com.google.android.gms") {
+                    if ("${details.requested}".contains("play-services-basement")) {
+                        details.useVersion "$vComGoogleAndroidGmsPlayServicesBasement"
+                    }
+                    if ("${details.requested}".contains("play-services-tasks")) {
+                        details.useVersion "$vComGoogleAndroidGmsPlayServicesTasks"
+                    }
+                }
+                if (details.requested.group == "com.google.android.datatransport") {
+                    if ("${details.requested}".contains("transport-api")) {
+                        details.useVersion "$vComGoogleAndroidDatatransportApi"
+                    }
+                    if ("${details.requested}".contains("play-services-tasks")) {
+                        details.useVersion "$vComGoogleAndroidGmsPlayServicesTasks"
+                    }
+                }
+                if (details.requested.group == "com.google.code.findbugs") {
+                    if ("${details.requested}".contains("jsr305")) {
+                        details.useVersion "$vComGoogleCodeFindbugsJsr305"
+                    }
+                }
+                if (details.requested.group == "com.google.errorprone") {
+                    if ("${details.requested}".contains("error_prone_annotations")) {
+                        details.useVersion "$vComGoogleErrorProneAnnotations"
+                    }
+                }
+                if (details.requested.group == "com.google.protobuf") {
+                    if ("${details.requested}".contains("protobuf-javalite")) {
+                        details.useVersion "$vComGoogleProtobufJavaLite"
+                    }
+                }
+                if (details.requested.group == "org.jetbrains") {
+                    if ("${details.requested}".contains("annotations")) {
+                        details.useVersion "$vOrgJetbrainsAnnotations"
+                    }
+                }
+            }
+        }
+    }
+}
+
+allprojects {
+    addRepos(repositories)
+}
+
+tasks.register("clean", Delete) {
+    delete rootProject.layout.buildDirectory
+}

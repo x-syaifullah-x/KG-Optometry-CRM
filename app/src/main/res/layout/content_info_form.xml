@@ -1,0 +1,915 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/base_info_layout_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/cardBackgroundDarker"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/form_caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:background="@color/cardBackgroundDarker"
+            android:fontFamily="@font/didact_gothic"
+            android:text="@string/info_form_caption"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Spinner
+            android:id="@+id/practitioner_name"
+            style="@style/Widget.AppCompat.Spinner.Underlined"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:minWidth="100dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/date_caption"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/date_caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:background="@color/cardBackgroundDarker"
+            android:fontFamily="@font/didact_gothic"
+            android:textAlignment="textEnd"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/view_"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="05/10/2020" />
+
+        <View
+            android:id="@+id/view_"
+            android:layout_width="1dp"
+            android:layout_height="20dp"
+            android:layout_marginEnd="4dp"
+            android:background="@color/colorPrimaryDark"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/undo_button_"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/undo_button_"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_undo_20_dark"
+            tools:ignore="ContentDescription" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_view_layout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/base_info_layout_navigation">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/top_items"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline_vertical_25"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.25" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline_vertical_33"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.3333333333333333" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline_vertical_50"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.50" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline_vertical_66"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.6666666666666666" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline_vertical_75"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.75" />
+
+            <TextView
+                android:id="@+id/name_input_hint"
+                style="@style/primaryDark18sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="@string/hint_name_input"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <EditText
+                android:id="@+id/name_input"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="8dp"
+                android:ems="10"
+                android:fontFamily="@font/didact_gothic"
+                android:inputType="date|textPersonName|text|phone"
+                android:textColor="@color/blackFont"
+                android:textSize="24sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/name_input_hint"
+                tools:ignore="Autofill,LabelFor"
+                tools:text="TESTING" />
+
+            <TextView
+                android:id="@+id/id_input_hint"
+                style="@style/primaryDark18sp"
+                android:text="@string/hint_id_input"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/name_input" />
+
+            <TextView
+                android:id="@+id/tin_input_hint"
+                style="@style/primaryDark18sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TIN"
+                app:layout_constraintStart_toStartOf="@+id/guideline_vertical_25"
+                app:layout_constraintTop_toBottomOf="@+id/name_input" />
+
+            <EditText
+                android:id="@+id/id_input"
+                style="@style/fixedConstraintInputTextBox18sp"
+                android:inputType="text"
+                app:layout_constraintEnd_toStartOf="@+id/guideline_vertical_25"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/id_input_hint"
+                tools:ignore="Autofill,LabelFor"
+                tools:text="Testing" />
+
+            <EditText
+                android:id="@+id/tin_input"
+                style="@style/fixedConstraintInputTextBox18sp"
+                android:inputType="text"
+                app:layout_constraintEnd_toStartOf="@+id/guideline_vertical_50"
+                app:layout_constraintStart_toStartOf="@+id/guideline_vertical_25"
+                app:layout_constraintTop_toBottomOf="@+id/id_input_hint"
+                tools:ignore="Autofill,LabelFor"
+                tools:text="D123456789" />
+
+            <TextView
+                android:id="@+id/ic_input_hint"
+                style="@style/primaryDark18sp"
+                android:text="@string/hint_ic_input"
+                app:layout_constraintStart_toStartOf="@+id/guideline_vertical_50"
+                app:layout_constraintTop_toBottomOf="@+id/name_input" />
+
+            <EditText
+                android:id="@+id/ic_input"
+                style="@style/fixedConstraintInputTextBox18sp"
+                android:inputType="phone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline_vertical_50"
+                app:layout_constraintTop_toBottomOf="@+id/ic_input_hint"
+                tools:ignore="Autofill,LabelFor"
+                tools:text="112233-44-5566" />
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrier_id_ic"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="id_input,ic_input"
+                tools:layout_editor_absoluteY="151dp" />
+
+            <TextView
+                android:id="@+id/family_code_input_hint"
+                style="@style/primaryDark18sp"
+                android:text="@string/hint_family_input"
+                app:layout_constraintEnd_toEndOf="@id/guideline_vertical_25"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/barrier_id_ic" />
+
+            <EditText
+                android:id="@+id/family_code_input"
+                style="@style/fixedConstraintInputTextBox18sp"
+                android:inputType="text"
+                android:singleLine="false"
+                app:layout_constraintEnd_toEndOf="@+id/guideline_vertical_25"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/family_code_input_hint"
+                tools:ignore="Autofill,LabelFor"
+                tools:text="F1234" />
+
+            <TextView
+                android:id="@+id/other_id_input_hint"
+                style="@style/primaryDark18sp"
+                android:text="@string/hint_other_id"
+                app:layout_constraintEnd_toEndOf="@id/guideline_vertical_50"
+                app:layout_constraintStart_toStartOf="@+id/guideline_vertical_25"
+                app:layout_constraintTop_toBottomOf="@+id/barrier_id_ic" />
+
+            <EditText
+                android:id="@+id/other_id_input"
+                style="@style/fixedConstraintInputTextBox18sp"
+                android:inputType="text"
+                app:layout_constraintEnd_toEndOf="@+id/guideline_vertical_50"
+                app:layout_constraintStart_toStartOf="@+id/guideline_vertical_25"
+                app:layout_constraintTop_toBottomOf="@+id/other_id_input_hint"
+                tools:ignore="Autofill,LabelFor"
+                tools:text="TESTING" />
+
+            <TextView
+                android:id="@+id/dob_input_hint"
+                style="@style/primaryDark18sp"
+                android:text="@string/hint_dob"
+                app:layout_constraintEnd_toEndOf="@id/guideline_vertical_75"
+                app:layout_constraintStart_toStartOf="@+id/guideline_vertical_50"
+                app:layout_constraintTop_toBottomOf="@+id/barrier_id_ic" />
+
+            <TextView
+                android:id="@+id/dob_input"
+                style="@style/fixedConstraintNoInputTextBox18sp"
+                app:layout_constraintBottom_toBottomOf="@+id/other_id_input"
+                app:layout_constraintEnd_toEndOf="@+id/guideline_vertical_75"
+                app:layout_constraintStart_toStartOf="@+id/guideline_vertical_50"
+                app:layout_constraintTop_toTopOf="@+id/other_id_input"
+                tools:text="33/22/11" />
+
+            <TextView
+                android:id="@+id/age_input_hint"
+                style="@style/primaryDark18sp"
+                android:text="@string/hint_age"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline_vertical_75"
+                app:layout_constraintTop_toBottomOf="@+id/barrier_id_ic" />
+
+            <TextView
+                android:id="@+id/age_input"
+                style="@style/fixedConstraintNoInputTextBox18sp"
+                app:layout_constraintBottom_toBottomOf="@+id/other_id_input"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline_vertical_75"
+                app:layout_constraintTop_toTopOf="@+id/other_id_input"
+                tools:text="20" />
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrier_family_code_input_other_id_input_dob_input_age_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="family_code_input,other_id_input,dob_input,age_input"
+                tools:layout_editor_absoluteY="222dp" />
+
+            <TextView
+                android:id="@+id/phone1_input_hint"
+                style="@style/primaryDark18sp"
+                android:text="@string/hint_phone1"
+                app:layout_constraintEnd_toEndOf="@id/guideline_vertical_33"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/barrier_family_code_input_other_id_input_dob_input_age_input" />
+
+            <EditText
+                android:id="@+id/phone1_input"
+                style="@style/fixedConstraintInputTextBox18sp"
+                android:inputType="text"
+                app:layout_constraintEnd_toEndOf="@+id/guideline_vertical_33"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/phone1_input_hint"
+                tools:ignore="Autofill,LabelFor"
+                tools:text="012-3456789" />
+
+            <TextView
+                android:id="@+id/phone2_input_hint"
+                style="@style/primaryDark18sp"
+                android:text="@string/hint_phone2"
+                app:layout_constraintEnd_toEndOf="@id/guideline_vertical_66"
+                app:layout_constraintStart_toStartOf="@+id/guideline_vertical_33"
+                app:layout_constraintTop_toBottomOf="@+id/barrier_family_code_input_other_id_input_dob_input_age_input" />
+
+            <EditText
+                android:id="@+id/phone2_input"
+                style="@style/fixedConstraintInputTextBox18sp"
+                android:inputType="text"
+                app:layout_constraintEnd_toEndOf="@+id/guideline_vertical_66"
+                app:layout_constraintStart_toStartOf="@+id/guideline_vertical_33"
+                app:layout_constraintTop_toBottomOf="@+id/phone2_input_hint"
+                tools:ignore="Autofill,LabelFor"
+                tools:text="012-3456789" />
+
+            <TextView
+                android:id="@+id/phone3_input_hint"
+                style="@style/primaryDark18sp"
+                android:text="@string/hint_phone3"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline_vertical_66"
+                app:layout_constraintTop_toBottomOf="@+id/barrier_family_code_input_other_id_input_dob_input_age_input" />
+
+            <EditText
+                android:id="@+id/phone3_input"
+                style="@style/fixedConstraintInputTextBox18sp"
+                android:inputType="text"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline_vertical_66"
+                app:layout_constraintTop_toBottomOf="@+id/phone3_input_hint"
+                tools:ignore="Autofill,LabelFor"
+                tools:text="012-3456789" />
+
+            <!-- Race and sex -->
+            <TextView
+                android:id="@+id/race_input_hint"
+                style="@style/primaryDark18sp"
+                android:text="@string/hint_race"
+                app:layout_constraintEnd_toEndOf="@id/guideline_vertical_33"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/phone1_input" />
+
+            <Spinner
+                android:id="@+id/race_input"
+                style="@style/Widget.AppCompat.Spinner.Underlined"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                app:layout_constraintEnd_toEndOf="@+id/guideline_vertical_33"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/race_input_hint" />
+
+            <TextView
+                android:id="@+id/sex_input_hint"
+                style="@style/primaryDark18sp"
+                android:text="@string/hint_sex"
+                app:layout_constraintStart_toStartOf="@+id/guideline_vertical_33"
+                app:layout_constraintTop_toBottomOf="@+id/phone1_input" />
+
+            <Spinner
+                android:id="@+id/sex_input"
+                style="@style/Widget.AppCompat.Spinner.Underlined"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                app:layout_constraintEnd_toEndOf="@+id/guideline_vertical_66"
+                app:layout_constraintStart_toStartOf="@+id/guideline_vertical_33"
+                app:layout_constraintTop_toBottomOf="@+id/sex_input_hint" />
+
+            <TextView
+                android:id="@+id/occupation_input_hint"
+                style="@style/primaryDark18sp"
+                android:text="@string/hint_occupation"
+                app:layout_constraintStart_toStartOf="@+id/guideline_vertical_66"
+                app:layout_constraintTop_toBottomOf="@+id/phone1_input" />
+
+            <EditText
+                android:id="@+id/occupation_input"
+                style="@style/fixedConstraintInputTextBox18sp"
+                android:inputType="text"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline_vertical_66"
+                app:layout_constraintTop_toBottomOf="@+id/occupation_input_hint"
+                tools:ignore="Autofill,LabelFor"
+                tools:text="ENGINEER" />
+
+            <TextView
+                android:id="@+id/address_input_hint"
+                style="@style/primaryDark18sp"
+                android:text="@string/hint_address"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/occupation_input" />
+
+            <EditText
+                android:id="@+id/address_input"
+                style="@style/fixedConstraintInputTextBox18sp"
+                android:inputType="text"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/post_code_input"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/address_input_hint"
+                tools:ignore="Autofill,LabelFor"
+                tools:text="123 ROAD 123 TOWN 123" />
+
+            <TextView
+                android:id="@+id/post_code_input_hint"
+                style="@style/primaryDark18sp"
+                android:text="@string/hint_post_code"
+                app:layout_constraintStart_toStartOf="@+id/guideline_vertical_75"
+                app:layout_constraintTop_toTopOf="@+id/address_input_hint" />
+
+            <EditText
+                android:id="@+id/post_code_input"
+                style="@style/fixedConstraintInputTextBox18sp"
+                android:inputType="phone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline_vertical_75"
+                app:layout_constraintTop_toBottomOf="@+id/post_code_input_hint"
+                tools:ignore="Autofill,LabelFor"
+                tools:text="00000" />
+
+            <TextView
+                android:id="@+id/city_input_hint"
+                style="@style/primaryDark18sp"
+                android:text="@string/hint_city"
+                app:layout_constraintEnd_toStartOf="@+id/guideline_vertical_33"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/address_input" />
+
+            <EditText
+                android:id="@+id/city_input"
+                style="@style/fixedConstraintInputTextBox18sp"
+                android:inputType="text"
+                app:layout_constraintEnd_toStartOf="@+id/guideline_vertical_33"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/city_input_hint"
+                tools:ignore="Autofill,LabelFor"
+                tools:text="SP" />
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrier_state_input_city_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="post_code_input,city_input"
+                tools:layout_editor_absoluteY="515dp" />
+
+            <TextView
+                android:id="@+id/state_input_hint"
+                style="@style/primaryDark18sp"
+                android:layout_height="wrap_content"
+                android:text="@string/hint_state"
+                app:layout_constraintEnd_toStartOf="@+id/guideline_vertical_66"
+                app:layout_constraintStart_toStartOf="@+id/guideline_vertical_33"
+                app:layout_constraintTop_toBottomOf="@+id/address_input" />
+
+            <Spinner
+                android:id="@+id/state_input"
+                style="@style/Widget.AppCompat.Spinner.Underlined"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                app:layout_constraintEnd_toStartOf="@+id/guideline_vertical_66"
+                app:layout_constraintStart_toStartOf="@+id/guideline_vertical_33"
+                app:layout_constraintTop_toBottomOf="@+id/state_input_hint" />
+
+            <TextView
+                android:id="@+id/country_input_hint"
+                style="@style/primaryDark18sp"
+                android:layout_height="wrap_content"
+                android:text="@string/hint_country"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline_vertical_66"
+                app:layout_constraintTop_toBottomOf="@+id/address_input" />
+
+            <EditText
+                android:id="@+id/country_input"
+                style="@style/fixedConstraintInputTextBox18sp"
+                android:inputType="text"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline_vertical_66"
+                app:layout_constraintTop_toBottomOf="@+id/country_input_hint"
+                tools:ignore="Autofill,LabelFor" />
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrier_state_input_country_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="state_input,country_input"
+                tools:layout_editor_absoluteY="515dp" />
+
+
+            <TextView
+                android:id="@+id/contact_lens_hint"
+                style="@style/primaryDark18sp"
+                android:text="@string/hint_contact_lens"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline_vertical_75"
+                app:layout_constraintTop_toTopOf="@+id/diabetes_hint" />
+
+            <RadioGroup
+                android:id="@+id/radio_group_contact_lens"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintStart_toStartOf="@+id/contact_lens_hint"
+                app:layout_constraintTop_toBottomOf="@+id/contact_lens_hint">
+
+                <RadioButton
+                    android:id="@+id/radio_contact_lens_yes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="@string/yes_answer"
+                    android:textSize="18sp" />
+
+                <RadioButton
+                    android:id="@+id/radio_contact_lens_no"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="@string/no_answer"
+                    android:textSize="18sp" />
+            </RadioGroup>
+
+            <EditText
+                android:id="@+id/contact_lens_info_input"
+                style="@style/fixedConstraintInputTextBox18sp"
+                android:layout_marginStart="1dp"
+                android:inputType="text"
+                app:layout_constraintEnd_toEndOf="@+id/contact_lens_hint"
+                app:layout_constraintStart_toStartOf="@+id/contact_lens_hint"
+                app:layout_constraintTop_toBottomOf="@+id/radio_group_contact_lens"
+                tools:ignore="Autofill,LabelFor" />
+
+            <TextView
+                android:id="@+id/hypertension_hint"
+                style="@style/primaryDark18sp"
+                android:text="@string/hint_hypertension"
+                app:layout_constraintEnd_toStartOf="@id/guideline_vertical_25"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/city_input" />
+
+            <RadioGroup
+                android:id="@+id/radio_group_hypertension"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintStart_toStartOf="@+id/hypertension_hint"
+                app:layout_constraintTop_toBottomOf="@+id/hypertension_hint">
+
+                <RadioButton
+                    android:id="@+id/radio_hypertension_yes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="@string/yes_answer"
+                    android:textSize="18sp" />
+
+                <RadioButton
+                    android:id="@+id/radio_hypertension_no"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="@string/no_answer"
+                    android:textSize="18sp" />
+            </RadioGroup>
+
+            <EditText
+                android:id="@+id/hypertension_info_input"
+                style="@style/fixedConstraintInputTextBox18sp"
+                android:layout_marginStart="1dp"
+                android:inputType="text"
+                app:layout_constraintEnd_toEndOf="@id/hypertension_hint"
+                app:layout_constraintStart_toStartOf="@+id/radio_group_hypertension"
+                app:layout_constraintTop_toBottomOf="@+id/radio_group_hypertension"
+                tools:ignore="Autofill,LabelFor" />
+
+            <TextView
+                android:id="@+id/diabetes_hint"
+                style="@style/primaryDark18sp"
+                android:text="@string/hint_diabetes"
+                app:layout_constraintEnd_toStartOf="@id/guideline_vertical_50"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/guideline_vertical_25"
+                app:layout_constraintTop_toTopOf="@+id/hypertension_hint" />
+
+            <RadioGroup
+                android:id="@+id/radio_group_diabetes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintStart_toStartOf="@id/diabetes_hint"
+                app:layout_constraintTop_toBottomOf="@+id/diabetes_hint">
+
+                <RadioButton
+                    android:id="@+id/radio_diabetes_yes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="@string/yes_answer"
+                    android:textSize="18sp" />
+
+                <RadioButton
+                    android:id="@+id/radio_diabetes_no"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="@string/no_answer"
+                    android:textSize="18sp" />
+            </RadioGroup>
+
+            <EditText
+                android:id="@+id/diabetes_info_input"
+                style="@style/fixedConstraintInputTextBox18sp"
+                android:layout_marginStart="1dp"
+                android:inputType="text"
+                app:layout_constraintEnd_toEndOf="@+id/diabetes_hint"
+                app:layout_constraintStart_toStartOf="@+id/radio_group_diabetes"
+                app:layout_constraintTop_toBottomOf="@+id/radio_group_diabetes"
+                tools:ignore="Autofill,LabelFor" />
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrier_diabetes_hint_radio_group_diabetes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="right"
+                app:constraint_referenced_ids="diabetes_hint,radio_group_diabetes"
+                tools:layout_editor_absoluteX="400dp" />
+
+            <TextView
+                android:id="@+id/allergy_hint"
+                style="@style/primaryDark18sp"
+                android:layout_height="wrap_content"
+                android:text="@string/hint_allergy"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/eye_surgery_hint"
+                app:layout_constraintTop_toBottomOf="@+id/contact_lens_info_input" />
+
+            <RadioGroup
+                android:id="@+id/radio_group_allergy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintStart_toStartOf="@id/allergy_hint"
+                app:layout_constraintTop_toBottomOf="@+id/allergy_hint">
+
+                <RadioButton
+                    android:id="@+id/radio_allergy_yes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="@string/yes_answer"
+                    android:textSize="18sp" />
+
+                <RadioButton
+                    android:id="@+id/radio_allergy_no"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="@string/no_answer"
+                    android:textSize="18sp" />
+            </RadioGroup>
+
+            <EditText
+                android:id="@+id/allergy_info_input"
+                style="@style/fixedConstraintInputTextBox18sp"
+                android:layout_marginStart="1dp"
+                android:inputType="text"
+                app:layout_constraintEnd_toEndOf="@id/allergy_hint"
+                app:layout_constraintStart_toStartOf="@id/allergy_hint"
+                app:layout_constraintTop_toBottomOf="@id/radio_group_allergy"
+                tools:ignore="Autofill,LabelFor" />
+
+            <TextView
+                android:id="@+id/medications_hint"
+                style="@style/primaryDark18sp"
+                android:text="@string/hint_medication"
+                app:layout_constraintEnd_toStartOf="@+id/guideline_vertical_75"
+                app:layout_constraintStart_toEndOf="@+id/diabetes_hint"
+                app:layout_constraintTop_toTopOf="@+id/contact_lens_hint" />
+
+            <RadioGroup
+                android:id="@+id/radio_group_medications"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintStart_toStartOf="@+id/medications_hint"
+                app:layout_constraintTop_toBottomOf="@+id/medications_hint">
+
+                <RadioButton
+                    android:id="@+id/radio_medications_yes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="@string/yes_answer"
+                    android:textSize="18sp" />
+
+                <RadioButton
+                    android:id="@+id/radio_medications_no"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="12dp"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="@string/no_answer"
+                    android:textSize="18sp" />
+            </RadioGroup>
+
+            <EditText
+                android:id="@+id/medications_info_input"
+                style="@style/fixedConstraintInputTextBox18sp"
+                android:layout_marginStart="1dp"
+                android:inputType="text"
+                app:layout_constraintEnd_toEndOf="@id/medications_hint"
+                app:layout_constraintStart_toStartOf="@id/medications_hint"
+                app:layout_constraintTop_toBottomOf="@id/radio_group_medications"
+                tools:ignore="Autofill,LabelFor" />
+
+            <RadioGroup
+                android:id="@+id/radio_group_cataract"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintStart_toStartOf="@+id/cataract_hint"
+                app:layout_constraintTop_toBottomOf="@+id/cataract_hint">
+
+                <RadioButton
+                    android:id="@+id/radio_cataract_yes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="@string/yes_answer"
+                    android:textSize="18sp" />
+
+                <RadioButton
+                    android:id="@+id/radio_cataract_no"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="@string/no_answer"
+                    android:textSize="18sp" />
+            </RadioGroup>
+
+            <EditText
+                android:id="@+id/cataract_info_input"
+                style="@style/fixedConstraintInputTextBox18sp"
+                android:layout_marginStart="1dp"
+                android:inputType="text"
+                app:layout_constraintEnd_toEndOf="@id/cataract_hint"
+                app:layout_constraintStart_toStartOf="@id/cataract_hint"
+                app:layout_constraintTop_toBottomOf="@id/radio_group_cataract"
+                tools:ignore="Autofill,LabelFor" />
+
+            <RadioGroup
+                android:id="@+id/radio_group_glaucoma"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintStart_toStartOf="@+id/glaucoma_hint"
+                app:layout_constraintTop_toBottomOf="@+id/glaucoma_hint">
+
+                <RadioButton
+                    android:id="@+id/radio_glaucoma_yes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="@string/yes_answer"
+                    android:textSize="18sp" />
+
+                <RadioButton
+                    android:id="@+id/radio_glaucoma_no"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="@string/no_answer"
+                    android:textSize="18sp" />
+            </RadioGroup>
+
+            <EditText
+                android:id="@+id/glaucoma_info_input"
+                style="@style/fixedConstraintInputTextBox18sp"
+                android:layout_marginStart="1dp"
+                android:inputType="text"
+                app:layout_constraintEnd_toEndOf="@id/glaucoma_hint"
+                app:layout_constraintStart_toStartOf="@id/glaucoma_hint"
+                app:layout_constraintTop_toBottomOf="@id/radio_group_glaucoma"
+                tools:ignore="Autofill,LabelFor" />
+
+            <TextView
+                android:id="@+id/eye_surgery_hint"
+                style="@style/primaryDark18sp"
+                android:layout_marginTop="2dp"
+                android:text="@string/hint_eye_surgery"
+                app:layout_constraintEnd_toStartOf="@id/guideline_vertical_75"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toEndOf="@id/guideline_vertical_50"
+                app:layout_constraintTop_toBottomOf="@+id/medications_info_input" />
+
+            <TextView
+                android:id="@+id/cataract_hint"
+                style="@style/primaryDark18sp"
+                android:lines="1"
+                android:text="@string/hint_cataract_removal"
+                app:layout_constraintEnd_toEndOf="@id/guideline_vertical_25"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/hypertension_info_input" />
+
+            <TextView
+                android:id="@+id/glaucoma_hint"
+                style="@style/primaryDark18sp"
+                android:text="@string/hint_glaucoma"
+                app:layout_constraintEnd_toEndOf="@id/guideline_vertical_50"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="@id/guideline_vertical_25"
+                app:layout_constraintTop_toBottomOf="@+id/diabetes_info_input" />
+
+            <RadioGroup
+                android:id="@+id/radio_group_eye_surgery"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintStart_toStartOf="@+id/eye_surgery_hint"
+                app:layout_constraintTop_toBottomOf="@+id/eye_surgery_hint">
+
+                <RadioButton
+                    android:id="@+id/radio_eye_surgery_yes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="@string/yes_answer"
+                    android:textSize="18sp" />
+
+                <RadioButton
+                    android:id="@+id/radio_eye_surgery_no"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/didact_gothic"
+                    android:text="@string/no_answer"
+                    android:textSize="18sp" />
+            </RadioGroup>
+
+            <EditText
+                android:id="@+id/eye_surgery_info_input"
+                style="@style/fixedConstraintInputTextBox18sp"
+                android:layout_marginStart="1dp"
+                android:inputType="text"
+                app:layout_constraintEnd_toEndOf="@+id/eye_surgery_hint"
+                app:layout_constraintStart_toStartOf="@+id/eye_surgery_hint"
+                app:layout_constraintTop_toBottomOf="@+id/radio_group_eye_surgery"
+                tools:ignore="Autofill,LabelFor" />
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrier_cataract_info_input_glaucoma_info_input_eye_surgery_info_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="cataract_info_input,glaucoma_info_input,eye_surgery_info_input,allergy_info_input"
+                tools:layout_editor_absoluteY="824dp" />
+
+            <TextView
+                android:id="@+id/remark_hint"
+                style="@style/primaryDark18sp"
+                android:text="@string/hint_remark"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/barrier_cataract_info_input_glaucoma_info_input_eye_surgery_info_input" />
+
+            <EditText
+                android:id="@+id/remark_input"
+                style="@style/fixedEditNoMarginTextBox18sp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="16dp"
+                android:inputType="text"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@id/remark_hint"
+                app:layout_constraintTop_toBottomOf="@+id/remark_hint"
+                tools:ignore="Autofill,LabelFor" />
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrier5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="medications_info_input"
+                tools:layout_editor_absoluteY="658dp" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

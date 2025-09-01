@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/main_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/blueVeryLight">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/top_navigation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/blueBasicLight"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+<!--            <ImageView-->
+<!--                android:id="@+id/view_only_button"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginStart="16dp"-->
+<!--                android:layout_marginTop="8dp"-->
+<!--                android:layout_marginBottom="8dp"-->
+<!--                android:padding="@dimen/padding_small"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                app:layout_constraintStart_toEndOf="@+id/synch_button"-->
+<!--                app:layout_constraintTop_toTopOf="parent"-->
+<!--                app:srcCompat="@drawable/ic_baseline_edit_24"-->
+<!--                app:tint="@color/viewOnlyMode"-->
+<!--                tools:ignore="ContentDescription" />-->
+
+            <ImageView
+                android:id="@+id/back_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_arrow_back_36"
+                tools:ignore="ContentDescription" />
+
+            <ImageView
+                android:id="@+id/synch_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/back_button"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_baseline_sync_24"
+                tools:ignore="ContentDescription" />
+
+            <ImageView
+                android:id="@+id/delete_form"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/delete_forever_42"
+                tools:ignore="ContentDescription" />
+
+            <ImageView
+                android:id="@+id/copy_form"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/delete_form"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_copy"
+                tools:ignore="ContentDescription" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <TextView
+            android:id="@+id/patient_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/didact_gothic"
+            android:textColor="@color/blackFont"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/top_navigation"
+            tools:text="A0002587" />
+
+        <TextView
+            android:id="@+id/patient_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:fontFamily="@font/didact_gothic"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/patient_id"
+            tools:text="FATIN BT ABDUL RAZAK" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/forms_list"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="8dp"
+            android:background="@color/blueVeryLight"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/patient_name"
+            tools:listitem="@layout/form_item_report" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/add_new_form"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="24dp"
+            app:backgroundTint="@color/colorPrimary"
+            app:elevation="8dp"
+            app:fabSize="normal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/plus_add_32"
+            tools:ignore="ContentDescription" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/select_form_to_add_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:background="@color/lightBackground"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/add_new_form"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.6"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:visibility="visible">
+
+            <Button
+                android:id="@+id/follow_up"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="72dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="24dp"
+                android:background="@drawable/login_shapes"
+                android:elevation="8dp"
+                android:fontFamily="@font/didact_gothic"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="@string/follow_up_form_caption"
+                android:textAlignment="center"
+                android:textColor="@color/blackFont"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/memo_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="72dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="24dp"
+                android:background="@drawable/login_shapes"
+                android:elevation="8dp"
+                android:fontFamily="@font/didact_gothic"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="@string/memo_form_caption"
+                android:textAlignment="center"
+                android:textColor="@color/blackFont"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/follow_up" />
+
+            <Button
+                android:id="@+id/current_rx_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="72dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="24dp"
+                android:background="@drawable/login_shapes"
+                android:elevation="8dp"
+                android:fontFamily="@font/didact_gothic"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="@string/current_rx_caption"
+                android:textAlignment="center"
+                android:textColor="@color/blackFont"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/memo_button" />
+
+            <Button
+                android:id="@+id/refraction_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="72dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="24dp"
+                android:background="@drawable/login_shapes"
+                android:elevation="8dp"
+                android:fontFamily="@font/didact_gothic"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="@string/refraction_caption"
+                android:textAlignment="center"
+                android:textColor="@color/blackFont"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/current_rx_button" />
+
+            <Button
+                android:id="@+id/ocular_health_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="72dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="24dp"
+                android:background="@drawable/login_shapes"
+                android:elevation="8dp"
+                android:fontFamily="@font/didact_gothic"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="@string/ocular_health_caption"
+                android:textAlignment="center"
+                android:textColor="@color/blackFont"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/refraction_button" />
+
+            <Button
+                android:id="@+id/supplementary_tests_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="72dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="24dp"
+                android:background="@drawable/login_shapes"
+                android:elevation="8dp"
+                android:fontFamily="@font/didact_gothic"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="@string/supplementary_test_caption"
+                android:textAlignment="center"
+                android:textColor="@color/blackFont"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ocular_health_button" />
+
+            <Button
+                android:id="@+id/contact_lens_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="72dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="24dp"
+                android:background="@drawable/login_shapes"
+                android:elevation="8dp"
+                android:fontFamily="@font/didact_gothic"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="@string/contact_lens_exam_caption"
+                android:textAlignment="center"
+                android:textColor="@color/blackFont"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/supplementary_tests_button" />
+
+            <Button
+                android:id="@+id/orthok_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="72dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="24dp"
+                android:background="@drawable/login_shapes"
+                android:elevation="8dp"
+                android:fontFamily="@font/didact_gothic"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="@string/orthox_caption"
+                android:textAlignment="center"
+                android:textColor="@color/blackFont"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/contact_lens_button" />
+
+            <Button
+                android:id="@+id/cash_order_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="72dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="24dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/login_shapes"
+                android:elevation="8dp"
+                android:fontFamily="@font/didact_gothic"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="@string/cash_order_caption"
+                android:textAlignment="center"
+                android:textColor="@color/blackFont"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/orthok_button" />
+
+            <Button
+                android:id="@+id/final_prescription_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="72dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="24dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/login_shapes"
+                android:elevation="8dp"
+                android:fontFamily="@font/didact_gothic"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="@string/sales_order_caption"
+                android:textAlignment="center"
+                android:textColor="@color/blackFont"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cash_order_button" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

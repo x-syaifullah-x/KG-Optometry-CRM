@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/lightBackground">
+
+    <TextView
+        android:id="@+id/kg_optometry_main_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/didact_gothic"
+        android:text="@string/kg_optometry_crm"
+        android:textColor="@color/blueBasicLight"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/settings_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:padding="4dp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_baseline_settings_24"
+        tools:ignore="ContentDescription"
+        tools:visibility="visible" />
+
+    <ImageView
+        android:id="@+id/start_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="4dp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="@+id/customers_text"
+        app:layout_constraintStart_toStartOf="@+id/customers_text"
+        app:layout_constraintTop_toTopOf="@+id/kg_optometry_logo"
+        app:srcCompat="@drawable/ic_search_icon"
+        tools:ignore="ContentDescription"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/customers_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:fontFamily="@font/didact_gothic"
+        android:text="@string/goto_customers"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:visibility="invisible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/start_button" />
+
+    <ImageView
+        android:id="@+id/kg_optometry_logo"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/logo_height"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/kg_optometry_main_text"
+        app:srcCompat="@drawable/ic_kg_logo"
+        tools:ignore="ContentDescription" />
+
+    <ImageView
+        android:id="@+id/login_logout_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="4dp"
+        app:layout_constraintEnd_toEndOf="@+id/login_logout_text"
+        app:layout_constraintStart_toStartOf="@+id/login_logout_text"
+        app:layout_constraintTop_toTopOf="@+id/kg_optometry_logo"
+        app:srcCompat="@drawable/login_36"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/login_logout_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="24dp"
+        android:fontFamily="@font/didact_gothic"
+        android:text="@string/login"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/login_logout_button" />
+
+    <EditText
+        android:id="@+id/editLoginName"
+        style="@style/login_input_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="24dp"
+        android:drawableStart="@drawable/person_24"
+        android:ems="10"
+        android:hint="@string/login_hint"
+        android:importantForAutofill="no"
+        android:inputType="textPersonName"
+        android:textColor="@color/lightBackground"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/hello_user_text" />
+
+    <EditText
+        android:id="@+id/editPassword"
+        style="@style/login_input_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:drawableStart="@drawable/lock_24"
+        android:ems="10"
+        android:hint="password"
+        android:importantForAutofill="no"
+        android:inputType="textVisiblePassword"
+        android:textColor="@color/lightBackground"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editLoginName" />
+
+    <TextView
+        android:id="@+id/hello_user_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:fontFamily="@font/didact_gothic"
+        android:text="Hello"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/kg_optometry_logo" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/messageRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="16dp"
+        android:visibility="invisible"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayoutSendMessage"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/divider"
+        tools:listitem="@layout/item_message"
+        tools:visibility="visible" />
+
+    <LinearLayout
+        android:id="@+id/container_change_configuration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="@id/editPassword"
+        app:layout_constraintStart_toStartOf="@id/editPassword"
+        app:layout_constraintTop_toBottomOf="@id/editPassword">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/hint_tv_change_firebase_config"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            android:text="Change Configuration?" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_change_firebase_config"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            android:text=" Settings"
+            android:textColor="@color/colorPrimary"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayoutSendMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="16dp"
+        android:orientation="horizontal"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <EditText
+            android:id="@+id/messageEditText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            tools:ignore="Autofill,LabelFor" />
+
+        <Button
+            android:id="@+id/sendButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:enabled="true"
+            android:text="SEND" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:layout_marginTop="16dp"
+        android:background="?android:attr/listDivider"
+        android:backgroundTint="@color/blueVeryLight"
+        android:backgroundTintMode="add"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/container_change_configuration" />
+</androidx.constraintlayout.widget.ConstraintLayout>
