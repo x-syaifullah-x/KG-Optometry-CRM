@@ -35,6 +35,11 @@ import com.lizpostudio.kgoptometrycrm.utils.actionConfirmDeletion
 import com.lizpostudio.kgoptometrycrm.utils.computeAgeAndDOB
 import id.xxx.module.view.binding.ktx.viewBinding
 import androidx.core.content.edit
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
+import com.lizpostudio.kgoptometrycrm.data.source.remote.firebase.RemoteDataSource
+import org.json.JSONObject
 
 class FormSelectionFragment : Fragment() {
 
@@ -101,7 +106,6 @@ class FormSelectionFragment : Fragment() {
             .addCallback(this) { onBackPressed() }
     }
 
-    @SuppressLint("SetTextI18n")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -120,14 +124,31 @@ class FormSelectionFragment : Fragment() {
         val safeArgs: FormSelectionFragmentArgs by navArgs()
         val patientID = safeArgs.patientID
 
-        Log.d(Constants.TAG, "Getting all forms for $patientID")
         patientViewModel.getAllFormsForPatient(patientID)
 
-//        if (viewOnlyMode) {
-//            binding.viewOnlyButton.setImageResource(R.drawable.visibility_32)
-//        } else {
-//            binding.viewOnlyButton.setImageResource(R.drawable.ic_baseline_edit_24)
-//        }
+        val database = RemoteDataSource.getInstance(context).getFirebaseDatabase()
+        val recordsRef = database.getReference("records")
+        val query = recordsRef.orderByChild("patientID").equalTo(patientID)
+        query.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    val p = snapshot.children.map { d ->
+                        val value = d.value
+                        val recordId = d.key
+                        val jsonObject = JSONObject(value as Map<*, *>)
+                        PatientEntity.fromJson("$recordId", jsonObject)
+                    }
+                    patientViewModel.updatePatientEntity(patientID, p)
+                } else {
+//                    remove by patient_id
+                    Log.d("Firebase", "No matching records found")
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("Firebase", "Query cancelled: ${error.message}")
+            }
+        })
 
         binding.synchButton.setOnLongClickListener { v ->
             val i = Intent(v.context, SyncActivity::class.java)
@@ -135,30 +156,30 @@ class FormSelectionFragment : Fragment() {
             true
         }
         binding.synchButton.setOnClickListener { v ->
-            val latestDataSync = System.currentTimeMillis()
-            val dialog = AlertDialog.Builder(v.context)
-                .setView(R.layout.sync_dialog)
-                .setCancelable(false)
-                .show()
-            patientViewModel.updateDatabaseFromFirebase(
-                v.context,
-                latestDataSync = sharedPref.getLong(Constants.PREF_KEY_LAST_SYNC, 0),
-                rc = { count ->
-                    val message =
-                        if (count > 0L) {
-                            "Updating/Inserting $count records from Firebase"
-                        } else {
-                            "You are well synced!\nNo new records in Firebase."
-                        }
-                    sharedPref.edit { putLong(Constants.PREF_KEY_LAST_SYNC, latestDataSync) }
-                    dialog.cancel()
-                    Toast.makeText(v.context, message, Toast.LENGTH_SHORT).show()
-                },
-                onError = {
-                    dialog.cancel()
-                    Toast.makeText(v.context, it.localizedMessage, Toast.LENGTH_SHORT).show()
-                }
-            )
+//            val latestDataSync = System.currentTimeMillis()
+//            val dialog = AlertDialog.Builder(v.context)
+//                .setView(R.layout.sync_dialog)
+//                .setCancelable(false)
+//                .show()
+//            patientViewModel.updateDatabaseFromFirebase(
+//                v.context,
+//                latestDataSync = sharedPref.getLong(Constants.PREF_KEY_LAST_SYNC, 0),
+//                rc = { count ->
+//                    val message =
+//                        if (count > 0L) {
+//                            "Updating/Inserting $count records from Firebase"
+//                        } else {
+//                            "You are well synced!\nNo new records in Firebase."
+//                        }
+//                    sharedPref.edit { putLong(Constants.PREF_KEY_LAST_SYNC, latestDataSync) }
+//                    dialog.cancel()
+//                    Toast.makeText(v.context, message, Toast.LENGTH_SHORT).show()
+//                },
+//                onError = {
+//                    dialog.cancel()
+//                    Toast.makeText(v.context, it.localizedMessage, Toast.LENGTH_SHORT).show()
+//                }
+//            )
         }
         // create Recycler View
 
@@ -169,9 +190,7 @@ class FormSelectionFragment : Fragment() {
             null
         )
 
-        myDecorLine?.also {
-            itemDecor.setDrawable(it)
-        }
+        myDecorLine?.also { itemDecor.setDrawable(it) }
 
         binding.formsList.addItemDecoration(itemDecor)
         binding.formsList.adapter = recyclerAdapter

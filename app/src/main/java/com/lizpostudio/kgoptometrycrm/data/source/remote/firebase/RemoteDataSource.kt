@@ -31,8 +31,11 @@ class RemoteDataSource private constructor(private val firebaseApp: FirebaseApp)
         @Volatile
         private var sInstance: RemoteDataSource? = null
 
-        fun getInstance(context: Context) = sInstance ?: synchronized(this) {
+        fun getInstance(context: Context?) = sInstance ?: synchronized(this) {
             sInstance ?: run {
+
+                context ?: throw NullPointerException()
+
                 val pref = Constants.getSharedPreferences(context)
                 var firebaseName = pref.getString(KEY_FIREBASE_NAME, "")
                 if (firebaseName.isNullOrBlank()) {
@@ -68,7 +71,7 @@ class RemoteDataSource private constructor(private val firebaseApp: FirebaseApp)
         fun setConfiguration(context: Context?, googleServiceFileUri: Uri?): Boolean {
             var result = false
             if (googleServiceFileUri == null || context == null)
-                return result
+                return false
             var openInputStream: InputStream? = null
             try {
                 openInputStream = context.contentResolver?.openInputStream(googleServiceFileUri)

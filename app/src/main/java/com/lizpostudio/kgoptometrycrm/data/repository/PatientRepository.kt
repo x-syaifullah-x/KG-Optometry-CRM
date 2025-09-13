@@ -119,6 +119,10 @@ class PatientRepository private constructor(
         }
     }
 
+    suspend fun updateRecord(patientID: String, data: List<PatientEntity>) {
+        dao.replaceRecordByPatientID(patientID = patientID, data = data)
+    }
+
     suspend fun updateListOfRecords(records: List<PatientEntity>): Boolean {
         return withContext(Dispatchers.IO) {
             dao.updateListOfRecords(records)
