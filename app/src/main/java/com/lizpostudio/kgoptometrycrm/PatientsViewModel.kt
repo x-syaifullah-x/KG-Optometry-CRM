@@ -15,11 +15,9 @@ import com.lizpostudio.kgoptometrycrm.data.repository.PractitionerRepository
 import com.lizpostudio.kgoptometrycrm.data.repository.RecordsRepository
 import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientEntity
 import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PractitionerEntity
-import com.lizpostudio.kgoptometrycrm.data.source.remote.firebase.FBRecords
 import com.lizpostudio.kgoptometrycrm.data.source.remote.firebase.RemoteDataSource
 import com.lizpostudio.kgoptometrycrm.utils.A
 import com.lizpostudio.kgoptometrycrm.utils.InfoSectionData
-import com.lizpostudio.kgoptometrycrm.utils.convertFBRecordToPatients
 import com.lizpostudio.kgoptometrycrm.utils.convertFormToFBRecord
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -205,7 +203,7 @@ class PatientsViewModel(
                             val value = snapshot.value
                             val jsonObject = JSONObject(value as Map<*, *>)
                             _patientFireForm.value =
-                                PatientEntity.fromJson("$recordID", jsonObject);
+                                PatientEntity.fromJson("$recordID", jsonObject)
                         } catch (e: Exception) {
                             e.printStackTrace()
                         }
@@ -469,5 +467,9 @@ class PatientsViewModel(
         onError: (Throwable) -> Unit = {}
     ) {
         A.updateDatabaseFromFirebase(viewModelScope, c, latestDataSync, rc, onError)
+    }
+
+    fun updatePatientEntity(patientID: String, data: List<PatientEntity>) {
+        viewModelScope.launch { patientRepo.updateRecord(patientID = patientID, data = data) }
     }
 }

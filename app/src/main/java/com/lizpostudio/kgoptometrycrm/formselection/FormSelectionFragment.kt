@@ -1,6 +1,5 @@
 package com.lizpostudio.kgoptometrycrm.formselection
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -11,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.edit
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -34,7 +34,6 @@ import com.lizpostudio.kgoptometrycrm.search.sync.SyncActivity
 import com.lizpostudio.kgoptometrycrm.utils.actionConfirmDeletion
 import com.lizpostudio.kgoptometrycrm.utils.computeAgeAndDOB
 import id.xxx.module.view.binding.ktx.viewBinding
-import androidx.core.content.edit
 
 class FormSelectionFragment : Fragment() {
 
@@ -101,7 +100,6 @@ class FormSelectionFragment : Fragment() {
             .addCallback(this) { onBackPressed() }
     }
 
-    @SuppressLint("SetTextI18n")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -120,14 +118,31 @@ class FormSelectionFragment : Fragment() {
         val safeArgs: FormSelectionFragmentArgs by navArgs()
         val patientID = safeArgs.patientID
 
-        Log.d(Constants.TAG, "Getting all forms for $patientID")
         patientViewModel.getAllFormsForPatient(patientID)
 
-//        if (viewOnlyMode) {
-//            binding.viewOnlyButton.setImageResource(R.drawable.visibility_32)
-//        } else {
-//            binding.viewOnlyButton.setImageResource(R.drawable.ic_baseline_edit_24)
-//        }
+//        val database = RemoteDataSource.getInstance(context).getFirebaseDatabase()
+//        val recordsRef = database.getReference("records")
+//        val query = recordsRef.orderByChild("patientID").equalTo(patientID)
+//        query.addValueEventListener(object : ValueEventListener {
+//            override fun onDataChange(snapshot: DataSnapshot) {
+//                if (snapshot.exists()) {
+//                    val p = snapshot.children.map { d ->
+//                        val value = d.value
+//                        val recordId = d.key
+//                        val jsonObject = JSONObject(value as Map<*, *>)
+//                        PatientEntity.fromJson("$recordId", jsonObject)
+//                    }
+//                    patientViewModel.updatePatientEntity(patientID, p)
+//                } else {
+////                    remove by patient_id
+//                    Log.d("Firebase", "No matching records found")
+//                }
+//            }
+//
+//            override fun onCancelled(error: DatabaseError) {
+//                Log.e("Firebase", "Query cancelled: ${error.message}")
+//            }
+//        })
 
         binding.synchButton.setOnLongClickListener { v ->
             val i = Intent(v.context, SyncActivity::class.java)
@@ -169,9 +184,7 @@ class FormSelectionFragment : Fragment() {
             null
         )
 
-        myDecorLine?.also {
-            itemDecor.setDrawable(it)
-        }
+        myDecorLine?.also { itemDecor.setDrawable(it) }
 
         binding.formsList.addItemDecoration(itemDecor)
         binding.formsList.adapter = recyclerAdapter

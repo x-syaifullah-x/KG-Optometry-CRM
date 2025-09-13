@@ -1,7 +1,13 @@
 package com.lizpostudio.kgoptometrycrm.data.source.local.dao
 
 import androidx.lifecycle.LiveData
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Transaction
+import androidx.room.Update
 import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientEntity
 import com.lizpostudio.kgoptometrycrm.data.source.local.entity.SalesEntity
 import kotlinx.coroutines.flow.Flow
@@ -76,6 +82,15 @@ interface PatientsDao {
     @Delete
     suspend fun deleteRecord(record: PatientEntity): Int
 
+    @Query("DELETE FROM patients_table WHERE sales_id = :patientID")
+    suspend fun deleteByPatientID(patientID: String): Int
+
+    @Transaction
+    suspend fun replaceRecordByPatientID(patientID: String, data: List<PatientEntity>) {
+        deleteByPatientID(patientID)
+        insertListOfForms(data)
+    }
+
 //    @Delete
 //    suspend fun deleteListOfRecords(records: List<PatientEntity>): Unit
 
@@ -117,4 +132,6 @@ interface PatientsDao {
 
     @Query("SELECT * FROM patients_table WHERE section_name = :nameOfSection")
     fun getRecordsBySectionNameAsLiveData(nameOfSection: String): LiveData<List<PatientEntity>>
+
+
 }

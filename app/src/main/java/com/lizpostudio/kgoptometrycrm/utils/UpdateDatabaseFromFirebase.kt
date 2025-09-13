@@ -43,21 +43,38 @@ object A {
                 val recordsToDelete = deletedHistories.map { it.second }.toSet().toList()
                 scope.launch(Dispatchers.IO) {
                     size += patientRepo.deleteListOfRecordsByID(recordsToDelete)
+
+                    setupListener(latestDataSync, patientRepo.historyReference) { histories ->
+                        scope.launch(Dispatchers.IO) {
+                            val historyUpdateList = histories.map { it.second }.toSet().toList()
+                            recordsRepo.saveFirebaseRecordToDatabase(
+                                recordsID = historyUpdateList,
+                                onComplete = { success, _ ->
+                                    rc.invoke(success.size + size)
+                                },
+                                onError = onError
+                            )
+                        }
+                    }
                 }
+                return@setupListener
             }
-        }
 
-
-        setupListener(latestDataSync, patientRepo.historyReference) { histories ->
-            scope.launch(Dispatchers.IO) {
-                val historyUpdateList = histories.map { it.second }.toSet().toList()
-                recordsRepo.saveFirebaseRecordToDatabase(
-                    recordsID = historyUpdateList,
-                    onComplete = { success, _ ->
-                        rc.invoke(success.size + size)
-                    },
-                    onError = onError
-                )
+            setupListener(latestDataSync, patientRepo.historyReference) { histories ->
+                if (histories.isNotEmpty()) {
+                    scope.launch(Dispatchers.IO) {
+                        val historyUpdateList = histories.map { it.second }.toSet().toList()
+                        recordsRepo.saveFirebaseRecordToDatabase(
+                            recordsID = historyUpdateList,
+                            onComplete = { success, _ ->
+                                rc.invoke(success.size + size)
+                            },
+                            onError = onError
+                        )
+                    }
+                } else {
+                    rc.invoke(0)
+                }
             }
         }
     }
