@@ -1,0 +1,54 @@
+name: Linux
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions: write-all
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          distribution: "jetbrains"
+          cache: gradle
+
+      - name: Setup Gradle
+        run: |
+          ### UPDATE GRADLE PROPERTIES
+          mem_total_m=$(($(cat /proc/meminfo | head -1 | awk '{ print $2 }') / 1024))
+          sed -i "s/^\(org\.gradle\.jvmargs=.*\)-Xmx[0-9]\+[a-zA-Z]\+/\1-Xmx${mem_total_m}m/" gradle.properties
+          
+          ### CHMOD
+          chmod +x gradlew
+
+      - name: Assemble Release
+        run: |
+          ./gradlew clean assembleRelease
+
+      - name: Assemble Debug
+        run: |
+          ./gradlew assembleDebug
+
+      - name: UPLOAD ARTIFACT
+        run: |
+          __APK_FILE_RELEASE=app/build/outputs/apk/release/app-release.apk
+          __APP_VERSION="v$($ANDROID_HOME/cmdline-tools/latest/bin/apkanalyzer manifest print "${__APK_FILE_RELEASE}" | grep versionName | cut -d'"' -f2)"
+          __APK_FILE_RELEASE_RESULT=/tmp/KG-Optometry-CRM-${__APP_VERSION}-release.apk
+          mv ${__APK_FILE_RELEASE} ${__APK_FILE_RELEASE_RESULT}
+          
+          __APK_FILE_DEBUG=app/build/outputs/apk/debug/app-debug.apk
+          __APK_FILE_DEBUG_RESULT=/tmp/KG-Optometry-CRM-${__APP_VERSION}-debug.apk
+          mv ${__APK_FILE_DEBUG} ${__APK_FILE_DEBUG_RESULT}
+          
+          gh release delete "${__APP_VERSION}" --yes || true
+          gh release create "${__APP_VERSION}" --title "KG-Optometry-CRM ${__APP_VERSION}" --latest=true --generate-notes || true
+          gh release upload "${__APP_VERSION}" "${__APK_FILE_DEBUG_RESULT}" "${__APK_FILE_RELEASE_RESULT}" --clobber

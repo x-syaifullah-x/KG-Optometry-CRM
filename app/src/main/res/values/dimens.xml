@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="login_shape_radius">16dp</dimen>
+    <dimen name="padding_login_text">8dp</dimen>
+    <dimen name="login_text_width">240dp</dimen>
+    <dimen name="padding_16dp">16dp</dimen>
+    <dimen name="logo_height">72dp</dimen>
+    <dimen name="icon_32">32dp</dimen>
+    <dimen name="icon_24">24dp</dimen>
+    <dimen name="sph_width">90dp</dimen>
+    <dimen name="cyl_width">86dp</dimen>
+    <dimen name="ocular_health_cl_top">300dp</dimen>
+    <dimen name="image_fitting_cl">242dp</dimen>
+    <dimen name="orthok_graphic_height">228dp</dimen>
+    <dimen name="padding_small">4dp</dimen>
+</resources>

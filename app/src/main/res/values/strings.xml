@@ -1,0 +1,192 @@
+<resources>
+    <string name="app_name">KG Optometry CRM</string>
+    <string name="kg_optometry_crm">KG OPTOMETRY CRM</string>
+    <string name="login_hint">Your login</string>
+    <string name="hello_user">Hello, %1$s!</string>
+    <string name="login">LOG IN</string>
+    <string name="logout">LOG OUT</string>
+    <string name="please_login">You should login into the app to continue using it.</string>
+    <string name="sign_in_failure">Sign in Failure!</string>
+    <string name="hint_search_by">Search by:</string>
+    <string name="entries_found_in_database">Found %1$s Customers</string>
+    <string name="entries_found_in_database_sales">Found %1$s Sales</string>
+    <string name="entries_found_in_database_follow_up">Found %1$s FOLLOW UP CASE</string>
+    <string name="entries_found_in_database_recycle_bin">Found %1$s Deleted Record</string>
+    <string name="hint_start_typing">Start typing to search database</string>
+    <string name="hint_phone">Phone:</string>
+    <string name="hint_family_code">Family code:</string>
+
+    <string name="number_of_years_patient">- %1$s years, DOB: %2$s</string>
+
+    <string name="hint_name_input">Name:</string>
+    <string name="hint_id_input">ID:</string>
+    <string name="hint_ic_input">IC:</string>
+    <string name="hint_family_input">Family Code:</string>
+    <string name="hint_other_id">Other ID:</string>
+    <string name="hint_dob">D.O.B.</string>
+    <string name="hint_age">Age:</string>
+    <string name="hint_phone1">Phone 1:</string>
+    <string name="hint_phone2">Phone 2:</string>
+    <string name="hint_phone3">Phone 3:</string>
+    <string name="hint_race">Race:</string>
+    <string name="hint_sex">Sex:</string>
+    <string name="hint_address">Address:</string>
+    <string name="hint_post_code">Post Code:</string>
+    <string name="hint_city">City:</string>
+    <string name="hint_state">State:</string>
+    <string name="hint_country">Country:</string>
+    <string name="hint_occupation">Occupation:</string>
+
+    <string name="hint_contact_lens">Contact Lens:</string>
+    <string name="yes_answer">Yes</string>
+    <string name="no_answer">No</string>
+    <string name="hint_hypertension">Hypertension:</string>
+    <string name="hint_diabetes">Diabetes:</string>
+    <string name="hint_allergy">Allergy:</string>
+    <string name="hint_medication">Medication:</string>
+    <string name="hint_cataract_removal">Cataract Removal:</string>
+    <string name="hint_glaucoma">Glaucoma:</string>
+    <string name="hint_eye_surgery">Eye Surgery:</string>
+    <string name="hint_current_status">Status/History/Main CO</string>
+    <string name="hint_remark">Remark:</string>
+
+    <string name="right">R</string>
+    <string name="left">L</string>
+
+    <string name="right_full">Right</string>
+    <string name="left_full">Left</string>
+
+    <string name="hint_retinoscopy">Retinoscopy:</string>
+    <string name="sph">Sph</string>
+    <string name="cyl">Cyl</string>
+    <string name="axis">Axis</string>
+    <string name="hint_ret_currentrx_aided">Type</string>
+
+    <string name="subjective_refraction">Subjective Refraction</string>
+    <string name="chart">Chart</string>
+    <string name="va">VA</string>
+    <string name="add">ADD</string>
+    <string name="pd">PD</string>
+    <string name="add2">ADD2</string>
+    <string name="near_va">Near VA</string>
+    <string name="near_va2">Near VA2</string>
+
+    <string name="mpmva">MPMVA</string>
+    <string name="ouva">OU VA</string>
+    <string name="x_sign">X</string>
+
+    <string name="currently_using">Currently Using</string>
+    <string name="current_spec_lens">Current Spectacles Lens</string>
+    <string name="lens_year">Lens Year</string>
+
+    <string name="lens">Lens</string>
+    <string name="iop">IOP</string>
+    <string name="av_ratio">AV Ratio</string>
+    <string name="cd_ratio">CD Ratio</string>
+    <string name="tbut">TBUT</string>
+
+    <string name="color_vision">Color Vision</string>
+    <string name="tno">TNO</string>
+    <string name="randot">Randot</string>
+    <string name="npc">NPC</string>
+    <string name="worth_dots_distance">Worth-4-Dots-Distance</string>
+    <string name="worth_dots_near">Worth-4-Dots-Near</string>
+    <string name="accommodation">Accommodation</string>
+    <string name="right_aa">Right AA</string>
+    <string name="left_aa">Left AA</string>
+    <string name="right_mem">Right MEM</string>
+    <string name="left_mem">Left MEM</string>
+    <string name="phoria">Phoria</string>
+    <string name="cover_test_near">Cover Test - Near</string>
+    <string name="howell_card_near">Howell Card - Near</string>
+    <string name="omt">OMT</string>
+    <string name="range_of_movement">Range of movement</string>
+    <string name="eye_movement">Eye movement</string>
+    <string name="losses_fixation">Losses Fixation</string>
+    <string name="head_movement">Head Movement</string>
+    <string name="overshoot">Overshoot</string>
+    <string name="additional_test_manage">Additional Test/ Management</string>
+
+    <string name="occupation">Occupation</string>
+    <string name="current_cl">Current CL</string>
+    <string name="wearing_hours">Wearing Hours</string>
+    <string name="current_status">Current Status</string>
+    <string name="vision">Vision</string>
+    <string name="comfort">Comfort</string>
+    <string name="complaints">Complaints</string>
+    <string name="visual_demand">Visual Demand</string>
+    <string name="rx">RX</string>
+    <string name="_24">/24</string>
+    <string name="_7">/7</string>
+    <string name="_30">/30</string>
+    <string name="_10">/10</string>
+
+    <string name="patient_history_contact_lens">Patient History</string>
+    <string name="cornea">Cornea</string>
+    <string name="limbus">Limbus</string>
+    <string name="lashes">Lashes</string>
+    <string name="bulbar_conj">Bulbar Conj</string>
+    <string name="lids">Lids</string>
+    <string name="tear_quality">Tear Quality</string>
+    <string name="ocular_health_contact_lens">Ocular Health</string>
+
+    <string name="fitting_contact_lens">Fitting</string>
+    <string name="rx_smal">Rx</string>
+    <string name="bc">Bc</string>
+    <string name="dia">Dia</string>
+    <string name="movement">Movement</string>
+    <string name="centration">Centration</string>
+    <string name="over_refraction">Over-refraction</string>
+
+    <string name="final_prescription_oh">Final Prescription</string>
+
+    <string name="solution">Solution</string>
+    <string name="advice">Advice</string>
+    <string name="rm">RM</string>
+    <string name="total">Total</string>
+
+    <string name="type">Type</string>
+    <string name="ht">HT</string>
+    <string name="frameHT">Frame HT</string>
+    <string name="ed">ED</string>
+    <string name="frame">Frame</string>
+    <string name="frameRM">Frame RM</string>
+    <string name="lensRM">Lens RM</string>
+    <string name="contact_lens_sun_glass">Contact Lens / Sunglasses</string>
+    <string name="clsgrm">CL/SG RM</string>
+    <string name="optometrist">Optometrist</string>
+
+    <string name="unaided_va">Unaided VA</string>
+    <string name="over_refraction_short">Over-ref.</string>
+    <string name="treatment_zone">Treatment\nZone</string>
+    <string name="management">Management</string>
+
+    <string name="customer_same_IC">The customer with IC %1$s already exists.\nWould you like to delete current customer and load the existing one? </string>
+    <string name="customer_form_delete">If you really want to delete %1$s of %2$s forever, please, enter valid password and tap YES.</string>
+    <string name="form_delete_title">Confirm Form Deletion</string>
+    <string name="patient_delete_title">Confirm Patient Deletion</string>
+    <string name="photo_delete_title">Confirm Photo Deletion</string>
+
+    <string name="photo_delete">Do you want to delete photo forever?</string>
+    <string name="cspractitioner">Cs Practitioner</string>
+    <string name="orpractitioner">Or Practitioner</string>
+    <string name="hint_dominance">Ocular Dominance</string>
+
+    <string name="to_prescribe">To Prescribe</string>
+    <string name="t_slash_h">T/H</string>
+    <string name="settled_checkbox_caption">SETTLED</string>
+    <string name="goto_customers">Customers</string>
+    <string name="or">OR</string>
+    <string name="frame_size">Frame Size</string>
+    <string name="total_rm">Total RM</string>
+    <string name="cash_order">CASH ORDER</string>
+    <string name="solution_misc">Solution/Misc</string>
+    <string name="solution_misc_rm">Sol/Misc RM</string>
+    <string name="hint_mm_input">MM</string>
+    <string name="frame_type">Frame Type</string>
+    <string name="sales_order_from_selection">SALES ORDER</string>
+    <string name="key_use_dropdown">methode_dropdown</string>
+    <string name="key_select_file_preference">select_file_preference</string>
+    <string name="upload_db_message">This operation will delete your local database and upload data from Firebase. It could take 1 or more minutes to complete.\nAre you sure you want to update your database?</string>
+    <string name="label_login_fragment">LoginFragment</string>
+</resources>
