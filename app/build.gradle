@@ -1,0 +1,141 @@
+plugins {
+    id "com.android.application"
+    id "androidx.navigation.safeargs"
+    id "kotlin-android"
+    id "kotlin-kapt"
+    id "com.google.devtools.ksp"
+}
+
+android {
+
+    String packageName = "com.lizpostudio.kgoptometrycrm"
+    namespace packageName
+    testNamespace "${packageName}.test"
+
+    compileSdkVersion build_versions.compile_sdk
+    buildToolsVersion build_versions.build_tools
+
+    defaultConfig {
+        minSdkVersion build_versions.min_sdk
+        targetSdkVersion build_versions.target_sdk
+        versionCode build_versions.code
+        versionName build_versions.name
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        resConfigs "en"
+    }
+
+    signingConfigs {
+        debug {
+            def store_file_release = file("$rootDir/key_store/debug/debug.jks")
+            storeFile store_file_release
+            storePassword "android"
+            keyAlias "androiddebugkey"
+            keyPassword "android"
+        }
+
+        release {
+            def store_file_release = file("$rootDir/key_store/debug/debug.jks")
+            storeFile store_file_release
+            storePassword "android"
+            keyAlias "androiddebugkey"
+            keyPassword "android"
+        }
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+            signingConfig signingConfigs.debug
+        }
+
+        release {
+            minifyEnabled true
+            debuggable false
+            jniDebuggable false
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+            signingConfig signingConfigs.release
+        }
+    }
+
+    buildFeatures {
+        dataBinding true
+        viewBinding  true
+        buildConfig true
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_21.toString()
+    }
+
+    packagingOptions {
+        exclude "META-INF/**"
+        exclude "id/**"
+        exclude "androidx/**"
+        exclude "okhttp3/**"
+        exclude "kotlin/**"
+        exclude "org/**"
+        exclude "**.properties"
+        exclude "**.bin"
+        exclude "kotlin-tooling-metadata.json"
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: "libs", include: ["*.jar", "*.aar"])
+
+    implementation "id.xxx.module:viewbinding:0.0.100"
+    implementation "id.xxx.module:handle-crash:0.0.100"
+
+    implementation "com.google.android.material:material:$vMaterial"
+
+    implementation platform("com.google.firebase:firebase-bom:$vFirebaseBom")
+    implementation "com.google.firebase:firebase-auth-ktx"
+    implementation "com.google.firebase:firebase-database-ktx"
+    implementation "com.google.firebase:firebase-storage-ktx"
+    implementation "com.google.firebase:firebase-messaging-ktx"
+
+    implementation "androidx.appcompat:appcompat:$vAndroidxAppCompat"
+    implementation "androidx.appcompat:appcompat-resources:$vAndroidxAppCompat"
+    implementation "androidx.constraintlayout:constraintlayout:$vAndroidxConstrainLayout"
+    implementation "androidx.fragment:fragment-ktx:$vAndroidxFragment"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$vAndroidxLifecycle"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$vAndroidxLifecycle"
+    implementation "androidx.navigation:navigation-fragment-ktx:$vAndroidxNavigation"
+    implementation "androidx.navigation:navigation-ui-ktx:$vAndroidxNavigation"
+    implementation "androidx.preference:preference-ktx:$vAndroidxPreference"
+    implementation "androidx.room:room-ktx:$vAndroidxRoom"
+
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$vKotlinCoroutines"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:$vKotlinCoroutines"
+    testImplementation "junit:junit:$vJunit"
+
+    androidTestImplementation "androidx.room:room-testing:$vAndroidxRoom"
+    androidTestImplementation "androidx.test.ext:junit-ktx:$vAndroidxTestExtJunit"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$vAndroidxTestEspresso"
+    androidTestImplementation "com.android.support.test:rules:$vAndroidxTestRules"
+
+    ksp "androidx.room:room-compiler:$vAndroidxRoom"
+
+    implementation "androidx.camera:camera-core:$vAndroidxCamera"
+    implementation "androidx.camera:camera-camera2:$vAndroidxCamera"
+    implementation "androidx.camera:camera-lifecycle:$vAndroidxCamera"
+    implementation "androidx.camera:camera-view:$vAndroidxCamera"
+
+    testImplementation "org.json:json:$vOrgGson"
+
+    implementation "com.squareup.okhttp3:okhttp:$vSquareupOkhttp3"
+
+    implementation "androidx.work:work-runtime-ktx:$vAndroidxWork"
+}
