@@ -66,74 +66,84 @@
         </HorizontalScrollView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/top_navigation_2"
+    <!--    <androidx.constraintlayout.widget.ConstraintLayout-->
+    <!--        android:id="@+id/top_navigation_2"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginTop="4dp"-->
+    <!--        android:background="@color/blueBasicLight"-->
+    <!--        android:padding="4dp"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toBottomOf="@+id/top_navigation">-->
+
+    <!--        <ImageView-->
+    <!--            android:id="@+id/view_only_button"-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:layout_marginStart="8dp"-->
+    <!--            app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--            app:layout_constraintStart_toStartOf="parent"-->
+    <!--            app:layout_constraintTop_toTopOf="parent"-->
+    <!--            app:srcCompat="@drawable/ic_read_write_36"-->
+    <!--            tools:ignore="ContentDescription" />-->
+
+    <!--        <ImageView-->
+    <!--            android:id="@+id/save_form_button_"-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:layout_marginStart="4dp"-->
+    <!--            app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--            app:layout_constraintStart_toEndOf="@+id/view_only_button"-->
+    <!--            app:layout_constraintTop_toTopOf="parent"-->
+    <!--            app:srcCompat="@drawable/ic_save_36"-->
+    <!--            tools:ignore="ContentDescription" />-->
+
+    <!--        <HorizontalScrollView-->
+    <!--            android:id="@+id/chips_scroll_2"-->
+    <!--            android:layout_width="0dp"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:layout_marginStart="4dp"-->
+    <!--            android:layout_marginTop="8dp"-->
+    <!--            android:layout_marginEnd="16dp"-->
+    <!--            android:layout_marginBottom="8dp"-->
+    <!--            android:scrollbarSize="0dp"-->
+    <!--            app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--            app:layout_constraintEnd_toStartOf="@+id/delete_form"-->
+    <!--            app:layout_constraintStart_toEndOf="@+id/save_form_button_"-->
+    <!--            app:layout_constraintTop_toTopOf="parent">-->
+
+    <!--            <LinearLayout-->
+    <!--                android:id="@+id/navigation_layout_2"-->
+    <!--                android:layout_width="wrap_content"-->
+    <!--                android:layout_height="wrap_content"-->
+    <!--                android:gravity="start|fill_horizontal"-->
+    <!--                android:orientation="horizontal" />-->
+
+    <!--        </HorizontalScrollView>-->
+
+    <!--        <ImageView-->
+    <!--            android:id="@+id/delete_form"-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:layout_marginEnd="8dp"-->
+    <!--            app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--            app:layout_constraintEnd_toEndOf="parent"-->
+    <!--            app:layout_constraintTop_toTopOf="parent"-->
+    <!--            app:srcCompat="@drawable/ic_clear_24"-->
+    <!--            app:tint="@color/redCircle"-->
+    <!--            tools:ignore="ContentDescription,RtlSymmetry" />-->
+    <!--    </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+    <include
+        android:id="@+id/nav_2"
+        layout="@layout/nav_2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:background="@color/blueBasicLight"
-        android:padding="4dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/top_navigation">
-
-        <ImageView
-            android:id="@+id/view_only_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_read_write_36"
-            tools:ignore="ContentDescription" />
-
-        <ImageView
-            android:id="@+id/save_form_button_"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/view_only_button"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_save_36"
-            tools:ignore="ContentDescription" />
-
-        <HorizontalScrollView
-            android:id="@+id/chips_scroll_2"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="8dp"
-            android:scrollbarSize="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/delete_form"
-            app:layout_constraintStart_toEndOf="@+id/save_form_button_"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <LinearLayout
-                android:id="@+id/navigation_layout_2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="start|fill_horizontal"
-                android:orientation="horizontal" />
-
-        </HorizontalScrollView>
-
-        <ImageView
-            android:id="@+id/delete_form"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_clear_24"
-            app:tint="@color/redCircle"
-            tools:ignore="ContentDescription,RtlSymmetry" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        app:layout_constraintTop_toBottomOf="@+id/top_navigation" />
 
     <include
         android:id="@+id/content"
@@ -141,5 +151,5 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/top_navigation_2" />
+        app:layout_constraintTop_toBottomOf="@+id/nav_2" />
 </androidx.constraintlayout.widget.ConstraintLayout>

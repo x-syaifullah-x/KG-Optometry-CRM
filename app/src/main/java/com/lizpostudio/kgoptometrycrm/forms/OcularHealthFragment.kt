@@ -492,7 +492,7 @@ class OcularHealthFragment : Fragment() {
 
                 var sectionName = ""
                 val navChipGroup = bindingRoot.navigationLayout
-                val navChipGroup2 = bindingRoot.navigationLayout2
+                val navChipGroup2 = bindingRoot.nav2.navigationLayout2
 //                val children = newList.map { patientForm ->
                 val children = newSectionName.map { patientForm ->
                     val chip = TextView(app.applicationContext)
@@ -630,11 +630,11 @@ class OcularHealthFragment : Fragment() {
                     mapSectionName[sectionName]?.map { form -> form.recordID } ?: listOf()
                 val hPosBottomNav = hPosList.indexOf(recordID)
                 if (hPosBottomNav > 3) {
-                    val scrollWidth = bindingRoot.chipsScroll2.width
+                    val scrollWidth = bindingRoot.nav2.chipsScroll2.width
                     val scrollX = ((hPosBottomNav - 2) * (scrollWidth / 6.25)).toInt()
-                    bindingRoot.chipsScroll2.postDelayed({
+                    bindingRoot.nav2.chipsScroll2.postDelayed({
                         if (context != null)
-                            bindingRoot.chipsScroll2.smoothScrollTo(scrollX, 0)
+                            bindingRoot.nav2.chipsScroll2.smoothScrollTo(scrollX, 0)
                     }, 100L)
                 }
             }
@@ -771,7 +771,7 @@ class OcularHealthFragment : Fragment() {
             }
         }
 
-        bindingRoot.deleteForm.setOnClickListener {
+        bindingRoot.nav2.deleteForm.setOnClickListener {
             if (context != null)
                 actionConfirmDeletion(
                     title = resources.getString(R.string.form_delete_title),
@@ -801,7 +801,7 @@ class OcularHealthFragment : Fragment() {
             }
         }
 
-        bindingRoot.saveFormButton.setOnClickListener {
+        bindingRoot.nav2.saveFormButton.setOnClickListener {
             saveAndNavigate("none")
         }
 
@@ -931,36 +931,36 @@ class OcularHealthFragment : Fragment() {
     private fun fillTheForm(p: PatientEntity) {
         viewOnlyMode = p.isReadOnly
         if (viewOnlyMode) {
-            bindingRoot.viewOnlyButton.setImageResource(R.drawable.visibility_36)
+            bindingRoot.nav2.viewOnlyButton.setImageResource(R.drawable.visibility_36)
             binding.mainLayout.setBackgroundColor(
                 ContextCompat.getColor(requireContext(), R.color.viewOnlyMode)
             )
-            bindingRoot.saveFormButton.visibility = View.GONE
+            bindingRoot.nav2.saveFormButton.visibility = View.GONE
         } else {
-            bindingRoot.viewOnlyButton.setImageResource(R.drawable.ic_read_write_36)
+            bindingRoot.nav2.viewOnlyButton.setImageResource(R.drawable.ic_read_write_36)
             binding.mainLayout.setBackgroundColor(
                 ContextCompat.getColor(requireContext(), R.color.lightBackground)
             )
-            bindingRoot.saveFormButton.visibility = View.VISIBLE
+            bindingRoot.nav2.saveFormButton.visibility = View.VISIBLE
         }
 
-        bindingRoot.viewOnlyButton.setOnClickListener {
+        bindingRoot.nav2.viewOnlyButton.setOnClickListener {
             viewOnlyMode = !viewOnlyMode
             if (viewOnlyMode) {
-                bindingRoot.viewOnlyButton.setImageResource(R.drawable.visibility_36)
+                bindingRoot.nav2.viewOnlyButton.setImageResource(R.drawable.visibility_36)
                 binding.mainLayout.setBackgroundColor(
                     ContextCompat.getColor(
                         requireContext(),
                         R.color.viewOnlyMode
                     )
                 )
-                bindingRoot.saveFormButton.visibility = View.GONE
+                bindingRoot.nav2.saveFormButton.visibility = View.GONE
             } else {
-                bindingRoot.viewOnlyButton.setImageResource(R.drawable.ic_read_write_36)
+                bindingRoot.nav2.viewOnlyButton.setImageResource(R.drawable.ic_read_write_36)
                 binding.mainLayout.setBackgroundColor(
                     ContextCompat.getColor(requireContext(), R.color.lightBackground)
                 )
-                bindingRoot.saveFormButton.visibility = View.VISIBLE
+                bindingRoot.nav2.saveFormButton.visibility = View.VISIBLE
             }
 
             patientViewModel.updateIsReadOnly("${p.recordID}", viewOnlyMode)
