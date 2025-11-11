@@ -124,6 +124,13 @@ interface PatientsDao {
     @Query("SELECT * FROM patients_table WHERE sales_id=:id")
     fun getInfoPatient(id: String): PatientEntity
 
+    @Query("SELECT * FROM patients_table WHERE sales_id=:patientId AND section_name='INFO'")
+    fun getPatientInfo(patientId: String): PatientEntity?
+
+
+    @Query("UPDATE patients_table SET sales_id=:newPatientId WHERE sales_id=:patientId")
+    fun updatePatientId(patientId: String?, newPatientId: String): Int
+
     @Query("SELECT family_code FROM patients_table WHERE sales_id=:id AND section_name='INFO' AND delete_at='0'")
     fun getFamilyCode(id: String): String?
 

@@ -66,6 +66,12 @@ class PatientRepository private constructor(
         }
     }
 
+    fun updatePatientId(patientId: String?, newPatientId: String) =
+        dao.updatePatientId(patientId, newPatientId)
+
+    fun getPatientInfo(patientId: String) =
+        dao.getPatientInfo(patientId)
+
     suspend fun insert(forms: List<PatientEntity>): List<Long> {
         return withContext(Dispatchers.IO) {
             dao.insertListOfForms(forms)

@@ -23,6 +23,7 @@ import com.lizpostudio.kgoptometrycrm.PatientsViewModel
 import com.lizpostudio.kgoptometrycrm.R
 import com.lizpostudio.kgoptometrycrm.ViewModelProviderFactory
 import com.lizpostudio.kgoptometrycrm.constant.Constants
+import com.lizpostudio.kgoptometrycrm.data.repository.PatientRepository
 import com.lizpostudio.kgoptometrycrm.data.source.local.entity.PatientEntity
 import com.lizpostudio.kgoptometrycrm.databinding.FragmentFormSelectionBinding
 import com.lizpostudio.kgoptometrycrm.formselection.adapter.SectionNameAdapter
@@ -189,7 +190,15 @@ class FormSelectionFragment : Fragment() {
         binding.formsList.addItemDecoration(itemDecor)
         binding.formsList.adapter = recyclerAdapter
 
-        patientViewModel.getPatientByIdAsLiveData(patientID)
+//        fun x(it: String) {
+//            patientViewModel.setPatientId(it)
+//            patientViewModel.createInfoListener(it)
+//        }
+
+//        patientViewModel.setPatientId(patientID)
+        patientViewModel.createInfoListener(patientID) {}
+//        patientViewModel.getPatientByIdAsLiveData(patientID)
+        patientViewModel.patientId
             .observe(viewLifecycleOwner) { patientForms ->
 //        patientViewModel.patientInitForms.observe(viewLifecycleOwner) { patientForms ->
                 patientForms?.let {

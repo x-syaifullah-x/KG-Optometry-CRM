@@ -104,6 +104,10 @@ class PatientsViewModel(
     val patientInitForms: LiveData<List<PatientEntity>>
         get() = _patientInitForms
 
+    private val _patientId = MutableLiveData<String>()
+    val patientId =
+        _patientId.switchMap { patientRepo.getRecordsByIDAsFlow(patientID = it).asLiveData() }
+
     fun getPatientByIdAsLiveData(id: String) =
         patientRepo.getRecordsByIDAsFlow(patientID = id).asLiveData()
 
@@ -178,6 +182,30 @@ class PatientsViewModel(
 
     fun readyToShowPhoto() {
         _photoFromFBReady.value = true
+    }
+
+    fun createInfoListener(patientId: String, onDataChange: (patientId: String) -> Unit) {
+        _patientId.value = patientId
+        val patient = patientRepo.getPatientInfo(patientId)
+        val recordID = patient?.recordID ?: return
+        val ref = patientRepo.recordsReference.child("$recordID")
+        val listener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    val value = snapshot.value
+                    val jsonObject = JSONObject(value as Map<*, *>)
+                    val newPatientInfo = PatientEntity.fromJson("$recordID", jsonObject)
+                    if (_patientId.value != newPatientInfo.patientID) {
+                        patientRepo.updatePatientId(_patientId.value, newPatientInfo.patientID)
+                        _patientId.value = newPatientInfo.patientID
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {}
+        }
+
+        ref.addValueEventListener(listener)
     }
 
     fun createRecordListener(recordID: Long, oneTimeEvent: Boolean = false) {
